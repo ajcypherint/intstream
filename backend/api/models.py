@@ -1,16 +1,15 @@
 from django.db import models
 from django.utils import timezone
+from polymorphic.models import PolymorphicModel
 
 # Create your models here.
 
 
-class Source(models.Model):
+class Source(PolymorphicModel):
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
     upload_date = models.DateTimeField(default=timezone.now)
     mlmodels = models.ManyToManyField('MLModel')
-    class Meta:
-        abstract=True
 
     def __str__(self):
         return self.name
@@ -46,7 +45,7 @@ class MLModel(models.Model):
 class Categories(models.Model):
     name=models.CharField(max_length=100,unique=True)
     created_date = models.DateTimeField(default=timezone.now)
-    model = models.ForeignKey(MLModel)
+    model = models.ForeignKey(MLModel,on_delete=models.CASCADE)
     enabled = models.BooleanField(default=True)
 
     def __str__(self):
@@ -57,6 +56,6 @@ class Article(models.Model):
     source = models.ForeignKey(Source,on_delete=models.CASCADE)
     title = models.TextField(max_length=256)
     upload_date = models.DateTimeField(default=timezone.now)
-    parent_match=models.ForeignKey('self')
+    parent_match=models.ForeignKey('self',on_delete=models.CASCADE)
     categories = models.ManyToManyField(Categories)
 
