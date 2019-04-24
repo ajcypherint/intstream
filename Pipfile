@@ -7,10 +7,13 @@ verify_ssl = true
 
 [packages]
 django = "*"
-django-rest-framework = "*"
 psycopg2-binary = "*"
 django-polymorphic = "*"
 django-generate-secret-key = "*"
+djangorestframework-simplejwt = "*"
+coreapi = "*"
+pyyaml = "*"
+djangorestframework = "*"
 
 [requires]
 python_version = "3.6"
