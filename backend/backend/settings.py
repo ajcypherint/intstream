@@ -25,9 +25,10 @@ with open(os.path.join(BASE_DIR, 'secretkey.txt')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+#DEBUG = True
+#default to false
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ['true','yes']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -45,9 +46,11 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'polymorphic',
     'django_generate_secret_key',
+    'django_filters',
 
 ]
 REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_PERMISSION_CLASSES': (

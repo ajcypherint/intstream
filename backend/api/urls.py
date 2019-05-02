@@ -7,10 +7,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView,
 from . import views
 router = routers.DefaultRouter()
 router.register('mlmodels',views.MLModelViewSet)
-router.register('doctypes',views.DocTypeViewSet)
-router.register('articles',views.ArticleViewSet)
-router.register('rsssources',views.RssSourceViewSet)
-router.register('documentsources',views.DocumentSourceViewSet)
+router.register('txtarticles',views.TxtArticleViewSet)
+router.register('sourcesupload',views.UploadSourceViewSet)
+router.register('sourcesrss',views.RssSourceViewSet)
 router.register('categories',views.CategoriesViewSet)
 
 

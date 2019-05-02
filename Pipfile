@@ -14,6 +14,7 @@ djangorestframework-simplejwt = "*"
 coreapi = "*"
 pyyaml = "*"
 djangorestframework = "*"
+django-filter = "*"
 
 [requires]
 python_version = "3.6"

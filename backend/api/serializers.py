@@ -1,5 +1,17 @@
 from rest_framework import serializers
-from .models import RssSource,DocType,DocumentSource,MLModel,Article,Categories
+from .models import MLModel,TxtArticle,Categories,UploadSource,RSSSource,SourceType
+
+
+
+class UploadSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=[
+            "id",
+            'name',
+            'active',
+
+        ]
+        model = UploadSource
 
 class RssSourceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -7,35 +19,10 @@ class RssSourceSerializer(serializers.ModelSerializer):
             "id",
             'name',
             'active',
-            'upload_date',
-            'mlmodels',
             'url'
 
         ]
-    model = RssSource
-
-
-class DocTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields=[
-           "id",
-           "name",
-           "extension"
-        ]
-    model = DocType
-
-class DocumentSourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields=[
-             "id",
-            'name',
-            'active',
-            'upload_date',
-            'mlmodels',
-            'document_type'
-
-        ]
-    model = DocumentSource
+        model = RSSSource
 
 
 class MLModelSerializer(serializers.ModelSerializer):
@@ -44,11 +31,11 @@ class MLModelSerializer(serializers.ModelSerializer):
             'sources',
             'name',
             'created_date',
-            'base64_encoded_model' 
+            'base64_encoded_model',
             'enabled'
         ]
 
-    model = MLModel
+        model = MLModel
 
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,16 +46,19 @@ class CategoriesSerializer(serializers.ModelSerializer):
            'enabled'
         ]
 
-    model = Categories
+        model = Categories
 
-class ArticleSerializer(serializers.ModelSerializer):
+class TxtSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
            'source',
            'title',
            'upload_date',
            'parent_match',
-           'categories'
+           'categories',
+           'file',
+           'encoding',
+
         ]
 
-    model = Article
+        model = TxtArticle
