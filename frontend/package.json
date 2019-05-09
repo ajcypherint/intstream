@@ -2,13 +2,25 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/intstream",
   "dependencies": {
+    "bootstrap": "^4.3.1",
+    "jquery": "^3.4.1",
+    "jwt-decode": "^2.2.0",
+    "popper": "^1.0.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-persist": "^1.0.2",
     "react-redux": "^7.0.3",
     "react-router-dom": "^5.0.0",
     "react-scripts": "^3.0.0",
-    "typescript": "^3.4.5"
+    "reactstrap": "^8.0.0",
+    "redux": "^4.0.1",
+    "redux-api-middleware": "^3.0.1",
+    "redux-persist": "^5.10.0",
+    "redux-persist-transform-filter": "0.0.18",
+    "typescript": "^3.4.5",
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -16,6 +28,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:8000/",
   "eslintConfig": {
     "extends": "react-app"
   },

@@ -1,9 +1,14 @@
 from django.db import models
 from django.utils import timezone
 from polymorphic.models import PolymorphicModel
+from django.contrib.auth.models import AbstractUser
 
 import uuid
 import os
+
+
+class UserIntStream(AbstractUser):
+    pass
 
 # Create your models here.
 def get_file_path(instance, filename):

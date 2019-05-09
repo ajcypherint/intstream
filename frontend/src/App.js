@@ -1,28 +1,21 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Route,Switch } from 'react-router-dom'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+import Login from './containers/Login';
+import PrivateRoute from './containers/PrivateRoute';
+import Contents from './components/Contents'
+
+
+//todo(aj) put nested routes inside Detonate under the navigation
+function App(props) {
+  return (
+    <Switch>
+      <Route exact path="/login/" component={Login} />
+      <PrivateRoute path="/" component={Contents} />
+      
+    </Switch>
+    )
 }
 
-export default App;
+
+export default App
