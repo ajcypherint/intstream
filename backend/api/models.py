@@ -8,7 +8,10 @@ import os
 
 
 class UserIntStream(AbstractUser):
-    pass
+    is_integrator= models.BooleanField('integrator status', default=False)
+
+    #is_staff  - admin
+    #is_superuser used for program admins
 
 # Create your models here.
 def get_file_path(instance, filename):
@@ -17,7 +20,7 @@ def get_file_path(instance, filename):
 
 # RSS, UPLOAD # for display on frontend
 class SourceType(models.Model):
-    name = models.CharField(max_length=25)
+    name = models.CharField(max_length=25,unique=True)
     active = models.BooleanField(default=True)
 
     def __str__(self):

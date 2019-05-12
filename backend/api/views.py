@@ -5,6 +5,7 @@ from rest_framework import filters as rest_filters
 from django_filters import rest_framework as filters
 import importlib
 from  utils.document import TXT
+from . import permissions
 
 from rest_framework import viewsets
 # Create your views here.
@@ -76,6 +77,7 @@ class TxtArticleFilter(filters.FilterSet):
 
 
 class TxtArticleViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.TxtArticle.objects.all()
     serializer_class = serializers.TxtSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
