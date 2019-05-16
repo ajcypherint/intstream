@@ -1,7 +1,13 @@
 from rest_framework import serializers
 from .models import MLModel,TxtArticle,Categories,UploadSource,RSSSource,SourceType
 
-
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=[
+            "password",
+            "is_staff",
+            "is_admin"
+        ]
 
 class UploadSourceSerializer(serializers.ModelSerializer):
     class Meta:

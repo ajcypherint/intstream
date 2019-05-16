@@ -10,8 +10,6 @@ import os
 class UserIntStream(AbstractUser):
     is_integrator= models.BooleanField('integrator status', default=False)
 
-    #is_staff  - admin
-    #is_superuser used for program admins
 
 # Create your models here.
 def get_file_path(instance, filename):

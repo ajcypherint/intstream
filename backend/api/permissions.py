@@ -9,7 +9,7 @@ class IsAuthandReadOnlyOrAdminOrIntegrator(permissions.BasePermission):
                 request.user.is_authenticated):
             return True
         elif (request.method not in permissions.SAFE_METHODS and
-                request.user.is_authenticated):
+              (request.user.is_integrator or request.user.is_superuser)):
             return True
         else:
             return False
