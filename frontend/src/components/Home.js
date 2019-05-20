@@ -1,20 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
+import { Tree, SampleTree } from 'react-lazy-paginated-tree';
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import TextInput from './TextInput'
+import TreeView from './TreeView'
 import SubmitButton from './Submit.js'
-
 import { Col,Alert,Form,FormGroup,Button,ListGroup,ListGroupItem } from 'reactstrap';
 class Main extends React.Component{
   constructor(props){
     super(props)
-    this.state={
-      na:'',
-    }
+    //this.state={
+    //  na:'',
+    //}
  
-    this.handleClick = this.handleClick.bind(this)
-    this.handleChange = this.handleChange.bind(this)
+    //this.handleClick = this.handleClick.bind(this)
+    //this.handleChange = this.handleChange.bind(this)
 
 
   }
@@ -34,38 +35,19 @@ class Main extends React.Component{
     
     const errors = this.props.errors || {}
     return(
-     <div className="col-sm-8 offset-sm-2" >
-        <Form onSubmit={this.handleClick}>
-            {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
-
-            <TextInput   
-              label="InputSomething"
-              error={errors.url}
-              name="urlinput"  
-              value = {this.state.na} onChange={this.handleChange}/>
-            <SubmitButton />          
-     </Form>
-      <ListGroup>
-              <ListGroupItem>
-                test
-              </ListGroupItem>
-              <ListGroupItem>
-                test2
-             </ListGroupItem>
-
-      </ListGroup>
-     </div>
-  
+      <Tree nodes={SampleTree} usLocalState={false} />
     )
  
  }
 }
 
 const mapStateToProps = (state) => ({
+  // add state for node
 })
 
 
 const mapDispatchToProps = (dispatch) => ({
+  //add state for node
 
 })
 
