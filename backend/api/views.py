@@ -4,21 +4,16 @@ from . import models
 from rest_framework import filters as rest_filters
 from django_filters import rest_framework as filters
 import importlib
-from  utils.document import TXT
+from  utils.document import TXT, PDF, WordDocx
+from . import permissions
 
 from rest_framework import viewsets
 # Create your views here.
 
+
 class UploadSourceViewSet(viewsets.ModelViewSet):
     queryset = models.UploadSource.objects.all()
     serializer_class = serializers.UploadSourceSerializer
-
-
-class RssSourceViewSet(viewsets.ModelViewSet):
-    queryset = models.RSSSource.objects.all()
-    serializer_class = serializers.RssSourceSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filter_fields = ('name','active','url')
 
 
 class MLModelFilter(filters.FilterSet):
@@ -35,17 +30,30 @@ class MLModelViewSet(viewsets.ModelViewSet):
     filterset_class = MLModelFilter
 
 
+class JobSourceFilter(filters.FilterSet):
+    class Meta:
+        model = models.RSSSource
+        fields = ('name','active')
+
+
+class JobSourceViewSet(viewsets.ModelViewSet):
+    queryset = models.JobSource.objects.all()
+    serializer_class = serializers.JobSourceSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('name','active')
+    filterset_class = JobSourceFilter
+
+
 class RssFilter(filters.FilterSet):
     class Meta:
         model = models.RSSSource
-        fields = ('name','url')
-
+        fields = ('name','url','active')
 
 class RssSourceViewSet(viewsets.ModelViewSet):
     queryset = models.RSSSource.objects.all()
     serializer_class = serializers.RssSourceSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('name','active','url','upload_date')
+    filterset_fields = ('name','active','url')
     filterset_class = RssFilter
 
     def perform_create(self, serializer):
@@ -69,6 +77,41 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     filterset_class = CategoriesFilter
 
 
+class ArticleFilter(filters.FilterSet):
+    class Meta:
+        model = models.Article
+        fields = ('source','title','upload_date')
+
+
+class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    queryset = models.Article.objects.all()
+    serializer_class = serializers.ArticleSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('source','title','upload_date')
+    filterset_class = ArticleFilter
+
+
+class HtmlArticleFilter(filters.FilterSet):
+    class Meta:
+        model = models.HtmlArticle
+        fields = ('source','title','upload_date')
+
+
+class HtmlArticleViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    queryset = models.HtmlArticle.objects.all()
+    serializer_class = serializers.HtmlSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('source','title','upload_date')
+    filterset_class = HtmlArticleFilter
+
+    def perform_create(self, serializer):
+        instance = TXT(self.request.FILES['file'],self.request.data.encoding)
+        text = instance.read()
+        serializer.save(text=text)
+
+
 class TxtArticleFilter(filters.FilterSet):
     class Meta:
         model = models.TxtArticle
@@ -76,6 +119,7 @@ class TxtArticleFilter(filters.FilterSet):
 
 
 class TxtArticleViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.TxtArticle.objects.all()
     serializer_class = serializers.TxtSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -87,8 +131,40 @@ class TxtArticleViewSet(viewsets.ModelViewSet):
         text = instance.read()
         serializer.save(text=text)
 
-    def process_html(self):
-        pass
+class WordDocxArticleFilter(filters.FilterSet):
+    class Meta:
+        model = models.WordDocxArticle
+        fields = ('source','title','upload_date')
 
-    def process_PDF(self):
-        pass
+class WordDocxArticleViewSet(viewsets.ModelViewSet):
+    permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    queryset = models.WordDocxArticle.objects.all()
+    serializer_class = serializers.WordDocxSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('source','title','upload_date')
+    filterset_class = WordDocxArticleFilter
+
+    def perform_create(self, serializer):
+        instance = WordDocx(self.request.FILES['file'])
+        text = instance.read()
+        serializer.save(text=text)
+
+class PDFArticleFilter(filters.FilterSet):
+    class Meta:
+        model = models.TxtArticle
+        fields = ('source','title','upload_date')
+
+class PDFArticleViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    queryset = models.PDFArticle.objects.all()
+    serializer_class = serializers.PDFSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('source','title','upload_date')
+    filterset_class = PDFArticleFilter
+
+    def perform_create(self, serializer):
+        password = self.request.data.password if 'password' in self.request.data else ''
+        instance = PDF(self.request.FILES['file'],password=password)
+        text = instance.read()
+        serializer.save(text=text)
+

@@ -15,6 +15,10 @@ coreapi = "*"
 pyyaml = "*"
 djangorestframework = "*"
 django-filter = "*"
+drf-yasg = "*"
+django-background-tasks = "*"
+packaging = "*"
+django-s3-storage = "*"
 
 [requires]
 python_version = "3.6"

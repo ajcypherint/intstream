@@ -9,6 +9,7 @@ def insert_source_types(apps,schema_editor):
     rss = source_type(name='RSS')
     rss.save()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [

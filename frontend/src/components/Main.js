@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
 import { Route,Switch } from 'react-router-dom'
-import Home from "./Home"
+import Home from "../containers/Home"
 import About from "./About"
 import Logout from "./Logout"
 import Password from "./Password"

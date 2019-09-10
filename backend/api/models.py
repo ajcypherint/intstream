@@ -8,22 +8,22 @@ import os
 
 
 class UserIntStream(AbstractUser):
-    pass
+    is_integrator= models.BooleanField('integrator status', default=False)
+
 
 # Create your models here.
 def get_file_path(instance, filename):
     filename = "%s" % (uuid.uuid4())
     return os.path.join('uploads/sources', filename)
 
-# RSS, UPLOAD # for display on frontend
+#types for frontend RSS, Upload, Job
 class SourceType(models.Model):
-    name = models.CharField(max_length=25)
-    active = models.BooleanField(default=True)
-
+    name = models.CharField(max_length=25,unique=True)
     def __str__(self):
         return self.name
 
 
+# name / active #
 class Source(PolymorphicModel):
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
@@ -34,14 +34,27 @@ class Source(PolymorphicModel):
 class UploadSource(Source):
     pass
 
+# this will trigger an rss source to accept incoming intel
 class RSSSource(Source):
     url = models.URLField(max_length=1000)
 
+
+# this will trigger a python script to run
+class JobSource(Source):
+    script_path = models.TextField(max_length=500)
+    working_dir = models.TextField(max_length=500)
+    virtual_env_path = models.TextField(max_length=500)
+    python_binary_fullpath = models.TextField(max_length=500)
+    last_run = models.DateTimeField(blank=True, null=True)
+    last_status = models.BooleanField(blank=True, null=True)
+    arguments = models.TextField(max_length=1000)
+    task = models.TextField() # todo(aj) foreignkey to
+
 class MLModel(models.Model):
-    sources = models.ManyToManyField(Source,blank=True,null=True)
+    sources = models.ManyToManyField(Source)
     name = models.CharField(max_length=250)
     created_date = models.DateTimeField(default=timezone.now)
-    base64_encoded_model = models.FileField()
+    base64_encoded_model = models.FileField(blank=True)
     enabled = models.BooleanField(default=True)
 
     def __str__(self):
@@ -57,13 +70,18 @@ class Categories(models.Model):
     def __str__(self):
         return self.name + " ( " + str(self.id) + ")"
 
+# name and api_endpoint for frontend  / sdk
+class ArticleType(models.Model):
+    name = models.CharField(max_length=100,unique=True)
+    api_endpoint = models.TextField(max_length=100,unique=True)
+
 
 class Article(PolymorphicModel):
     source = models.ForeignKey(Source,on_delete=models.CASCADE)
     title = models.TextField(max_length=256)
     text = models.TextField()
     upload_date = models.DateTimeField(default=timezone.now)
-    parent_match=models.ForeignKey('self',on_delete=models.CASCADE,blank=True,null=True)
+    match_articles=models.ManyToManyField('self',blank=True, null=True)
     categories = models.ManyToManyField(Categories,blank=True,null=True)
     file = models.FileField(upload_to='article')
     encoding = models.CharField(max_length=15,default='utf8')
@@ -72,11 +90,30 @@ class Article(PolymorphicModel):
     def __str__(self):
         return self.title + "( " + str(self.id) + ")"
 
+class WordDocxArticle(Article):
+    pass
+
 class PDFArticle(Article):
-    password = models.CharField(max_length=200)
+    password = models.CharField(max_length=200,blank=True,null=True)
 
 class TxtArticle(Article):
     pass
 
-class RssArticle(Article):
+class HtmlArticle(Article):
+    """
+    for display purposes on front end app
+    """
     pass
+
+class RSSArticle(Article):
+    """
+    for display purposes on front end app
+    """
+    pass
+
+
+
+class Settings(models.Model):
+    aws_key = models.CharField(max_length=100)
+    aws_secret = models.CharField(max_length=250)
+    aws_region = models.CharField(max_length=15)
