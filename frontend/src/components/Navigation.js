@@ -35,41 +35,58 @@ export default class Example extends React.Component {
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
-              <NavItem>
+              {/*
+            <NavItem>
                 <NavLink tag={Link} to="/password">Change Password</NavLink>
-              </NavItem>
-               <NavItem>
-                <NavLink tag={Link} to="/about">About</NavLink>
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to="/logout">Logout</NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink tag={Link} to="/about">About</NavLink>
+              </NavItem>
+              */}
 
-              {/*  
              <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
-                 Menu 
+                 Admin 
                 </DropdownToggle>
                 <DropdownMenu right  >
-                  <DropdownItem tag={Link} to="/">
-                    Home
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/password">
-                    Change Password
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/settings">
-                    Settings
+                 <DropdownItem tag={Link} to="/about">
+                  Sources 
                   </DropdownItem>
                   <DropdownItem tag={Link} to="/about">
-                    About
+                    Categories
+                  </DropdownItem>
+                  <DropdownItem tag={Link} to="/about">
+                   Models 
+                  </DropdownItem>
+                  <DropdownItem tag={Link} to="/about">
+                   Training 
                   </DropdownItem>
                   <DropdownItem divider />
+                  <DropdownItem tag={Link} to="/about">
+                    Settings
+                  </DropdownItem>
+
+                </DropdownMenu>
+              </UncontrolledDropdown>
+
+
+             <UncontrolledDropdown nav inNavbar >
+                <DropdownToggle nav caret>
+                 Account
+                </DropdownToggle>
+                <DropdownMenu right  >
+                 <DropdownItem tag={Link} to="/password">
+                   Change Password
+                  </DropdownItem>
                   <DropdownItem tag={Link} to="/logout">
                     Logout
                   </DropdownItem>
-                </DropdownMenu>
+               </DropdownMenu>
               </UncontrolledDropdown>
-              */}
+
 
             </Nav>
           </Collapse>

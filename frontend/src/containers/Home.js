@@ -1,12 +1,11 @@
 import React from 'react'
-import ReactDOM from 'react-dom';
-import { Tree, SampleTree } from 'react-lazy-paginated-tree';
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
-import TextInput from './TextInput'
-import TreeView from './TreeView'
-import SubmitButton from './Submit.js'
+import TextInput from '../components/TextInput'
+import SearchForm from '../components/SearchForm.js'
+import SubmitButton from '../components/Submit.js'
 import { Col,Alert,Form,FormGroup,Button,ListGroup,ListGroupItem } from 'reactstrap';
+
 class Main extends React.Component{
   constructor(props){
     super(props)
@@ -35,7 +34,9 @@ class Main extends React.Component{
     
     const errors = this.props.errors || {}
     return(
-      <Tree nodes={SampleTree} usLocalState={false} />
+     <div >
+       <SearchForm />
+    </div>
     )
  
  }

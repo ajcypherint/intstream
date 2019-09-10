@@ -8,8 +8,7 @@ def insert_source_types(apps,schema_editor):
     upload.save()
     rss = source_type(name='RSS')
     rss.save()
-    pdf = source_type(name='PDF')
-    pdf.save()
+
 
 class Migration(migrations.Migration):
 
