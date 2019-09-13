@@ -1,3 +1,3 @@
 # intstream
 
-Cyber Intelligence classification and information summarization. 
+Cyber Intelligence classification and information summarization.  
