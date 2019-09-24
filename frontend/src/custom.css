@@ -10,3 +10,11 @@
      color:white;
  
 }
+
+.tableheader {
+    color:black;
+    text-align:left;
+    font-weight:bold;
+    cursor:pointer;
+    
+}

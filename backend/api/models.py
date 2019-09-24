@@ -19,8 +19,9 @@ def get_file_path(instance, filename):
 #types for frontend RSS, Upload, Job
 class SourceType(models.Model):
     name = models.CharField(max_length=25,unique=True)
+    api_endpoint = models.TextField(max_length=50,unique=True)
     def __str__(self):
-        return self.name
+        return self.name + " (" + self.id + ")"
 
 
 # name / active #

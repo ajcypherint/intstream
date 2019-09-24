@@ -13,8 +13,8 @@ class Main extends React.Component{
     //  na:'',
     //}
  
-    //this.handleClick = this.handleClick.bind(this)
-    //this.handleChange = this.handleChange.bind(this)
+    this.handleClick = this.handleClick.bind(this)
+    this.handleChange = this.handleChange.bind(this)
 
 
   }

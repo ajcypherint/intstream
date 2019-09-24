@@ -8,6 +8,7 @@
     "bootstrap": "^4.3.1",
     "jquery": "^3.4.1",
     "jwt-decode": "^2.2.0",
+    "lodash": "^4.17.15",
     "popper": "^1.0.1",
     "react": "^16.8.6",
     "react-datepicker": "^2.5.0",
@@ -23,6 +24,7 @@
     "redux-persist": "^5.10.0",
     "redux-persist-transform-filter": "0.0.18",
     "typescript": "^3.4.5",
+    "url-parse": "^1.4.7",
     "uuid": "^3.3.2"
   },
   "scripts": {

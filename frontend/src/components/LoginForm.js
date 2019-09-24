@@ -36,7 +36,7 @@ export default class LoginForm extends Component {
     return (
       <Container>
             <Form onSubmit={this.onSubmit} >
-            {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+            {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
             <TextInput name="username" label="Username" error={errors.username}  onChange={this.handleInputChange}/>
             <TextInput name="password" label="Password" error={errors.password} type="password" onChange={this.handleInputChange}/>
             <Button type="submit" className="button-brand-primary" size="lg">Log In</Button>

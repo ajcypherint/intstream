@@ -14,15 +14,26 @@ DOCXARTICLES = 'docxarticles'
 router = routers.DefaultRouter()
 router.register('mlmodels',views.MLModelViewSet)
 
+# articles
+router.register('articletypes',views.ArticleTypeViewSet)
+
 router.register('articles',views.ArticleViewSet)
 router.register(TXTARTICLES,views.TxtArticleViewSet)
 router.register(HTMLARTICLES,views.HtmlArticleViewSet)
 router.register(PDFARTICLES,views.PDFArticleViewSet)
 router.register(DOCXARTICLES,views.WordDocxArticleViewSet)
 
-router.register('sourcesupload',views.UploadSourceViewSet)
-router.register('sourcesrss',views.RssSourceViewSet)
-router.register('sourcesjob',views.JobSourceViewSet)
+# sources
+router.register('sourcetypes',views.SourceTypeViewSet)
+
+UPLOADSOURCE = 'sourcesupload'
+RSSSOURCE = 'sourcesrss'
+JOBSOURCE = 'sourcesjob'
+
+router.register(UPLOADSOURCE, views.UploadSourceViewSet)
+router.register(RSSSOURCE, views.RssSourceViewSet)
+router.register(JOBSOURCE, views.JobSourceViewSet)
+
 
 router.register('categories',views.CategoriesViewSet)
 from rest_framework import permissions
