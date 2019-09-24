@@ -3,8 +3,7 @@
     "model": "api.sourcetype",
     "pk": 2,
     "fields": {
-        "name": "RSS",
-        "active": true
+        "name": "RSS"
     }
 },
 

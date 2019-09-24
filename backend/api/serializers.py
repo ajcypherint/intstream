@@ -1,14 +1,30 @@
 from rest_framework import serializers
 from .models import (MLModel, TxtArticle, Categories, Article, PDFArticle,
-                     UploadSource, RSSSource, SourceType, HtmlArticle)
+                     UploadSource, RSSSource, SourceType, ArticleType, HtmlArticle)
 
-class UserSerializer(serializers.ModelSerializer):
+class SourceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
-            "password",
-            "is_staff",
-            "is_admin"
+            "name",
+            "api_endpoint"
         ]
+        model = SourceType
+
+class ArticleTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=[
+           "name",
+           "api_endpoint"
+        ]
+        model = ArticleType
+
+#class UserSerializer(serializers.ModelSerializer):
+#    class Meta:
+#        fields=[
+#            "password",
+#            "is_staff",
+#            "is_admin"
+#        ]
 
 class JobSourceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -131,6 +147,8 @@ class WordDocxSerializer(serializers.ModelSerializer):
         ]
 
         model = TxtArticle
+
+
 class TxtSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[

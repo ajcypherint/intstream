@@ -52,9 +52,13 @@ export default class Example extends React.Component {
                  Admin 
                 </DropdownToggle>
                 <DropdownMenu right  >
-                 <DropdownItem tag={Link} to="/about">
-                  Sources 
+                 <DropdownItem tag={Link} to="/sources_upload">
+                  Upload Sources
                   </DropdownItem>
+                 <DropdownItem tag={Link} to="/sources_rss">
+                  RSS Sources
+                  </DropdownItem>
+                  <DropdownItem divider />
                   <DropdownItem tag={Link} to="/about">
                     Categories
                   </DropdownItem>

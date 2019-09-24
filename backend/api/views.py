@@ -11,9 +11,53 @@ from rest_framework import viewsets
 # Create your views here.
 
 
+class SourceTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.SourceType.objects.all()
+    serializer_class = serializers.SourceTypeSerializer
+
+
+class RssFilter(filters.FilterSet):
+    class Meta:
+        model = models.RSSSource
+        fields = ('name','url','active')
+
+class RssSourceViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    queryset = models.RSSSource.objects.all()
+    serializer_class = serializers.RssSourceSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('name','active','url')
+    filterset_class = RssFilter
+
+
+class UploadSourceFilter(filters.FilterSet):
+    class Meta:
+        model = models.UploadSource
+        fields = ('name','active')
+
+
 class UploadSourceViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.UploadSource.objects.all()
     serializer_class = serializers.UploadSourceSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('name','active')
+    filterset_class = UploadSourceFilter
+
+
+class JobSourceFilter(filters.FilterSet):
+    class Meta:
+        model = models.JobSource
+        fields = ('name','active')
+
+
+class JobSourceViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    queryset = models.JobSource.objects.all()
+    serializer_class = serializers.JobSourceSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('name','active')
+    filterset_class = JobSourceFilter
 
 
 class MLModelFilter(filters.FilterSet):
@@ -23,6 +67,7 @@ class MLModelFilter(filters.FilterSet):
 
 
 class MLModelViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.MLModel.objects.all()
     serializer_class = serializers.MLModelSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -30,37 +75,6 @@ class MLModelViewSet(viewsets.ModelViewSet):
     filterset_class = MLModelFilter
 
 
-class JobSourceFilter(filters.FilterSet):
-    class Meta:
-        model = models.RSSSource
-        fields = ('name','active')
-
-
-class JobSourceViewSet(viewsets.ModelViewSet):
-    queryset = models.JobSource.objects.all()
-    serializer_class = serializers.JobSourceSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('name','active')
-    filterset_class = JobSourceFilter
-
-
-class RssFilter(filters.FilterSet):
-    class Meta:
-        model = models.RSSSource
-        fields = ('name','url','active')
-
-class RssSourceViewSet(viewsets.ModelViewSet):
-    queryset = models.RSSSource.objects.all()
-    serializer_class = serializers.RssSourceSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('name','active','url')
-    filterset_class = RssFilter
-
-    def perform_create(self, serializer):
-        #todo(aj) read rss to text field
-        # text = rss.read
-        # serializer.save(text=text)
-        pass
 
 
 class CategoriesFilter(filters.FilterSet):
@@ -70,6 +84,7 @@ class CategoriesFilter(filters.FilterSet):
 
 
 class CategoriesViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.Categories.objects.all()
     serializer_class = serializers.CategoriesSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -151,7 +166,7 @@ class WordDocxArticleViewSet(viewsets.ModelViewSet):
 
 class PDFArticleFilter(filters.FilterSet):
     class Meta:
-        model = models.TxtArticle
+        model = models.PDFArticle
         fields = ('source','title','upload_date')
 
 class PDFArticleViewSet(viewsets.ModelViewSet):
@@ -167,4 +182,9 @@ class PDFArticleViewSet(viewsets.ModelViewSet):
         instance = PDF(self.request.FILES['file'],password=password)
         text = instance.read()
         serializer.save(text=text)
+
+class ArticleTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    queryset = models.ArticleType.objects.all()
+    serializer_class = serializers.ArticleTypeSerializer
 
