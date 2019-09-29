@@ -16,6 +16,7 @@ const initialState ={
 
 export default (state=initialState, action) => {
   switch(action.type) {
+    case sourcesData.CLEAR:
     case sourcesData.GET_SOURCES_REQUEST:
       {
       return {

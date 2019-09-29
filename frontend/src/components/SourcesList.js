@@ -22,7 +22,7 @@ class SourcesList extends Component {
     this.props.fetchSources();
     this.setState({page:1,ordercol:'',orderdir:ASC})
   }
-
+  
   displaysources(sources, fields){
     //rows
     return sources.map((source)=>{
@@ -148,7 +148,7 @@ class SourcesList extends Component {
     return (
       <div className="container">
         <h1>{heading}</h1>
-        {this.pagination(totalcount,next,previous)}
+        {totalcount ? this.pagination(totalcount,next,previous): ''}
         <Table>
           <thead>
             <tr>
@@ -177,6 +177,7 @@ SourcesList.propTypes = {
   next:propTypes.string,
   previous:propTypes.string,
   fetchSources:propTypes.func,
-  fetchSourcesFullURI:propTypes.func
+  fetchSourcesFullURI:propTypes.func,
+  clearSources:propTypes.func
 };
 export default SourcesList;

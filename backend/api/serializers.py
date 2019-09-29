@@ -5,6 +5,7 @@ from .models import (MLModel, TxtArticle, Categories, Article, PDFArticle,
 class SourceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
+            "id",
             "name",
             "api_endpoint"
         ]
@@ -13,6 +14,7 @@ class SourceTypeSerializer(serializers.ModelSerializer):
 class ArticleTypeSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
+           "id",
            "name",
            "api_endpoint"
         ]

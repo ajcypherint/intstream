@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import SourcesList from '../components/SourcesList';
-import {getSources} from '../actions/sources'
+import {getSources,clearSources} from '../actions/sources'
 import * as reducers from '../reducers/'
 import {Props} from './Props'
 
@@ -29,7 +29,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchSources: (params=undefined) => dispatch(getSources(API,params)),
-    fetchSourcesFullUri: (url,params=undefined) => dispatch(getSources(url,params))
+    fetchSourcesFullUri: (url,params=undefined) => dispatch(getSources(url,params)),
+    clearSources:()=>dispatch(clearSources())
   }
 }
 
