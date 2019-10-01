@@ -38,12 +38,12 @@ export const getSources= (url, params=undefined)=>{
 }
 }
 
-export const setSources= (url,data )=>{
+export const setSources= (url,data,method='PUT' )=>{
   // filters - list[string]
   return {
   [RSAA]:{
    endpoint: url,
-      method: 'PUT',
+      method: method,
       body: JSON.stringify(data),
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [

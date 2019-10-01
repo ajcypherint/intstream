@@ -7,24 +7,47 @@ import SourcesUploadEdit from "../containers/SourcesUploadEdit"
 import About from "./About"
 import Logout from "./Logout"
 import Password from "../containers/Password"
-
+import Edit from './SourceEditFormComp'
+export const ADDFORM = "ADD"
+export const EDITFORM = "EDIT"
 const Main = (props)=>(
   <Switch>
     <Route exact path="/" component={Home} />
 
     <Route exact path="/sources_upload" component={SourcesUploadList} />
+    <Route exact path="/sources_add" 
+      render={()=>
+      <SourcesUploadEdit 
+        form={<Edit/>}
+        state={ {
+          action:ADDFORM,
+          firstrender:true,
+          stateLoaded:true,
+          object:{
+            name:'',
+            active:false
+          }
+        }}
+        match={undefined}/>} 
+      />
+
+
     <Route exact path="/sources_upload_edit/:id" 
-      render={({match})=><SourcesUploadEdit 
-      state={ {
-        firstrender:true,
-        stateLoaded:false,
-        object:{
-          id:undefined,
-          name:undefined,
-          active:undefined
-        }
-      }}
-    match={match}/>} />
+      render={({match})=>
+      <SourcesUploadEdit 
+        form={<Edit/>}
+        state={ {
+          action:EDITFORM,
+          firstrender:true,
+          stateLoaded:false,
+          object:{
+            id:undefined,
+            name:undefined,
+            active:undefined
+          }
+        }}
+        match={match}/>} 
+      />
 
     <Route exact path="/sources_rss" component={SourcesRssList} />
     <Route exact path="/sources_rss/:id" component={SourcesRssList} />

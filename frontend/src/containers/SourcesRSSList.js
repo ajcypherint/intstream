@@ -5,7 +5,7 @@ import * as reducers from '../reducers/'
 
 //edit
 const API = '/api/sourcesrss/'
-const FIELDS = ["name","url"]
+const FIELDS = ["id","name","url","active"]
 const HEADING = "RSS Sources"
 const EDITURI = /sources_rss_edit/
 

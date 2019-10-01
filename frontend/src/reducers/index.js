@@ -31,6 +31,7 @@ export const getPasswordChanged = state => fromPassword.getPasswordChanged(state
 export const getSources= state => fromSources.sources(state.sources)
 export const getErrors = state => fromSources.errors(state.sources)
 export const getLoading = state => fromSources.loading(state.sources)
+export const getSaving = state => fromSources.saving(state.sources)
 export const getTotalCount = state => fromSources.totalcount(state.sources)
 export const getNextPage = state => fromSources.nextPage(state.sources)
 export const getPreviousPage = state => fromSources.previousPage(state.sources)

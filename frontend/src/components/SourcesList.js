@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
 import _ from 'lodash';
 import propTypes from 'prop-types'
-import {Button} from 'reactstrap'
+import {FormGroup,Container,Button} from 'reactstrap'
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import { PAGINATION } from '../util/util'
+import { Input } from 'reactstrap';
 const ASC = ''
 const DESC = '-'
 class SourcesList extends Component {
@@ -25,6 +26,7 @@ class SourcesList extends Component {
   
   displaysources(sources, fields){
     //rows
+    //todo(aj) onChange for checkbox
     return sources.map((source)=>{
       return (
             <tr key={source.id}>
@@ -32,7 +34,9 @@ class SourcesList extends Component {
                   return (
                       <td >
                       <Link style={{color:'black'}} to={this.props.edituri + source.id}>
-                        {source[field]}
+                        {typeof source[field] ==='boolean'?
+                                <Input className='hover' type='checkbox' name={field} checked={source[field]} />
+                             : source[field]}
                       </Link>
                     </td>
                   )})}
@@ -148,7 +152,11 @@ class SourcesList extends Component {
     return (
       <div className="container">
         <h1>{heading}</h1>
-        {totalcount ? this.pagination(totalcount,next,previous): ''}
+       {totalcount ? this.pagination(totalcount,next,previous): ''}
+          <FormGroup>
+        <Button tag={Link} to={this.props.addUri} className="button-brand-primary" size="md">Add</Button>
+      </FormGroup>
+ 
         <Table>
           <thead>
             <tr>
@@ -178,6 +186,8 @@ SourcesList.propTypes = {
   previous:propTypes.string,
   fetchSources:propTypes.func,
   fetchSourcesFullURI:propTypes.func,
-  clearSources:propTypes.func
+  clearSources:propTypes.func,
+  addUri:propTypes.string,
+  editUri:propTypes.string
 };
 export default SourcesList;

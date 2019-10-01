@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import _ from 'lodash';
 import {Container} from 'reactstrap'
 import { Alert, Button, Jumbotron,  Form } from 'reactstrap';
-import TextInput from './TextInput'
-import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
-import {Edit} from './sourceEditForm'
+import Edit from './SourceEditFormComp'
 import {SourceLoading} from './sourceLoading'
+import {ADDFORM, EDITFORM} from './Main'
 export default class SourcesEdit extends Component {
   constructor(props){
     super(props)
@@ -15,7 +13,11 @@ export default class SourcesEdit extends Component {
    this.onSubmit = this.onSubmit.bind(this)
   }
   componentWillMount() {
-    this.props.fetchSources('id='+this.props.match.params.id);
+   if ( typeof this.props.match !== 'undefined'){
+     this.props.fetchSources('id='+this.props.match.params.id) 
+   } else {
+     this.props.clearSources()
+   }
  }
 
   handleInputChange(event) {
@@ -36,13 +38,19 @@ export default class SourcesEdit extends Component {
     // name:this.state.name,
     // active:this.state.active
     //}
-    this.props.setSources('/'+this.state.object.id+'/',this.state.object)
+    if (this.state.action === EDITFORM) {
+      this.props.setSources('/'+this.state.object.id+'/',this.state.object) 
+      // this.props.fetchSources('id='+this.state.object.id) 
+    } else {
+
+      this.props.setSources('',this.state.object,'POST') 
+      //redirect to listing
+    }
   }
   render(){
 
     const loading = this.props.loading;
     const error = this.props.errors || {};
-    const heading = this.props.heading;
     if(this.state.firstrender) { 
       this.setState({firstrender:false})
        return ( <SourceLoading heading={heading}/>)
@@ -60,20 +68,32 @@ export default class SourcesEdit extends Component {
       )
     }
 
-    const name = this.state.object.name 
-    const active = this.state.object.active 
+    //todo(aj) pass copy of state.object to Edit so it is dynamic
+    //Edit should be passed in as a component
+    //Edit should then grab the props it needs out of the properties of object
+    //onsubmit, handlechange, and errors will all be standard for any object
+    //after this this component is fully dynamic
+    
+    const prefix = this.props.state.action === EDITFORM ? "Edit " : "Add ";
+    const heading = prefix + this.props.heading;
     return (
        <div className="row" >
         <div className="col-sm-4"/>
         <div className="col-sm-4">
        <Container>
 
-         <h1>{this.props.heading}</h1>
-         <Edit name={name} 
-           onSubmit={this.onSubmit}
-           active={active} 
-           handleChange = {this.handleInputChange}
-           errors={error}/>
+         <h1>{heading}</h1>
+         {error.detail?<Alert color="danger">{error.detail}</Alert>:""}
+         {React.cloneElement(this.props.form,
+           {
+           object:this.state.object,
+           onSubmit:this.onSubmit,
+           handleChange : this.handleInputChange,
+           errors:error.name,
+           saving:this.props.saving
+           }
+         )
+        }
         </Container>
       </div>
         <div className="col-sm-4"/>
@@ -92,5 +112,6 @@ SourcesEdit.propTypes = {
   fields:propTypes.arrayOf(
     propTypes.string
     ).isRequired,
-  fetchSources:propTypes.func
+  fetchSources:propTypes.func,
+  clearSources:propTypes.func
 };

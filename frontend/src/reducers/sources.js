@@ -11,12 +11,50 @@ const initialState ={
   errors: {},
   nextpage:null,
   previouspage:null,
+  saving:false
 }
 
 
 export default (state=initialState, action) => {
   switch(action.type) {
+      //used for edit
+    case sourcesData.SET_SOURCES_REQUEST:
+      {
+
+      return {
+        ...state,
+        saving:true
+      }
+      }
+    case sourcesData.SET_SOURCES_SUCCESS:
+      {
+      return {
+        ...state,
+        sources:[action.payload],
+        saving:false,
+      }
+      }
+    case sourcesData.SET_SOURCES_FAILURE:
+      {
+      return {
+        ...state,
+        saving:false,
+        errors: action.payload.response || {'non_field_errors': action.payload.statusText},
+      }
+      }
+    //used for listing
     case sourcesData.CLEAR:
+      {
+      return {
+        sources:[],
+        totalcount:0,
+        loading:false,
+        nextpage:null,
+        previouspage:null,
+        errors:{}
+      }
+      }
+
     case sourcesData.GET_SOURCES_REQUEST:
       {
       return {
@@ -28,6 +66,7 @@ export default (state=initialState, action) => {
         errors:{}
       }
       }
+
     case sourcesData.GET_SOURCES_SUCCESS:
       {
         //let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
@@ -41,7 +80,6 @@ export default (state=initialState, action) => {
         errors: {},
       }
       }
- 
     case sourcesData.GET_SOURCES_FAILURE:
       {
       return {
@@ -94,6 +132,9 @@ export function previousPage(state){
 
 export function loading(state) {
   return  state.loading
+}
+export function saving(state) {
+  return  state.saving
 }
 
 export function errors(state) {

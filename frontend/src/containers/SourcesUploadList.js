@@ -6,9 +6,10 @@ import {Props} from './Props'
 
 // edit
 const API = '/api/sourcesupload/'
-const FIELDS = ["name"]
+const FIELDS = ["id","name","active"]
 const HEADING = "Upload Sources"
-const EDITURI = /sources_upload_edit/
+const EDITURI = "/sources_upload_edit/"
+const ADDURI = "/sources_add"
 
 // do not edit
 const mapStateToProps = (state) => {
@@ -22,6 +23,7 @@ const mapStateToProps = (state) => {
     edituri:EDITURI,
     next:reducers.getNextPage(state),
     previous:reducers.getPreviousPage(state),
+    addUri:ADDURI
   };
 }
 

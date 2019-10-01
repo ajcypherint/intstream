@@ -4,7 +4,7 @@ import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
 
-export class Edit extends Component {
+export default class Edit extends Component {
   constructor(props){
     super(props)
  }
@@ -15,15 +15,15 @@ export class Edit extends Component {
             onChange={this.props.handleChange}
             name={'name'}  
             label={'Name'}  
-            value={this.props.name}  
+            value={this.props.object.name}  
             error={this.props.error} />
           <CheckBoxInput    
             onChange={this.props.handleChange}
             type={'checkbox'} 
             name={'active'}  
             label={'active'}  
-            checked={this.props.active}   />
-            {this.props.loading===true?
+            checked={this.props.object.active}   />
+            {this.props.saving===true?
                <span className="spinner-border" role="status">
                         <span className="sr-only">Loading...</span>
                </span>:
@@ -37,7 +37,13 @@ export class Edit extends Component {
 Edit.propTypes = {
   handleChange:propTypes.func,
   error:propTypes.object,
-  name:propTypes.string,
-  active:propTypes.bool,
+  saving:propTypes.bool,
+  updating:propTypes.bool,
+  object:propTypes.shape({
+    id:propTypes.number,
+    name:propTypes.string,
+    active:propTypes.bool,
+  }
+  ),
   onSubmit:propTypes.func
 }
