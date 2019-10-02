@@ -18,6 +18,13 @@ export default class Edit extends Component {
             label={'Name'}  
             value={this.props.object.name}  
             error={this.props.error} />
+          <TextInput   
+            onChange={this.props.handleChange}
+            name={'url'}  
+            label={'Url'}  
+            value={this.props.object.url}  
+            error={this.props.error} />
+ 
           <CheckBoxInput    
             onChange={this.props.handleChange}
             type={'checkbox'} 
@@ -26,8 +33,7 @@ export default class Edit extends Component {
             checked={this.props.object.active}   />
           <FormButtons saving={this.props.saving}
                        goBack={this.props.goBack}/>
-
-         </Form>
+          </Form>
       )
     }
 };

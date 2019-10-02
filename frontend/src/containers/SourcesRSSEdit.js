@@ -3,9 +3,9 @@ import SourceEdit from '../components/SourcesEdit';
 import {getSources, setSources, clearSources} from '../actions/sources'
 import * as reducers from '../reducers/'
 // edit
-const API = '/api/sourcesupload/'
-const FIELDS = ["name"]
-const HEADING = "Upload Source"
+const API = '/api/sourcesrss/'
+const FIELDS = ["name","url","active"]
+const HEADING = "RSS Source"
 
 // do not edit
 const mapStateToProps = (state) => {

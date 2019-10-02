@@ -1,13 +1,14 @@
 import { connect } from 'react-redux'
 import SourcesList from '../components/SourcesList';
-import {getSources} from '../actions/sources'
+import {getSources,clearSources} from '../actions/sources'
 import * as reducers from '../reducers/'
 
 //edit
 const API = '/api/sourcesrss/'
 const FIELDS = ["id","name","url","active"]
 const HEADING = "RSS Sources"
-const EDITURI = /sources_rss_edit/
+const EDITURI = /sources_rss/
+const ADDURI = "/sources_rss_add"
 
 // do not edit
 const mapStateToProps = (state) => {
@@ -21,6 +22,7 @@ const mapStateToProps = (state) => {
     edituri:EDITURI,
     next:reducers.getNextPage(state),
     previous:reducers.getPreviousPage(state),
+    addUri:ADDURI
   };
 }
 
@@ -28,7 +30,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchSources: (params=undefined) => dispatch(getSources(API,params)),
-    fetchSourcesFullUri: (url,params=undefined) => dispatch(getSources(url,params))
+    fetchSourcesFullUri: (url,params=undefined) => dispatch(getSources(url,params)),
+    clearSources:()=>dispatch(clearSources())
   }
 }
 

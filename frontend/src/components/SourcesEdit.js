@@ -5,12 +5,15 @@ import propTypes from 'prop-types'
 import Edit from './SourceEditFormComp'
 import {SourceLoading} from './sourceLoading'
 import {ADDFORM, EDITFORM} from './Main'
-export default class SourcesEdit extends Component {
+import {withRouter} from 'react-router-dom'
+
+class SourcesEdit extends Component {
   constructor(props){
     super(props)
     this.state=this.props.state
    this.handleInputChange = this.handleInputChange.bind(this) 
    this.onSubmit = this.onSubmit.bind(this)
+    this.goBack = this.goBack.bind(this)
   }
   componentWillMount() {
    if ( typeof this.props.match !== 'undefined'){
@@ -19,7 +22,10 @@ export default class SourcesEdit extends Component {
      this.props.clearSources()
    }
  }
+  goBack(event){
+    this.props.history.goBack()
 
+  }
   handleInputChange(event) {
     const target = event.target;
     const value = target.type ===
@@ -86,11 +92,13 @@ export default class SourcesEdit extends Component {
          {error.detail?<Alert color="danger">{error.detail}</Alert>:""}
          {React.cloneElement(this.props.form,
            {
-           object:this.state.object,
-           onSubmit:this.onSubmit,
-           handleChange : this.handleInputChange,
-           errors:error.name,
-           saving:this.props.saving
+             object:this.state.object,
+             onSubmit:this.onSubmit,
+             handleChange : this.handleInputChange,
+             errors:error.name,
+             saving:this.props.saving,
+             goBack:this.goBack
+
            }
          )
         }
@@ -115,3 +123,5 @@ SourcesEdit.propTypes = {
   fetchSources:propTypes.func,
   clearSources:propTypes.func
 };
+
+export default withRouter(SourcesEdit)
