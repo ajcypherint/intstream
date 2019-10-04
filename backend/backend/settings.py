@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django_generate_secret_key',
     'django_filters',
     'drf_yasg',
+    'django_celery_beat'
     #'django_s3_storage'
 ]
 
