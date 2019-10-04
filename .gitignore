@@ -26,3 +26,5 @@ yarn-error.log*
 
 backend/media
 .idea/
+
+*.swp
