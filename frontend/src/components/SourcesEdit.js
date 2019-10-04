@@ -117,9 +117,6 @@ SourcesEdit.propTypes = {
   source:propTypes.object.isRequired,
   loading:propTypes.object.isRequired,
   match:propTypes.object,
-  fields:propTypes.arrayOf(
-    propTypes.string
-    ).isRequired,
   fetchSources:propTypes.func,
   clearSources:propTypes.func
 };

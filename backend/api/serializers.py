@@ -1,6 +1,10 @@
 from rest_framework import serializers
-from .models import (MLModel, TxtArticle, Categories, Article, PDFArticle,
-                     UploadSource, RSSSource, SourceType, ArticleType, HtmlArticle)
+from .models import (MLModel, JobSource,
+                     TxtArticle, Categories,
+                     Article, PDFArticle,
+                     UploadSource, RSSSource,
+                     SourceType, ArticleType,
+                     HtmlArticle)
 
 class SourceTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,13 +41,13 @@ class JobSourceSerializer(serializers.ModelSerializer):
             'script_path',
             'working_dir',
             'virtual_env_path',
-            'python_binary_full_path',
+            'python_binary_fullpath',
             'last_run',
             'last_status',
             'arguments'
 
         ]
-        model = UploadSource
+        model = JobSource
 
 class UploadSourceSerializer(serializers.ModelSerializer):
     class Meta:

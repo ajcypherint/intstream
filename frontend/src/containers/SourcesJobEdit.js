@@ -2,9 +2,10 @@ import { connect } from 'react-redux'
 import SourceEdit from '../components/SourcesEdit';
 import {getSources, setSources, clearSources} from '../actions/sources'
 import * as reducers from '../reducers/'
+
 // edit
-const API = '/api/sourcesupload/'
-const HEADING = "Upload Source"
+const API = '/api/sourcesjob/'
+const HEADING = "Job Source"
 
 // do not edit
 const mapStateToProps = (state) => {
