@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route,Switch } from 'react-router-dom'
 import Home from "../containers/Home"
+import SourcesJobList from "../containers/SourcesJobList"
 import SourcesUploadList from "../containers/SourcesUploadList"
 import SourcesUploadEdit from "../containers/SourcesUploadEdit"
 import SourcesRssList from "../containers/SourcesRSSList"
@@ -87,6 +88,7 @@ const Main = (props)=>(
       />
 
 
+    <Route exact path="/sources_job" component={SourcesJobList} />
     <Route exact path="/about" component={About}/>
     <Route exact path="/logout" component={Logout}/>
     <Route exact path="/password" component={Password}/>

@@ -45,10 +45,22 @@ class UploadSourceViewSet(viewsets.ModelViewSet):
     filterset_class = UploadSourceFilter
 
 
+jobsourcecols = ('id',
+                  'name',
+                  'active',
+                  'script_path',
+                  'working_dir',
+                  'virtual_env_path',
+                  'python_binary_fullpath',
+                  'last_run',
+                  'last_status',
+                  'arguments',
+                  )
+
 class JobSourceFilter(filters.FilterSet):
     class Meta:
         model = models.JobSource
-        fields = ('id','name','active')
+        fields = jobsourcecols
 
 
 class JobSourceViewSet(viewsets.ModelViewSet):
@@ -56,7 +68,7 @@ class JobSourceViewSet(viewsets.ModelViewSet):
     queryset = models.JobSource.objects.all()
     serializer_class = serializers.JobSourceSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','name','active')
+    filterset_fields = jobsourcecols
     filterset_class = JobSourceFilter
 
 
