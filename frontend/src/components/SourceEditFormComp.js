@@ -8,6 +8,9 @@ import FormButtons from './compFormButtons'
 export default class Edit extends Component {
   constructor(props){
     super(props)
+
+    const errors = this.props.errors || {}
+    const err_name = errors.name || {}
  }
     render(){
       return (
@@ -17,7 +20,7 @@ export default class Edit extends Component {
             name={'name'}  
             label={'Name'}  
             value={this.props.object.name}  
-            error={this.props.error} />
+            error={this.err_name} />
           <CheckBoxInput    
             onChange={this.props.handleChange}
             type={'checkbox'} 

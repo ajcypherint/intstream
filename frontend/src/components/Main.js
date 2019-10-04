@@ -2,6 +2,7 @@ import React from 'react'
 import { Route,Switch } from 'react-router-dom'
 import Home from "../containers/Home"
 import SourcesJobList from "../containers/SourcesJobList"
+import SourcesJobEdit from "../containers/SourcesJobEdit"
 import SourcesUploadList from "../containers/SourcesUploadList"
 import SourcesUploadEdit from "../containers/SourcesUploadEdit"
 import SourcesRssList from "../containers/SourcesRSSList"
@@ -11,6 +12,7 @@ import Logout from "./Logout"
 import Password from "../containers/Password"
 import Edit from './SourceEditFormComp'
 import EditRSS from './SourceEditRSSFormComp'
+import EditJob from './SourceEditJobFormComp'
 export const ADDFORM = "ADD"
 export const EDITFORM = "EDIT"
 const Main = (props)=>(
@@ -89,6 +91,41 @@ const Main = (props)=>(
 
 
     <Route exact path="/sources_job" component={SourcesJobList} />
+    <Route exact path="/sources_job_add" 
+      render={()=>
+      <SourcesJobEdit 
+        form={<EditJob/>}
+        state={ {
+          action:ADDFORM,
+          firstrender:true,
+          stateLoaded:true,
+          object:{
+            name:'',
+            active:false
+          }
+        }}
+        match={undefined}/>} 
+      />
+
+
+    <Route exact path="/sources_job/:id"       
+      render={({match})=>
+      <SourcesJobEdit 
+        form={<EditJob/>}
+        state={ {
+          action:EDITFORM,
+          firstrender:true,
+          stateLoaded:false,
+          object:{
+            id:undefined,
+            name:undefined,
+            active:undefined
+          }
+        }}
+        match={match}/>} 
+      />
+
+
     <Route exact path="/about" component={About}/>
     <Route exact path="/logout" component={Logout}/>
     <Route exact path="/password" component={Password}/>

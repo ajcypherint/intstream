@@ -95,7 +95,7 @@ class SourcesEdit extends Component {
              object:this.state.object,
              onSubmit:this.onSubmit,
              handleChange : this.handleInputChange,
-             errors:error.name,
+             errors:error,
              saving:this.props.saving,
              goBack:this.goBack
 

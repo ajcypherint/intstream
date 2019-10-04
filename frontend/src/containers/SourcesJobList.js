@@ -5,7 +5,13 @@ import * as reducers from '../reducers/'
 
 // edit
 const API = '/api/sourcesjob/'
-const FIELDS = ["id","name","active"]
+const FIELDS = ["id",
+  "name",
+  "script_path",
+  "working_dir",
+  "last_run",
+  "last_run_status",
+  "active"]
 const HEADING = "Job Sources"
 const EDITURI = "/sources_job/"
 const ADDURI = "/sources_job_add"
