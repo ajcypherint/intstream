@@ -6,6 +6,7 @@ from rest_framework import status
 
 class TestPerms(TestCase):
     fixtures = ['initial.json']
+
     def setUp(self):
         username = "ubuntu"
         password = "hinton50"

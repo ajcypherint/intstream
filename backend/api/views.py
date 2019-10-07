@@ -104,10 +104,12 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     filterset_class = CategoriesFilter
 
 
+ARTICLE_SORT_FIELDS =('id','source','title','upload_date')
+
 class ArticleFilter(filters.FilterSet):
     class Meta:
         model = models.Article
-        fields = ('id','source','title','upload_date')
+        fields = ARTICLE_SORT_FIELDS
 
 
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
@@ -115,23 +117,23 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Article.objects.all()
     serializer_class = serializers.ArticleSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','source','title','upload_date')
+    filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = ArticleFilter
 
 
-class HtmlArticleFilter(filters.FilterSet):
+class RSSArticleFilter(filters.FilterSet):
     class Meta:
-        model = models.HtmlArticle
-        fields = ('id','source','title','upload_date')
+        model = models.RSSArticle
+        fields = ARTICLE_SORT_FIELDS
 
 
-class HtmlArticleViewSet(viewsets.ModelViewSet):
-    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
-    queryset = models.HtmlArticle.objects.all()
-    serializer_class = serializers.HtmlSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','source','title','upload_date')
-    filterset_class = HtmlArticleFilter
+class RSSArticleViewSet(viewsets.ModelViewSet):
+    permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    queryset = models.RSSArticle.objects.all()
+    serializer_class = serializers.RSSSerializer
+    filter_backends = (filters.DjangoFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter)
+    filterset_fields = ARTICLE_SORT_FIELDS
+    filterset_class = RSSArticleFilter
 
     def perform_create(self, serializer):
         instance = TXT(self.request.FILES['file'],self.request.data.encoding)
@@ -139,10 +141,29 @@ class HtmlArticleViewSet(viewsets.ModelViewSet):
         serializer.save(text=text)
 
 
+class HtmlArticleFilter(filters.FilterSet):
+    class Meta:
+        model = models.HtmlArticle
+        fields = ARTICLE_SORT_FIELDS
+
+
+class HtmlArticleViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    queryset = models.HtmlArticle.objects.all()
+    serializer_class = serializers.HtmlSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ARTICLE_SORT_FIELDS
+    filterset_class = HtmlArticleFilter
+
+    def perform_create(self, serializer):
+        instance = TXT(self.request.FILES['file'],self.request.data.encoding)
+        text = instance.read()
+        serializer.save(text=text)
+
 class TxtArticleFilter(filters.FilterSet):
     class Meta:
         model = models.TxtArticle
-        fields = ('id','source','title','upload_date')
+        fields = ARTICLE_SORT_FIELDS
 
 
 class TxtArticleViewSet(viewsets.ModelViewSet):
@@ -150,7 +171,7 @@ class TxtArticleViewSet(viewsets.ModelViewSet):
     queryset = models.TxtArticle.objects.all()
     serializer_class = serializers.TxtSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','source','title','upload_date')
+    filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = TxtArticleFilter
 
     def perform_create(self, serializer):
@@ -161,14 +182,14 @@ class TxtArticleViewSet(viewsets.ModelViewSet):
 class WordDocxArticleFilter(filters.FilterSet):
     class Meta:
         model = models.WordDocxArticle
-        fields = ('id','source','title','upload_date')
+        fields = ARTICLE_SORT_FIELDS
 
 class WordDocxArticleViewSet(viewsets.ModelViewSet):
     permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.WordDocxArticle.objects.all()
     serializer_class = serializers.WordDocxSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','source','title','upload_date')
+    filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = WordDocxArticleFilter
 
     def perform_create(self, serializer):
@@ -179,14 +200,14 @@ class WordDocxArticleViewSet(viewsets.ModelViewSet):
 class PDFArticleFilter(filters.FilterSet):
     class Meta:
         model = models.PDFArticle
-        fields = ('id','source','title','upload_date')
+        fields = ARTICLE_SORT_FIELDS
 
 class PDFArticleViewSet(viewsets.ModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.PDFArticle.objects.all()
     serializer_class = serializers.PDFSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','source','title','upload_date')
+    filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = PDFArticleFilter
 
     def perform_create(self, serializer):
@@ -199,4 +220,5 @@ class ArticleTypeViewSet(viewsets.ReadOnlyModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.ArticleType.objects.all()
     serializer_class = serializers.ArticleTypeSerializer
+
 

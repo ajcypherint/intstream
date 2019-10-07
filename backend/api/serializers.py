@@ -4,7 +4,7 @@ from .models import (MLModel, JobSource,
                      Article, PDFArticle,
                      UploadSource, RSSSource,
                      SourceType, ArticleType,
-                     HtmlArticle)
+                     HtmlArticle, RSSArticle)
 
 class SourceTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -94,9 +94,11 @@ class CategoriesSerializer(serializers.ModelSerializer):
 
         model = Categories
 
+
+
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=[
+        fields= [
            'source',
            'title',
            'upload_date',
@@ -104,13 +106,13 @@ class ArticleSerializer(serializers.ModelSerializer):
            'categories',
            'file',
            'encoding',
-
+           'text',
         ]
         model = Article
 
 class PDFSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=[
+        fields= [
            'source',
            'title',
            'upload_date',
@@ -118,15 +120,17 @@ class PDFSerializer(serializers.ModelSerializer):
            'categories',
            'file',
            'encoding',
-           'password'
+           'text',
 
+            'password'
         ]
 
         model = PDFArticle
 
+
 class HtmlSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=[
+        fields= [
            'source',
            'title',
            'upload_date',
@@ -134,14 +138,14 @@ class HtmlSerializer(serializers.ModelSerializer):
            'categories',
            'file',
            'encoding',
-
+           'text',
         ]
-
         model = HtmlArticle
+
 
 class WordDocxSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=[
+        fields= [
            'source',
            'title',
            'upload_date',
@@ -149,15 +153,14 @@ class WordDocxSerializer(serializers.ModelSerializer):
            'categories',
            'file',
            'encoding',
-
+           'text',
         ]
-
         model = TxtArticle
 
 
 class TxtSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=[
+        fields= [
            'source',
            'title',
            'upload_date',
@@ -165,7 +168,25 @@ class TxtSerializer(serializers.ModelSerializer):
            'categories',
            'file',
            'encoding',
-
+           'text',
         ]
-
         model = TxtArticle
+
+class RSSSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields= [
+           'source',
+           'title',
+           'upload_date',
+            'match_articles',
+           'categories',
+           'file',
+           'encoding',
+           'text',
+
+            'description',
+            'link',
+            'quid',
+        ]
+        model = RSSArticle
+

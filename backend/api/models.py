@@ -94,11 +94,14 @@ class Article(PolymorphicModel):
 class WordDocxArticle(Article):
     pass
 
+
 class PDFArticle(Article):
     password = models.CharField(max_length=200,blank=True,null=True)
 
+
 class TxtArticle(Article):
     pass
+
 
 class HtmlArticle(Article):
     """
@@ -106,11 +109,14 @@ class HtmlArticle(Article):
     """
     pass
 
+
 class RSSArticle(Article):
     """
     for display purposes on front end app
     """
-    pass
+    description = models.TextField(blank=True, null=True)
+    link = models.URLField()
+    guid = models.CharField(max_length=200,unique=True)
 
 
 

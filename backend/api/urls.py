@@ -10,6 +10,7 @@ HTMLARTICLES = 'htmlarticles'
 PDFARTICLES = "pdfarticles"
 TXTARTICLES = "txtarticles"
 DOCXARTICLES = 'docxarticles'
+RSSARTICLES = 'rssarticles'
 
 router = routers.DefaultRouter()
 router.register('mlmodels',views.MLModelViewSet)
@@ -22,6 +23,7 @@ router.register(TXTARTICLES,views.TxtArticleViewSet)
 router.register(HTMLARTICLES,views.HtmlArticleViewSet)
 router.register(PDFARTICLES,views.PDFArticleViewSet)
 router.register(DOCXARTICLES,views.WordDocxArticleViewSet)
+router.register(RSSARTICLES,views.RSSArticleViewSet)
 
 # sources
 router.register('sourcetypes',views.SourceTypeViewSet)

@@ -39,7 +39,6 @@ class TestPerms(TestCase):
         r = self.c.get("/api/sourcesupload/")
         self.assertEqual(r.status_code,status.HTTP_200_OK)
 
-
     def testIsAnalyst(self):
         """
         not is_superuser and not is_integrator
