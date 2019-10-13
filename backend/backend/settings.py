@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'background_task',
     'rest_framework.authtoken',
     'polymorphic',
     'django_generate_secret_key',
@@ -142,7 +141,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.environ.get("TIMEZONE",'America/New_York')
 
 USE_I18N = True
 

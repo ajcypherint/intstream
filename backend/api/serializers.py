@@ -104,7 +104,6 @@ class ArticleSerializer(serializers.ModelSerializer):
            'upload_date',
             'match_articles',
            'categories',
-           'file',
            'encoding',
            'text',
         ]
@@ -180,13 +179,12 @@ class RSSSerializer(serializers.ModelSerializer):
            'upload_date',
             'match_articles',
            'categories',
-           'file',
            'encoding',
            'text',
 
             'description',
             'link',
-            'quid',
+            'guid',
         ]
         model = RSSArticle
 

@@ -6,8 +6,9 @@ import requests
 from django.utils import timezone
 from celery_singleton import Singleton
 from celery.utils.log import get_task_logger
+import numpy as np
 logger = get_task_logger(__name__)
-
+from utils import vector, read
 @shared_task
 def add(x,y):
     return x + y
@@ -18,51 +19,95 @@ def process_entry(post_title,
                   post_description,
                   post_id,
                   post_link,
-                  source_id):
+                  source_id,
+                  articles_id,
+                  articles_text
+                  ):
+    """
+
+    :param post_title: str
+    :param post_description: str
+    :param post_id: int
+    :param post_link: str
+    :param source_id: int
+    :param articles_id: list[int]
+    :param articles_text: list[string]
+    :return:
+    """
+    # todo(aj) hard coded clean_html and clean_hashes for now
+    vectorizer = vector.StemmedTfidfVectorizer(decode_error="ignore",
+                                               clean_html=True,
+                                               clean_hashes=True)
+
     response = requests.get(post_link)
-    # check similar for the last 24 hours
     article = models.RSSArticle(
         title=post_title,
         description=post_description,
-        quid=post_id,
+        guid=post_id,
         link=post_link,
         text=response.text
         )
+    # todo(aj) hardcoded for now
+    threshold = .70
+
     article.source_id = source_id
     article.save()
-    previous_day= timezone.now()-datetime.timedelta(hours=-24)
-    all_articles_previous_day = models.Article.objects.filter(upload_date__gt=previous_day)
-    # pass all articles including this text to similar check;
+    # check that there are historical articles
+    if len(articles_text) > 0:
+        articles_text.append(read.HTMLRead(article.text).read())
+        tfidf = vectorizer.fit_transform(articles_text)
+        from sklearn.metrics.pairwise import linear_kernel
+        cosine_similarities = linear_kernel(tfidf[-1], tfidf[0:-1]).flatten()
+        match_ids = np.array(articles_id)[cosine_similarities > threshold]
+        if len(match_ids) > 0:
+            match_articles = models.Article.objects.filter(id__in=match_ids).all()
+            for i in match_articles:
+                article.match_articles.add(i)
 
 
-@shared_task
-def process_rss_source(source_url,source_id):
+
+#@shared_task
+def process_rss_source(source_url, source_id):
     """
     will launch them async
-    :param feedname:
+    :param source_url: str
+    :param source_id: int
     :return:
     """
-    previous_day= timezone.now()-datetime.timedelta(hours=24)
-    logger.info("previous date: " + datetime.datetime.strftime(previous_day,"%m/%d/%Y, %H:%M:%S"))
-    existing = models.RSSArticle.objects.filter(upload_date__gt=previous_day)
-    guids = [object.guid for object in existing]
-    logger.info("guids: " + str(guids))
+    previous_week = timezone.now()-datetime.timedelta(days=7)
+    articles = models.Article.objects.filter(upload_date__gt=previous_week)
+    article_ids = [article.id for article in articles]
+    article_text = [read.HTMLRead(article.text).read() for article in articles]
+    # RSS transformer
+    # read body of each article
+    # remove html tags
+    # tfidf
+    # cosine similarity
+    # create dict of row-id:list[id] and vectorized_records:list[tfidf vectors]
+    # element 0 in row-id = row 0 identifier
+
     data = feedparser.parse(source_url)
     for post in data.entries:
-        logger.info("post id:" + str(post.id))
-        if post.id not in guids:
+        logger.debug("post id:" + str(post.id))
+        exists = models.RSSArticle.objects.filter(guid=post.id).exists()
+        if not exists:
             process_entry.delay(post.title,
                                 post.description,
                                 post.id,
-                                post.link,source_id)
+                                post.link,
+                                source_id,
+                                article_ids,
+                                article_text
+                                )
 
 
 
-@shared_task(base=Singleton)
+#@shared_task(base=Singleton)
+@shared_task()
 def process_rss_sources():
     sources = models.RSSSource.objects.all()
     for source in sources:
-        logger.info("source:" + source.name)
-        process_rss_source.delay(source.url,source.id)
+        logger.debug("source:" + source.name)
+        process_rss_source(source.url,source.id)
 
 

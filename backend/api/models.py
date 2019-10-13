@@ -84,36 +84,25 @@ class Article(PolymorphicModel):
     upload_date = models.DateTimeField(default=timezone.now)
     match_articles=models.ManyToManyField('self',blank=True, null=True)
     categories = models.ManyToManyField(Categories,blank=True,null=True)
-    file = models.FileField(upload_to='article')
     encoding = models.CharField(max_length=15,default='utf8')
 
 
     def __str__(self):
         return self.title + "( " + str(self.id) + ")"
 
+# Upload Articles
 class WordDocxArticle(Article):
-    pass
-
-
+    file = models.FileField(upload_to='article')
 class PDFArticle(Article):
+    file = models.FileField(upload_to='article')
     password = models.CharField(max_length=200,blank=True,null=True)
-
-
 class TxtArticle(Article):
-    pass
-
-
+    file = models.FileField(upload_to='article')
 class HtmlArticle(Article):
-    """
-    for display purposes on front end app
-    """
-    pass
+    file = models.FileField(upload_to='article')
 
-
+# Rss Articles
 class RSSArticle(Article):
-    """
-    for display purposes on front end app
-    """
     description = models.TextField(blank=True, null=True)
     link = models.URLField()
     guid = models.CharField(max_length=200,unique=True)

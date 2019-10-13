@@ -16,9 +16,11 @@ pyyaml = "*"
 djangorestframework = "*"
 django-filter = "*"
 drf-yasg = "*"
-django-background-tasks = "*"
 packaging = "*"
 django-s3-storage = "*"
+sklearn = "*"
+pystemmer = "*"
+selectolax = "*"
 
 [requires]
 python_version = "3.6"

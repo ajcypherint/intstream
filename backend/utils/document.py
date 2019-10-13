@@ -7,6 +7,7 @@ import docx2txt
 import sys
 from io import StringIO
 
+# Used for upload endpoint
 class Document(object):
 
     def __init__(self):

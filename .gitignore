@@ -28,3 +28,4 @@ backend/media
 .idea/
 
 *.swp
+celerybeat-schedule
