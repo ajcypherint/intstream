@@ -14,7 +14,7 @@ class SourcesList extends Component {
     super(props)
     this.displaysources = this.displaysources.bind(this)
     this.setpage = this.setpage.bind(this)
-    this.state={page:1,ordercol:null,orderdir:ASC}
+    this.state={page:1,ordercol:'',orderdir:ASC}
     this.changesort = this.changesort.bind(this)
     this.columnheader = this.columnheader.bind(this)
   }
@@ -94,7 +94,7 @@ class SourcesList extends Component {
           return this.props.fetchSources("ordering="+this.state.orderdir+this.state.ordercol+"&page=1")}} />
         </PaginationItem>
         <PaginationItem>
-          {previous==null ?
+          {previous==null?
           <PaginationLink previous disabled  />
               :
               <PaginationLink previous  onClick={(event)=>{this.setpage(this.state.page-1);
@@ -116,7 +116,7 @@ class SourcesList extends Component {
         }
 
         <PaginationItem>
-          {next == null ?
+          {next===null?
             <PaginationLink next disabled  />
               :
               <PaginationLink next onClick={(event)=>{this.setpage(this.state.page+1);

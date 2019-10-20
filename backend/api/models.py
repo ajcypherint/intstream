@@ -82,10 +82,9 @@ class Article(PolymorphicModel):
     title = models.TextField(max_length=256)
     text = models.TextField()
     upload_date = models.DateTimeField(default=timezone.now)
-    match_articles=models.ManyToManyField('self',blank=True, null=True)
+    parent=models.ForeignKey('self',blank=True, null=True, on_delete=models.SET_NULL)
     categories = models.ManyToManyField(Categories,blank=True,null=True)
     encoding = models.CharField(max_length=15,default='utf8')
-
 
     def __str__(self):
         return self.title + "( " + str(self.id) + ")"

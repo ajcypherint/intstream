@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import (MLModel, JobSource,
                      TxtArticle, Categories,
                      Article, PDFArticle,
+                    Source,
                      UploadSource, RSSSource,
                      SourceType, ArticleType,
                      HtmlArticle, RSSArticle)
@@ -59,6 +60,7 @@ class UploadSourceSerializer(serializers.ModelSerializer):
         ]
         model = UploadSource
 
+
 class RssSourceSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
@@ -71,9 +73,20 @@ class RssSourceSerializer(serializers.ModelSerializer):
         model = RSSSource
 
 
+class SourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=[
+            'id',
+            'name',
+            'active',
+        ]
+        model = Source
+
+
 class MLModelSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
+            'id',
             'sources',
             'name',
             'created_date',
@@ -86,6 +99,7 @@ class MLModelSerializer(serializers.ModelSerializer):
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
+            'id',
            'name',
            'created_date',
            'model',
@@ -95,27 +109,44 @@ class CategoriesSerializer(serializers.ModelSerializer):
         model = Categories
 
 
-
-class ArticleSerializer(serializers.ModelSerializer):
+class ArticleSerializerSet(serializers.ModelSerializer):
     class Meta:
         fields= [
+            'id',
            'source',
            'title',
            'upload_date',
-            'match_articles',
+            'parent',
            'categories',
            'encoding',
            'text',
         ]
         model = Article
 
-class PDFSerializer(serializers.ModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
+    article_set = ArticleSerializerSet(many=True, read_only=True)
     class Meta:
         fields= [
+            'id',
            'source',
            'title',
            'upload_date',
-            'match_articles',
+            'parent',
+           'categories',
+           'encoding',
+           'text',
+            'article_set'
+        ]
+        model = Article
+
+class PDFSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields= [
+            'id',
+           'source',
+           'title',
+           'upload_date',
+            'parent',
            'categories',
            'file',
            'encoding',
@@ -130,10 +161,11 @@ class PDFSerializer(serializers.ModelSerializer):
 class HtmlSerializer(serializers.ModelSerializer):
     class Meta:
         fields= [
+            'id',
            'source',
            'title',
            'upload_date',
-            'match_articles',
+            'parent',
            'categories',
            'file',
            'encoding',
@@ -145,10 +177,11 @@ class HtmlSerializer(serializers.ModelSerializer):
 class WordDocxSerializer(serializers.ModelSerializer):
     class Meta:
         fields= [
+            'id',
            'source',
            'title',
            'upload_date',
-            'match_articles',
+            'parent',
            'categories',
            'file',
            'encoding',
@@ -160,10 +193,11 @@ class WordDocxSerializer(serializers.ModelSerializer):
 class TxtSerializer(serializers.ModelSerializer):
     class Meta:
         fields= [
+            'id',
            'source',
            'title',
            'upload_date',
-            'match_articles',
+            'parent',
            'categories',
            'file',
            'encoding',
@@ -172,12 +206,14 @@ class TxtSerializer(serializers.ModelSerializer):
         model = TxtArticle
 
 class RSSSerializer(serializers.ModelSerializer):
+    article_set = ArticleSerializer(many=True, read_only=True)
     class Meta:
         fields= [
+            'id',
            'source',
            'title',
            'upload_date',
-            'match_articles',
+            'parent',
            'categories',
            'encoding',
            'text',
@@ -185,6 +221,7 @@ class RSSSerializer(serializers.ModelSerializer):
             'description',
             'link',
             'guid',
+            'article_set'
         ]
         model = RSSArticle
 

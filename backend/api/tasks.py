@@ -58,11 +58,12 @@ def process_entry(post_title,
         tfidf = vectorizer.fit_transform(articles_text)
         from sklearn.metrics.pairwise import linear_kernel
         cosine_similarities = linear_kernel(tfidf[-1], tfidf[0:-1]).flatten()
-        match_ids = np.array(articles_id)[cosine_similarities > threshold]
-        if len(match_ids) > 0:
-            match_articles = models.Article.objects.filter(id__in=match_ids).all()
-            for i in match_articles:
-                article.match_articles.add(i)
+        parent_ids= sorted(np.array(articles_id)[cosine_similarities > threshold])
+        if len(parent_ids) > 0:
+            parent = parent_ids[-1]
+            parent_article = models.Article.objects.get(pk=parent)
+            article.parent = parent_article
+            article.save()
 
 
 
@@ -75,7 +76,7 @@ def process_rss_source(source_url, source_id):
     :return:
     """
     previous_week = timezone.now()-datetime.timedelta(days=7)
-    articles = models.Article.objects.filter(upload_date__gt=previous_week)
+    articles = models.Article.objects.filter(upload_date__gt=previous_week,parent__isnull=True)
     article_ids = [article.id for article in articles]
     article_text = [read.HTMLRead(article.text).read() for article in articles]
     # RSS transformer

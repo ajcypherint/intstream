@@ -1,55 +1,31 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
-import TextInput from '../components/TextInput'
-import SearchForm from '../components/SearchForm.js'
-import SubmitButton from '../components/Submit.js'
-import { Col,Alert,Form,FormGroup,Button,ListGroup,ListGroupItem } from 'reactstrap';
+import { Main} from '../components/Home'
+import {getArticles,clearArticles} from '../actions/articles'
 
-class Main extends React.Component{
-  constructor(props){
-    super(props)
-    //this.state={
-    //  na:'',
-    //}
- 
-    this.handleClick = this.handleClick.bind(this)
-    this.handleChange = this.handleChange.bind(this)
+import {getSources, getAllSources, clearSources} from '../actions/sources'
 
-
-  }
-  handleChange(event){
-    this.setState({
-      na:event.target.value
-    })
-  }
-  handleClick(event){
-    //call action to unshorten url
-    event.preventDefault()
-    //this.props.submitLoading ? this.props.onCancel() : this.props.onSubmit(this.state.url)
-  }
-
-
-  render(){
-    
-    const errors = this.props.errors || {}
-    return(
-     <div >
-       <SearchForm />
-    </div>
-    )
- 
- }
-}
-
+const API = '/api/articles/'
+const API_SOURCES = '/api/sources/'
 const mapStateToProps = (state) => ({
-  // add state for node
+    articlesList:reducers.getArticles(state),
+    articlesLoading:reducers.getArticleLoading(state),
+    articlesErrors:reducers.getArticleErrors(state),
+    articlesTotalCount:reducers.getArticleTotalCount(state),
+    articleNext:reducers.getArticleNextPage(state),
+    articlePrevious:reducers.getArticlePreviousPage(state),
+    sourcesList:reducers.getSources(state),
+    sourcesTotalCount:reducers.getTotalCount(state),
+    allSourcesLoaded:reducers.getAllLoaded(state)
 })
 
 
 const mapDispatchToProps = (dispatch) => ({
-  //add state for node
-
+    fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
+    fetchArticlesFullUri: (url,params=undefined) => dispatch(getArticles(url,params)),
+    fetchArticles: (params=undefined) => dispatch(getArticles(API,params)),
+    clearArticles:()=>dispatch(clearArticles())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

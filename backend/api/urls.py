@@ -31,10 +31,12 @@ router.register('sourcetypes',views.SourceTypeViewSet)
 UPLOADSOURCE = 'sourcesupload'
 RSSSOURCE = 'sourcesrss'
 JOBSOURCE = 'sourcesjob'
+SOURCE = 'sources'
 
 router.register(UPLOADSOURCE, views.UploadSourceViewSet)
 router.register(RSSSOURCE, views.RssSourceViewSet)
 router.register(JOBSOURCE, views.JobSourceViewSet)
+router.register(SOURCE, views.SourceViewSet)
 
 
 router.register('categories',views.CategoriesViewSet)

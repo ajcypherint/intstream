@@ -16,10 +16,26 @@ class SourceTypeViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.SourceTypeSerializer
 
 
+class SourceFilter(filters.FilterSet):
+    class Meta:
+        model = models.Source
+        fields = ('id','name','active')
+
+
+class SourceViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    queryset = models.Source.objects.all()
+    serializer_class = serializers.SourceSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('id','name','active','url')
+    filterset_class = SourceFilter
+
+
 class RssFilter(filters.FilterSet):
     class Meta:
         model = models.RSSSource
         fields = ('id','name','url','active')
+
 
 class RssSourceViewSet(viewsets.ModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
@@ -28,6 +44,7 @@ class RssSourceViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active','url')
     filterset_class = RssFilter
+
 
 
 class UploadSourceFilter(filters.FilterSet):

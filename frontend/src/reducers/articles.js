@@ -1,13 +1,12 @@
-// reducers/sources.js
+// reducers/articles.js
 //
 import _ from 'lodash';
-import * as sourcesData from '../actions/sources';
+import * as articlesData from '../actions/articles';
 import  URL  from  'url-parse'
 
 const initialState ={
-  sources:[],
+  articles:[],
   loading:false,
-  allloaded:false,
   totalcount:0,
   errors: {},
   nextpage:null,
@@ -19,20 +18,7 @@ const initialState ={
 export default (state=initialState, action) => {
   switch(action.type) {
       //used for edit
-    case sourcesData.GET_TOTAL_SOURCES:
-      {
-        return {
-        sources:action.payload.sources,
-        totalcount:action.payload.totalCount,
-        allloaded:true,
-        loading:false,
-        nextpage:null,
-        previouspage:null,
-        errors: {},
-        }
-
-      }
-    case sourcesData.SET_SOURCES_REQUEST:
+    case articlesData.SET_ARTICLES_REQUEST:
       {
 
       return {
@@ -40,15 +26,15 @@ export default (state=initialState, action) => {
         saving:true
       }
       }
-    case sourcesData.SET_SOURCES_SUCCESS:
+    case articlesData.SET_ARTICLES_SUCCESS:
       {
       return {
         ...state,
-        sources:[action.payload],
+        articles:[action.payload],
         saving:false,
       }
       }
-    case sourcesData.SET_SOURCES_FAILURE:
+    case articlesData.SET_ARTICLES_FAILURE:
       {
       return {
         ...state,
@@ -57,53 +43,49 @@ export default (state=initialState, action) => {
       }
       }
     //used for listing
-    case sourcesData.CLEAR:
+    case articlesData.CLEAR:
       {
       return {
-        sources:[],
+        articles:[],
         totalcount:0,
         loading:false,
-        allloaded:false,
         nextpage:null,
         previouspage:null,
         errors:{}
       }
       }
 
-    case sourcesData.GET_SOURCES_REQUEST:
+    case articlesData.GET_ARTICLES_REQUEST:
       {
       return {
-        sources:[],
+        articles:[],
         totalcount:0,
         loading:true,
-        allloaded:false,
         nextpage:null,
         previouspage:null,
         errors:{}
       }
       }
 
-    case sourcesData.GET_SOURCES_SUCCESS:
+    case articlesData.GET_ARTICLES_SUCCESS:
       {
         //let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
-        //#let newsourcesourcesData= {...result}
+        //#let newarticlesourcesData= {...result}
       return {
-        sources:action.payload.results,
+        articles:action.payload.results,
         totalcount:action.payload.count,
         loading:false,
-        allloaded:false,
         nextpage:action.payload.next,
         previouspage:action.payload.previous,
         errors: {},
       }
       }
-    case sourcesData.GET_SOURCES_FAILURE:
+    case articlesData.GET_ARTICLES_FAILURE:
       {
       return {
-        sources:[],
+        articles:[],
         totalcount:0,
         loading:false,
-        allloaded:false,
         nextpage:null,
         previouspage:null,
          errors: action.payload.response || {'non_field_errors': action.payload.statusText},
@@ -119,14 +101,14 @@ export function totalcount(state){
   return state.totalcount;
 }
 
-export function sources(state) {
-  if (state.sources) {
-    return  state.sources
+export function articles(state) {
+  if (state.articles) {
+    return  state.articles
   }
 }
 
 export function nextPage(state){
-  if (state.nextpage!= null){
+  if (state.nextpage != null){
     let fullUrl = new URL(state.nextpage)
     let path = fullUrl.pathname+fullUrl.query
     return path
@@ -150,10 +132,6 @@ export function previousPage(state){
 
 export function loading(state) {
   return  state.loading
-}
-export function allLoaded(state){
-
-  return state.allloaded
 }
 export function saving(state) {
   return  state.saving

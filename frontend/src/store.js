@@ -2,6 +2,7 @@ import storage from 'redux-persist/es/storage'
 import { applyMiddleware, createStore,compose } from 'redux'
 import { createFilter   } from 'redux-persist-transform-filter';
 import { persistReducer, persistStore } from 'redux-persist'
+import thunk from 'redux-thunk';
 
 import apiMiddleware from './middleware';
 import rootReducer from './reducers'
@@ -24,7 +25,7 @@ export default (history) => {
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
   const store = createStore(
     reducer, {},
-    composeEnhancers(applyMiddleware(apiMiddleware )),
+    composeEnhancers(applyMiddleware(apiMiddleware, thunk)),
 
   )
 
