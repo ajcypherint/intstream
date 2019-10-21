@@ -43,6 +43,21 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri){
                 fetchFullUri(previous)}}/>
           }
         </PaginationItem>
+       {list_pages.map((page)=>{
+          return (
+          <PaginationItem active={page===this.state.page} key={page}>
+            <PaginationLink  
+              onClick={(event)=>{
+                this.setState({page:page});
+                fetchit("ordering="+this.state.orderdir+this.state.ordercol+"&page="+page)}}>
+              {page }
+            </PaginationLink>
+          </PaginationItem>
+          );
+          })
+        }
+
+
         <PaginationItem>
           {next === null?
             <PaginationLink next disabled  />

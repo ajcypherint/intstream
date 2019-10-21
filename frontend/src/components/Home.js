@@ -4,9 +4,9 @@ import { Input, Table,  Alert, Form, Row, Col, FormGroup, Button, ListGroup, Lis
 import propTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
-import Paginate from './paginate'
+import Paginate from './Paginate'
 import {PAGINATION} from '../util/util'
-import {changesort} from './changeSort'
+import {changesort} from './ChangeSort'
 
 const ASC = ''
 const DESC = '-'
@@ -24,9 +24,7 @@ export class Main extends React.Component{
       ordercol:'',
       orderdir:ASC,
       next:null,
-      previous:null,
-      orderdir:ASC,
-      ordercol:''
+      previous:null
     }
     this.handleSourceChange = this.handleSourceChange.bind(this) 
     this.handleStartChange = this.handleStartChange.bind(this)
@@ -34,7 +32,8 @@ export class Main extends React.Component{
     this.onSubmit = this.onSubmit.bind(this)
     this.changesort = changesort.bind(this)
     this.paginate = Paginate.bind(this)
-
+    this.updateDate = this.updateDate.bind(this)
+    this.updateSources = this.updateSources.bind(this)
   }
   componentWillMount() {
     this.props.fetchAllSources()
@@ -44,13 +43,36 @@ export class Main extends React.Component{
     this.setState({
       startDate:date
     })
+    this.updateDate(date,this.state.endDate, true)
+    // update 
   }
   handleEndChange(date){
-    this.setState({
+      this.setState({
       endDate:date
-    })
+      })
+    this.updateDate(this.state.startDate,date,false)
   }
+  updateDate(startDate,endDate,start_filter=true){
+    //startdate - date
+    //enddate - date
+    //start_end - bool
+    if (start_filter === true){
+      if(startDate > endDate){
+        endDate = startDate
+      }
+    } else {
+      if(endDate < startDate){
+        startDate = endDate
+      }
+    }
+    this.setState({endDate:endDate,startDate:startDate})
+    this.updateSources(startDate,endDate)
 
+  }
+  updateSources(startDate,endDate){
+    // todo(aj) filter sources by article upload_date between start and end
+      
+  }
   handleSourceChange(event){
     event.preventDefault()
     this.setState({
@@ -99,6 +121,7 @@ export class Main extends React.Component{
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
            <Input type="select" name="Source" id="source_id" onChange={this.handleSourceChange}>
+             <option key="---" value={"---"}>---</option>
              {this.props.sourcesList.map((source)=>{
                return ( <option key={source.id} 
                                 value={source.id}>
@@ -128,6 +151,7 @@ export class Main extends React.Component{
                DESC, 
                this.props.fetchArticles
              )}}>Title</td>
+           <td> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
@@ -141,6 +165,7 @@ export class Main extends React.Component{
              articles.map((article)=>{
          return (<tr key={article.id}>
                   <td>{article.title}</td>
+                  <td>{article.source}</td>
                   <td>{article.upload_date}</td>
                   <td>{article.categories.length}</td>
                   <td>{article.article_set.length}</td>
