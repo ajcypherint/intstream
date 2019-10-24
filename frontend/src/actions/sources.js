@@ -65,33 +65,30 @@ export const setSources= (url,data,method='PUT' )=>{
 
 export const  getAllSources = (url, params) =>{
   return async(dispatch, getState) => {
-  try{
-    let totalresp = await dispatch(getSources(url))
-    if (totalresp.error) {
-    //  // the last dispatched action has errored, break out of the promise chain.
-      throw new Error("Promise flow received action error", totalresp);
-     }
-    let allSources = []
-    let total = totalresp.payload.count
-    let pages = Math.ceil(total / PAGINATION)
-    for ( let i=0; i < pages; i++){
-     let page = i +1
-     let actionResponse = await dispatch(getSources(url,'page='+page));
-    //
-     if (actionResponse.error) {
-       // the last dispatched action has errored, break out of the promise chain.
-       throw new Error("Promise flow received action error", actionResponse);
-     }
+      let totalresp = await dispatch(getSources(url,'active=true'))
+      console.log("resp:" + JSON.stringify(totalresp))
+      if (totalresp.error) {
+      //  // the last dispatched action has errored, break out of the promise chain.
+        throw new Error("Promise flow received action error", totalresp);
+       }
+      let allSources = []
+      let total = totalresp.payload.count
+      let pages = Math.ceil(total / PAGINATION)
+      //ACTIVE, duh time for bed.
+      for ( let i=0; i < pages; i++){
+       let page = i +1
+       let actionResponse = await dispatch(getSources(url,'ordering=name&active=true&page='+page));
+      //
+       if (actionResponse.error) {
+         // the last dispatched action has errored, break out of the promise chain.
+         throw new Error("Promise flow received action error", actionResponse);
+       }
 
-     allSources = allSources.concat(actionResponse.payload.results)
-      
-    }
+       allSources = allSources.concat(actionResponse.payload.results)
+        
+      }
 
-    // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
-    return await dispatch(totalSources(allSources, total));
-  }
-    catch(e){
-      console.error(e)
+      // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
+      return await dispatch(totalSources(allSources, total));
     }
-  };
 }

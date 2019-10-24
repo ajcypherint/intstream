@@ -63,7 +63,7 @@ export function accessToken(state) {
 
 export function isAccessTokenExpired(state) {
   if (state.access && state.access.exp) {
-    return 1000 * state.access.exp - (new Date()).getTime() < 5000
+    return 1000 * state.access.exp - (new Date()).getTime() < 5000 // are we within 5 seconds of expiration?
   }
   return true
 }
@@ -76,7 +76,7 @@ export function refreshToken(state) {
 
 export function isRefreshTokenExpired(state) {
   if (state.refresh && state.refresh.exp) {
-    return 1000 * state.refresh.exp - (new Date()).getTime() < 5000
+    return 1000 * state.refresh.exp - (new Date()).getTime() < 5000 //are we within 5 seconds of expire
   }
   return true
 }

@@ -21,16 +21,15 @@ class SourceType(models.Model):
     name = models.CharField(max_length=25,unique=True)
     api_endpoint = models.TextField(max_length=50,unique=True)
     def __str__(self):
-        return self.name + " (" + self.id + ")"
+        return self.name + " (" + str(self.id) + ")"
 
 
 # name / active #
 class Source(PolymorphicModel):
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
-
     def __str__(self):
-        return self.name
+        return self.name + " (" + str(self.id) + ")"
 
 class UploadSource(Source):
     pass
@@ -80,7 +79,7 @@ class ArticleType(models.Model):
 class Article(PolymorphicModel):
     source = models.ForeignKey(Source,on_delete=models.CASCADE)
     title = models.TextField(max_length=256)
-    text = models.TextField()
+    text = models.TextField(blank=True)
     upload_date = models.DateTimeField(default=timezone.now)
     parent=models.ForeignKey('self',blank=True, null=True, on_delete=models.SET_NULL)
     categories = models.ManyToManyField(Categories,blank=True,null=True)

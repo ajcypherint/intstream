@@ -121,9 +121,16 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     filterset_class = CategoriesFilter
 
 
-ARTICLE_SORT_FIELDS =('id','source','title','upload_date')
+ARTICLE_SORT_FIELDS =('id','source','title','upload_date', 'source__name')
+
 
 class ArticleFilter(filters.FilterSet):
+    source__name = filters.CharFilter(lookup_expr='exact')
+    ordering = filters.OrderingFilter(
+        fields=[('source__name','source_name'),
+                ('title','title'),
+                ('upload_date','upload_date')]
+    )
     class Meta:
         model = models.Article
         fields = ARTICLE_SORT_FIELDS

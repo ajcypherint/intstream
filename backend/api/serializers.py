@@ -110,6 +110,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializerSet(serializers.ModelSerializer):
+    source = SourceSerializer(read_only=True)
     class Meta:
         fields= [
             'id',
@@ -124,6 +125,7 @@ class ArticleSerializerSet(serializers.ModelSerializer):
         model = Article
 
 class ArticleSerializer(serializers.ModelSerializer):
+    source = SourceSerializer(read_only=True)
     article_set = ArticleSerializerSet(many=True, read_only=True)
     class Meta:
         fields= [
@@ -140,6 +142,8 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
 
 class PDFSerializer(serializers.ModelSerializer):
+    source = SourceSerializer(read_only=True)
+    article_set = ArticleSerializer(many=True, read_only=True)
     class Meta:
         fields= [
             'id',
@@ -151,14 +155,16 @@ class PDFSerializer(serializers.ModelSerializer):
            'file',
            'encoding',
            'text',
-
             'password'
+            'article_set'
         ]
 
         model = PDFArticle
 
 
 class HtmlSerializer(serializers.ModelSerializer):
+    source = SourceSerializer(read_only=True)
+    article_set = ArticleSerializer(many=True, read_only=True)
     class Meta:
         fields= [
             'id',
@@ -170,11 +176,14 @@ class HtmlSerializer(serializers.ModelSerializer):
            'file',
            'encoding',
            'text',
+            'article_set'
         ]
         model = HtmlArticle
 
 
 class WordDocxSerializer(serializers.ModelSerializer):
+    source = SourceSerializer(read_only=True)
+    article_set = ArticleSerializer(many=True, read_only=True)
     class Meta:
         fields= [
             'id',
@@ -186,11 +195,14 @@ class WordDocxSerializer(serializers.ModelSerializer):
            'file',
            'encoding',
            'text',
+            'article_set'
         ]
         model = TxtArticle
 
 
 class TxtSerializer(serializers.ModelSerializer):
+    source = SourceSerializer(read_only=True)
+    article_set = ArticleSerializer(many=True, read_only=True)
     class Meta:
         fields= [
             'id',
@@ -202,10 +214,12 @@ class TxtSerializer(serializers.ModelSerializer):
            'file',
            'encoding',
            'text',
+            'article_set'
         ]
         model = TxtArticle
 
 class RSSSerializer(serializers.ModelSerializer):
+    source = SourceSerializer(read_only=True)
     article_set = ArticleSerializer(many=True, read_only=True)
     class Meta:
         fields= [
@@ -223,5 +237,6 @@ class RSSSerializer(serializers.ModelSerializer):
             'guid',
             'article_set'
         ]
+
         model = RSSArticle
 

@@ -7,7 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import Paginate from './Paginate'
 import {PAGINATION} from '../util/util'
 import {changesort} from './ChangeSort'
-
+const ALL = "---"
 const ASC = ''
 const DESC = '-'
 
@@ -26,6 +26,7 @@ export class Main extends React.Component{
       next:null,
       previous:null
     }
+    this.requestArticles = this.requestArticles.bind(this)
     this.handleSourceChange = this.handleSourceChange.bind(this) 
     this.handleStartChange = this.handleStartChange.bind(this)
     this.handleEndChange = this.handleEndChange.bind(this)
@@ -73,11 +74,32 @@ export class Main extends React.Component{
     // todo(aj) filter sources by article upload_date between start and end
       
   }
+  requestArticles(source){
+    if(source === ALL){
+      this.props.fetchArticles("ordering="+this.state.orderdir+
+        this.state.ordercol+
+        "&page="+this.state.page +
+        "&start_date__gte="+this.state.startDate +
+        "&end_date__lte" + this.state.endDate
+      ) 
+    }
+    else{
+      this.props.fetchArticles("ordering="+this.state.orderdir+this.state.ordercol+
+        "&page="+this.state.page + 
+        "&source_name="+this.sourceChosen +
+        "&start_date__gte="+this.state.startDate +
+        "&end_date__lte" + this.state.endDate
+
+      ) 
+    }
+
+  }
   handleSourceChange(event){
     event.preventDefault()
     this.setState({
       sourceChosen:event.target.value,
       })
+    this.requestArticles(event.target.value)
   }
   onSubmit(event){
     event.preventDefault()
@@ -151,7 +173,10 @@ export class Main extends React.Component{
                DESC, 
                this.props.fetchArticles
              )}}>Title</td>
-           <td> Source </td>
+           <td className="hover" onClick={(event)=>{this.changesort("source_name", 
+             ASC, 
+             DESC, 
+             this.props.fetchArticles)}}> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
@@ -165,8 +190,8 @@ export class Main extends React.Component{
              articles.map((article)=>{
          return (<tr key={article.id}>
                   <td>{article.title}</td>
-                  <td>{article.source}</td>
-                  <td>{article.upload_date}</td>
+                  <td>{article.source.name}</td>
+                  <td>{(new Date(article.upload_date)).toLocaleString()}</td>
                   <td>{article.categories.length}</td>
                   <td>{article.article_set.length}</td>
 
