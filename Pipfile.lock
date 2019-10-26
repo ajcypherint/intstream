@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "305ea17acf8c9dfad9d8fbd228c6e1b77f5ace1716e9a38c661ebe97eee4fb7e"
+            "sha256": "62bde570aacb3562781577f19fc5152d864a95c233f63b8985bf61ab48b290c7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -158,6 +158,13 @@
                 "sha256:a2aeea129088da402665e92e0b25b04b073c04b2dce4ab65caaa38b7ce2e1a99"
             ],
             "version": "==0.15.2"
+        },
+        "docx2txt": {
+            "hashes": [
+                "sha256:2c06d98d7cfe2d3947e5760a57d924e3ff07745b379c8737723922e7009236e5"
+            ],
+            "index": "pypi",
+            "version": "==0.8"
         },
         "drf-yasg": {
             "hashes": [

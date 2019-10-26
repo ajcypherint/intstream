@@ -24,6 +24,7 @@ selectolax = "*"
 celery = "*"
 django-celery-beat = "*"
 pdfminer-six = "*"
+docx2txt = "*"
 
 [requires]
 python_version = "3.6"
