@@ -23,6 +23,7 @@ pystemmer = "*"
 selectolax = "*"
 celery = "*"
 django-celery-beat = "*"
+pdfminer-six = "*"
 
 [requires]
 python_version = "3.6"
