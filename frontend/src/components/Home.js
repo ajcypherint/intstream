@@ -5,7 +5,7 @@ import propTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import Paginate from './Paginate'
-import {PAGINATION} from '../util/util'
+import {PAGINATION, dateString} from '../util/util'
 import {changesort} from './ChangeSort'
 const ALL = "---"
 const ASC = ''
@@ -18,7 +18,7 @@ export class Main extends React.Component{
       startDate: new Date(),
       endDate: new Date(),
       sources: [],
-      sourceChosen:undefined,
+      sourceChosen:'',
       loadSources:false,
       page:1,
       ordercol:'',
@@ -26,7 +26,7 @@ export class Main extends React.Component{
       next:null,
       previous:null
     }
-    this.requestArticles = this.requestArticles.bind(this)
+    this.dateString = dateString.bind(this)
     this.handleSourceChange = this.handleSourceChange.bind(this) 
     this.handleStartChange = this.handleStartChange.bind(this)
     this.handleEndChange = this.handleEndChange.bind(this)
@@ -34,17 +34,33 @@ export class Main extends React.Component{
     this.changesort = changesort.bind(this)
     this.paginate = Paginate.bind(this)
     this.updateDate = this.updateDate.bind(this)
-    this.updateSources = this.updateSources.bind(this)
   }
   componentWillMount() {
-    this.props.fetchAllSources()
-    this.props.fetchArticles() 
+    this.props.fetchAllSources(
+    
+    )
+    this.props.fetchArticles(this.dateString(
+    this.state.orderdir,
+        this.state.ordercol,
+        this.state.sourceChosen,
+      this.state.page,
+        this.state.startDate,
+      this.state.endDate
+    )) 
   }
   handleStartChange(date){
     this.setState({
       startDate:date
     })
     this.updateDate(date,this.state.endDate, true)
+    this.props.fetchArticles(this.dateString(
+      ASC,
+      '',
+        this.state.sourceChosen,
+      1,
+      date,
+      this.state.endDate
+    )) 
     // update 
   }
   handleEndChange(date){
@@ -52,6 +68,14 @@ export class Main extends React.Component{
       endDate:date
       })
     this.updateDate(this.state.startDate,date,false)
+    this.props.fetchArticles(this.dateString(
+      ASC,
+      '',
+        this.state.sourceChosen,
+      1,
+        this.state.startDate,
+      date
+    )) 
   }
   updateDate(startDate,endDate,start_filter=true){
     //startdate - date
@@ -67,31 +91,6 @@ export class Main extends React.Component{
       }
     }
     this.setState({endDate:endDate,startDate:startDate})
-    this.updateSources(startDate,endDate)
-
-  }
-  updateSources(startDate,endDate){
-    // todo(aj) filter sources by article upload_date between start and end
-      
-  }
-  requestArticles(source){
-    if(source === ALL){
-      this.props.fetchArticles("ordering="+this.state.orderdir+
-        this.state.ordercol+
-        "&page="+this.state.page +
-        "&start_date__gte="+this.state.startDate +
-        "&end_date__lte" + this.state.endDate
-      ) 
-    }
-    else{
-      this.props.fetchArticles("ordering="+this.state.orderdir+this.state.ordercol+
-        "&page="+this.state.page + 
-        "&source_name="+this.sourceChosen +
-        "&start_date__gte="+this.state.startDate +
-        "&end_date__lte" + this.state.endDate
-
-      ) 
-    }
 
   }
   handleSourceChange(event){
@@ -99,7 +98,13 @@ export class Main extends React.Component{
     this.setState({
       sourceChosen:event.target.value,
       })
-    this.requestArticles(event.target.value)
+    this.props.fetchArticles(dateString(this.state.orderdir,
+      ASC,
+        event.target.value,
+        1,
+        this.state.startDate,
+      this.state.endDate)) 
+
   }
   onSubmit(event){
     event.preventDefault()
@@ -116,9 +121,6 @@ export class Main extends React.Component{
     const sources = this.props.sourcesList || [];
     const allSourcesLoaded = this.props.allSourcesLoaded || false;
 
-    if(!_.isEmpty(error)) {
-      return <div className="alert alert-danger">Error: {error.message}</div>
-    }
      
     const errors = this.props.errors || {}
     return(
@@ -143,7 +145,7 @@ export class Main extends React.Component{
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
            <Input type="select" name="Source" id="source_id" onChange={this.handleSourceChange}>
-             <option key="---" value={"---"}>---</option>
+             <option value={""}>---</option>
              {this.props.sourcesList.map((source)=>{
                return ( <option key={source.id} 
                                 value={source.id}>
@@ -154,14 +156,14 @@ export class Main extends React.Component{
 
           </div>
         </Col>
-      <Col className="center">
-        <Button type="submit" className="button-brand-primary "  size="md">Filter</Button>
-      </Col>
     </Row>
        <Row>
          {this.paginate(totalcount,
            next,
-           previous,this.props.fetchArticles,this.props.fetchArticlesFullUri)}
+           previous,
+           this.props.fetchArticles,
+           this.props.fetchArticlesFullUri,
+           this.dateString)}
        </Row>
         </Form>
 

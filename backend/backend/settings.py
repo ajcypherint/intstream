@@ -252,5 +252,5 @@ CELERY_TASK_SERIALIZER = 'json'
 
 from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5)
 }

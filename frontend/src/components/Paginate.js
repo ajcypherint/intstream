@@ -6,16 +6,19 @@ import { PAGINATION } from '../util/util'
 //  orderdir: str
 //  ordercol: str
 //  page: int
+//  startDate: date
+//  endDate: date
 //
 //
 //CANNOT be an arrow function or 'this' will not work... dont ask how long i spent on that.
-export default function  (totalcount,next,previous,fetchit, fetchFullUri){
+export default function  (totalcount,next,previous,fetchit, fetchFullUri, dateStringFunc){
   //
   //totalcount: int
   //next:str
   //previous:str
   //fetchit: func
   //fetchFullUri: func
+  //dateStringFunc: func
   //
   //
     let total_pages = Math.ceil(totalcount / PAGINATION)
@@ -32,7 +35,15 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri){
 
         <PaginationLink first onClick={(event)=>{
           this.setState({page:1});
-          fetchit("ordering="+this.state.orderdir+this.state.ordercol+"&page=1")}} />
+          fetchit(dateStringFunc(
+            this.state.orderdir,
+            this.state.ordercol,
+            this.state.sourceChosen,
+            1,
+            this.state.startDate,
+            this.state.endDate
+          )
+          )}} />
         </PaginationItem>
         <PaginationItem>
           {previous===null?
@@ -49,7 +60,15 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri){
             <PaginationLink  
               onClick={(event)=>{
                 this.setState({page:page});
-                fetchit("ordering="+this.state.orderdir+this.state.ordercol+"&page="+page)}}>
+                fetchit(dateStringFunc(
+                  this.state.orderdir,
+                  this.state.ordercol,
+                  this.state.sourceChosen,
+                  page,
+                  this.state.startDate,
+                  this.state.endDate
+                )
+                )}}>
               {page }
             </PaginationLink>
           </PaginationItem>
@@ -70,7 +89,14 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri){
         <PaginationItem>
           <PaginationLink last onClick={(event)=>{
           this.setState({page:total_pages});
-            fetchit("ordering="+this.state.orderdir+this.state.ordercol+"&page="+total_pages)}}/>
+            fetchit(dateStringFunc(
+                  this.state.orderdir,
+                  this.state.ordercol,
+                  this.state.sourceChosen,
+                  total_pages,
+                  this.state.startDate,
+                  this.state.endDate
+            ))}}/>
         </PaginationItem>
 
       </Pagination>
