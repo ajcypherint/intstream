@@ -48,9 +48,9 @@ echo " nginx setup"
 sudo apt-get install nginx
 echo "Enter your registered DNS name: " 
 read dns_name 
-sed -e "s/{server_name}/server_name $dns_name/g" ./utility/intstream > ./utility/intstream_new
+sed -e "s/\${server_name}/server_name $dns_name/g" ./utility/intstream > ./utility/intstream_new
 sudo cp ./utility/intstream_new /etc/nginx/sites-available/$dns_name
-sudo ln -s /etc/nginx/sites-available/$dns_name /etc/nginx/sites-enabled/$dns_name
+sudo ln -sf /etc/nginx/sites-available/$dns_name /etc/nginx/sites-enabled/$dns_name
 sudo systemctl restart nginx
 
 

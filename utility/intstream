@@ -19,8 +19,8 @@
 # Default server configuration
 #
 server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
+	listen 80 ;
+	listen [::]:80 ;
 
 	# SSL configuration
 	#
@@ -47,22 +47,22 @@ server {
 
 	 location /favicon.ico {access_log off; log_not_found off;}
 	  location /static/ {
-	    root /home/ubuntu/intstream;
+	    root /home/${user}/intstream;
 	  }
 	  location /media/ {
-	    root /home/ubuntu/intstream;
+	    root /home/${user}/intstream;
 	  }
 
 
 	    location /cloaken {
 
-		    alias /home/ubuntu/intstream/frontend/build;
+		    alias /home/${user}/intstream/frontend/build;
 		    try_files $uri $uri/ /intstream/index.html;
 	    }
 
 	    location / {
 		include proxy_params;
-		proxy_pass http://unix:/home/ubuntu/intstream/awesome.sock;
+		proxy_pass http://unix:/home/${user}/intstream/awesome.sock;
 	    }
 
 	# pass PHP scripts to FastCGI server
