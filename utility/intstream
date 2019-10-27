@@ -54,7 +54,7 @@ server {
 	  }
 
 
-	    location /cloaken {
+	    location /intstream {
 
 		    alias /home/${user}/intstream/frontend/build;
 		    try_files $uri $uri/ /intstream/index.html;
