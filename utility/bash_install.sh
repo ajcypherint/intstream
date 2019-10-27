@@ -37,7 +37,7 @@ echo "------"
 echo " gunicorn setup"
 #gunicorn
 curdir=$(pwd)
-sed -e  "s/\${postgres_pw}/$password/" -e "s/\${user}/$USER/" -e "s/\${cwd}/${curdir//\//\\/}/" -e "s/\${venvpath}/${venvpath//\//\\/}/" ./utility/gunicorn > ./utility/gunicorn_new
+sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${curdir//\//\\/}\/backend\//g" -e "s/\${venvpath}/${venvpath//\//\\/}/g" ./utility/gunicorn > ./utility/gunicorn_new
 sudo cp ./utility/gunicorn_new /etc/systemd/system/gunicorn.service
 sudo systemctl daemon-reload
 sudo systemctl start gunicorn
@@ -48,7 +48,7 @@ echo " nginx setup"
 sudo apt-get install nginx
 echo "Enter your registered DNS name: " 
 read dns_name 
-sed -e "s/\${server_name}/server_name $dns_name/g" ./utility/intstream > ./utility/intstream_new
+sed -e "s/\${server_name}/server_name $dns_name/g" -e "s/\${user}/$USER/g" ./utility/intstream > ./utility/intstream_new
 sudo cp ./utility/intstream_new /etc/nginx/sites-available/$dns_name
 sudo ln -sf /etc/nginx/sites-available/$dns_name /etc/nginx/sites-enabled/$dns_name
 sudo systemctl restart nginx
@@ -61,7 +61,7 @@ sudo add-apt-repository universe
 sudo add-apt-repository ppa:certbot/certbot
 sudo apt-get update
 sudo apt-get install certbot python-certbot-nginx
-sudo certbot --nginx -D $dns_name
+sudo certbot --nginx -d $dns_name
 
 echo "------"
 echo " create super user"
