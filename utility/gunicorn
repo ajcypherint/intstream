@@ -7,7 +7,7 @@ User=${user}
 Environment=PASSWORD=${postgres_pw}
 Group=www-data
 WorkingDirectory=${cwd}
-ExecStart=${venvpath}/bin/gunicorn --access-logfile - --workers 3 --bind unix:${cwd}/awesome.sock api.wsgi:application
+ExecStart=${venvpath}/bin/gunicorn --access-logfile - --workers 3 --bind unix:${cwd}/awesome.sock backend.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
