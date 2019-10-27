@@ -25,6 +25,7 @@ celery = "*"
 django-celery-beat = "*"
 pdfminer-six = "*"
 docx2txt = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"
