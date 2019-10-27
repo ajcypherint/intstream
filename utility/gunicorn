@@ -1,0 +1,14 @@
+[Unit]
+Description=gunicorn service
+After=network.target
+
+[Service]
+User=${user}
+Environment=PASSWORD=${postgres_pw}
+Group=www-data
+WorkingDirectory=${cwd}
+ExecStart=${venv-path}/bin/gunicorn --access-logfile - --workers 3 --bind unix:${cwd}/awesome.sock siteapi.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
