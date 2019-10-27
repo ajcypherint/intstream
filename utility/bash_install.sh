@@ -37,7 +37,7 @@ echo "------"
 echo " gunicorn setup"
 #gunicorn
 curdir=$(pwd)
-sed -e  "s/\${postgres_pw}/$password/" -e "s/\${cwd}/${curdir//\//\\/}/" -e "s/\${venv_path}/${venvpath//\//\\/}/" ./utility/gunicorn > ./utility/gunicorn_new
+sed -e  "s/\${postgres_pw}/$password/" -e "s/\${user}/$USER/" -e "s/\${cwd}/${curdir//\//\\/}/" -e "s/\${venvpath}/${venvpath//\//\\/}/" ./utility/gunicorn > ./utility/gunicorn_new
 sudo cp ./utility/gunicorn_new /etc/systemd/system/gunicorn.service
 sudo systemctl daemon-reload
 sudo systemctl start gunicorn
