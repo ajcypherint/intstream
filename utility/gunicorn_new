@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=ubuntu
-Environment=PASSWORD=yBiFZ68ZPTc2B0DTATqWymGlHSmKL9o5
+Environment=PASSWORD=sqf1SLKUAeIv9pNNcmLaPOkStzuId1Sg
 Group=www-data
 WorkingDirectory=/home/ubuntu/intstream/backend/
 ExecStart=/home/ubuntu/.local/share/virtualenvs/intstream-kMLzBkkn/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/ubuntu/intstream/backend//awesome.sock backend.wsgi:application
