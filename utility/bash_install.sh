@@ -28,10 +28,23 @@ echo " postgres setup"
 sudo apt-get install postgresql
 sudo systemctl restart postgresql 
 password=$(trap - PIPE ; cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1) 
-sudo -u postgres psql -U postgres -d postgres -tc "SELECT 1 FROM pg_user WHERE usename = 'intstream'" | grep -q 1 || psql -h localhost -U postgres -c "CREATE ROLE intstream LOGIN PASSWORD '$password';"
+# if user exists just change the password
+res=`sudo -u postgres psql -U postgres -d postgres -tc "SELECT 1 FROM pg_user WHERE usename = 'intstream'" | grep -q 1;echo $?`
+if [ "$res" -eq "0" ]; then
+    echo "updating intstream user password"
+    sudo -u postgres psql -U postgres -d postgres -c "alter user intstream with password '$password';"
+else
+    echo "creating intstream user"
+    sudo -u postgres psql -U postgres -d postgres -c "CREATE ROLE intstream LOGIN PASSWORD '$password';"
+fi
 
-#sudo -u postgres psql -U postgres -d postgres -c "create user intstream with password '$password';"
-echo "postres user password set to password: $password"
+resdb=`sudo -u postgres psql -U postgres -c "SELECT FROM pg_database WHERE datname = 'intstream'" | grep -q 1;echo $?`
+if [ "$resdb" -eq "0" ]; then
+    echo "database intstream exists"
+else
+    echo "create database intstream"
+    sudo -u postgres psql -U postgres -c "create database intstream";
+fi
 
 echo "------"
 echo " gunicorn setup"
@@ -64,8 +77,12 @@ sudo apt-get install certbot python-certbot-nginx
 sudo certbot --nginx -d $dns_name
 
 echo "------"
-echo " create super user"
+echo " create database"
+export PASSWORD="$password"
 cd backend/
+pipenv run python manage.py migrate
+echo "------"
+echo " create super user"
 pipenv run python manage.py generate_secret_key --replace 
 pipenv run python manage.py createsuperuser 
 
