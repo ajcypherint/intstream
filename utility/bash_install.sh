@@ -2,6 +2,7 @@ set -x
 set -e
 
 #standalone installation script
+base_dir=$(pwd)
 
 # prep
 echo "------"
@@ -18,7 +19,7 @@ echo "------"
 echo " cloning into instream"
 #clone python code
 git clone git@gitlab.com:cypherint/intstream.git
-cd intstream/
+cd "$base_dir/intstream/"
 pipenv install
 venvpath="$(pipenv --venv)"
 
@@ -79,12 +80,22 @@ sudo certbot --nginx -d $dns_name
 echo "------"
 echo " create database"
 export PASSWORD="$password"
-cd backend/
+cd "$basedir/intstream/backend/"
 pipenv run python manage.py migrate
 echo "------"
 echo " create super user"
 pipenv run python manage.py generate_secret_key --replace 
 pipenv run python manage.py createsuperuser 
+
+echo "------"
+echo " collect static for backend"
+pipenv run python manage.py collectstatic
+
+echo "------"
+echo " npm run build"
+sudo apt-get install npm
+cd "$basedir/intstream/frontend"
+npm run build
 
 
 
