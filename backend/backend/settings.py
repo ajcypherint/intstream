@@ -156,7 +156,7 @@ LOGIN_REDIRECT_URL='/api/docs'
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.environ.get('STATIC_ROOT',os.path.join(BASE_DIR,'/static'))
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
 # The name of the bucket to store files in.
 
 # TFIDF needs to reprocess on every file input.  it needs the whole corpus every time.
