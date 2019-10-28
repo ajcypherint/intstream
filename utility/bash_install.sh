@@ -98,15 +98,16 @@ mkdir "$base_dir/intstream/backend/media"
 echo "------"
 echo " nvm install"
 sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash
-sudo nvm install 11.6.0
-sudo apt-get install npm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" 
 
+nvm install 11.6.0
+
 echo "------"
-echo " nvm install"
-cd "$base_dir/intstream/frontend"
+echo " npm install"
+npm install
+echo " npm build"
 npm run build
 
 
