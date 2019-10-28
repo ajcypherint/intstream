@@ -80,7 +80,7 @@ sudo certbot --nginx -d $dns_name
 echo "------"
 echo " create database"
 export PASSWORD="$password"
-cd "$basedir/intstream/backend/"
+cd "$base_dir/intstream/backend/"
 pipenv run python manage.py migrate
 echo "------"
 echo " create super user"
@@ -88,13 +88,25 @@ pipenv run python manage.py generate_secret_key --replace
 pipenv run python manage.py createsuperuser 
 
 echo "------"
-echo " collect static for backend"
+echo " collect static for backend to $base_dir/intstream/backend/"
 pipenv run python manage.py collectstatic
 
 echo "------"
-echo " npm run build"
+echo " create media directory"
+mkdir "$base_dir/intstream/backend/media"
+
+echo "------"
+echo " nvm install"
+sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash
+sudo nvm install 11.6.0
 sudo apt-get install npm
-cd "$basedir/intstream/frontend"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" 
+
+echo "------"
+echo " nvm install"
+cd "$base_dir/intstream/frontend"
 npm run build
 
 
