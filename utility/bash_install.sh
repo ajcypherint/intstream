@@ -57,6 +57,20 @@ sudo systemctl daemon-reload
 sudo systemctl start gunicorn
 
 echo "------"
+echo " celery beat setup"
+sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${curdir//\//\\/}\/backend\//g" -e "s/\${venvpath}/${venvpath//\//\\/}/g" ./utility/celerybeat > ./utility/celerybeat_new
+sudo cp ./utility/celerybeat_new /etc/systemd/system/celerybeat.service
+sudo systemctl daemon-reload
+sudo systemctl start celerybeat
+
+echo "------"
+echo " celery worker setup"
+sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${curdir//\//\\/}\/backend\//g" -e "s/\${venvpath}/${venvpath//\//\\/}/g" ./utility/celeryworker > ./utility/celeryworker_new
+sudo cp ./utility/celeryworker_new /etc/systemd/system/celeryworker.service
+sudo systemctl daemon-reload
+sudo systemctl start celeryworker
+
+echo "------"
 echo " nginx setup"
 #nginx
 sudo apt-get install nginx
@@ -93,7 +107,7 @@ pipenv run python manage.py collectstatic
 
 echo "------"
 echo " create media directory"
-mkdir "$base_dir/intstream/backend/media"
+mkdir -p "$base_dir/intstream/backend/media"
 
 echo "------"
 echo " nvm install"
@@ -106,6 +120,7 @@ nvm install 11.6.0
 
 echo "------"
 echo " npm install"
+cd "$base_dir/intstream/frontend/"
 npm install
 echo " npm build"
 npm run build
