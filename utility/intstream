@@ -62,7 +62,7 @@ server {
 
 	    location / {
 		include proxy_params;
-		proxy_pass http://unix:/home/${user}/intstream/awesome.sock;
+		proxy_pass http://unix:/home/${user}/intstream/backend/awesome.sock;
 	    }
 
 	# pass PHP scripts to FastCGI server
