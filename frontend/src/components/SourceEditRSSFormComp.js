@@ -33,6 +33,7 @@ export default class Edit extends Component {
             type={'checkbox'} 
             name={'active'}  
             label={'active'}  
+            readOnly
             checked={this.props.object.active}   />
           <FormButtons saving={this.props.saving}
                        goBack={this.props.goBack}/>

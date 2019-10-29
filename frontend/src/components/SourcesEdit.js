@@ -45,7 +45,7 @@ class SourcesEdit extends Component {
     // active:this.state.active
     //}
     if (this.state.action === EDITFORM) {
-      this.props.setSources('/'+this.state.object.id+'/',this.state.object) 
+      this.props.setSources(this.state.object.id+'/',this.state.object) 
       // this.props.fetchSources('id='+this.state.object.id) 
     } else {
 
@@ -57,6 +57,8 @@ class SourcesEdit extends Component {
 
     const loading = this.props.loading;
     const error = this.props.errors || {};
+    //todo this is a no no
+    //simplifiy this by just checking
     if(this.state.firstrender) { 
       this.setState({firstrender:false})
        return ( <SourceLoading heading={heading}/>)
@@ -72,6 +74,7 @@ class SourcesEdit extends Component {
           stateLoaded:true
         }
       )
+      return ( <SourceLoading heading={heading}/>)
     }
 
     //todo(aj) pass copy of state.object to Edit so it is dynamic
@@ -114,8 +117,8 @@ class SourcesEdit extends Component {
 SourcesEdit.propTypes = {
   heading:propTypes.string,
   errors:propTypes.object,
-  source:propTypes.object.isRequired,
-  loading:propTypes.object.isRequired,
+  source:propTypes.object,
+  loading:propTypes.bool,
   match:propTypes.object,
   fetchSources:propTypes.func,
   clearSources:propTypes.func

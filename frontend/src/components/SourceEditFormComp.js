@@ -25,6 +25,7 @@ export default class Edit extends Component {
             onChange={this.props.handleChange}
             type={'checkbox'} 
             name={'active'}  
+            readOnly
             label={'active'}  
             checked={this.props.object.active}   />
           <FormButtons saving={this.props.saving}
