@@ -50,7 +50,7 @@ server {
 	    root ${cwd}/backend;
 	  }
 	  location /media/ {
-	    root {cwd}/backend;
+	    root ${cwd}/backend;
 	  }
 
 
