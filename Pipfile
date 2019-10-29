@@ -21,7 +21,7 @@ django-s3-storage = "*"
 sklearn = "*"
 pystemmer = "*"
 selectolax = "*"
-celery = "*"
+celery = {extras = ["redis"],version = "*"}
 django-celery-beat = "*"
 pdfminer-six = "*"
 docx2txt = "*"
