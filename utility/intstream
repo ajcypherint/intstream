@@ -47,22 +47,22 @@ server {
 
 	 location /favicon.ico {access_log off; log_not_found off;}
 	  location /static/ {
-	    root /home/${user}/intstream/backend;
+	    root ${cwd}/backend;
 	  }
 	  location /media/ {
-	    root /home/${user}/intstream/backend;
+	    root {cwd}/backend;
 	  }
 
 
 	    location /intstream {
 
-		    alias /home/${user}/intstream/frontend/build;
+		    alias ${cwd}/frontend/build;
 		    try_files $uri $uri/ /intstream/index.html;
 	    }
 
 	    location / {
 		include proxy_params;
-		proxy_pass http://unix:/home/${user}/intstream/backend/awesome.sock;
+		proxy_pass http://unix:${cwd}/backend/awesome.sock;
 	    }
 
 	# pass PHP scripts to FastCGI server
