@@ -24,6 +24,12 @@ pipenv install
 venvpath="$(pipenv --venv)"
 
 echo "------"
+echo " redis setup"
+sudo apt-get install redis-server
+sudo systemctl enable redis-server
+
+
+echo "------"
 echo " postgres setup"
 #postgres
 sudo apt-get install postgresql
@@ -55,6 +61,7 @@ sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${
 sudo cp ./utility/gunicorn_new /etc/systemd/system/gunicorn.service
 sudo systemctl daemon-reload
 sudo systemctl start gunicorn
+sudo systemctl enable gunicorn
 
 echo "------"
 echo " celery beat setup"
@@ -62,6 +69,7 @@ sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${
 sudo cp ./utility/celerybeat_new /etc/systemd/system/celerybeat.service
 sudo systemctl daemon-reload
 sudo systemctl start celerybeat
+sudo systemctl enable celerybeat
 
 echo "------"
 echo " celery worker setup"
@@ -69,6 +77,7 @@ sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${
 sudo cp ./utility/celeryworker_new /etc/systemd/system/celeryworker.service
 sudo systemctl daemon-reload
 sudo systemctl start celeryworker
+sudo systemctl enable celeryworker
 
 echo "------"
 echo " nginx setup"
@@ -115,13 +124,14 @@ sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" 
-
 nvm install 11.6.0
 
 echo "------"
 echo " npm install"
 cd "$base_dir/intstream/frontend/"
 npm install
+
+echo "------"
 echo " npm build"
 npm run build
 
