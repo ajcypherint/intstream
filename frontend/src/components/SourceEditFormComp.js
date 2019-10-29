@@ -29,6 +29,7 @@ export default class Edit extends Component {
             label={'active'}  
             checked={this.props.object.active}   />
           <FormButtons saving={this.props.saving}
+                      onSubmit={this.props.onSubmit}
                        goBack={this.props.goBack}/>
 
          </Form>

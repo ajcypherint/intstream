@@ -23,6 +23,7 @@ class SourcesEdit extends Component {
    }
  }
   goBack(event){
+    event.preventDefault() //prevent form submission
     this.props.history.goBack()
 
   }
