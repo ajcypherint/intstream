@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "785ac16bb8856bd36cf91cd3aba4f677aa1c57fdc9f4c72a9755cd819319f6fc"
+            "sha256": "f2bbd40f4e8e49ad44c07543c96572db9ee770e2160d0d1ab195417ba8d232dc"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -54,6 +54,14 @@
             ],
             "index": "pypi",
             "version": "==4.3.0"
+        },
+        "celery-singleton": {
+            "hashes": [
+                "sha256:2e088e244652b2c7b3e0fe6555747ca100a48e4cbc08d617937db4ac8867b46d",
+                "sha256:48ef1452415c5a608fc4074b48086818f591c1772e607528863e85f96a897cd4"
+            ],
+            "index": "pypi",
+            "version": "==0.2.0"
         },
         "certifi": {
             "hashes": [
@@ -176,6 +184,15 @@
             ],
             "index": "pypi",
             "version": "==1.17.0"
+        },
+        "feedparser": {
+            "hashes": [
+                "sha256:bd030652c2d08532c034c27fcd7c85868e7fa3cb2b17f230a44a6bbc92519bf9",
+                "sha256:cd2485472e41471632ed3029d44033ee420ad0b57111db95c240c9160a85831c",
+                "sha256:ce875495c90ebd74b179855449040003a1beb40cd13d5f037a0654251e260b02"
+            ],
+            "index": "pypi",
+            "version": "==5.2.1"
         },
         "gunicorn": {
             "hashes": [

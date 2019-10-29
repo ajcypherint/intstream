@@ -26,6 +26,8 @@ django-celery-beat = "*"
 pdfminer-six = "*"
 docx2txt = "*"
 gunicorn = "*"
+feedparser = "*"
+celery-singleton = "*"
 
 [requires]
 python_version = "3.6"
