@@ -30,12 +30,12 @@ class SourcesList extends Component {
     return sources.map((source)=>{
       return (
             <tr key={source.id}>
-              {fields.map((field)=>{
+              {fields.map((field, index)=>{
                   return (
-                      <td >
-                      <Link style={{color:'black'}} to={this.props.edituri + source.id}>
+                      <td key={index} >
+                      <Link key={index} style={{color:'black'}} to={this.props.edituri + source.id}>
                         {typeof source[field] ==='boolean'?
-                                <Input className='hover' type='checkbox' name={field} checked={source[field]} />
+                                <Input key={index} className='hover' type='checkbox' readOnly name={field} checked={source[field]} />
                              : source[field]}
                       </Link>
                     </td>
@@ -72,7 +72,7 @@ class SourcesList extends Component {
   
   columnheader(name){
       return (
-             <th className="tableheader" onClick={(event)=>{console.log("click1");this.changesort(name)}}>
+             <th key={name} className="tableheader" onClick={(event)=>{console.log("click1");this.changesort(name)}}>
                   {name.charAt(0).toUpperCase() + name.slice(1)}
              </th>
       )
@@ -173,15 +173,15 @@ class SourcesList extends Component {
 }
 
 SourcesList.propTypes = {
-  heading:propTypes.string.isRequired,
+  heading:propTypes.string,
   fields:propTypes.arrayOf(propTypes.string),
   sourceList:propTypes.arrayOf(propTypes.shape({
     name:propTypes.string,
     id:propTypes.number,
-    })).isRequired,
-  sourcesLoading:propTypes.bool.isRequired,
+    })),
+  sourcesLoading:propTypes.bool,
   totalCount:propTypes.number,
-  error:propTypes.shape({message:propTypes.string}).isRequired,
+  error:propTypes.shape({message:propTypes.string}),
   next:propTypes.string,
   previous:propTypes.string,
   fetchSources:propTypes.func,

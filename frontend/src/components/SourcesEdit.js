@@ -6,6 +6,7 @@ import Edit from './SourceEditFormComp'
 import {SourceLoading} from './sourceLoading'
 import {ADDFORM, EDITFORM} from './Main'
 import {withRouter} from 'react-router-dom'
+import {ADD,EDIT} from './Main'
 
 class SourcesEdit extends Component {
   constructor(props){
@@ -15,13 +16,23 @@ class SourcesEdit extends Component {
    this.onSubmit = this.onSubmit.bind(this)
     this.goBack = this.goBack.bind(this)
   }
-  componentWillMount() {
-   if ( typeof this.props.match !== 'undefined'){
+  componentDidMount(){
+   if ( typeof this.props.match.params.id !== 'undefined'){
      this.props.fetchSources('id='+this.props.match.params.id) 
    } else {
      this.props.clearSources()
    }
- }
+ 
+    if (this.props.sources.length > 0 && this.state.action !== "ADD"){
+      this.setState(
+        {
+          object:this.props.sources[0],
+          stateLoaded:true
+        }
+      )
+    }
+ 
+  }
   goBack(event){
     event.preventDefault() //prevent form submission
     this.props.history.goBack()
@@ -60,25 +71,8 @@ class SourcesEdit extends Component {
     const error = this.props.errors || {};
     //todo this is a no no
     //simplifiy this by just checking
-    if(this.state.firstrender) { 
-      this.setState({firstrender:false})
-       return ( <SourceLoading heading={heading}/>)
-   } 
- 
-    if(loading) { 
-       return ( <SourceLoading heading={heading}/>)
-    } 
-    if( this.state.stateLoaded===false){
-      this.setState(
-        {
-          object:this.props.sources[0],
-          stateLoaded:true
-        }
-      )
-      return ( <SourceLoading heading={heading}/>)
-    }
-
-    //todo(aj) pass copy of state.object to Edit so it is dynamic
+    //
+      //todo(aj) pass copy of state.object to Edit so it is dynamic
     //Edit should be passed in as a component
     //Edit should then grab the props it needs out of the properties of object
     //onsubmit, handlechange, and errors will all be standard for any object

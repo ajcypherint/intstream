@@ -46,9 +46,9 @@ const Main = (props)=>(
           firstrender:true,
           stateLoaded:false,
           object:{
-            id:undefined,
-            name:undefined,
-            active:undefined
+            id:0,
+            name:'',
+            active:false
           }
         }}
         match={match}/>} 
@@ -63,8 +63,7 @@ const Main = (props)=>(
           action:ADDFORM,
           firstrender:true,
           stateLoaded:true,
-          object:{
-            name:'',
+          object:{ name:'',
             active:false
           }
         }}
@@ -81,9 +80,9 @@ const Main = (props)=>(
           firstrender:true,
           stateLoaded:false,
           object:{
-            id:undefined,
-            name:undefined,
-            active:undefined
+            id:0,
+            name:'',
+            active:false
           }
         }}
         match={match}/>} 
