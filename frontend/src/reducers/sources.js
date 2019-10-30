@@ -73,12 +73,9 @@ export default (state=initialState, action) => {
     case sourcesData.GET_SOURCES_REQUEST:
       {
       return {
-        sources:[],
-        totalcount:0,
+        ...state,
         loading:true,
         allloaded:false,
-        nextpage:null,
-        previouspage:null,
         errors:{}
       }
       }

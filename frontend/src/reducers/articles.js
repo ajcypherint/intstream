@@ -58,11 +58,8 @@ export default (state=initialState, action) => {
     case articlesData.GET_ARTICLES_REQUEST:
       {
       return {
-        articles:[],
-        totalcount:0,
+        ...state,
         loading:true,
-        nextpage:null,
-        previouspage:null,
         errors:{}
       }
       }

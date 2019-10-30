@@ -19,7 +19,7 @@ class SourcesList extends Component {
     this.columnheader = this.columnheader.bind(this)
   }
  
-  componentWillMount() {
+  componentDidMount() {
     this.props.fetchSources();
     this.setState({page:1,ordercol:'',orderdir:ASC})
   }
@@ -91,7 +91,7 @@ class SourcesList extends Component {
       <Pagination aria-label="Page navigation example">
       <PaginationItem>
         <PaginationLink first onClick={(event)=>{this.setpage(1);
-          return this.props.fetchSources("ordering="+this.state.orderdir+this.state.ordercol+"&page=1")}} />
+          this.props.fetchSources("ordering="+this.state.orderdir+this.state.ordercol+"&page=1")}} />
         </PaginationItem>
         <PaginationItem>
           {previous==null?
@@ -142,15 +142,10 @@ class SourcesList extends Component {
     const next = this.props.next;
     const previous = this.props.previous;
 
-    if(loading) { 
-			return <div className="container"><h1>{heading}</h1><h3>Loading...</h3></div> 
-    } 
-    if(!_.isEmpty(error)) {
-      return <div className="alert alert-danger">Error: {error.message}</div>
-    }
 
     return (
       <div className="container">
+      { !_.isEmpty(error) ? <div className="alert alert-danger">Error: {error.message}</div>: ''}
         <h1>{heading}</h1>
        {totalcount ? this.pagination(totalcount,next,previous): ''}
           <FormGroup>
