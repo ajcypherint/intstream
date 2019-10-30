@@ -24,9 +24,14 @@ class SourcesList extends Component {
     this.setState({page:1,ordercol:'',orderdir:ASC})
   }
   
-  displaysources(sources, fields){
+  displaysources(sources, fields, loading){
     //rows
     //todo(aj) onChange for checkbox
+    if (loading) {
+      return <span className="spinner-border" role="status">
+               <span className="sr-only">Loading...</span></span>
+
+    } else{
     return sources.map((source)=>{
       return (
             <tr key={source.id}>
@@ -43,6 +48,7 @@ class SourcesList extends Component {
             </tr>
           );
     });
+    }
   }
   changesort(column_name){
     console.log("clicked")
@@ -136,7 +142,7 @@ class SourcesList extends Component {
     const heading = this.props.heading;
     const fields = this.props.fields;
     const sources = this.props.sourcesList;
-    const loading = this.props.sourcesLoading;
+    const loading = typeof this.props.sourcesLoading === 'undefined' ? true : this.props.sourcesLoading;
     const error = this.props.sourcesErrors;
     const totalcount= this.props.totalCount;
     const next = this.props.next;
@@ -159,7 +165,7 @@ class SourcesList extends Component {
             </tr>
           </thead>
           <tbody>
-          {this.displaysources(sources, fields) }
+          {this.displaysources(sources, fields, loading) }
         </tbody>
         </Table>
       </div>

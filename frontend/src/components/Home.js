@@ -99,7 +99,7 @@ export class Main extends React.Component{
       sourceChosen:event.target.value,
       })
     this.props.fetchArticles(dateString(this.state.orderdir,
-      ASC,
+      this.state.ordercol,
         event.target.value,
         1,
         this.state.startDate,
@@ -113,13 +113,13 @@ export class Main extends React.Component{
 
   render(){
     const articles = this.props.articlesList || [];
-    const loading = this.props.articlesLoading||true;
+    const loading = typeof this.props.articlesLoading === 'undefined' ? true : this.props.articlesLoading;
     const error = this.props.articlesErrors;
     const totalcount= this.props.articlesTotalCount ||0;
     const next = this.props.articleNext ;
     const previous = this.props.articlePrevious;
     const sources = this.props.sourcesList || [];
-    const allSourcesLoaded = this.props.allSourcesLoaded || false;
+    const allSourcesLoaded = typeof this.props.allSourcesLoaded === 'undefined' ? false : this.props.allSourcesLoaded;
 
      
     const errors = this.props.errors || {}
@@ -187,10 +187,11 @@ export class Main extends React.Component{
              <td >Children</td>
            </tr>
          </thead>
+         { !loading ?
          <tbody>
            {
              articles.map((article)=>{
-         return (<tr key={article.id}>
+                return (<tr key={article.id}>
                   <td>{article.title}</td>
                   <td>{article.source.name}</td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
@@ -200,7 +201,10 @@ export class Main extends React.Component{
                 </tr>)
              })
            }
-       </tbody>
+        </tbody>
+             : <span className="spinner-border" role="status">
+               <span className="sr-only">Loading...</span></span>
+             }
        </Table>
     </div>
     )

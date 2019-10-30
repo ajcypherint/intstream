@@ -22,12 +22,12 @@ class SourcesEdit extends Component {
    } else {
      this.props.clearSources()
    }
- 
-    if (this.props.sources.length > 0 && this.state.action !== "ADD"){
+  }
+  componentWillReceiveProps(nextProps){
+    if (nextProps.sources.length > 0 && this.state.action !== "ADD"){
       this.setState(
         {
-          object:this.props.sources[0],
-          stateLoaded:true
+          object:nextProps.sources[0],
         }
       )
     }
@@ -69,14 +69,6 @@ class SourcesEdit extends Component {
 
     const loading = this.props.loading;
     const error = this.props.errors || {};
-    //todo this is a no no
-    //simplifiy this by just checking
-    //
-      //todo(aj) pass copy of state.object to Edit so it is dynamic
-    //Edit should be passed in as a component
-    //Edit should then grab the props it needs out of the properties of object
-    //onsubmit, handlechange, and errors will all be standard for any object
-    //after this this component is fully dynamic
     
     const prefix = this.props.state.action === EDITFORM ? "Edit " : "Add ";
     const heading = prefix + this.props.heading;
