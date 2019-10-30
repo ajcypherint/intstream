@@ -60,7 +60,7 @@ curdir=$(pwd) #base dir + intstream
 sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${curdir//\//\\/}\/backend\//g" -e "s/\${venvpath}/${venvpath//\//\\/}/g" ./utility/gunicorn > ./utility/gunicorn_new
 sudo cp ./utility/gunicorn_new /etc/systemd/system/gunicorn.service
 sudo systemctl daemon-reload
-sudo systemctl start gunicorn
+sudo systemctl restart gunicorn
 sudo systemctl enable gunicorn
 
 echo "------"
@@ -68,7 +68,7 @@ echo " celery beat setup"
 sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${curdir//\//\\/}\/backend\//g" -e "s/\${venvpath}/${venvpath//\//\\/}/g" ./utility/celerybeat > ./utility/celerybeat_new
 sudo cp ./utility/celerybeat_new /etc/systemd/system/celerybeat.service
 sudo systemctl daemon-reload
-sudo systemctl start celerybeat
+sudo systemctl restart celerybeat
 sudo systemctl enable celerybeat
 
 echo "------"
@@ -76,7 +76,7 @@ echo " celery worker setup"
 sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${curdir//\//\\/}\/backend\//g" -e "s/\${venvpath}/${venvpath//\//\\/}/g" ./utility/celeryworker > ./utility/celeryworker_new
 sudo cp ./utility/celeryworker_new /etc/systemd/system/celeryworker.service
 sudo systemctl daemon-reload
-sudo systemctl start celeryworker
+sudo systemctl restart celeryworker
 sudo systemctl enable celeryworker
 
 echo "------"
