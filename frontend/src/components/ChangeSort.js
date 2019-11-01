@@ -27,7 +27,7 @@ export function  changesort(column_name,
        fetch(dateString(DESC,
          column_name,
         this.state.sourceChosen,
-        this.state.page,
+        1,
         this.state.startDate,
       this.state.endDate))
         }
@@ -38,7 +38,7 @@ export function  changesort(column_name,
         dateString(ASC,
          column_name,
         this.state.sourceChosen,
-        this.state.page,
+        1,
         this.state.startDate,
       this.state.endDate))
       }
@@ -51,7 +51,7 @@ export function  changesort(column_name,
          dateString(ASC,
              column_name,
             this.state.sourceChosen,
-            this.state.page,
+            1,
             this.state.startDate,
           this.state.endDate))
       }
