@@ -6,7 +6,7 @@ from django.db import migrations, models
 def create_uuid(apps, schema_editor):
     sources = apps.get_model('api', 'Source')
     for source in sources.objects.all():
-        source_names = [x.name for x in sources.objects.exclude(source_id=source.id).all()]
+        source_names = [x.name for x in sources.objects.exclude(id=source.id).all()]
         if source.name in source_names:
             source.name = source.name + str(uuid.uuid4())
         source.save()
