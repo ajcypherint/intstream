@@ -95,13 +95,14 @@ export class Main extends React.Component{
         startDate = endDate
       }
     }
-    this.setState({endDate:endDate,startDate:startDate})
+    this.setState({endDate:endDate,startDate:startDate,page:1})
 
   }
   handleSourceChange(event){
     event.preventDefault()
     this.setState({
       sourceChosen:event.target.value,
+      page:1
       })
     this.props.fetchArticles(dateString(this.state.orderdir,
       this.state.ordercol,
