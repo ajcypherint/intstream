@@ -24,7 +24,7 @@ const mapDispatchToProps = (dispatch) => {
     fetchSources: (params=undefined) => dispatch(getSources(API,params)),
     setSources: (url,data,method='PUT') => dispatch(setSources(API+url,data,method)),
     clearSources:()=>dispatch(clearSources()),
-    addSource: (url, data, historyFunc, method='PUT') => dispatch(addSources(API+url, data, historyFunc,method))
+    addSources: (url, data, method, goBack) => dispatch(addSources(API+url, data, method, goBack)),
   }
 }
 
