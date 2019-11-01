@@ -1,9 +1,14 @@
 //
 //state:
-//  ordercol: str
 //  orderdir: str
+//  sourceChosen: str
+//  ordercol: str
 //  page: int
+//  startDate: date
+//  endDate: date
 //
+
+import {PAGINATION, dateString} from '../util/util'
 
 export function  changesort(column_name, 
   ASC, 
@@ -18,23 +23,37 @@ export function  changesort(column_name,
       // column matches sort column opposite
       if( this.state.orderdir===ASC){
        this.setState({orderdir:DESC})
-       fetch(
-            "ordering="+DESC+column_name+"&page="+this.state.page)
         //call desc sort
+       fetch(dateString(DESC,
+         column_name,
+        this.state.sourceChosen,
+        this.state.page,
+        this.state.startDate,
+      this.state.endDate))
         }
       else{
        this.setState({orderdir:ASC})
-       fetch(
-            "ordering="+ASC+column_name+"&page="+this.state.page)
         //call asc sort
+       fetch(
+        dateString(ASC,
+         column_name,
+        this.state.sourceChosen,
+        this.state.page,
+        this.state.startDate,
+      this.state.endDate))
       }
     }
     else{
       //sort by this column ascending; first time sorting this column
        this.setState({ordercol:column_name,orderdir:ASC}) 
-       fetch(
-            "ordering="+ASC+column_name+"&page="+this.state.page)
         //call asc sort
+       fetch(
+         dateString(ASC,
+             column_name,
+            this.state.sourceChosen,
+            this.state.page,
+            this.state.startDate,
+          this.state.endDate))
       }
   }
   

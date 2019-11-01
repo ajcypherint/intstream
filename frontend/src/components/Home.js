@@ -5,7 +5,7 @@ import propTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import Paginate from './Paginate'
-import {PAGINATION, dateString} from '../util/util'
+import {PAGINATION, dateString, addDays} from '../util/util'
 import {changesort} from './ChangeSort'
 const ALL = "---"
 const ASC = ''
@@ -13,10 +13,15 @@ const DESC = '-'
 
 export class Main extends React.Component{
   constructor(props){
+    var start = new Date();
+    start.setHours(0,0,0,0);
+
+    var end = new Date();
+    end.setHours(23,59,59,999);
     super(props)
     this.state={
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: start,
+      endDate: end,
       sources: [],
       sourceChosen:'',
       loadSources:false,

@@ -126,8 +126,8 @@ ARTICLE_SORT_FIELDS =('id','source','title','upload_date', 'source__name')
 
 class ArticleFilter(filters.FilterSet):
     source__name = filters.CharFilter(lookup_expr='exact')
-    start_upload_date = filters.DateFilter(field_name='upload_date', lookup_expr=('gt'))
-    end_upload_date = filters.DateFilter(field_name='upload_date', lookup_expr=('lt'))
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lt'))
     ordering = filters.OrderingFilter(
         fields=[('source__name','source_name'),
                 ('title','title'),

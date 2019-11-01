@@ -6,6 +6,11 @@ from django.contrib.auth.models import AbstractUser
 import uuid
 import os
 
+#todo(aj) mutitenant - organization table
+# all queries filter by org
+# Admin can see all orgs; add new orgs
+# integrator can only see their own org; cannot add orgs
+# Not integrator and not admin can only see their own org; cannot add orgs
 
 class UserIntStream(AbstractUser):
     is_integrator= models.BooleanField('integrator status', default=False)
