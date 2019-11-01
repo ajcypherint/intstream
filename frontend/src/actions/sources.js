@@ -1,5 +1,6 @@
 import { RSAA } from 'redux-api-middleware';
 import { withAuth } from '../reducers'
+import _ from 'lodash';
 import  URL  from  'url-parse'
 import {setParams} from './util'
 import {PAGINATION} from '../util/util'
@@ -92,3 +93,13 @@ export const  getAllSources = (url, params) =>{
       return await dispatch(totalSources(allSources, total));
     }
 }
+
+export const  addSources = (url, data, method, goBack) =>{
+  return async(dispatch, getState) => {
+      let totalresp = await dispatch(setSources(url, data, method))
+      if (!totalresp.error){
+        goBack()
+      }
+  }
+}
+ 

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import SourceEdit from '../components/SourcesEdit';
-import {getSources, setSources, clearSources} from '../actions/sources'
+import {getSources, setSources, addSources, clearSources} from '../actions/sources'
 import * as reducers from '../reducers/'
 // edit
 const API = '/api/sourcesupload/'
@@ -22,7 +22,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     fetchSources: (params=undefined) => dispatch(getSources(API,params)),
     setSources: (url,data,method='PUT') => dispatch(setSources(API+url,data,method)),
-    clearSources:()=>dispatch(clearSources())
+    clearSources:()=>dispatch(clearSources()),
+    addSources: (url, data, method, goBack) => dispatch(addSources(API+url, data, method, goBack)),
   }
 }
 

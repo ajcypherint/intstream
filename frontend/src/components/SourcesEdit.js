@@ -60,8 +60,11 @@ class SourcesEdit extends Component {
       this.props.setSources(this.state.object.id+'/',this.state.object) 
       // this.props.fetchSources('id='+this.state.object.id) 
     } else {
-
-      this.props.setSources('',this.state.object,'POST') 
+      this.props.addSources('',
+        this.state.object,
+        "POST",
+        this.props.history.goBack)
+      //this.props.setSources('',this.state.object,'POST') 
       //redirect to listing
     }
   }
@@ -72,6 +75,12 @@ class SourcesEdit extends Component {
     
     const prefix = this.props.state.action === EDITFORM ? "Edit " : "Add ";
     const heading = prefix + this.props.heading;
+    if (loading) {
+      return <span className="spinner-border" role="status">
+               <span className="sr-only">Loading...</span></span>
+
+    } else{
+ 
     return (
        <div className="row" >
         <div className="col-sm-4"/>
@@ -96,8 +105,9 @@ class SourcesEdit extends Component {
       </div>
         <div className="col-sm-4"/>
       </div>
-  )
-  } 
+    )
+    } 
+  }
  
 };
 

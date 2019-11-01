@@ -31,7 +31,7 @@ class SourceType(models.Model):
 
 # name / active #
 class Source(PolymorphicModel):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
     def __str__(self):
         return self.name + " (" + str(self.id) + ")"
