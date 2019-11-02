@@ -22,13 +22,21 @@ class SourceFilter(filters.FilterSet):
         fields = ('id','name','active')
 
 
-class SourceViewSet(viewsets.ModelViewSet):
+class OrgViewSet(viewsets.ModelViewSet):
+    def perform_create(self, serializer):
+        serializer.save(organization = self.request.user.organization)
+
+
+class SourceViewSet(OrgViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
-    queryset = models.Source.objects.all()
     serializer_class = serializers.SourceSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active','url')
     filterset_class = SourceFilter
+
+    def get_queryset(self):
+        return models.Source.objects.filter(organization=self.request.user.organization)
+
 
 
 class RssFilter(filters.FilterSet):
@@ -164,7 +172,7 @@ class RSSArticleViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = TXT(self.request.FILES['file'],self.request.data.encoding)
         text = instance.read()
-        serializer.save(text=text)
+        serializer.save(text=text,organization=self.request.user.organization)
 
 
 class HtmlArticleFilter(filters.FilterSet):
@@ -184,7 +192,7 @@ class HtmlArticleViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = TXT(self.request.FILES['file'],self.request.data.encoding)
         text = instance.read()
-        serializer.save(text=text)
+        serializer.save(text=text,organization=self.request.user.organization)
 
 class TxtArticleFilter(filters.FilterSet):
     class Meta:

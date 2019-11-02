@@ -45,7 +45,8 @@ class JobSourceSerializer(serializers.ModelSerializer):
             'python_binary_fullpath',
             'last_run',
             'last_status',
-            'arguments'
+            'arguments',
+            'organization'
 
         ]
         model = JobSource
@@ -56,6 +57,7 @@ class UploadSourceSerializer(serializers.ModelSerializer):
             "id",
             'name',
             'active',
+            'organization',
 
         ]
         model = UploadSource
@@ -67,7 +69,8 @@ class RssSourceSerializer(serializers.ModelSerializer):
             "id",
             'name',
             'active',
-            'url'
+            'url',
+            'organization',
 
         ]
         model = RSSSource
@@ -79,6 +82,8 @@ class SourceSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'active',
+            'organization',
+
         ]
         model = Source
 
@@ -92,6 +97,7 @@ class MLModelSerializer(serializers.ModelSerializer):
             'created_date',
             'base64_encoded_model',
             'enabled'
+            'organization',
         ]
 
         model = MLModel
@@ -104,6 +110,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
            'created_date',
            'model',
            'enabled'
+           'organization',
         ]
 
         model = Categories
@@ -121,7 +128,9 @@ class ArticleSerializerSet(serializers.ModelSerializer):
            'categories',
            'encoding',
            'text',
+           'organization',
         ]
+
         model = Article
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -137,7 +146,8 @@ class ArticleSerializer(serializers.ModelSerializer):
            'categories',
            'encoding',
            'text',
-            'article_set'
+            'article_set',
+            'organization',
         ]
         model = Article
 
@@ -156,7 +166,8 @@ class PDFSerializer(serializers.ModelSerializer):
            'encoding',
            'text',
             'password'
-            'article_set'
+            'article_set',
+            'organization',
         ]
 
         model = PDFArticle
@@ -176,7 +187,8 @@ class HtmlSerializer(serializers.ModelSerializer):
            'file',
            'encoding',
            'text',
-            'article_set'
+            'article_set',
+            'organization',
         ]
         model = HtmlArticle
 
@@ -195,7 +207,8 @@ class WordDocxSerializer(serializers.ModelSerializer):
            'file',
            'encoding',
            'text',
-            'article_set'
+            'article_set',
+            'organization',
         ]
         model = TxtArticle
 
@@ -214,7 +227,8 @@ class TxtSerializer(serializers.ModelSerializer):
            'file',
            'encoding',
            'text',
-            'article_set'
+            'article_set',
+            'organization',
         ]
         model = TxtArticle
 
@@ -235,7 +249,8 @@ class RSSSerializer(serializers.ModelSerializer):
             'description',
             'link',
             'guid',
-            'article_set'
+            'article_set',
+            'organization',
         ]
 
         model = RSSArticle

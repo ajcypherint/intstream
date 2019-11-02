@@ -36,7 +36,7 @@ SOURCE = 'sources'
 router.register(UPLOADSOURCE, views.UploadSourceViewSet)
 router.register(RSSSOURCE, views.RssSourceViewSet)
 router.register(JOBSOURCE, views.JobSourceViewSet)
-router.register(SOURCE, views.SourceViewSet)
+router.register(SOURCE, views.SourceViewSet,basename="source")
 
 
 router.register('categories',views.CategoriesViewSet)
