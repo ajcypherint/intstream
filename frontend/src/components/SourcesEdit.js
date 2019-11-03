@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import {Container} from 'reactstrap'
+import _ from 'lodash';
 import { Alert, Button, Jumbotron,  Form } from 'reactstrap';
 import propTypes from 'prop-types'
 import Edit from './SourceEditFormComp'
 import {SourceLoading} from './sourceLoading'
-import {ADDFORM, EDITFORM} from './Main'
 import {withRouter} from 'react-router-dom'
-import {ADD,EDIT} from './Main'
-
+import {ADD,EDIT} from '../util/util'
 class SourcesEdit extends Component {
   constructor(props){
     super(props)
@@ -17,21 +16,14 @@ class SourcesEdit extends Component {
     this.goBack = this.goBack.bind(this)
   }
   componentDidMount(){
-   if ( typeof this.props.match.params.id !== 'undefined'){
-     this.props.fetchSources('id='+this.props.match.params.id) 
-   } else {
-     this.props.clearSources()
-   }
-  }
-  componentWillReceiveProps(nextProps){
-    if (nextProps.sources.length > 0 && this.state.action !== "ADD"){
-      this.setState(
-        {
-          object:nextProps.sources[0],
-        }
-      )
-    }
- 
+    // if  not ADD form
+       if ( typeof this.props.match.params.id !== 'undefined'){
+         this.props.fetchSources('id='+this.props.match.params.id) 
+       } else {
+         this.props.clearSources()
+         // todo: move this into container as in input prop so it is correct for each type of source
+         this.props.sourceFormUpdate(this.props.empty)
+       }
   }
   goBack(event){
     event.preventDefault() //prevent form submission
@@ -43,9 +35,12 @@ class SourcesEdit extends Component {
     const value = target.type ===
         'checkbox' ? target.checked : target.value;
     const name = target.name;
-    let object = Object.assign({},this.state.object)
-    object[name]=value
-    this.setState({object:{...object}})
+    let object_new = Object.assign({},this.props.sources[0])
+    object_new[name]=value
+
+    //this.setState(object:{...object_new}})
+    //dispatch object to redux
+    this.props.sourceFormUpdate(object_new)
   }
 
 
@@ -56,12 +51,12 @@ class SourcesEdit extends Component {
     // name:this.state.name,
     // active:this.state.active
     //}
-    if (this.state.action === EDITFORM) {
-      this.props.setSources(this.state.object.id+'/',this.state.object) 
+    if (this.state.action === EDIT) {
+      this.props.setSources(this.props.sources[0].id+'/',this.props.sources[0]) 
       // this.props.fetchSources('id='+this.state.object.id) 
     } else {
       this.props.addSources('',
-        this.state.object,
+        this.props.sources[0],
         "POST",
         this.props.history.goBack)
       //this.props.setSources('',this.state.object,'POST') 
@@ -72,8 +67,9 @@ class SourcesEdit extends Component {
 
     const loading = this.props.loading;
     const error = this.props.errors || {};
+    const source = this.props.sources[0] || {};
     
-    const prefix = this.props.state.action === EDITFORM ? "Edit " : "Add ";
+    const prefix = this.state.action === EDIT ? EDIT : ADD;
     const heading = prefix + this.props.heading;
     if (loading) {
       return <span className="spinner-border" role="status">
@@ -91,7 +87,7 @@ class SourcesEdit extends Component {
          {error.detail?<Alert color="danger">{error.detail}</Alert>:""}
          {React.cloneElement(this.props.form,
            {
-             object:this.state.object,
+             object:source,
              onSubmit:this.onSubmit,
              handleChange : this.handleInputChange,
              errors:error,

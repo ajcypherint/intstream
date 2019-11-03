@@ -1,4 +1,6 @@
 export const PAGINATION=10
+export const EDIT ="Edit"
+export const ADD = "Add"
 
 export function dateString(
   orderdir,

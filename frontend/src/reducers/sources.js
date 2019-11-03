@@ -19,6 +19,15 @@ const initialState ={
 export default (state=initialState, action) => {
   switch(action.type) {
       //used for edit
+    case sourcesData.SOURCE_FORM_UPDATE:
+      {
+        return {
+          ...state,
+          sources:[action.payload]
+
+        }
+
+      }
     case sourcesData.GET_TOTAL_SOURCES:
       {
         return {

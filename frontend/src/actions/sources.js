@@ -13,6 +13,8 @@ export const SET_SOURCES_REQUEST = '@@sources/SET_SOURCES_REQUEST';
 export const SET_SOURCES_SUCCESS = '@@sources/SET_SOURCES_SUCCESS';
 export const SET_SOURCES_FAILURE = '@@sources/SET_SOURCES_FAILURE';
 
+export const SOURCE_FORM_UPDATE = '@@sources/SOURCE_FORM_UPDATE';
+
 export const CLEAR = '@@sources/CLEAR';
 export const GET_TOTAL_SOURCES = '@@sources/TOTAL';
 
@@ -20,6 +22,13 @@ export const clearSources = ()=>{
   return {
     type:CLEAR,
     payload:{}
+
+  }
+}
+export const sourceFormUpdate = (data) =>{
+  return {
+    type: SOURCE_FORM_UPDATE,
+    payload:data
 
   }
 }

@@ -1,7 +1,9 @@
 import { connect } from 'react-redux'
+
 import SourceEdit from '../components/SourcesEdit';
-import {getSources,  addSources, setSources, clearSources} from '../actions/sources'
+import {getSources, sourceFormUpdate, addSources, setSources, clearSources} from '../actions/sources'
 import * as reducers from '../reducers/'
+import {ADD, EDIT} from "../util/util"
 // edit
 const API = '/api/sourcesrss/'
 const FIELDS = ["name","url","active"]
@@ -16,6 +18,7 @@ const mapStateToProps = (state) => {
     errors:reducers.getErrors(state),
     fields:FIELDS,
     heading:HEADING,
+    empty:{name:"",id:"", url:"",active:false}
   };
 }
 
@@ -26,7 +29,7 @@ const mapDispatchToProps = (dispatch) => {
     setSources: (url,data,method='PUT') => dispatch(setSources(API+url,data,method)),
     clearSources:()=>dispatch(clearSources()),
     addSources: (url, data, method, goBack) => dispatch(addSources(API+url, data, method, goBack)),
-
+    sourceFormUpdate:(data)=>dispatch(sourceFormUpdate(data))
   }
 }
 

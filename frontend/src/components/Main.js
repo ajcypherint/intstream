@@ -13,8 +13,7 @@ import Password from "../containers/Password"
 import Edit from './SourceEditFormComp'
 import EditRSS from './SourceEditRSSFormComp'
 import EditJob from './SourceEditJobFormComp'
-export const ADDFORM = "ADD"
-export const EDITFORM = "EDIT"
+import {ADD, EDIT} from "../util/util"
 const Main = (props)=>(
   <Switch>
     <Route exact path="/" component={Home} />
@@ -24,14 +23,9 @@ const Main = (props)=>(
       render={()=>
       <SourcesUploadEdit 
         form={<Edit/>}
+        action={"ADD"}
         state={ {
-          action:ADDFORM,
-          firstrender:true,
-          stateLoaded:true,
-          object:{
-            name:'',
-            active:false
-          }
+          action:ADD,
         }}
         match={undefined}/>} 
       />
@@ -42,14 +36,7 @@ const Main = (props)=>(
       <SourcesUploadEdit 
         form={<Edit/>}
         state={ {
-          action:EDITFORM,
-          firstrender:true,
-          stateLoaded:false,
-          object:{
-            id:0,
-            name:'',
-            active:false
-          }
+          action:EDIT,
         }}
         match={match}/>} 
       />
@@ -60,12 +47,7 @@ const Main = (props)=>(
       <SourcesRSSEdit 
         form={<EditRSS/>}
         state={ {
-          action:ADDFORM,
-          firstrender:true,
-          stateLoaded:true,
-          object:{ name:'',
-            active:false
-          }
+          action:ADD,
         }}
         match={undefined}/>} 
       />
@@ -76,14 +58,7 @@ const Main = (props)=>(
       <SourcesRSSEdit 
         form={<EditRSS/>}
         state={ {
-          action:EDITFORM,
-          firstrender:true,
-          stateLoaded:false,
-          object:{
-            id:0,
-            name:'',
-            active:false
-          }
+          action:EDIT,
         }}
         match={match}/>} 
       />
@@ -95,13 +70,7 @@ const Main = (props)=>(
       <SourcesJobEdit 
         form={<EditJob/>}
         state={ {
-          action:ADDFORM,
-          firstrender:true,
-          stateLoaded:true,
-          object:{
-            name:'',
-            active:false
-          }
+          action:ADD,
         }}
         match={undefined}/>} 
       />
@@ -112,14 +81,8 @@ const Main = (props)=>(
       <SourcesJobEdit 
         form={<EditJob/>}
         state={ {
-          action:EDITFORM,
-          firstrender:true,
-          stateLoaded:false,
-          object:{
-            id:undefined,
-            name:undefined,
-            active:undefined
-          }
+          action:EDIT,
+        
         }}
         match={match}/>} 
       />

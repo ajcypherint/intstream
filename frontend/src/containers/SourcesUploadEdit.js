@@ -14,6 +14,7 @@ const mapStateToProps = (state) => {
     saving:reducers.getSaving(state),
     errors:reducers.getErrors(state),
     heading:HEADING,
+    emtpy:{name:"",id:"", file:"",active:false}
   };
 }
 
