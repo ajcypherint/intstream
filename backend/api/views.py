@@ -38,14 +38,13 @@ class SourceViewSet(OrgViewSet):
         return models.Source.objects.filter(organization=self.request.user.organization)
 
 
-
 class RssFilter(filters.FilterSet):
     class Meta:
         model = models.RSSSource
         fields = ('id','name','url','active')
 
 
-class RssSourceViewSet(viewsets.ModelViewSet):
+class RssSourceViewSet(OrgViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.RSSSource.objects.all()
     serializer_class = serializers.RssSourceSerializer
@@ -53,6 +52,8 @@ class RssSourceViewSet(viewsets.ModelViewSet):
     filterset_fields = ('id','name','active','url')
     filterset_class = RssFilter
 
+    def get_queryset(self):
+        return models.RSSSource.objects.filter(organization=self.request.user.organization)
 
 
 class UploadSourceFilter(filters.FilterSet):
@@ -61,13 +62,16 @@ class UploadSourceFilter(filters.FilterSet):
         fields = ('id','name','active')
 
 
-class UploadSourceViewSet(viewsets.ModelViewSet):
+class UploadSourceViewSet(OrgViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.UploadSource.objects.all()
     serializer_class = serializers.UploadSourceSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active')
     filterset_class = UploadSourceFilter
+
+    def get_queryset(self):
+        return models.UploadSource.objects.filter(organization=self.request.user.organization)
 
 
 jobsourcecols = ('id',
@@ -88,13 +92,16 @@ class JobSourceFilter(filters.FilterSet):
         fields = jobsourcecols
 
 
-class JobSourceViewSet(viewsets.ModelViewSet):
+class JobSourceViewSet(OrgViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.JobSource.objects.all()
     serializer_class = serializers.JobSourceSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = jobsourcecols
     filterset_class = JobSourceFilter
+
+    def get_queryset(self):
+        return models.JobSource.objects.filter(organization=self.request.user.organization)
 
 
 class MLModelFilter(filters.FilterSet):
@@ -103,7 +110,7 @@ class MLModelFilter(filters.FilterSet):
         fields = ('id','name','created_date','enabled')
 
 
-class MLModelViewSet(viewsets.ModelViewSet):
+class MLModelViewSet(OrgViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     queryset = models.MLModel.objects.all()
     serializer_class = serializers.MLModelSerializer
@@ -111,22 +118,28 @@ class MLModelViewSet(viewsets.ModelViewSet):
     filterset_fields = ('id','name','created_date','enabled')
     filterset_class = MLModelFilter
 
+    def get_queryset(self):
+        return models.MLModel.objects.filter(organization=self.request.user.organization)
 
 
 
-class CategoriesFilter(filters.FilterSet):
+
+class CategoryFilter(filters.FilterSet):
     class Meta:
-        model = models.Categories
+        model = models.Category
         fields = ('id','name','created_date','enabled')
 
 
-class CategoriesViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(OrgViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
-    queryset = models.Categories.objects.all()
-    serializer_class = serializers.CategoriesSerializer
+    queryset = models.Category.objects.all()
+    serializer_class = serializers.CategorySerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','created_date','enabled')
-    filterset_class = CategoriesFilter
+    filterset_class = CategoryFilter
+
+    def get_queryset(self):
+        return models.Category.objects.filter(organization=self.request.user.organization)
 
 
 ARTICLE_SORT_FIELDS =('id','source','title','upload_date', 'source__name')
@@ -154,6 +167,9 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = ArticleFilter
 
+    def get_queryset(self):
+        return models.Article.objects.filter(organization=self.request.user.organization)
+
 
 class RSSArticleFilter(filters.FilterSet):
     class Meta:
@@ -173,6 +189,9 @@ class RSSArticleViewSet(viewsets.ModelViewSet):
         instance = TXT(self.request.FILES['file'],self.request.data.encoding)
         text = instance.read()
         serializer.save(text=text,organization=self.request.user.organization)
+
+    def get_queryset(self):
+        return models.RSSArticle.objects.filter(organization=self.request.user.organization)
 
 
 class HtmlArticleFilter(filters.FilterSet):
@@ -194,6 +213,9 @@ class HtmlArticleViewSet(viewsets.ModelViewSet):
         text = instance.read()
         serializer.save(text=text,organization=self.request.user.organization)
 
+    def get_queryset(self):
+        return models.HtmlArticle.objects.filter(organization=self.request.user.organization)
+
 class TxtArticleFilter(filters.FilterSet):
     class Meta:
         model = models.TxtArticle
@@ -211,7 +233,10 @@ class TxtArticleViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = TXT(self.request.FILES['file'],self.request.data.encoding)
         text = instance.read()
-        serializer.save(text=text)
+        serializer.save(text=text, organization=self.request.user.organization)
+
+    def get_queryset(self):
+        return models.TxtArticle.objects.filter(organization=self.request.user.organization)
 
 class WordDocxArticleFilter(filters.FilterSet):
     class Meta:
@@ -229,7 +254,10 @@ class WordDocxArticleViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = WordDocx(self.request.FILES['file'])
         text = instance.read()
-        serializer.save(text=text)
+        serializer.save(text=text, organization=self.request.user.organization)
+
+    def get_queryset(self):
+        return models.WordDocxArticle.objects.filter(organization=self.request.user.organization)
 
 class PDFArticleFilter(filters.FilterSet):
     class Meta:
@@ -248,7 +276,10 @@ class PDFArticleViewSet(viewsets.ModelViewSet):
         password = self.request.data.password if 'password' in self.request.data else ''
         instance = PDF(self.request.FILES['file'],password=password)
         text = instance.read()
-        serializer.save(text=text)
+        serializer.save(text=text, organization=self.request.user.organization)
+
+    def get_queryset(self):
+        return models.PDFArticle.objects.filter(organization=self.request.user.organization)
 
 class ArticleTypeViewSet(viewsets.ReadOnlyModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)

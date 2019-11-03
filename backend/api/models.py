@@ -14,10 +14,12 @@ import os
 
 class Organization(models.Model):
     name = models.CharField(max_length=200, unique=True)
+    def __str__(self):
+        return self.name
 
 class UserIntStream(AbstractUser):
     is_integrator= models.BooleanField('integrator status', default=False)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     REQUIRED_FIELDS = ["organization"] # createsuperuser
 
 # Create your models here.
@@ -37,7 +39,7 @@ class SourceType(models.Model):
 class Source(PolymorphicModel):
     name = models.CharField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     def __str__(self):
         return self.name + " (" + str(self.id) + ")"
 
@@ -66,18 +68,18 @@ class MLModel(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
     base64_encoded_model = models.FileField(blank=True)
     enabled = models.BooleanField(default=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):
         return self.name + " ( " + str(self.id) + ")"
 
 
-class Categories(models.Model):
+class Category(models.Model):
     name=models.CharField(max_length=100,unique=True)
     created_date = models.DateTimeField(default=timezone.now)
     model = models.ForeignKey(MLModel,on_delete=models.CASCADE)
     enabled = models.BooleanField(default=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):
         return self.name + " ( " + str(self.id) + ")"
@@ -85,7 +87,7 @@ class Categories(models.Model):
 # name and api_endpoint for frontend  / sdk
 class ArticleType(models.Model):
     name = models.CharField(max_length=100,unique=True)
-    api_endpoint = models.TextField(max_length=100,unique=True)
+    api_endpoint = models.TextField(max_length=100, unique=True)
 
 
 class Article(PolymorphicModel):
@@ -94,9 +96,9 @@ class Article(PolymorphicModel):
     text = models.TextField(blank=True)
     upload_date = models.DateTimeField(default=timezone.now)
     parent=models.ForeignKey('self',blank=True, null=True, on_delete=models.SET_NULL)
-    categories = models.ManyToManyField(Categories,blank=True,null=True)
+    categories = models.ManyToManyField(Category,blank=True,null=True)
     encoding = models.CharField(max_length=15,default='utf8')
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):
         return self.title + "( " + str(self.id) + ")"
@@ -124,4 +126,4 @@ class Settings(models.Model):
     aws_key = models.CharField(max_length=100)
     aws_secret = models.CharField(max_length=250)
     aws_region = models.CharField(max_length=15)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
