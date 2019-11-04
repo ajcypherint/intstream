@@ -1,5 +1,5 @@
 from selectolax.parser import HTMLParser
-
+import re
 
 class Read(object):
     def read(self):
@@ -22,8 +22,9 @@ class HTMLRead(Read):
         for tag in tree.css('style'):
             tag.decompose()
 
-        text = tree.body.text(separator='\n')
-        return text
+        text = tree.body.text(separator=' ')
+        text = re.sub(r'\n\s*', "\n",text)
+        return text.strip()
 
 
 

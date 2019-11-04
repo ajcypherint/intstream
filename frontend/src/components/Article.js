@@ -20,7 +20,7 @@ export default class extends Component {
       <div className="container mt-2 col-sm-8 offset-sm-2" >
          <FormGroup>
         <Label for="Article">Article</Label>
-        <Input type="textarea" name="text" rows="20" id="Article" value={article.text}/>
+        <Input type="textarea" name="text" rows="20" id="Article" value={article.clean_text}/>
       </FormGroup>
         <Button  onClick={this.props.history.goBack} className="button-brand-primary" size="lg">Back</Button>
       </div>

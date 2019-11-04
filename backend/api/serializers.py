@@ -7,6 +7,8 @@ from .models import (MLModel, JobSource,
                      SourceType, ArticleType,
                      HtmlArticle, RSSArticle)
 
+from utils import read
+
 class SourceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
@@ -75,7 +77,6 @@ class RssSourceSerializer(serializers.ModelSerializer):
         ]
         model = RSSSource
 
-
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
@@ -136,6 +137,12 @@ class ArticleSerializerSet(serializers.ModelSerializer):
 class ArticleSerializer(serializers.ModelSerializer):
     source = SourceSerializer(read_only=True)
     article_set = ArticleSerializerSet(many=True, read_only=True)
+    clean_text = serializers.SerializerMethodField()
+
+    def get_clean_text(self, obj):
+        reader = read.HTMLRead(obj.text)
+        return reader.read()
+
     class Meta:
         fields= [
             'id',
@@ -146,6 +153,7 @@ class ArticleSerializer(serializers.ModelSerializer):
            'categories',
            'encoding',
            'text',
+            'clean_text',
             'article_set',
             'organization',
         ]
@@ -176,6 +184,12 @@ class PDFSerializer(serializers.ModelSerializer):
 class HtmlSerializer(serializers.ModelSerializer):
     source = SourceSerializer(read_only=True)
     article_set = ArticleSerializer(many=True, read_only=True)
+    clean_text = serializers.SerializerMethodField()
+
+    def get_clean_text(self, obj):
+        reader = read.HTMLRead(obj.text)
+        return reader.read()
+
     class Meta:
         fields= [
             'id',
@@ -187,6 +201,7 @@ class HtmlSerializer(serializers.ModelSerializer):
            'file',
            'encoding',
            'text',
+            'clean_text',
             'article_set',
             'organization',
         ]
@@ -235,6 +250,12 @@ class TxtSerializer(serializers.ModelSerializer):
 class RSSSerializer(serializers.ModelSerializer):
     source = SourceSerializer(read_only=True)
     article_set = ArticleSerializer(many=True, read_only=True)
+    clean_text = serializers.SerializerMethodField()
+
+    def get_clean_text(self, obj):
+        reader = read.HTMLRead(obj.text)
+        return reader.read()
+
     class Meta:
         fields= [
             'id',
@@ -245,6 +266,7 @@ class RSSSerializer(serializers.ModelSerializer):
            'categories',
            'encoding',
            'text',
+            'clean_text',
 
             'description',
             'link',
