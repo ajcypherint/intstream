@@ -12,15 +12,21 @@ export const SET_ARTICLES_SUCCESS = '@@articles/SET_ARTICLES_SUCCESS';
 export const SET_ARTICLES_FAILURE = '@@articles/SET_ARTICLES_FAILURE';
 
 export const CLEAR = '@@articles/CLEAR';
+export const HOME = '@@articles/HOME';
 
-export const clearArticles= ()=>{
+export const clearArticles= (data)=>{
   return {
     type:CLEAR,
-    payload:{}
+    payload:data
 
   }
 }
-
+export const setHomeSelections = (data)=>{
+  return {
+    type:HOME,
+    payload:data
+  }
+}
 export const getArticles= (url, params=undefined)=>{
   // filters - list[string]
   url = setParams(url,params)

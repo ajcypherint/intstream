@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
 import _ from 'lodash';
 import propTypes from 'prop-types'
-import {FormGroup,Container,Button} from 'reactstrap'
+import {FormGroup,Container,Button,Row} from 'reactstrap'
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import { PAGINATION } from '../util/util'
 import { Input } from 'reactstrap';
@@ -28,9 +28,9 @@ class SourcesList extends Component {
     //rows
     //todo(aj) onChange for checkbox
     if (loading) {
-      return <div><span className="spinner-border" role="status">
+      return <Row><span className="spinner-border" role="status">
                <span className="sr-only">Loading...</span></span>
-           </div>
+           </Row>
 
     } else{
     return sources.map((source)=>{

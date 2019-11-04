@@ -2,6 +2,11 @@ export const PAGINATION=10
 export const EDIT ="Edit"
 export const ADD = "Add"
 
+export const ALL = "---"
+export const ASC = ''
+export const DESC = '-'
+
+
 export function dateString(
   orderdir,
   ordercol,

@@ -13,11 +13,13 @@ import Password from "../containers/Password"
 import Edit from './SourceEditFormComp'
 import EditRSS from './SourceEditRSSFormComp'
 import EditJob from './SourceEditJobFormComp'
+import Article from "../containers/Article"
 import {ADD, EDIT} from "../util/util"
 const Main = (props)=>(
   <Switch>
     <Route exact path="/" component={Home} />
 
+    <Route exact path="/article/:id" component={Article} />
     <Route exact path="/sources_upload" component={SourcesUploadList} />
     <Route exact path="/sources_upload_add" 
       render={()=>

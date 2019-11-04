@@ -47,8 +47,7 @@ export const getArticleSaving = state => fromArticles.saving(state.articles)
 export const getArticleTotalCount = state => fromArticles.totalcount(state.articles)
 export const getArticleNextPage = state => fromArticles.nextPage(state.articles)
 export const getArticlePreviousPage = state => fromArticles.previousPage(state.articles)
-
-
+export const getHomeArticleSelections = state => fromArticles.getHomeSelections(state.articles)
 
 export function withAuth(headers={}) {
   return (state) => ({

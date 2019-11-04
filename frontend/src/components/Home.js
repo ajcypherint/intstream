@@ -1,36 +1,18 @@
 import React from 'react'
 import _ from 'lodash';
 import { Input, Table,  Alert, Form, Row, Col, FormGroup, Button, ListGroup, ListGroupItem } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import propTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import Paginate from './Paginate'
 import {PAGINATION, dateString, addDays} from '../util/util'
 import {changesort} from './ChangeSort'
-const ALL = "---"
-const ASC = ''
-const DESC = '-'
+import {ASC, DESC, ALL} from "../util/util"
 
 export class Main extends React.Component{
   constructor(props){
-    var start = new Date();
-    start.setHours(0,0,0,0);
-
-    var end = new Date();
-    end.setHours(23,59,59,999);
     super(props)
-    this.state={
-      startDate: start,
-      endDate: end,
-      sources: [],
-      sourceChosen:'',
-      loadSources:false,
-      page:1,
-      ordercol:'',
-      orderdir:ASC,
-      next:null,
-      previous:null
-    }
     this.dateString = dateString.bind(this)
     this.handleSourceChange = this.handleSourceChange.bind(this) 
     this.handleStartChange = this.handleStartChange.bind(this)
@@ -40,48 +22,54 @@ export class Main extends React.Component{
     this.paginate = Paginate.bind(this)
     this.updateDate = this.updateDate.bind(this)
   }
-  componentWillMount() {
-    this.props.fetchAllSources(
-    
-    )
+  componentDidMount() {
+    this.props.fetchAllSources()
+    let selections = this.props.homeSelections
     this.props.fetchArticles(this.dateString(
-    this.state.orderdir,
-        this.state.ordercol,
-        this.state.sourceChosen,
-      this.state.page,
-        this.state.startDate,
-      this.state.endDate
-    )) 
+        selections.orderdir,
+        selections.ordercol,
+        selections.sourceChosen,
+        selections.page,
+        selections.startDate,
+        selections.endDate
+        )) 
+  }
+  showArticle(event){
+    event.preventDefault()
+    
   }
   handleStartChange(date){
-    this.setState({
+    let selections = this.props.homeSelections
+    this.props.setHomeSelections({
       startDate:date
     })
-    this.updateDate(date,this.state.endDate, true)
+    this.updateDate(date,selections.endDate, true)
     this.props.fetchArticles(this.dateString(
       ASC,
       '',
-        this.state.sourceChosen,
+        selections.sourceChosen,
       1,
       date,
-      this.state.endDate
+      selections.endDate
     )) 
     // update 
   }
   handleEndChange(date){
-      this.setState({
+    let selections = this.props.homeSelections
+    this.props.setHomeSelection({
       endDate:date
       })
-    this.updateDate(this.state.startDate,date,false)
+    this.updateDate(selections.startDate,date,false)
     this.props.fetchArticles(this.dateString(
       ASC,
       '',
-        this.state.sourceChosen,
+        selections.sourceChosen,
       1,
-        this.state.startDate,
+        selections.startDate,
       date
     )) 
   }
+
   updateDate(startDate,endDate,start_filter=true){
     //startdate - date
     //enddate - date
@@ -95,21 +83,22 @@ export class Main extends React.Component{
         startDate = endDate
       }
     }
-    this.setState({endDate:endDate,startDate:startDate,page:1})
+    this.props.setHomeSelections({endDate:endDate,startDate:startDate,page:1})
 
   }
   handleSourceChange(event){
     event.preventDefault()
-    this.setState({
+    let selections = this.props.homeSelections
+    this.setHomeSelections({
       sourceChosen:event.target.value,
       page:1
       })
     this.props.fetchArticles(dateString(this.state.orderdir,
-      this.state.ordercol,
+        selections.ordercol,
         event.target.value,
         1,
-        this.state.startDate,
-      this.state.endDate)) 
+        selections.startDate,
+        selections.endDate)) 
 
   }
   onSubmit(event){
@@ -120,14 +109,11 @@ export class Main extends React.Component{
   render(){
     const articles = this.props.articlesList || [];
     const loading = typeof this.props.articlesLoading === 'undefined' ? true : this.props.articlesLoading;
-    const error = this.props.articlesErrors;
     const totalcount= this.props.articlesTotalCount ||0;
     const next = this.props.articleNext ;
     const previous = this.props.articlePrevious;
-    const sources = this.props.sourcesList || [];
-    const allSourcesLoaded = typeof this.props.allSourcesLoaded === 'undefined' ? false : this.props.allSourcesLoaded;
-
      
+    let selections = this.props.homeSelections
     const errors = this.props.errors || {}
     return(
       <div className="container mt-2 col-sm-8 offset-sm-2" >
@@ -137,13 +123,13 @@ export class Main extends React.Component{
         <Col>
           <label  htmlFor={"start_id"}>{"Start Date"}</label>
           <div className = "mb-2">
-          <DatePicker id={"startDate"}  selected={this.state.startDate} onChange={this.handleStartChange} />
+          <DatePicker id={"startDate"}  selected={selections.startDate} onChange={this.handleStartChange} />
           </div>
         </Col>
         <Col>
           <label  htmlFor={"end_id"}>{"End Date"}</label>
           <div className = "mb-2">
-          <DatePicker  id={"endDate"}  selected={this.state.endDate} onChange={this.handleEndChange}/>
+          <DatePicker  id={"endDate"}  selected={selections.endDate} onChange={this.handleEndChange}/>
           </div>
         </Col>
 
@@ -169,7 +155,9 @@ export class Main extends React.Component{
            previous,
            this.props.fetchArticles,
            this.props.fetchArticlesFullUri,
-           this.dateString)}
+           this.dateString,
+           this.props.homeSelections,
+         this.props.setHomeSelections)}
        </Row>
         </Form>
 
@@ -198,8 +186,14 @@ export class Main extends React.Component{
            {
              articles.map((article)=>{
                 return (<tr key={article.id}>
-                  <td>{article.title}</td>
-                  <td>{article.source.name}</td>
+                  <td>
+                      <Link key={article.id+"link"} style={{color:'black'}} to={this.props.articleuri+ article.id}>
+                    {article.title}
+                        </Link>
+                      </td>
+                  <td >
+                    {article.source.name}
+                  </td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
                   <td>{article.categories.length}</td>
                   <td>{article.article_set.length}</td>
@@ -208,8 +202,9 @@ export class Main extends React.Component{
              })
            }
         </tbody>
-             : <span className="spinner-border" role="status">
+             : <Row><span className="spinner-border" role="status">
                <span className="sr-only">Loading...</span></span>
+           </Row>
              }
        </Table>
     </div>

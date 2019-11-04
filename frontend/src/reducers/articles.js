@@ -3,8 +3,27 @@
 import _ from 'lodash';
 import * as articlesData from '../actions/articles';
 import  URL  from  'url-parse'
+import {ASC, DESC} from "../util/util"
+
+let START = new Date();
+START.setHours(0,0,0,0);
+
+let END= new Date();
+END.setHours(23,59,59,999);
 
 const initialState ={
+  homeSelections: {
+      startDate: START,
+      endDate: END,
+      sources: [],
+      sourceChosen:'',
+      loadSources:false,
+      page:1,
+      ordercol:'',
+      orderdir:ASC,
+      next:null,
+      previous:null
+  },
   articles:[],
   loading:false,
   totalcount:0,
@@ -18,6 +37,18 @@ const initialState ={
 export default (state=initialState, action) => {
   switch(action.type) {
       //used for edit
+    case articlesData.HOME:
+      {
+        return {
+          ...state,
+          homeSelections:{
+            ...state.homeSelections,
+            ...action.payload
+          }
+        }
+          
+
+      }
     case articlesData.SET_ARTICLES_REQUEST:
       {
 
@@ -45,14 +76,16 @@ export default (state=initialState, action) => {
     //used for listing
     case articlesData.CLEAR:
       {
-      return {
-        articles:[],
-        totalcount:0,
-        loading:false,
-        nextpage:null,
-        previouspage:null,
-        errors:{}
-      }
+        return {
+         ...state,
+          articles:[],
+          loading:false,
+          totalcount:0,
+          errors: {},
+          nextpage:null,
+          previouspage:null,
+          saving:false
+        }
       }
 
     case articlesData.GET_ARTICLES_REQUEST:
@@ -69,6 +102,7 @@ export default (state=initialState, action) => {
         //let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
         //#let newarticlesourcesData= {...result}
       return {
+        ...state,
         articles:action.payload.results,
         totalcount:action.payload.count,
         loading:false,
@@ -80,6 +114,7 @@ export default (state=initialState, action) => {
     case articlesData.GET_ARTICLES_FAILURE:
       {
       return {
+        ...state,
         articles:[],
         totalcount:0,
         loading:false,
@@ -126,7 +161,9 @@ export function previousPage(state){
   }
 
 }
-
+export function getHomeSelections(state){
+  return  state.homeSelections
+}
 export function loading(state) {
   return  state.loading
 }
