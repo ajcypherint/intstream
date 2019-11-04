@@ -89,11 +89,11 @@ export class Main extends React.Component{
   handleSourceChange(event){
     event.preventDefault()
     let selections = this.props.homeSelections
-    this.setHomeSelections({
+    this.props.setHomeSelections({
       sourceChosen:event.target.value,
       page:1
       })
-    this.props.fetchArticles(dateString(this.state.orderdir,
+    this.props.fetchArticles(dateString(selections.orderdir,
         selections.ordercol,
         event.target.value,
         1,
