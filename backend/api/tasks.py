@@ -21,7 +21,8 @@ def process_entry(post_title,
                   post_link,
                   source_id,
                   articles_id,
-                  articles_text
+                  articles_text,
+                  organization_id
                   ):
     """
 
@@ -51,6 +52,7 @@ def process_entry(post_title,
     threshold = .70
 
     article.source_id = source_id
+    article.organization_id=organization_id
     article.save()
     # check that there are historical articles
     if len(articles_text) > 0:
@@ -68,7 +70,7 @@ def process_entry(post_title,
 
 
 #@shared_task
-def process_rss_source(source_url, source_id):
+def process_rss_source(source_url, source_id, organization_id):
     """
     will launch them async
     :param source_url: str
@@ -98,7 +100,8 @@ def process_rss_source(source_url, source_id):
                                 post.link,
                                 source_id,
                                 article_ids,
-                                article_text
+                                article_text,
+                                organization_id
                                 )
 
 
@@ -109,6 +112,6 @@ def process_rss_sources():
     sources = models.RSSSource.objects.all()
     for source in sources:
         logger.debug("source:" + source.name)
-        process_rss_source(source.url,source.id)
+        process_rss_source(source.url,source.id,source.organization_id)
 
 
