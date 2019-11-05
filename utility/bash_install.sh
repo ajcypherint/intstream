@@ -135,6 +135,7 @@ echo "------"
 echo " npm build"
 npm run build
 
-
+#todo move file to /etc/rc.local
+cat "$base_dir/intstream/utility/rc.local" >> /etc/rc.local
 
 
