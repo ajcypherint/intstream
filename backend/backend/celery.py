@@ -24,15 +24,10 @@ def debug_task(self):
 # add "birthdays_today" task to the beat schedule
 
 celery_app.conf.beat_schedule = {
-    "add-task": {
-        "task": "api.tasks.add",
-        "schedule": crontab(hour='*', minute='*/1'), # every 1 mins
-        "args":(2,2)
-    },
     # assign to single worker with concurrency = 1
     "rss_sources":{
         "task":"api.tasks.process_rss_sources",
-        "schedule": crontab(hour="*", minute="*/2") # every 2 mins
+        "schedule": crontab(hour="*/1", minute="2") # every hour at 2 mins
     }
 }
 
