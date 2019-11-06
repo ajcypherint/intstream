@@ -11,50 +11,54 @@
 import {PAGINATION, dateString} from '../util/util'
 
 export function  changesort(column_name, 
-  ASC, 
-  DESC, 
-  fetch){
+                            ASC, 
+                            DESC, 
+                            fetch,
+                            selections,
+                            setHomeSelections
+  ){
   // column_name: str
   // ASC: str
   // DESC: str
+  // selections: obj { startDate,endDate,sourceChosen}
+  // setHomeSelections: func
   //
-    console.log("clicked")
-   if (this.state.ordercol===column_name) {
+   if (selections.ordercol===column_name) {
       // column matches sort column opposite
-      if( this.state.orderdir===ASC){
-       this.setState({orderdir:DESC,page:1})
+      if(selections.orderdir===ASC){
+       setHomeSelections({orderdir:DESC,page:1})
         //call desc sort
        fetch(dateString(DESC,
          column_name,
-        this.state.sourceChosen,
+        selections.sourceChosen,
         1,
-        this.state.startDate,
-      this.state.endDate))
+        selections.startDate,
+        selections.endDate))
         }
       else{
-       this.setState({orderdir:ASC,page:1})
+       setHomeSelections({orderdir:ASC,page:1})
         //call asc sort
        fetch(
         dateString(ASC,
          column_name,
-        this.state.sourceChosen,
-        1,
-        this.state.startDate,
-      this.state.endDate))
+         selections.sourceChosen,
+         1,
+         selections.startDate,
+         selections.endDate))
       }
     }
     else{
       //sort by this column ascending; first time sorting this column
-       this.setState({ordercol:column_name,orderdir:ASC,page:1}) 
+       setHomeSelections({ordercol:column_name,orderdir:ASC,page:1}) 
         //call asc sort
        fetch(
          dateString(ASC,
              column_name,
-            this.state.sourceChosen,
+            selections.sourceChosen,
             1,
-            this.state.startDate,
-          this.state.endDate))
-      }
+            selections.startDate,
+            selections.endDate))
+         }
   }
   
 

@@ -107,13 +107,12 @@ export class Main extends React.Component{
 
 
   render(){
+    let selections = this.props.homeSelections
     const articles = this.props.articlesList || [];
     const loading = typeof this.props.articlesLoading === 'undefined' ? true : this.props.articlesLoading;
     const totalcount= this.props.articlesTotalCount ||0;
     const next = this.props.articleNext ;
     const previous = this.props.articlePrevious;
-     
-    let selections = this.props.homeSelections
     const errors = this.props.errors || {}
     return(
       <div className="container mt-2 col-sm-8 offset-sm-2" >
@@ -140,7 +139,7 @@ export class Main extends React.Component{
              <option value={""}>---</option>
              {this.props.sourcesList.map((source)=>{
                return ( <option key={source.id} 
-                                value={source.id}>
+                                value={source.id} selected={source.id.toString() === selections.sourceChosen? true: false}>
                                 {source.name}</option>)
              })
              }
@@ -167,16 +166,26 @@ export class Main extends React.Component{
              <td className="hover" onClick={(event)=>{this.changesort("title", 
                ASC, 
                DESC, 
-               this.props.fetchArticles
+               this.props.fetchArticles,
+               selections,
+               this.props.setHomeSelections
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source_name", 
              ASC, 
              DESC, 
-             this.props.fetchArticles)}}> Source </td>
+             this.props.fetchArticles,
+             selections,
+               this.props.setHomeSelections
+              )}}> Source </td>
+
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
-             this.props.fetchArticles)}}>Date</td>
+             this.props.fetchArticles,
+             selections,
+             this.props.setHomeSelections
+
+           )}}>Date</td>
              <td >Classifications</td>
              <td >Children</td>
            </tr>
