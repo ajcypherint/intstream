@@ -128,7 +128,6 @@ class ArticleSerializerSet(serializers.ModelSerializer):
             'parent',
            'categories',
            'encoding',
-           'text',
            'organization',
         ]
 
@@ -152,7 +151,6 @@ class ArticleSerializer(serializers.ModelSerializer):
             'parent',
            'categories',
            'encoding',
-           'text',
             'clean_text',
             'article_set',
             'organization',
@@ -172,7 +170,6 @@ class PDFSerializer(serializers.ModelSerializer):
            'categories',
            'file',
            'encoding',
-           'text',
             'password',
             'article_set',
             'organization',
@@ -200,7 +197,6 @@ class HtmlSerializer(serializers.ModelSerializer):
            'categories',
            'file',
            'encoding',
-           'text',
             'clean_text',
             'article_set',
             'organization',
@@ -221,7 +217,6 @@ class WordDocxSerializer(serializers.ModelSerializer):
            'categories',
            'file',
            'encoding',
-           'text',
             'article_set',
             'organization',
         ]
@@ -241,7 +236,6 @@ class TxtSerializer(serializers.ModelSerializer):
            'categories',
            'file',
            'encoding',
-           'text',
             'article_set',
             'organization',
         ]
@@ -265,7 +259,6 @@ class RSSSerializer(serializers.ModelSerializer):
             'parent',
            'categories',
            'encoding',
-           'text',
             'clean_text',
 
             'description',
