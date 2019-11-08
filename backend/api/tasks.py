@@ -88,7 +88,10 @@ def process_rss_source(source_url, source_id, organization_id):
     logger.debug("source_url:" + str(source_url))
     for post in data.entries:
         if "id" not in post.keys():
-            post["id"]=post.title[0:200]
+            if "guid" in post.keys():
+                post["id"]=post.guid
+            else:
+                post["id"]=post.title[0:100]+source_url[0:100]
         logger.debug("post id:" + str(post.id))
         exists = models.RSSArticle.objects.filter(guid=post.id).exists()
         if not exists:
