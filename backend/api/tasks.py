@@ -13,6 +13,9 @@ from utils import vector, read
 def add(x,y):
     return x + y
 
+@shared_task
+def train_model():
+    pass
 
 @shared_task
 def process_entry(post_title,
@@ -81,16 +84,11 @@ def process_rss_source(source_url, source_id, organization_id):
     articles = models.Article.objects.filter(upload_date__gt=previous_week,parent__isnull=True)
     article_ids = [article.id for article in articles]
     article_text = [read.HTMLRead(article.text).read() for article in articles]
-    # RSS transformer
-    # read body of each article
-    # remove html tags
-    # tfidf
-    # cosine similarity
-    # create dict of row-id:list[id] and vectorized_records:list[tfidf vectors]
-    # element 0 in row-id = row 0 identifier
-
     data = feedparser.parse(source_url)
+    logger.debug("source_url:" + str(source_url))
     for post in data.entries:
+        if "id" not in post.keys():
+            post["id"]=post.title[0:200]
         logger.debug("post id:" + str(post.id))
         exists = models.RSSArticle.objects.filter(guid=post.id).exists()
         if not exists:

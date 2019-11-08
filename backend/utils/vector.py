@@ -3,12 +3,22 @@ import Stemmer #Pystemmer
 
 
 import re
+from selectolax.parser import HTMLParser
 
 def clean_html(raw):
-    cleanr = re.compile('<.*?>')
-    cleantext = re.sub(cleanr,'',raw)
+    tree = HTMLParser(raw)
 
-    return cleantext
+    if tree.body is None:
+        return None
+
+    for tag in tree.css('script'):
+        tag.decompose()
+    for tag in tree.css('style'):
+        tag.decompose()
+
+    text = tree.body.text(separator=' ')
+    text = re.sub(r'\n\s*', "\n",text)
+    return text
 
 def clean_hashes(raw):
     clean_nonwords = re.compile(r'\S*[^a-zA-Z\s\-\"\']\S*')
@@ -32,7 +42,7 @@ class StemmedTfidfVectorizer(TfidfVectorizer):
             'indonesian', 'irish', 'italian', 'lithuanian',
             'nepali', 'norwegian', 'porter', 'portuguese',
             'romanian', 'russian', 'spanish', 'swedish',
-            'tamil', 'turkish']
+            'tamil', 'turkish']from selectolax.parser import HTMLParser
 
         """
 

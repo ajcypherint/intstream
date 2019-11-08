@@ -1,4 +1,4 @@
-from selectolax.parser import HTMLParser
+from .vector import clean_html
 import re
 
 class Read(object):
@@ -12,19 +12,7 @@ class HTMLRead(Read):
         self.raw=raw
 
     def read(self):
-        tree = HTMLParser(self.raw)
-
-        if tree.body is None:
-            return None
-
-        for tag in tree.css('script'):
-            tag.decompose()
-        for tag in tree.css('style'):
-            tag.decompose()
-
-        text = tree.body.text(separator=' ')
-        text = re.sub(r'\n\s*', "\n",text)
-        return text.strip()
+        return clean_html(self.raw)
 
 
 
