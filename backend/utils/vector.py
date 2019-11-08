@@ -16,9 +16,9 @@ def clean_html(raw):
     for tag in tree.css('style'):
         tag.decompose()
 
-    text = tree.body.text(separator=' ')
+    text = tree.body.text(separator='\n')
     text = re.sub(r'\n\s*', "\n",text)
-    return text
+    return text.strip().strip("\n")
 
 def clean_hashes(raw):
     clean_nonwords = re.compile(r'\S*[^a-zA-Z\s\-\"\']\S*')
