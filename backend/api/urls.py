@@ -37,7 +37,7 @@ router.register(UPLOADSOURCE, views.UploadSourceViewSet)
 router.register(RSSSOURCE, views.RssSourceViewSet)
 router.register(JOBSOURCE, views.JobSourceViewSet)
 router.register(SOURCE, views.SourceViewSet,basename="source")
-
+router.register("homefilter",views.HomeFilter, basename="homefilter")
 
 router.register('categories',views.CategoryViewSet)
 from rest_framework import permissions

@@ -9,6 +9,8 @@ from .models import (MLModel, JobSource,
 
 from utils import read
 
+
+
 class SourceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
@@ -17,6 +19,7 @@ class SourceTypeSerializer(serializers.ModelSerializer):
             "api_endpoint"
         ]
         model = SourceType
+
 
 class ArticleTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -269,4 +272,14 @@ class RSSSerializer(serializers.ModelSerializer):
         ]
 
         model = RSSArticle
+
+
+class HomeFilterSerializer(serializers.ModelSerializer):
+    source = SourceSerializer(read_only=True)
+    class Meta:
+        fields=[
+            "id",
+            'source',
+        ]
+        model= Article
 

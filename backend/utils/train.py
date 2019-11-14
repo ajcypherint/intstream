@@ -17,9 +17,8 @@ import time
 import tarfile
 import boto3
 import botocore
-
+from django.conf import settings
 logger = logging.getLogger(__name__)
-
 
 def terminate(error_message=None):
     """
@@ -40,26 +39,56 @@ class DeployPySparkScriptOnAws(object):
     def __init__(self,
                  app_name,
                  ec2_key_name,
-                 path_script,
                  s3_bucket_logs,
                  s3_bucket_temp_files,
                  s3_region,
+                 tmp_dir,
                  user,
+                 profile_name,
                  job_flow_id=None,
-                 job_name=None
+                 job_name=None,
                  ):
-        self.app_name = "word_count_spark"                  # Application name
-        self.ec2_key_name = "e2_key_name"                   # Key name to use for cluster
-        self.job_flow_id = None                             # Returned by AWS in start_spark_cluster()
-        self.job_name = None                                # Filled by generate_job_name()
-        self.path_script = "spark_example/"                 # Path of Spark script to be deployed on AWS Cluster
-        self.s3_bucket_logs = "aws-logs-XXXXXX-eu-west-1"   # S3 Bucket to store AWS EMR logs
-        self.s3_bucket_temp_files = "bucket-temp-files"     # S3 Bucket to store temporary files
-        self.s3_region = 's3-eu-west-1.amazonaws.com'       # S3 region to specifiy s3Endpoint in s3-dist-cp step
-        self.user = 'thom'                                  # Define user name
+
+        self.AWS_DIR = os.path.join(settings.BASE_DIR,"awsfiles/")
+        self.AWS_TRAIN_DIR = os.path.join(settings.BASE_DIR,"aws_training_files/")
+        self.app_name = app_name                            # Application name = model name
+        self.base_tmp_dir = tmp_dir
+        self.tmp_dir = self._generate_tmp_appdir(self.base_tmp_dir,self.app_name)
+        self.script = self._generate_script(self.tmp_dir, app_name)
+        self.ec2_key_name = ec2_key_name                    # Key name to use for cluster
+        self.job_flow_id = job_flow_id                      # Returned by AWS in start_spark_cluster()
+        self.job_name = job_name                            # Filled by generate_job_name()
+        self.s3_bucket_logs = s3_bucket_logs                # S3 Bucket to store AWS EMR logs
+        self.s3_bucket_temp_files = s3_bucket_temp_files    # S3 Bucket to store temporary files
+        self.s3_region = s3_region                          # S3 region to specifiy s3Endpoint in s3-dist-cp step
+        self.user = user                                    # Define user name
+        self.profile_name = profile_name                    # profile_name
+
+    def _generate_tmp_appdir(self,base_tmp_dir, app_name):
+        """
+        make self.base_tmp_dir + app_name; also used for checking lock (already training)
+        :param base_tmp_dir:
+        :param app_name:
+        :return:
+        """
+        dir = os.path.join(base_tmp_dir,app_name)
+        os.mkdir(dir)
+        return dir
+
+    def _generate_script(self,tmp_dir, app_name):
+        """
+        read base_train_file - find and replace input s3, and output s3;
+        write a new file to tmp_dir
+        :param app_name:
+        :return:
+        """
+        with open(os.path.join(settings.BASE_DIR,"aws_training_files")) as file:
+            script = file.read()
+            script = script.replace("##INPUT##")
+            return script
 
     def run(self):
-        session = boto3.Session(profile_name='thom')        # Select AWS IAM profile
+        session = boto3.Session(profile_name=self.profile_name)        # Select AWS IAM profile
         s3 = session.resource('s3')                         # Open S3 connection
         self.generate_job_name()                            # Generate job name
         self.temp_bucket_exists(s3)                         # Check if S3 bucket to store temporary files in exists
@@ -95,15 +124,14 @@ class DeployPySparkScriptOnAws(object):
 
     def tar_python_script(self):
         """
-
         :return:
         """
         # Create tar.gz file
-        t_file = tarfile.open("files/script.tar.gz", 'w:gz')
+        t_file = tarfile.open(os.path.join(self.tmp_dir,"script.tar.gz"), 'w:gz')
         # Add Spark script path to tar.gz file
-        files = os.listdir(self.path_script)
+        files = os.listdir(self.tmp_dir)
         for f in files:
-            t_file.add(self.path_script + f, arcname=f)
+            t_file.add(self.tmp_dir + f, arcname=f)
         # List all files in tar.gz
         for f in t_file.getnames():
             logger.info("Added %s to tar-file" % f)
@@ -117,13 +145,13 @@ class DeployPySparkScriptOnAws(object):
         """
         # Shell file: setup (download S3 files to local machine)
         s3.Object(self.s3_bucket_temp_files, self.job_name + '/setup.sh')\
-          .put(Body=open('files/setup.sh', 'rb'), ContentType='text/x-sh')
+          .put(Body=open(os.path.join(self.AWS_DIR,'setup.sh'), 'rb'), ContentType='text/x-sh')
         # Shell file: Terminate idle cluster
         s3.Object(self.s3_bucket_temp_files, self.job_name + '/terminate_idle_cluster.sh')\
-          .put(Body=open('files/terminate_idle_cluster.sh', 'rb'), ContentType='text/x-sh')
+          .put(Body=open(os.path.join(self.AWS_DIR,'terminate_idle_cluster.sh'), 'rb'), ContentType='text/x-sh')
         # Compressed Python script files (tar.gz)
         s3.Object(self.s3_bucket_temp_files, self.job_name + '/script.tar.gz')\
-          .put(Body=open('files/script.tar.gz', 'rb'), ContentType='application/x-tar')
+          .put(Body=open(os.path.join(self.tmp_dir,'script.tar.gz'), 'rb'), ContentType='application/x-tar')
         logger.info("Uploaded files to key '{}' in bucket '{}'".format(self.job_name, self.s3_bucket_temp_files))
         return True
 

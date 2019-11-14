@@ -1,13 +1,20 @@
 from django.shortcuts import render
+import coreapi, coreschema
 from . import serializers
+from django.utils import timezone
 from . import models
 from rest_framework import filters as rest_filters
+from rest_framework import status, generics, mixins
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from django_filters import rest_framework as filters
 import importlib
 from  utils.document import TXT, PDF, WordDocx
 from . import permissions
-
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework import viewsets
+from rest_framework.schemas import AutoSchema
 # Create your views here.
 
 
@@ -21,6 +28,18 @@ class SourceFilter(filters.FilterSet):
         model = models.Source
         fields = ('id','name','active')
 
+class HomeFilterSetting(filters.FilterSet):
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
+    class Meta:
+        model = models.Article
+        fields = ("source","source__active")
+
+class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    serializer_class = serializers.HomeFilterSerializer
+    queryset = models.Article.objects.order_by("source__name").distinct("source__name")
+    filterset_class = HomeFilterSetting
 
 class OrgViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
@@ -148,7 +167,7 @@ ARTICLE_SORT_FIELDS =('id','source','title','upload_date', 'source__name')
 class ArticleFilter(filters.FilterSet):
     source__name = filters.CharFilter(lookup_expr='exact')
     start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lt'))
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
     ordering = filters.OrderingFilter(
         fields=[('source__name','source_name'),
                 ('title','title'),
