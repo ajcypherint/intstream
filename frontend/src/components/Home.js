@@ -23,8 +23,13 @@ export class Main extends React.Component{
     this.updateDate = this.updateDate.bind(this)
   }
   componentDidMount() {
-    this.props.fetchAllSources()
     let selections = this.props.homeSelections
+    //todo() ordering
+    this.props.fetchAllSources(
+      "start_upload_date="+selections.startDate.toISOString()+
+      "&end_upload_date="+selections.endDate.toISOString()+
+      "&source__active=true"
+    )
     this.props.fetchArticles(this.dateString(
         selections.orderdir,
         selections.ordercol,

@@ -75,7 +75,8 @@ export const setSources= (url,data,method='PUT' )=>{
 
 export const  getAllSources = (url, params) =>{
   return async(dispatch, getState) => {
-      let totalresp = await dispatch(getSources(url,'active=true'))
+      let extra_params = params || ''
+      let totalresp = await dispatch(getSources(url,extra_params))
       console.log("resp:" + JSON.stringify(totalresp))
       if (totalresp.error) {
       //  // the last dispatched action has errored, break out of the promise chain.
@@ -87,7 +88,7 @@ export const  getAllSources = (url, params) =>{
       //ACTIVE, duh time for bed.
       for ( let i=0; i < pages; i++){
        let page = i +1
-       let actionResponse = await dispatch(getSources(url,'ordering=name&active=true&page='+page));
+       let actionResponse = await dispatch(getSources(url,extra_params+'&page='+page));
       //
        if (actionResponse.error) {
          // the last dispatched action has errored, break out of the promise chain.

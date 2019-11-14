@@ -7,7 +7,7 @@ import {getArticles, clearArticles, setHomeSelections} from '../actions/articles
 import {getSources, getAllSources, clearSources } from '../actions/sources'
 
 const API = '/api/articles/'
-const API_SOURCES = '/api/sources/'
+const API_SOURCES = '/api/homefilter/'
 const ARTICLE_URI = "/article/"
 const mapStateToProps = (state) => ({
   homeSelections:reducers.getHomeArticleSelections(state),
@@ -18,8 +18,6 @@ const mapStateToProps = (state) => ({
   articleNext:reducers.getArticleNextPage(state),
   articlePrevious:reducers.getArticlePreviousPage(state),
   sourcesList:reducers.getSources(state),
-  sourcesTotalCount:reducers.getTotalCount(state),
-  allSourcesLoaded:reducers.getAllLoaded(state),
   articleuri:ARTICLE_URI,
 })
 
