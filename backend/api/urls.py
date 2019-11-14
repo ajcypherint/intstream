@@ -13,17 +13,17 @@ DOCXARTICLES = 'docxarticles'
 RSSARTICLES = 'rssarticles'
 
 router = routers.DefaultRouter()
-router.register('mlmodels',views.MLModelViewSet)
+router.register('mlmodels',views.MLModelViewSet, basename="mlmodels")
 
 # articles
 router.register('articletypes',views.ArticleTypeViewSet)
 
-router.register('articles',views.ArticleViewSet)
-router.register(TXTARTICLES,views.TxtArticleViewSet)
-router.register(HTMLARTICLES,views.HtmlArticleViewSet)
-router.register(PDFARTICLES,views.PDFArticleViewSet)
-router.register(DOCXARTICLES,views.WordDocxArticleViewSet)
-router.register(RSSARTICLES,views.RSSArticleViewSet)
+router.register('articles',views.ArticleViewSet, basename="articles")
+router.register(TXTARTICLES,views.TxtArticleViewSet, basename="txtarticles")
+router.register(HTMLARTICLES,views.HtmlArticleViewSet, basename="htmlarticles")
+router.register(PDFARTICLES,views.PDFArticleViewSet, basename="pdfarticles")
+router.register(DOCXARTICLES,views.WordDocxArticleViewSet, basename="docxarticles")
+router.register(RSSARTICLES,views.RSSArticleViewSet, basename="rssarticles")
 
 # sources
 router.register('sourcetypes',views.SourceTypeViewSet)
@@ -33,13 +33,13 @@ RSSSOURCE = 'sourcesrss'
 JOBSOURCE = 'sourcesjob'
 SOURCE = 'sources'
 
-router.register(UPLOADSOURCE, views.UploadSourceViewSet)
-router.register(RSSSOURCE, views.RssSourceViewSet)
-router.register(JOBSOURCE, views.JobSourceViewSet)
+router.register(UPLOADSOURCE, views.UploadSourceViewSet, basename="uploadsource")
+router.register(RSSSOURCE, views.RssSourceViewSet, basename="rsssource")
+router.register(JOBSOURCE, views.JobSourceViewSet, basename="jobsource")
 router.register(SOURCE, views.SourceViewSet,basename="source")
 router.register("homefilter",views.HomeFilter, basename="homefilter")
 
-router.register('categories',views.CategoryViewSet)
+router.register('categories',views.CategoryViewSet, basename="categories")
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi

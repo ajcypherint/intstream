@@ -274,12 +274,3 @@ class RSSSerializer(serializers.ModelSerializer):
         model = RSSArticle
 
 
-class HomeFilterSerializer(serializers.ModelSerializer):
-    source = SourceSerializer(read_only=True)
-    class Meta:
-        fields=[
-            "id",
-            'source',
-        ]
-        model= Article
-
