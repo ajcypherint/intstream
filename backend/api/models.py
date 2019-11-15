@@ -64,16 +64,25 @@ class JobSource(Source):
 
 class MLModel(models.Model):
     sources = models.ManyToManyField(Source)
-    name = models.CharField(max_length=250, unique=True)
+    name = models.CharField(max_length=250)
     created_date = models.DateTimeField(default=timezone.now)
     base64_encoded_model = models.FileField(blank=True)
     enabled = models.BooleanField(default=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    category = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name + " ( " + str(self.id) + ")"
 
+
+class Category(models.Model):
+    name=models.CharField(max_length=100,unique=True)
+    created_date = models.DateTimeField(default=timezone.now)
+    model = models.ForeignKey(MLModel,on_delete=models.CASCADE)
+    enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+
+    def __str__(self):
+        return self.name + " ( " + str(self.id) + ")"
 
 # name and api_endpoint for frontend  / sdk
 class ArticleType(models.Model):
