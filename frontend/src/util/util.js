@@ -21,9 +21,6 @@ export function dateString(
   // :param page: int
   // :param start: date
   // :param end: date
-    start.setHours(0,0,0,0);
-
-    end.setHours(23,59,59,999);
   
    return "ordering=" + orderdir+
         ordercol +

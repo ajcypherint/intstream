@@ -60,13 +60,20 @@ export class Main extends React.Component{
     //start_end - bool
     if (start_filter === true){
       if(startDate > endDate){
-        endDate = startDate
+        endDate = new Date(startDate.getTime())
+        
       }
     } else {
       if(endDate < startDate){
-        startDate = endDate
+        startDate = new Date(endDate.getTime())
+        //fix start date
+        //fix end date
+
       }
     }
+    startDate.setHours(0,0,0,0);
+    endDate.setHours(23,59,59,999);
+        
     // fetch all cascading filters
     // todoaj(foreach cascading insert here
     // refactor filter components in to one large component
