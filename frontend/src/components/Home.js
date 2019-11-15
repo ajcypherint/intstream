@@ -26,9 +26,9 @@ export class Main extends React.Component{
     let selections = this.props.homeSelections
     //todo() ordering
     this.props.fetchAllSources(
-      "start_upload_date="+selections.startDate.toISOString()+
-      "&end_upload_date="+selections.endDate.toISOString()+
-      "&source__active=true"
+    "start_upload_date="+selections.startDate.toISOString()+
+    "&end_upload_date="+selections.endDate.toISOString()+
+    "&source__active=true"
     )
     this.props.fetchArticles(this.dateString(
         selections.orderdir,
@@ -45,9 +45,6 @@ export class Main extends React.Component{
   }
   handleStartChange(date){
     let selections = this.props.homeSelections
-    this.props.setHomeSelections({
-      startDate:date
-    })
     this.updateDate(date,selections.endDate, true)
     this.props.fetchArticles(this.dateString(
       ASC,
@@ -64,6 +61,7 @@ export class Main extends React.Component{
     this.props.setHomeSelection({
       endDate:date
       })
+    
     this.updateDate(selections.startDate,date,false)
     this.props.fetchArticles(this.dateString(
       ASC,
@@ -88,6 +86,11 @@ export class Main extends React.Component{
         startDate = endDate
       }
     }
+    this.props.fetchAllSources(
+    "start_upload_date="+startDate.toISOString()+
+    "&end_upload_date="+endDate.toISOString()+
+    "&source__active=true"
+    )
     this.props.setHomeSelections({endDate:endDate,startDate:startDate,page:1})
 
   }

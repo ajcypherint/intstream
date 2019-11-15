@@ -2,9 +2,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import { Main} from '../components/Home'
-import {getArticles, clearArticles, setHomeSelections} from '../actions/articles'
+import {getArticles, clearArticles} from '../actions/articles'
 
-import {getSources, getAllSources, clearSources } from '../actions/sources'
+import {setHomeSelections, getAllSources} from '../actions/filter'
+
+import {getSources, clearSources } from '../actions/sources'
 
 const API = '/api/articles/'
 const API_SOURCES = '/api/homefilter/'
@@ -17,7 +19,7 @@ const mapStateToProps = (state) => ({
   articlesTotalCount:reducers.getArticleTotalCount(state),
   articleNext:reducers.getArticleNextPage(state),
   articlePrevious:reducers.getArticlePreviousPage(state),
-  sourcesList:reducers.getSources(state),
+  sourcesList:reducers.getFilterSources(state),
   articleuri:ARTICLE_URI,
 })
 

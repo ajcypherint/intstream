@@ -91,6 +91,10 @@ class SourceSerializer(serializers.ModelSerializer):
         ]
         model = Source
 
+class HomeFilter(serializers.BaseSerializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=100)
+    active = serializers.BooleanField()
 
 class MLModelSerializer(serializers.ModelSerializer):
     class Meta:

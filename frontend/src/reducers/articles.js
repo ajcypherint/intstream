@@ -12,18 +12,6 @@ let END= new Date();
 END.setHours(23,59,59,999);
 
 const initialState ={
-  homeSelections: {
-      startDate: START,
-      endDate: END,
-      sources: [],
-      sourceChosen:'',
-      loadSources:false,
-      page:1,
-      ordercol:'',
-      orderdir:ASC,
-      next:null,
-      previous:null
-  },
   articles:[],
   loading:false,
   totalcount:0,
@@ -37,19 +25,7 @@ const initialState ={
 export default (state=initialState, action) => {
   switch(action.type) {
       //used for edit
-    case articlesData.HOME:
-      {
-        return {
-          ...state,
-          homeSelections:{
-            ...state.homeSelections,
-            ...action.payload
-          }
-        }
-          
-
-      }
-    case articlesData.SET_ARTICLES_REQUEST:
+   case articlesData.SET_ARTICLES_REQUEST:
       {
 
       return {
@@ -161,9 +137,7 @@ export function previousPage(state){
   }
 
 }
-export function getHomeSelections(state){
-  return  state.homeSelections
-}
+
 export function loading(state) {
   return  state.loading
 }
