@@ -46,34 +46,15 @@ export class Main extends React.Component{
   handleStartChange(date){
     let selections = this.props.homeSelections
     this.updateDate(date,selections.endDate, true)
-    this.props.fetchArticles(this.dateString(
-      ASC,
-      '',
-        selections.sourceChosen,
-      1,
-      date,
-      selections.endDate
-    )) 
-    // update 
   }
   handleEndChange(date){
     let selections = this.props.homeSelections
-    this.props.setHomeSelection({
-      endDate:date
-      })
-    
     this.updateDate(selections.startDate,date,false)
-    this.props.fetchArticles(this.dateString(
-      ASC,
-      '',
-        selections.sourceChosen,
-      1,
-        selections.startDate,
-      date
-    )) 
   }
 
   updateDate(startDate,endDate,start_filter=true){
+    // unset sourceChosen
+    // fix start_date or end_date based on input
     //startdate - date
     //enddate - date
     //start_end - bool
@@ -86,15 +67,36 @@ export class Main extends React.Component{
         startDate = endDate
       }
     }
+    // fetch all cascading filters
+    // todoaj(foreach cascading insert here
+    // refactor filter components in to one large component
     this.props.fetchAllSources(
     "start_upload_date="+startDate.toISOString()+
     "&end_upload_date="+endDate.toISOString()+
     "&source__active=true"
     )
-    this.props.setHomeSelections({endDate:endDate,startDate:startDate,page:1})
+    // update cascading filters
+    this.props.setHomeSelections({
+      orderdir:ASC,
+      ordercol:'',
+      sourceChosen:'',
+      page:1,
+      startDate:startDate,
+      endDate:endDate,
+      })
+    //fetch articles 
+    this.props.fetchArticles(this.dateString(
+      ASC,// orderdir
+      '', // ordercol 
+      '', // sourceChosen
+      1,  // page
+      startDate,
+      endDate
+    )) 
 
-  }
+ }
   handleSourceChange(event){
+    //last filter.  do not need to unset others
     event.preventDefault()
     let selections = this.props.homeSelections
     this.props.setHomeSelections({
