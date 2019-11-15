@@ -30,6 +30,15 @@ def terminate(error_message=None):
     logger.critical('The script is now terminating')
     exit()
 
+class classifications(object):
+    def __init__(self, category, article_ids):
+        """
+
+        :param category: str
+        :param article_ids: list[int]
+        """
+        self.category = category
+        self.article_ids = article_ids
 
 class DeployPySparkScriptOnAws(object):
     """
@@ -42,27 +51,40 @@ class DeployPySparkScriptOnAws(object):
                  s3_bucket_logs,
                  s3_bucket_temp_files,
                  s3_region,
-                 tmp_dir,
                  user,
                  profile_name,
-                 job_flow_id=None,
-                 job_name=None,
+                 tmp_dir="/tmp",
+                 training_script = None
                  ):
+        """
 
+        :param app_name: str
+        :param ec2_key_name:  str; Key name to use for cluster
+        :param s3_bucket_logs:  str; S3 Bucket to store AWS EMR logs
+        :param s3_bucket_temp_files: str; S3 Bucket to store temporary files
+        :param s3_region: str; S3 region to specifiy s3Endpoint in s3-dist-cp step
+        :param user: str; define user name
+        :param profile_name: str; profile name
+        :param training_script: str; script to upload to EWS for training
+        """
         self.AWS_DIR = os.path.join(settings.BASE_DIR,"awsfiles/")
         self.AWS_TRAIN_DIR = os.path.join(settings.BASE_DIR,"aws_training_files/")
-        self.app_name = app_name                            # Application name = model name
-        self.base_tmp_dir = tmp_dir
-        self.tmp_dir = self._generate_tmp_appdir(self.base_tmp_dir,self.app_name)
-        self.script = self._generate_script(self.tmp_dir, app_name)
-        self.ec2_key_name = ec2_key_name                    # Key name to use for cluster
-        self.job_flow_id = job_flow_id                      # Returned by AWS in start_spark_cluster()
-        self.job_name = job_name                            # Filled by generate_job_name()
-        self.s3_bucket_logs = s3_bucket_logs                # S3 Bucket to store AWS EMR logs
-        self.s3_bucket_temp_files = s3_bucket_temp_files    # S3 Bucket to store temporary files
-        self.s3_region = s3_region                          # S3 region to specifiy s3Endpoint in s3-dist-cp step
-        self.user = user                                    # Define user name
-        self.profile_name = profile_name                    # profile_name
+        self.job_flow_id = None # Returned by AWS in start_spark_cluster()
+        self.job_name = None    # Filled by generate_job_name()
+
+        self.app_name = app_name
+        training_script = "base_train_file.py" if training_script is None else training_script
+        self.script = self._read_script(training_script)
+
+        self.ec2_key_name = ec2_key_name
+        self.s3_bucket_logs = s3_bucket_logs
+        self.s3_bucket_temp_files = s3_bucket_temp_files
+        self.s3_region = s3_region
+        self.user = user
+        self.profile_name = profile_name
+
+        self.tmp_dir = self._generate_tmp_appdir(base_tmp_dir=tmp_dir, app_name=app_name)
+
 
     def _generate_tmp_appdir(self,base_tmp_dir, app_name):
         """
@@ -75,21 +97,26 @@ class DeployPySparkScriptOnAws(object):
         os.mkdir(dir)
         return dir
 
-    def _generate_script(self,tmp_dir, app_name):
+    def _read_script(self,script):
         """
         read base_train_file - find and replace input s3, and output s3;
         write a new file to tmp_dir
         :param app_name:
         :return:
         """
-        with open(os.path.join(settings.BASE_DIR,"aws_training_files")) as file:
+        with open(os.path.join(settings.BASE_DIR,self.AWS_TRAIN_DIR,script)) as file:
             script = file.read()
-            script = script.replace("##INPUT##")
             return script
 
+    def _upload_articles(self):
+        pass
+
     def run(self):
+        # todo(aj) check for lock file
+        # write lock file
         session = boto3.Session(profile_name=self.profile_name)        # Select AWS IAM profile
         s3 = session.resource('s3')                         # Open S3 connection
+        self._upload_articles()
         self.generate_job_name()                            # Generate job name
         self.temp_bucket_exists(s3)                         # Check if S3 bucket to store temporary files in exists
         self.tar_python_script()                            # Tar the Python Spark script
@@ -99,6 +126,7 @@ class DeployPySparkScriptOnAws(object):
         self.step_spark_submit(c)                           # Add step 'spark-submit'
         self.describe_status_until_terminated(c)            # Describe cluster status until terminated
         self.remove_temp_files(s3)                          # Remove files from the temporary files S3 bucket
+        # todo(aj) remove lock file
 
     def generate_job_name(self):
         self.job_name = "{}.{}.{}".format(self.app_name,
