@@ -145,22 +145,6 @@ class MLModelViewSet(OrgViewSet):
 
 
 
-class CategoryFilter(filters.FilterSet):
-    class Meta:
-        model = models.Category
-        fields = ('id','name','created_date','enabled')
-
-
-class CategoryViewSet(OrgViewSet):
-    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
-    serializer_class = serializers.CategorySerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','name','created_date','enabled')
-    filterset_class = CategoryFilter
-
-    def get_queryset(self):
-        return models.Category.objects.filter(organization=self.request.user.organization)
-
 
 ARTICLE_SORT_FIELDS =('id','source','title','upload_date', 'source__name')
 

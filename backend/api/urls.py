@@ -39,7 +39,6 @@ router.register(JOBSOURCE, views.JobSourceViewSet, basename="jobsource")
 router.register(SOURCE, views.SourceViewSet,basename="source")
 router.register("homefilter",views.HomeFilter, basename="homefilter")
 
-router.register('categories',views.CategoryViewSet, basename="categories")
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi

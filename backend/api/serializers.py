@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import (MLModel, JobSource,
-                     TxtArticle, Category,
+                     TxtArticle,
                      Article, PDFArticle,
                     Source,
                      UploadSource, RSSSource,
@@ -110,18 +110,6 @@ class MLModelSerializer(serializers.ModelSerializer):
 
         model = MLModel
 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        fields=[
-            'id',
-           'name',
-           'created_date',
-           'model',
-           'enabled',
-           'organization',
-        ]
-
-        model = Category
 
 
 class ArticleSerializerSet(serializers.ModelSerializer):
