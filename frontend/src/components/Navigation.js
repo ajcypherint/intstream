@@ -49,37 +49,68 @@ export default class Example extends React.Component {
 
              <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
-                 Admin 
+                 Site Admin 
                 </DropdownToggle>
                 <DropdownMenu right  >
-                 <DropdownItem tag={Link} to="/sources_upload">
-                  Sources - Upload
-                  </DropdownItem>
-                 <DropdownItem tag={Link} to="/sources_rss">
-                  Sources - RSS
-                  </DropdownItem>
-                 <DropdownItem tag={Link} to="/sources_job">
-                  Sources - Job 
-                  </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem tag={Link} to="/about">
-                    Categories
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/about">
+                   <DropdownItem tag={Link} to="/about">
+                    Organizations
+                    </DropdownItem>
+                   <DropdownItem tag={Link} to="/about">
+                     Users
+                    </DropdownItem>
+                 </DropdownMenu>
+             </UncontrolledDropdown>
+
+             <UncontrolledDropdown nav inNavbar >
+               <DropdownToggle nav caret>
+                 Org Admin 
+                </DropdownToggle>
+
+                <DropdownMenu right  >
+                   <DropdownItem tag={Link} to="/about">
+                    Organization
+                    </DropdownItem>
+                   <DropdownItem tag={Link} to="/about">
+                     Users
+                    </DropdownItem>
+                 </DropdownMenu>
+              </UncontrolledDropdown>
+
+             <UncontrolledDropdown nav inNavbar >
+                <DropdownToggle nav caret>
+                  Sources
+                </DropdownToggle>
+                <DropdownMenu right  >
+                   <DropdownItem tag={Link} to="/sources_upload">
+                    Upload
+                    </DropdownItem>
+                   <DropdownItem tag={Link} to="/sources_rss">
+                    RSS
+                    </DropdownItem>
+                   <DropdownItem tag={Link} to="/sources_job">
+                    Job 
+                    </DropdownItem>
+                 </DropdownMenu>
+              </UncontrolledDropdown>
+
+             <UncontrolledDropdown nav inNavbar >
+                <DropdownToggle nav caret>
+                  Training 
+                </DropdownToggle>
+                <DropdownMenu right  >
+                  <DropdownItem tag={Link} to="/models">
                    Models 
                   </DropdownItem>
-                  <DropdownItem tag={Link} to="/about">
-                   Training 
+                  <DropdownItem tag={Link} to="/history">
+                    History
                   </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem tag={Link} to="/about">
-                    Settings
+                  <DropdownItem tag={Link} to="/aws_settings">
+                    AWS Settings
                   </DropdownItem>
 
                 </DropdownMenu>
               </UncontrolledDropdown>
-
-
+ 
              <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
                  Account
@@ -91,6 +122,10 @@ export default class Example extends React.Component {
                   <DropdownItem tag={Link} to="/logout">
                     Logout
                   </DropdownItem>
+                  <DropdownItem tag={Link} to="/about">
+                    About
+                  </DropdownItem>
+ 
                </DropdownMenu>
               </UncontrolledDropdown>
 

@@ -47,24 +47,28 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, dateSt
           }
         </PaginationItem>
        {list_pages.map((page)=>{
-          return (
-          <PaginationItem active={page===selections.page} key={page}>
-            <PaginationLink  
-              onClick={(event)=>{
-                setSelections({page:page});
-                fetchit(dateStringFunc(
-                  selections.orderdir,
-                  selections.ordercol,
-                  selections.sourceChosen,
-                  page,
-                  selections.startDate,
-                  selections.endDate
-                )
-                )}}>
-              {page }
-            </PaginationLink>
-          </PaginationItem>
-          );
+          if (page == 1 || page== total_pages || (page>= selections.page - 2 && page<= selections.page + 2)) {
+            return (
+              <div> 
+            <PaginationItem active={page===selections.page} key={page}>
+              <PaginationLink  
+                onClick={(event)=>{
+                  setSelections({page:page});
+                  fetchit(dateStringFunc(
+                    selections.orderdir,
+                    selections.ordercol,
+                    selections.sourceChosen,
+                    page,
+                    selections.startDate,
+                    selections.endDate
+                  )
+                  )}}>
+                {page }
+              </PaginationLink>
+            </PaginationItem>
+          </div>
+            );
+          }
           })
         }
         <PaginationItem>
