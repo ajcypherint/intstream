@@ -21,6 +21,7 @@ export class Main extends React.Component{
     this.changesort = changesort.bind(this)
     this.paginate = Paginate.bind(this)
     this.updateDate = this.updateDate.bind(this)
+    this.fetch = this.fetch.bind(this)
   }
   componentDidMount() {
     let selections = this.props.homeSelections
@@ -121,8 +122,16 @@ export class Main extends React.Component{
   onSubmit(event){
     event.preventDefault()
   } 
-
-
+  fetch(selections,page){
+    this.props.fetchArticles(dateString(
+            selections.orderdir,
+            selections.ordercol,
+            selections.sourceChosen,
+            page,
+            selections.startDate,
+            selections.endDate
+          ))
+  }
   render(){
     let selections = this.props.homeSelections
     const articles = this.props.articlesList || [];
@@ -169,9 +178,8 @@ export class Main extends React.Component{
          {this.paginate(totalcount,
            next,
            previous,
-           this.props.fetchArticles,
+           this.fetch,
            this.props.fetchArticlesFullUri,
-           this.dateString,
            this.props.homeSelections,
          this.props.setHomeSelections)}
        </Row>

@@ -4,7 +4,7 @@ import { PAGINATION } from '../util/util'
 //
 //
 //CANNOT be an arrow function or 'this' will not work... dont ask how long i spent on that.
-export default function  (totalcount,next,previous,fetchit, fetchFullUri, dateStringFunc, selections, setSelections){
+export default function  (totalcount,next,previous,fetchit, fetchFullUri, selections, setSelections){
   //
   // totalcount: int
   // next:str
@@ -23,19 +23,10 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, dateSt
   }
     return (
       <Pagination aria-label="Page navigation">
-      <PaginationItem>
-
+      <PaginationItem> 
         <PaginationLink first onClick={(event)=>{
           setSelections({page:1});
-          fetchit(dateStringFunc(
-            selections.orderdir,
-            selections.ordercol,
-            selections.sourceChosen,
-            1,
-            selections.startDate,
-            selections.endDate
-          )
-          )}} />
+          fetchit(selections,1)}} />
         </PaginationItem>
         <PaginationItem>
           {previous===null?
@@ -54,15 +45,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, dateSt
               <PaginationLink  
                 onClick={(event)=>{
                   setSelections({page:page});
-                  fetchit(dateStringFunc(
-                    selections.orderdir,
-                    selections.ordercol,
-                    selections.sourceChosen,
-                    page,
-                    selections.startDate,
-                    selections.endDate
-                  )
-                  )}}>
+                  fetchit(selections,page)}}>
                 {page }
               </PaginationLink>
             </PaginationItem>
@@ -83,14 +66,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, dateSt
         <PaginationItem>
           <PaginationLink last onClick={(event)=>{
             setSelections({page:total_pages});
-            fetchit(dateStringFunc(
-                  selections.orderdir,
-                  selections.ordercol,
-                  selections.sourceChosen,
-                  total_pages,
-                  selections.startDate,
-                  selections.endDate
-            ))}}/>
+            fetchit(selections,total_pages)}}/>
         </PaginationItem>
 
       </Pagination>

@@ -5,6 +5,7 @@ import _ from 'lodash';
 import propTypes from 'prop-types'
 import {FormGroup,Container,Button,Row} from 'reactstrap'
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import Paginate from './Paginate'
 import { PAGINATION } from '../util/util'
 import { Input } from 'reactstrap';
 const ASC = ''
@@ -17,6 +18,9 @@ class SourcesList extends Component {
     this.state={page:1,ordercol:'',orderdir:ASC}
     this.changesort = this.changesort.bind(this)
     this.columnheader = this.columnheader.bind(this)
+    this.paginate = Paginate.bind(this)
+    this.noop = this.noop.bind(this)
+    this.fetch = this.fetch.bind(this)
   }
  
   componentDidMount() {
@@ -88,56 +92,12 @@ class SourcesList extends Component {
   setpage(page){
     this.setState({page:page})
   }
-  pagination(totalcount,next,previous){
-    let total_pages = Math.ceil(totalcount / PAGINATION)
-    
-    let pre_list_pages = [...Array(total_pages).keys()]
+  noop(){
 
-    let list_pages = pre_list_pages.map((i)=>{ return i+1})
-    return (
-      <Pagination aria-label="Page navigation example">
-      <PaginationItem>
-        <PaginationLink first onClick={(event)=>{this.setpage(1);
-          this.props.fetchSources("ordering="+this.state.orderdir+this.state.ordercol+"&page=1")}} />
-        </PaginationItem>
-        <PaginationItem>
-          {previous==null?
-          <PaginationLink previous disabled  />
-              :
-              <PaginationLink previous  onClick={(event)=>{this.setpage(this.state.page-1);
-                this.props.fetchSourcesFullUri(previous)}}/>
-          }
-        </PaginationItem>
-        {list_pages.map((page)=>{
-          return (
-          <PaginationItem active={page===this.state.page} key={page}>
-            <PaginationLink  
-              onClick={(event)=>{
-                this.setpage(page);
-                this.props.fetchSources("ordering="+this.state.orderdir+this.state.ordercol+"&page="+page)}}>
-              {page }
-            </PaginationLink>
-          </PaginationItem>
-          );
-          })
-        }
-
-        <PaginationItem>
-          {next===null?
-            <PaginationLink next disabled  />
-              :
-              <PaginationLink next onClick={(event)=>{this.setpage(this.state.page+1);
-                this.props.fetchSourcesFullUri(next)}} />
-          }
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink last onClick={(event)=>{
-            this.setpage(total_pages);
-            this.props.fetchSources("ordering="+this.state.orderdir+this.state.ordercol+"&page="+total_pages)}}/>
-        </PaginationItem>
-
-      </Pagination>
-    )
+  }
+  fetch(selections,page){
+    this.setpage(page);
+    this.props.fetchSources("ordering="+selections.orderdir+selections.ordercol+"&page="+page)
   }
   render() {
     const heading = this.props.heading;
@@ -154,7 +114,15 @@ class SourcesList extends Component {
       <div className="container">
       { !_.isEmpty(error) ? <div className="alert alert-danger">Error: {error.message}</div>: ''}
         <h1>{heading}</h1>
-       {totalcount ? this.pagination(totalcount,next,previous): ''}
+        {totalcount ?
+            this.paginate(totalcount,
+           next,
+           previous,
+           this.fetch,
+           this.props.fetchSourcesFullUri,
+           this.state,
+         this.noop) 
+            : ''}
           <FormGroup>
         <Button tag={Link} to={this.props.addUri} className="button-brand-primary" size="md">Add</Button>
       </FormGroup>
