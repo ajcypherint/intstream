@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import propTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
+import '../custom.css';
 import Paginate from './Paginate'
 import {PAGINATION, dateString, addDays} from '../util/util'
 import {changesort} from './ChangeSort'
@@ -145,20 +146,20 @@ export class Main extends React.Component{
         <Form onSubmit={this.onSubmit} >
           {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
        <Row>
-        <Col>
+        <Col sm="4">
           <label  htmlFor={"start_id"}>{"Start Date"}</label>
-          <div className = "mb-2">
-          <DatePicker id={"startDate"}  selected={selections.startDate} onChange={this.handleStartChange} />
+          <div className = "mb-2 ">
+          <DatePicker style={{width:'100%'}} id={"startDate"}  selected={selections.startDate} onChange={this.handleStartChange} />
           </div>
         </Col>
-        <Col>
+        <Col sm="4" >
           <label  htmlFor={"end_id"}>{"End Date"}</label>
-          <div className = "mb-2">
+          <div className = "mb-2 ">
           <DatePicker  id={"endDate"}  selected={selections.endDate} onChange={this.handleEndChange}/>
           </div>
         </Col>
 
-         <Col>
+         <Col sm="4">
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
            <Input type="select" name="Source" id="source_id" onChange={this.handleSourceChange}>
