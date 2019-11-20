@@ -2,7 +2,7 @@ import { RSAA } from 'redux-api-middleware';
 import { withAuth } from '../reducers'
 import _ from 'lodash';
 import  URL  from  'url-parse'
-import {setParams} from './util'
+import {setParams,getAll} from './util'
 import {PAGINATION} from '../util/util'
 
 export const GET_SOURCES_REQUEST = '@@sources/GET_SOURCES_REQUEST';
@@ -72,37 +72,8 @@ export const setSources= (url,data,method='PUT' )=>{
 }
 }
 
+export const getAllSources = getAll(getSources)(totalSources);
 
-export const  getAllSources = (url, params) =>{
-  return async(dispatch, getState) => {
-      let extra_params = params || ''
-      let totalresp = await dispatch(getSources(url,extra_params))
-      console.log("resp:" + JSON.stringify(totalresp))
-      if (totalresp.error) {
-      //  // the last dispatched action has errored, break out of the promise chain.
-        throw new Error("Promise flow received action error", totalresp);
-       }
-      let allSources = []
-      let total = totalresp.payload.count
-      let pages = Math.ceil(total / PAGINATION)
-      //ACTIVE, duh time for bed.
-      for ( let i=0; i < pages; i++){
-       let page = i +1
-       let actionResponse = await dispatch(getSources(url,extra_params+'&page='+page));
-      //
-       if (actionResponse.error) {
-         // the last dispatched action has errored, break out of the promise chain.
-         throw new Error("Promise flow received action error", actionResponse);
-       }
-
-       allSources = allSources.concat(actionResponse.payload.results)
-        
-      }
-
-      // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
-      return await dispatch(totalSources(allSources, total));
-    }
-}
 
 export const  addSources = (url, data, method, goBack) =>{
   return async(dispatch, getState) => {

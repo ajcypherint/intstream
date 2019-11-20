@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import ModelEdit from '../components/ModelsEdit';
+import SourcesEdit from '../components/SourcesEdit';
 import {getModels, addModels, setModels, clearModels} from '../actions/models'
 import * as reducers from '../reducers/'
 
@@ -11,9 +11,9 @@ const HEADING = "Model"
 const mapStateToProps = (state) => {
   return { 
     sources:reducers.getModels(state),
-    loading:reducers.getLoading(state),
-    saving:reducers.getSaving(state),
-    errors:reducers.getErrors(state),
+    loading:reducers.getModelLoading(state),
+    saving:reducers.getModelSaving(state),
+    errors:reducers.getModelErrors(state),
     heading:HEADING,
     empty:{name:"",
       active:false}
@@ -31,4 +31,4 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(ModelEdit);
+export default connect(mapStateToProps, mapDispatchToProps)(SourcesEdit);

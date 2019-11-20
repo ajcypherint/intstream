@@ -3,6 +3,7 @@ import auth, * as fromAuth from './auth.js'
 import password, * as fromPassword from './password.js'
 import categories, * as fromCategories from './categories.js'
 import sources, * as fromSources from  './sources.js'
+import models, * as fromModels from  './models.js'
 import articles, * as fromArticles from  './articles.js'
 import filter, * as fromFilter from  './filter.js'
 
@@ -12,7 +13,8 @@ export default combineReducers({
   password:password,
   categories:categories,
   sources:sources,
-  articles:articles
+  articles:articles,
+  models:models
 })
 
 //fromAuth
@@ -49,6 +51,15 @@ export const getArticleSaving = state => fromArticles.saving(state.articles)
 export const getArticleTotalCount = state => fromArticles.totalcount(state.articles)
 export const getArticleNextPage = state => fromArticles.nextPage(state.articles)
 export const getArticlePreviousPage = state => fromArticles.previousPage(state.articles)
+
+//fromModels
+export const getModels= state => fromModels.models(state.models)
+export const getModelErrors = state => fromModels.errors(state.models)
+export const getModelLoading = state => fromModels.loading(state.models)
+export const getModelSaving = state => fromModels.saving(state.models)
+export const getModelTotalCount = state => fromModels.totalcount(state.models)
+export const getModelNextPage = state => fromModels.nextPage(state.models)
+export const getModelPreviousPage = state => fromModels.previousPage(state.models)
 
 //filter
 export const getHomeArticleSelections = state => fromFilter.getHomeSelections(state.filter)

@@ -7,11 +7,16 @@ import SourcesUploadList from "../containers/SourcesUploadList"
 import SourcesUploadEdit from "../containers/SourcesUploadEdit"
 import SourcesRssList from "../containers/SourcesRSSList"
 import SourcesRSSEdit from "../containers/SourcesRSSEdit"
+
+import ModelsList from "../containers/ModelsList"
+import ModelsEdit from "../containers/ModelsEdit"
+
 import About from "./About"
 import Logout from "./Logout"
 import Password from "../containers/Password"
 import Edit from './SourceEditFormComp'
 import EditRSS from './SourceEditRSSFormComp'
+import EditModels from './ModelsEditFormComp'
 import EditJob from './SourceEditJobFormComp'
 import Article from "../containers/Article"
 import {ADD, EDIT} from "../util/util"
@@ -42,6 +47,28 @@ const Main = (props)=>(
         }}
         match={match}/>} 
       />
+    <Route exact path="/models" component={ModelsList} />
+    <Route exact path="/models_add" 
+      render={()=>
+      <ModelsEdit 
+        form={<EditModels/>}
+        state={ {
+          action:ADD,
+        }}
+        match={undefined}/>} 
+      />
+
+
+    <Route exact path="/models/:id"       
+      render={({match})=>
+      <ModelsEdit 
+        form={<EditModels/>}
+        state={ {
+          action:EDIT,
+        }}
+        match={match}/>} 
+      />
+
 
     <Route exact path="/sources_rss" component={SourcesRssList} />
     <Route exact path="/sources_rss_add" 
