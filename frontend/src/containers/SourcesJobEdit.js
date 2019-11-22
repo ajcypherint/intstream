@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import SourceEdit from '../components/SourcesEdit';
-import {getSources, addSources, setSources, clearSources} from '../actions/sources'
+import {getSources, sourceFormUpdate, addSources, setSources, clearSources} from '../actions/sources'
 import * as reducers from '../reducers/'
 
 // edit
@@ -35,6 +35,7 @@ const mapDispatchToProps = (dispatch) => {
     setSources: (url,data,method='PUT') => dispatch(setSources(API+url,data,method)),
     clearSources:()=>dispatch(clearSources()),
     addSources: (url, data, method, goBack) => dispatch(addSources(API+url, data, method, goBack)),
+    sourceFormUpdate:(data)=>dispatch(sourceFormUpdate(data))
   }
 }
 

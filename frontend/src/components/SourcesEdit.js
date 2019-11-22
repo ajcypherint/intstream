@@ -92,7 +92,8 @@ class SourcesEdit extends Component {
              handleChange : this.handleInputChange,
              errors:error,
              saving:this.props.saving,
-             goBack:this.goBack
+             goBack:this.goBack,
+             ...this.props
 
            }
          )

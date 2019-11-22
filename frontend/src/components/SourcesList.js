@@ -32,9 +32,12 @@ class SourcesList extends Component {
     //rows
     //todo(aj) onChange for checkbox
     if (loading) {
-      return <Row><span className="spinner-border" role="status">
+      return <tr>
+              <td>
+                <span className="spinner-border" role="status">
                <span className="sr-only">Loading...</span></span>
-           </Row>
+              </td>
+           </tr>
 
     } else{
     return sources.map((source)=>{

@@ -65,9 +65,10 @@ class JobSource(Source):
 class MLModel(models.Model):
     sources = models.ManyToManyField(Source)
     name = models.CharField(max_length=250)
+    train = models.BooleanField(default=True)
     created_date = models.DateTimeField(default=timezone.now)
     base64_encoded_model = models.FileField(blank=True,null=True)
-    enabled = models.BooleanField(default=True)
+    active = models.BooleanField(default=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):

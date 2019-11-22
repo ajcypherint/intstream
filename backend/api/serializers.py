@@ -97,6 +97,7 @@ class HomeFilter(serializers.BaseSerializer):
     active = serializers.BooleanField()
 
 class MLModelSerializer(serializers.ModelSerializer):
+    sources = SourceSerializer(read_only=True, many=True)
     class Meta:
         fields=[
             'id',
@@ -104,7 +105,8 @@ class MLModelSerializer(serializers.ModelSerializer):
             'name',
             'created_date',
             'base64_encoded_model',
-            'enabled',
+            'active',
+            'train',
             'organization',
         ]
 

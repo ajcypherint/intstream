@@ -129,7 +129,7 @@ class JobSourceViewSet(OrgViewSet):
 class MLModelFilter(filters.FilterSet):
     class Meta:
         model = models.MLModel
-        fields = ('id','name','created_date','enabled')
+        fields = ('id','name','created_date','train','active')
 
 
 class MLModelViewSet(OrgViewSet):

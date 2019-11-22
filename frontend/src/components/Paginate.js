@@ -38,9 +38,9 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
           }
         </PaginationItem>
        {list_pages.map((page)=>{
-          if (page == 1 || page== total_pages || (page>= selections.page - 2 && page<= selections.page + 2)) {
+          if (page === 1 || page=== total_pages || (page>= selections.page - 2 && page<= selections.page + 2)) {
             return (
-              <div> 
+              <div key={page}> 
             <PaginationItem active={page===selections.page} key={page}>
               <PaginationLink  
                 onClick={(event)=>{

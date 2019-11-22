@@ -7,8 +7,8 @@ import * as reducers from '../reducers/'
 const API = '/api/mlmodels/'
 const FIELDS = ["id","name","active"]
 const HEADING = "Models"
-const EDITURI = /models_rss/
-const ADDURI = "/models_rss_add"
+const EDITURI = /models/
+const ADDURI = "/models_add"
 
 // do not edit
 const mapStateToProps = (state) => {
