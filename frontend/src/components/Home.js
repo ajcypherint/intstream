@@ -237,9 +237,11 @@ export class Main extends React.Component{
              })
            }
         </tbody>
-             : <Row><span className="spinner-border" role="status">
+             :<tbody><tr><td><span className="spinner-border" role="status">
                <span className="sr-only">Loading...</span></span>
-           </Row>
+           </td>
+           </tr>
+         </tbody>
              }
        </Table>
     </div>

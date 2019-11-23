@@ -13,7 +13,7 @@ export default class Edit extends Component {
       show:false
     }
     const errors = this.props.errors || {}
-    const err_name = errors.name || {}
+    const err_name = errors.name ||'' 
     this.handle_source_check = this.handle_source_check.bind(this)
     this.handleAdd = this.handleAdd.bind(this)
     //todo; bring in all sources;
@@ -25,7 +25,6 @@ export default class Edit extends Component {
     this.setState({show:true})
   }
   handle_source_check(event){
-    event.preventDefault() //prevent form submission
     const target = event.target;
     const checked = target.checked  //true
     const value = JSON.parse(target.value);
@@ -50,6 +49,7 @@ export default class Edit extends Component {
       const all_sources = this.props.allSources || []
       const all_loaded = this.props.allSrcLoaded || false
       sources.sort((a, b) => (a.name> b.name) ? 1 : -1)
+      let object_name = this.props.object.name || ''
       return (
         <Form onSubmit={this.props.onSubmit} >
           <FormGroup>
@@ -57,7 +57,7 @@ export default class Edit extends Component {
             onChange={this.props.handleChange}
             name={'name'}  
             label={'Name'}  
-            value={this.props.object.name}  
+            value={object_name}  
             error={this.err_name} />
         </FormGroup>
           <FormGroup>

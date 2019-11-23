@@ -31,7 +31,6 @@ class SourcesEdit extends Component {
 
   }
   handleInputChange(event) {
-    event.preventDefault() //prevent form submission
     const target = event.target;
     const value = target.type ===
         'checkbox' ? target.checked : target.value;
