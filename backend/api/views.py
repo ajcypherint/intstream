@@ -127,6 +127,7 @@ class JobSourceViewSet(OrgViewSet):
 
 
 class MLModelFilter(filters.FilterSet):
+    #source__name = filters.CharFilter(lookup_expr='exact')
     class Meta:
         model = models.MLModel
         fields = ('id','name','created_date','train','active')

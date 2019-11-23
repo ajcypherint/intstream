@@ -102,6 +102,7 @@ class MLModelSerializer(serializers.ModelSerializer):
         fields=[
             'id',
             'sources',
+            'sources',
             'name',
             'created_date',
             'base64_encoded_model',

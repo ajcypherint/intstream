@@ -16,12 +16,12 @@ class SourcesEdit extends Component {
     this.goBack = this.goBack.bind(this)
   }
   componentDidMount(){
-    // if  not ADD form
+    // if  EDIT form
        if ( typeof this.props.match.params.id !== 'undefined'){
          this.props.fetchSources('id='+this.props.match.params.id) 
        } else {
+         // ADD
          this.props.clearSources()
-         // todo: move this into container as in input prop so it is correct for each type of source
          this.props.sourceFormUpdate(this.props.empty)
        }
   }
@@ -31,6 +31,7 @@ class SourcesEdit extends Component {
 
   }
   handleInputChange(event) {
+    event.preventDefault() //prevent form submission
     const target = event.target;
     const value = target.type ===
         'checkbox' ? target.checked : target.value;

@@ -16,7 +16,9 @@ const mapStateToProps = (state) => {
   return { 
     //all sources
     allSources:reducers.getSources(state),
+    allSrcLoaded:reducers.getAllLoaded(state),
     //models
+    
     sources:reducers.getModels(state),
     loading:reducers.getModelLoading(state),
     saving:reducers.getModelSaving(state),

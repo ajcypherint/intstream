@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {FormGroup, Alert, Button, Jumbotron,  Form } from 'reactstrap';
+import {FormGroup,Label, Alert, Button, Jumbotron,  Form } from 'reactstrap';
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
@@ -9,21 +9,47 @@ export default class Edit extends Component {
 
   constructor(props){
     super(props)
-
+    this.state={
+      show:false
+    }
     const errors = this.props.errors || {}
     const err_name = errors.name || {}
+    this.handle_source_check = this.handle_source_check.bind(this)
+    this.handleAdd = this.handleAdd.bind(this)
     //todo; bring in all sources;
     //create list of sources ids already linked.
- }
-  componentDidMount(){
-    this.props.fetchAllSources()
+  }
+  handleAdd(event){
+    this.props.fetchAllSources("ordering=name")
+    event.preventDefault() //prevent form submission
+    this.setState({show:true})
+  }
+  handle_source_check(event){
+    event.preventDefault() //prevent form submission
+    const target = event.target;
+    const checked = target.checked  //true
+    const value = JSON.parse(target.value);
+    let object_new = Object.assign({},this.props.sources[0])
+    if(checked === true){
+        object_new.sources.push(value)
+    } else {
+      let filtered = object_new.sources.filter((source)=>{
+          return value.id !== source.id
+      })
+      object_new.sources=filtered 
+    }
+    this.props.sourceFormUpdate(object_new)
+
+    //this.setState(object:{...object_new}})
+    //dispatch object to redux
 
   }
-    render(){
+  render(){
       const sources = this.props.object.sources || []
       const selected_ids = sources.map(source=>source.id)
       const all_sources = this.props.allSources || []
-      all_sources.sort((a, b) => (a.name> b.name) ? 1 : -1)
+      const all_loaded = this.props.allSrcLoaded || false
+      sources.sort((a, b) => (a.name> b.name) ? 1 : -1)
       return (
         <Form onSubmit={this.props.onSubmit} >
           <FormGroup>
@@ -35,28 +61,41 @@ export default class Edit extends Component {
             error={this.err_name} />
         </FormGroup>
           <FormGroup>
-            <div className="boxes">
-          {
-            all_sources.map((source)=>{
-              return (
-                <div >
-          <CheckBoxInput    
-            onChange={this.props.handleChange}
-            type={'checkbox'} 
-            name={source.id}  
-            readOnly
-            label={source.name}  
-            checked={selected_ids.includes(source.id)}   />
- 
+           {this.state.show ?
+                    <div className="boxes">
+                  { all_loaded === true ?
+                      all_sources.map((source)=>{
+                        return (
+                          <CheckBoxInput   key={source.id} 
+                            onChange={this.handle_source_check}
+                            type={'checkbox'} 
+                            name={source.name}  
+                            label={source.name}
+                            value={JSON.stringify(source)}
+                            readOnly
+                            checked={selected_ids.includes(source.id)}   />
+                              )
+                          }) : 
+                      <span className="spinner-border" role="status">
+                       <span className="sr-only">Loading...</span></span>
+                  }
                 </div>
-              )
-
+                : <Button className="button-brand-primary" name={"Add"} onClick={this.handleAdd} size="lg">
+                  Add Sources
+                  </Button>
             }
-
-            )
-
-          }
-        </div>
+        </FormGroup>
+        <FormGroup>
+          <Label for="list">Sources</Label>
+          <ul id="list">
+            {sources.map((source)=>{
+              return (
+                <li key={source.id}>
+                  {source.name}
+                </li>
+              )
+            })}
+          </ul>
         </FormGroup>
           <FormGroup>
           <CheckBoxInput    
