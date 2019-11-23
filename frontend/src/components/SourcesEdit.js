@@ -72,12 +72,7 @@ class SourcesEdit extends Component {
     
     const prefix = this.state.action === EDIT ? EDIT : ADD;
     const heading = prefix + this.props.heading;
-    if (loading) {
-      return <span className="spinner-border" role="status">
-               <span className="sr-only">Loading...</span></span>
 
-    } else{
- 
     return (
        <div className="row" >
         <div className="col-sm-4"/>
@@ -105,7 +100,6 @@ class SourcesEdit extends Component {
       </div>
     )
     } 
-  }
  
 };
 
