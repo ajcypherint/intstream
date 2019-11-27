@@ -6,6 +6,7 @@ import sources, * as fromSources from  './sources.js'
 import models, * as fromModels from  './models.js'
 import articles, * as fromArticles from  './articles.js'
 import filter, * as fromFilter from  './filter.js'
+import list, * as fromList from './listSelections.js'
 
 export default combineReducers({
   auth: auth,
@@ -14,7 +15,8 @@ export default combineReducers({
   categories:categories,
   sources:sources,
   articles:articles,
-  models:models
+  models:models,
+  list:list
 })
 
 //fromAuth
@@ -64,6 +66,11 @@ export const getModelPreviousPage = state => fromModels.previousPage(state.model
 //filter
 export const getHomeArticleSelections = state => fromFilter.getHomeSelections(state.filter)
 export const getFilterSources= state => fromFilter.sources(state.filter)
+
+//listSelections
+export const getListPage = state => fromList.getPage(state.list)
+export const getListOrderCol = state => fromList.getOrderCol(state.list)
+export const getListOrderDir = state => fromList.getOrderDir(state.list)
 
 export function withAuth(headers={}) {
   return (state) => ({

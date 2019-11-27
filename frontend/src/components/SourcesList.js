@@ -14,8 +14,6 @@ class SourcesList extends Component {
   constructor(props){
     super(props)
     this.displaysources = this.displaysources.bind(this)
-    this.setpage = this.setpage.bind(this)
-    this.state={page:1,ordercol:'',orderdir:ASC}
     this.changesort = this.changesort.bind(this)
     this.columnheader = this.columnheader.bind(this)
     this.paginate = Paginate.bind(this)
@@ -24,8 +22,8 @@ class SourcesList extends Component {
   }
  
   componentDidMount() {
-    this.props.fetchSources();
-    this.setState({page:1,ordercol:'',orderdir:ASC})
+    this.props.clearSelections();
+    this.props.fetchSources(this.props.orderStartCol);
   }
   
   displaysources(sources, fields, loading){
@@ -60,26 +58,27 @@ class SourcesList extends Component {
   }
   changesort(column_name){
     console.log("clicked")
-   if (this.state.ordercol===column_name) {
+   if (this.props.orderCol===column_name) {
       // column matches sort column opposite
-      if( this.state.orderdir===ASC){
-       this.setState({orderdir:DESC})
+      if( this.props.orderDir===ASC){
+       this.props.setOrderDir(DESC)
        this.props.fetchSources(
-            "ordering="+DESC+column_name+"&page="+this.state.page)
+            "ordering="+DESC+column_name+"&page="+this.props.page)
         //call desc sort
         }
       else{
-       this.setState({orderdir:ASC})
+       this.props.setOrderDir(ASC)
        this.props.fetchSources(
-            "ordering="+ASC+column_name+"&page="+this.state.page)
+            "ordering="+ASC+column_name+"&page="+this.props.page)
         //call asc sort
       }
     }
     else{
       //sort by this column ascending; first time sorting this column
-       this.setState({ordercol:column_name,orderdir:ASC}) 
+       this.props.setOrderDir(ASC)
+       this.props.setOrderCol(column_name)
        this.props.fetchSources(
-            "ordering="+ASC+column_name+"&page="+this.state.page)
+            "ordering="+ASC+column_name+"&page="+this.props.page)
         //call asc sort
       }
   }
@@ -92,14 +91,10 @@ class SourcesList extends Component {
       )
  
   }
-  setpage(page){
-    this.setState({page:page})
-  }
   noop(){
 
   }
   fetch(selections,page){
-    this.setpage(page);
     this.props.fetchSources("ordering="+selections.orderdir+selections.ordercol+"&page="+page)
   }
   render() {
@@ -123,8 +118,10 @@ class SourcesList extends Component {
            previous,
            this.fetch,
            this.props.fetchSourcesFullUri,
-           this.state,
-         this.noop) 
+              {page:this.props.page,
+                ordercol:this.props.orderCol,
+                orderdir:this.props.orderDir}, //selections
+         this.props.setPage) 
             : ''}
           <FormGroup>
         <Button tag={Link} to={this.props.addUri} className="button-brand-primary" size="md">Add</Button>

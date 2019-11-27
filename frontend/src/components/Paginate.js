@@ -4,7 +4,7 @@ import { PAGINATION } from '../util/util'
 //
 //
 //CANNOT be an arrow function or 'this' will not work... dont ask how long i spent on that.
-export default function  (totalcount,next,previous,fetchit, fetchFullUri, selections, setSelections){
+export default function  (totalcount,next,previous,fetchit, fetchFullUri, selections, setPage){
   //
   // totalcount: int
   // next:str
@@ -25,7 +25,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
       <Pagination aria-label="Page navigation">
       <PaginationItem> 
         <PaginationLink first onClick={(event)=>{
-          setSelections({page:1});
+          setPage(1);
           fetchit(selections,1)}} />
         </PaginationItem>
         <PaginationItem>
@@ -33,7 +33,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
           <PaginationLink previous disabled  />
               :
               <PaginationLink previous  onClick={(event)=>{
-                setSelections({page:selections.page-1});
+                setPage(selections.page-1);
                 fetchFullUri(previous)}}/>
           }
         </PaginationItem>
@@ -44,7 +44,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
             <PaginationItem active={page===selections.page} key={page}>
               <PaginationLink  
                 onClick={(event)=>{
-                  setSelections({page:page});
+                  setPage(page);
                   fetchit(selections,page)}}>
                 {page }
               </PaginationLink>
@@ -59,13 +59,13 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
             <PaginationLink next disabled  />
               :
               <PaginationLink next onClick={(event)=>{
-                setSelections({page:selections.page+1})
+                setPage(selections.page+1)
                 fetchFullUri(next)}} />
           }
         </PaginationItem>
         <PaginationItem>
           <PaginationLink last onClick={(event)=>{
-            setSelections({page:total_pages});
+            setPage(total_pages);
             fetchit(selections,total_pages)}}/>
         </PaginationItem>
 
