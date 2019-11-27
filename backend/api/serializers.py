@@ -8,6 +8,7 @@ from .models import (MLModel, JobSource,
                      HtmlArticle, RSSArticle)
 
 from utils import read
+from django.core.validators import MaxLengthValidator
 
 
 
@@ -80,6 +81,26 @@ class RssSourceSerializer(serializers.ModelSerializer):
         ]
         model = RSSSource
 
+
+class SourceSerializerNested(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=100)
+    active = serializers.BooleanField(default=True)
+    """class Meta:
+        fields=[
+            'id',
+            'name',
+            'active',
+            'organization',
+
+        ]
+        model = Source
+        extra_kwargs = {
+            'name': {'validators': [MaxLengthValidator(100)]},
+        }
+        """
+
+
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
         fields=[
@@ -91,17 +112,18 @@ class SourceSerializer(serializers.ModelSerializer):
         ]
         model = Source
 
+
 class HomeFilter(serializers.BaseSerializer):
     id = serializers.IntegerField()
     name = serializers.CharField(max_length=100)
     active = serializers.BooleanField()
 
+
 class MLModelSerializer(serializers.ModelSerializer):
-    sources = SourceSerializer(read_only=True, many=True)
+    sources= SourceSerializerNested( many=True)
     class Meta:
         fields=[
             'id',
-            'sources',
             'sources',
             'name',
             'created_date',
@@ -113,6 +135,16 @@ class MLModelSerializer(serializers.ModelSerializer):
 
         model = MLModel
 
+    def update(self, instance, validated_data):
+        sources = validated_data.pop("sources")
+        ids = [source["id"] for source in sources]
+        instance.sources.set(ids, clear=True)
+        instance.name = validated_data.get("name",instance.name)
+        instance.active = validated_data.get("active",instance.active)
+        instance.train = validated_data.get("train",instance.train)
+        instance.organization = validated_data.get("organization",instance.organization)
+        instance.save()
+        return instance
 
 
 class ArticleSerializerSet(serializers.ModelSerializer):
