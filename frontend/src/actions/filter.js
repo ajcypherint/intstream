@@ -8,12 +8,19 @@ import {getSources} from './sources'
 
 export const ALL_SOURCES = '@@filter/TOTAL';
 export const HOME = '@@filter/HOME';
+export const PAGE = '@@filter/PAGE';
 
 export const GET_FILTER_REQUEST = '@@filter/GET_FILTER_REQUEST';
 export const GET_FILTER_SUCCESS = '@@filter/GET_FILTER_SUCCESS';
 export const GET_FILTER_FAILURE = '@@filter/GET_FILTER_FAILURE';
 
 
+export const setPage= (data)=>{
+  return {
+    type:PAGE,
+    payload:data
+  }
+}
 export const setHomeSelections = (data)=>{
   return {
     type:HOME,

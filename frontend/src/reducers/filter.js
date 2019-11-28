@@ -28,6 +28,16 @@ const initialState ={
 
 export default (state=initialState, action) => {
   switch(action.type) {
+      case filter.PAGE:
+      {
+        return {
+          ...state,
+          homeSelections:{
+            ...state.homeSelections,
+            page:action.payload
+          }
+        }
+      }
       case filter.HOME:
         {
           return {

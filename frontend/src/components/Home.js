@@ -182,7 +182,7 @@ export class Main extends React.Component{
            this.fetch,
            this.props.fetchArticlesFullUri,
            this.props.homeSelections,
-         this.props.setHomeSelections)}
+           this.props.setPage)}
        </Row>
         </Form>
 

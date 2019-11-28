@@ -3,9 +3,7 @@ import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import { Main} from '../components/Home'
 import {getArticles, clearArticles} from '../actions/articles'
-
-import {setHomeSelections, getAllSources} from '../actions/filter'
-
+import {setPage, setHomeSelections, getAllSources} from '../actions/filter'
 import {getSources, clearSources } from '../actions/sources'
 
 const API = '/api/articles/'
@@ -28,7 +26,8 @@ const mapDispatchToProps = (dispatch) => ({
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
   fetchArticlesFullUri: (url,params=undefined) => dispatch(getArticles(url,params)),
   fetchArticles: (params=undefined) => dispatch(getArticles(API,params)),
-  setHomeSelections: (data)=>dispatch(setHomeSelections(data))
+  setHomeSelections: (data)=>dispatch(setHomeSelections(data)),
+  setPage:(page)=>dispatch(setPage(page))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
