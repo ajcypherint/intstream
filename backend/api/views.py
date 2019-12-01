@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import coreapi, coreschema
+from random import randint
 from . import serializers
 from django.utils import timezone
 from . import models
@@ -17,6 +18,12 @@ from rest_framework import viewsets
 from rest_framework.schemas import AutoSchema
 from django.db.models import F
 # Create your views here.
+
+class MLModelFilter(filters.FilterSet):
+    #source__name = filters.CharFilter(lookup_expr='exact')
+    class Meta:
+        model = models.MLModel
+        fields = ('id','name','created_date','train','active')
 
 
 class SourceTypeViewSet(viewsets.ReadOnlyModelViewSet):
@@ -36,16 +43,42 @@ class HomeFilterSetting(filters.FilterSet):
         model = models.Article
         fields = ("source","source__active")
 
+class ArticleRandomFilter(filters.FilterSet):
+    class Meta:
+        model = models.Article
+        fields = ('id','source__id', "source__mlmodel",)
+
+class RandomUnclassified(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    serializer_class = serializers.ArticleSerializer
+    filterset_class = ArticleRandomFilter
+
+    def get_queryset(self):
+        # todo(aj) filter by model id
+        # either pass in source ids list to filter by or double nested
+        # model_id = self.request.query_params["model"]
+        count = models.Article.objects.filter(organization=self.request.user.organization,
+                                             categories=None).count()
+        random_index = randint(0, count - 1)
+        object = models.Article.objects.filter(organization=self.request.user.organization,
+                                             categories=None)[random_index]
+        return models.Article.objects.filter(id=object.id)
+
+
 class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
-    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
+    permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator)
     serializer_class = serializers.SourceSerializer
-    queryset = models.Article.objects.order_by("source__name").\
-        distinct("source__name").\
-        values("source__name", "source__id", "source__active", ).\
-        annotate(name=F("source__name"),
+    filterset_class = HomeFilterSetting
+
+    def get_queryset(self):
+        return models.Article.objects.filter(organization=self.request.user.organization).\
+            order_by("source__name").\
+            distinct("source__name").\
+            values("source__name", "source__id", "source__active", ).\
+            annotate(name=F("source__name"),
                  id=F("source__id"),
                  active=F("source__active"))
-    filterset_class = HomeFilterSetting
+
 
 class OrgViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
@@ -125,12 +158,6 @@ class JobSourceViewSet(OrgViewSet):
     def get_queryset(self):
         return models.JobSource.objects.filter(organization=self.request.user.organization)
 
-
-class MLModelFilter(filters.FilterSet):
-    #source__name = filters.CharFilter(lookup_expr='exact')
-    class Meta:
-        model = models.MLModel
-        fields = ('id','name','created_date','train','active')
 
 
 class MLModelViewSet(OrgViewSet):

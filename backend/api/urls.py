@@ -24,6 +24,7 @@ router.register(HTMLARTICLES,views.HtmlArticleViewSet, basename="htmlarticles")
 router.register(PDFARTICLES,views.PDFArticleViewSet, basename="pdfarticles")
 router.register(DOCXARTICLES,views.WordDocxArticleViewSet, basename="docxarticles")
 router.register(RSSARTICLES,views.RSSArticleViewSet, basename="rssarticles")
+router.register('unclass', views.RandomUnclassified, basename="unclass")
 
 # sources
 router.register('sourcetypes',views.SourceTypeViewSet)

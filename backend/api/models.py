@@ -17,17 +17,20 @@ class Organization(models.Model):
     def __str__(self):
         return self.name
 
+
 class UserIntStream(AbstractUser):
     is_integrator= models.BooleanField('integrator status', default=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     REQUIRED_FIELDS = ["organization"] # createsuperuser
+
 
 # Create your models here.
 def get_file_path(instance, filename):
     filename = "%s" % (uuid.uuid4())
     return os.path.join('uploads/sources', filename)
 
-#types for frontend RSS, Upload, Job
+
+# types for frontend RSS, Upload, Job
 class SourceType(models.Model):
     name = models.CharField(max_length=25,unique=True)
     api_endpoint = models.TextField(max_length=50,unique=True)
@@ -43,8 +46,10 @@ class Source(PolymorphicModel):
     def __str__(self):
         return self.name + " (" + str(self.id) + ")"
 
+
 class UploadSource(Source):
     pass
+
 
 # this will trigger an rss source to accept incoming intel
 class RSSSource(Source):
@@ -61,6 +66,7 @@ class JobSource(Source):
     last_status = models.BooleanField(blank=True, null=True)
     arguments = models.TextField(max_length=1000)
     task = models.TextField() # todo(aj) foreignkey to
+
 
 class MLModel(models.Model):
     sources = models.ManyToManyField(Source)
@@ -94,23 +100,30 @@ class Article(PolymorphicModel):
     def __str__(self):
         return self.title + "( " + str(self.id) + ")"
 
+
 # Upload Articles
 class WordDocxArticle(Article):
     file = models.FileField(upload_to='article')
+
+
 class PDFArticle(Article):
     file = models.FileField(upload_to='article')
     password = models.CharField(max_length=200,blank=True,null=True)
+
+
 class TxtArticle(Article):
     file = models.FileField(upload_to='article')
+
+
 class HtmlArticle(Article):
     file = models.FileField(upload_to='article')
+
 
 # Rss Articles
 class RSSArticle(Article):
     description = models.TextField(blank=True, null=True)
     link = models.URLField()
     guid = models.CharField(max_length=200,unique=True)
-
 
 
 class Settings(models.Model):

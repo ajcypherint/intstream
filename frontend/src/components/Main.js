@@ -19,12 +19,14 @@ import EditRSS from './SourceEditRSSFormComp'
 import EditModels from './ModelsEditFormComp'
 import EditJob from './SourceEditJobFormComp'
 import Article from "../containers/Article"
+import Train from "../containers/Train"
 import {ADD, EDIT} from "../util/util"
 const Main = (props)=>(
   <Switch>
     <Route exact path="/" component={Home} />
 
     <Route exact path="/article/:id" component={Article} />
+    <Route exact path="/train/:id/:model" component={Train} />
     <Route exact path="/sources_upload" component={SourcesUploadList} />
     <Route exact path="/sources_upload_add" 
       render={()=>

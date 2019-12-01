@@ -4,6 +4,7 @@ import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
 import FormButtons from './compFormButtons'
+import {withRouter} from 'react-router-dom'
 
 export default class Edit extends Component {
 
@@ -16,8 +17,12 @@ export default class Edit extends Component {
     const err_name = errors.name ||'' 
     this.handle_source_check = this.handle_source_check.bind(this)
     this.handleAdd = this.handleAdd.bind(this)
+    this.handle_train = this.handle_train.bind(this)
     //todo; bring in all sources;
     //create list of sources ids already linked.
+  }
+  handle_train(event){
+    this.props.history.push('/train/'+this.props.match.params.id+"/"+this.props.object.name)
   }
   handleAdd(event){
     this.props.fetchAllSources("ordering=name")
@@ -106,9 +111,14 @@ export default class Edit extends Component {
             label={'active'}  
             checked={this.props.object.active}   />
         </FormGroup>
+          <FormGroup>
+        <Button className="button-brand-primary" size="lg" onClick={this.handle_train}>Train </Button>
+      </FormGroup>
+          <FormGroup>
           <FormButtons saving={this.props.saving}
                       onSubmit={this.props.onSubmit}
                        goBack={this.props.goBack}/>
+                   </FormGroup>
 
          </Form>
       )
