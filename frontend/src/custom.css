@@ -35,3 +35,7 @@
     overflow: auto;
     width: auto;
 }
+
+.bktextarea:read-only{
+ background-color: white;
+}

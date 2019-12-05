@@ -81,7 +81,9 @@ def process_rss_source(source_url, source_id, organization_id):
     :return:
     """
     previous_week = timezone.now()-datetime.timedelta(days=7)
-    articles = models.Article.objects.filter(upload_date__gt=previous_week,parent__isnull=True)
+    articles = models.Article.objects.filter(upload_date__gt=previous_week,
+                                             parent__isnull=True,
+                                             organization=organization_id)
     article_ids = [article.id for article in articles]
     article_text = [read.HTMLRead(article.text).read() for article in articles]
     data = feedparser.parse(source_url)
@@ -93,7 +95,8 @@ def process_rss_source(source_url, source_id, organization_id):
             else:
                 post["id"]=post.title[0:100]+source_url[0:100]
         logger.debug("post id:" + str(post.id))
-        exists = models.RSSArticle.objects.filter(guid=post.id).exists()
+        exists = models.RSSArticle.objects.filter(guid=post.id,
+                                                  organization=organization_id).exists()
         if not exists:
             process_entry.delay(post.title,
                                 post.description,

@@ -5,6 +5,7 @@ import categories, * as fromCategories from './categories.js'
 import sources, * as fromSources from  './sources.js'
 import models, * as fromModels from  './models.js'
 import articles, * as fromArticles from  './articles.js'
+import randomArticle, * as fromRandomArticle from  './randomArticle.js'
 import filter, * as fromFilter from  './filter.js'
 import list, * as fromList from './listSelections.js'
 
@@ -16,7 +17,8 @@ export default combineReducers({
   sources:sources,
   articles:articles,
   models:models,
-  list:list
+  list:list,
+  randomArticle:randomArticle
 })
 
 //fromAuth
@@ -71,6 +73,11 @@ export const getFilterSources= state => fromFilter.sources(state.filter)
 export const getListPage = state => fromList.getPage(state.list)
 export const getListOrderCol = state => fromList.getOrderCol(state.list)
 export const getListOrderDir = state => fromList.getOrderDir(state.list)
+
+//random article
+export const getRandomArticle = state => fromRandomArticle.articles(state.randomArticle)
+export const getRandomErrors= state => fromRandomArticle.errors(state.randomArticle)
+export const getRandomLoading = state => fromRandomArticle.loading(state.randomArticle)
 
 export function withAuth(headers={}) {
   return (state) => ({

@@ -78,7 +78,7 @@ class MLModel(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):
-        return self.name + " ( " + str(self.id) + ")"
+        return self.name + " (" + str(self.id) + ")"
 
 
 # name and api_endpoint for frontend  / sdk
@@ -87,19 +87,25 @@ class ArticleType(models.Model):
     api_endpoint = models.TextField(max_length=100, unique=True)
 
 
+
 class Article(PolymorphicModel):
     source = models.ForeignKey(Source,on_delete=models.CASCADE)
     title = models.TextField(max_length=256)
     text = models.TextField(blank=True)
     upload_date = models.DateTimeField(default=timezone.now)
     parent=models.ForeignKey('self',blank=True, null=True, on_delete=models.SET_NULL)
-    categories = models.ManyToManyField(MLModel,blank=True,null=True)
     encoding = models.CharField(max_length=15,default='utf8')
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):
-        return self.title + "( " + str(self.id) + ")"
+        return self.title + " (" + str(self.id) + ")"
 
+
+class Classification(models.Model):
+    article = models.ForeignKey(Article,on_delete=models.CASCADE)
+    target = models.BooleanField('target classification')
+    mlmodel = models.ForeignKey(MLModel, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
 # Upload Articles
 class WordDocxArticle(Article):

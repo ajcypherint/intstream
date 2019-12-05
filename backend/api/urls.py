@@ -13,6 +13,7 @@ DOCXARTICLES = 'docxarticles'
 RSSARTICLES = 'rssarticles'
 
 router = routers.DefaultRouter()
+#models
 router.register('mlmodels',views.MLModelViewSet, basename="mlmodels")
 
 # articles
@@ -24,7 +25,6 @@ router.register(HTMLARTICLES,views.HtmlArticleViewSet, basename="htmlarticles")
 router.register(PDFARTICLES,views.PDFArticleViewSet, basename="pdfarticles")
 router.register(DOCXARTICLES,views.WordDocxArticleViewSet, basename="docxarticles")
 router.register(RSSARTICLES,views.RSSArticleViewSet, basename="rssarticles")
-router.register('unclass', views.RandomUnclassified, basename="unclass")
 
 # sources
 router.register('sourcetypes',views.SourceTypeViewSet)
@@ -39,6 +39,9 @@ router.register(RSSSOURCE, views.RssSourceViewSet, basename="rsssource")
 router.register(JOBSOURCE, views.JobSourceViewSet, basename="jobsource")
 router.register(SOURCE, views.SourceViewSet,basename="source")
 router.register("homefilter",views.HomeFilter, basename="homefilter")
+
+#classifications
+router.register("classifications",views.ClassificationViewSet, basename="classifications")
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -64,5 +67,6 @@ urlpatterns=[
     path('token-refresh/', TokenRefreshView.as_view()),
     path('token-verify/', TokenVerifyView.as_view()),
     path('auth', include('rest_framework.urls')),
+    path('unclass/',views.RandomUnclassified.as_view()),
     path('schema/', g_schema(title="IntStream API"))
 ]

@@ -5,7 +5,8 @@ from .models import (MLModel, JobSource,
                     Source,
                      UploadSource, RSSSource,
                      SourceType, ArticleType,
-                     HtmlArticle, RSSArticle)
+                     HtmlArticle, RSSArticle,
+                     Classification)
 
 from utils import read
 from django.core.validators import MaxLengthValidator
@@ -300,4 +301,13 @@ class RSSSerializer(serializers.ModelSerializer):
 
         model = RSSArticle
 
-
+class ClassificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=(
+            "id",
+            "target",
+            "article",
+            "mlmodel",
+            "organization"
+        )
+        model = Classification

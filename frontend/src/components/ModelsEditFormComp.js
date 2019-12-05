@@ -76,7 +76,7 @@ export default class Edit extends Component {
                             type={'checkbox'} 
                             name={source.name}  
                             label={source.name}
-                            value={JSON.stringify(source)}
+                            value={JSON.stringify(source)||""}
                             readOnly
                             checked={selected_ids.includes(source.id)}   />
                               )
@@ -109,7 +109,7 @@ export default class Edit extends Component {
             name={'active'}  
             readOnly
             label={'active'}  
-            checked={this.props.object.active}   />
+            checked={this.props.object.active||false}   />
         </FormGroup>
           <FormGroup>
         <Button className="button-brand-primary" size="lg" onClick={this.handle_train}>Train </Button>
