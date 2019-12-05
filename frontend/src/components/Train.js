@@ -21,9 +21,9 @@ export default class extends Component {
   }
   render(){
     let articles = this.props.articlesList || [];
-    let article = articles.length > 0 ? articles[0] : ''
-    let title = article.title
-    let clean_text = article.clean_text
+    let article = articles.length > 0 ? articles[0] : {}
+    let title = article.title || ''
+    let clean_text = article.clean_text || ''
     let model = this.props.match.params.model
     let model_id = this.props.match.params.id
     const errors = this.props.articlesErrors || {}

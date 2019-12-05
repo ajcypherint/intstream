@@ -73,13 +73,13 @@ class RandomUnclassified(APIView):
         # either pass in source ids list to filter by or double nested
         model_id = self.request.query_params["model"]
         count = models.Article.objects.filter(organization=self.request.user.organization,
-                                             categories=None,
+                                             classification=None,
                                               source__mlmodel=int(model_id)).count()
         if count == 0:
             return Response({"error":"no articles found for model " + str(model_id)},status.HTTP_404_NOT_FOUND)
         random_index = randint(0, count - 1)
         object = models.Article.objects.filter(organization=self.request.user.organization,
-                                             categories=None,
+                                             classification=None,
                                                source__mlmodel=int(model_id))[random_index]
         serial = serializers.ArticleSerializer(models.Article.objects.filter(id=object.id),many=True)
         return Response(serial.data)
@@ -336,13 +336,13 @@ class ClassificationFilter(filters.FilterSet):
     #article__title = filters.CharFilter(lookup_expr='exact')
     class Meta:
         model = models.Classification
-        fields = ("id","mlmodel","target","article")
+        fields = ("id", "mlmodel", "target", "article")
 
 class ClassificationViewSet(OrgViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.ClassificationSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ("id","mlmodel","target","article")
+    filterset_fields = ("id", "mlmodel", "target", "article")
     filterset_class = ClassificationFilter
 
     def get_queryset(self):

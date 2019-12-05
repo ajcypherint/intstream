@@ -1,9 +1,8 @@
 import { isRSAA, apiMiddleware } from 'redux-api-middleware';
 
-import { TOKEN_RECEIVED, refreshAccessToken } from './actions/auth'
+import { TOKEN_RECEIVED, refreshAccessToken ,LOGIN_REQUEST} from './actions/auth'
 import { refreshToken, isAccessTokenExpired } from './reducers'
 
-//no fucking clue; this works
 export function createApiMiddleware() {//capture rsaa middlware calls
 
   return ({ dispatch, getState }) => { //store param
@@ -24,12 +23,12 @@ export function createApiMiddleware() {//capture rsaa middlware calls
             return next(nextAction) //token_request
           }
       }
-
       if(isRSAA(action)) {
         const state = getState(),
               token = refreshToken(state)
-
-        if(token && isAccessTokenExpired(state)) {
+        
+        // todo(aj) add: and not login action
+        if(token && isAccessTokenExpired(state) && action.type !== LOGIN_REQUEST) {
             postponedRSAAs.push(action)
             return  rsaaMiddleware(nextCheckPostoned)(refreshAccessToken(token)) //create middlware from above as next and return it 
         }
