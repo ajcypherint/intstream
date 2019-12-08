@@ -140,7 +140,7 @@ export class Main extends React.Component{
     const totalcount= this.props.articlesTotalCount ||0;
     const next = this.props.articleNext ;
     const previous = this.props.articlePrevious;
-    const errors = this.props.errors || {}
+    const errors = this.props.articlesErrors || {}
     return(
       <div className="container mt-2 col-sm-8 offset-sm-2" >
         <Form onSubmit={this.onSubmit} >
