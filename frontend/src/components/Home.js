@@ -144,7 +144,7 @@ export class Main extends React.Component{
     return(
       <div className="container mt-2 col-sm-8 offset-sm-2" >
         <Form onSubmit={this.onSubmit} >
-          {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+          {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
        <Row>
         <Col sm="4">
           <label  htmlFor={"start_id"}>{"Start Date"}</label>
@@ -196,7 +196,7 @@ export class Main extends React.Component{
                selections,
                this.props.setHomeSelections
              )}}>Title</td>
-           <td className="hover" onClick={(event)=>{this.changesort("source_name", 
+           <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
              DESC, 
              this.props.fetchArticles,
@@ -212,7 +212,6 @@ export class Main extends React.Component{
              this.props.setHomeSelections
 
            )}}>Date</td>
-             <td >Classifications</td>
              <td >Children</td>
            </tr>
          </thead>
@@ -230,9 +229,7 @@ export class Main extends React.Component{
                     {article.source.name}
                   </td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
-                  <td>{article.categories.length}</td>
-                  <td>{article.article_set.length}</td>
-
+                  <td>{article.match.length}</td>
                 </tr>)
              })
            }

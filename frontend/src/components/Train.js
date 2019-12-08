@@ -43,13 +43,13 @@ export default class extends Component {
       <FormGroup>
         <Row>
        <Col>
-        <Button  onClick={this.true} value={{model:model_id,class:true}} className="button-brand-primary" size="lg">True</Button>
+          <Button  onClick={this.true} value={{model:model_id,class:true}} className="button-brand-primary" size="lg">True</Button>
         </Col>
         <Col>
-        <Button  onClick={this.next} value={{model:model_id,class:false}} className="button-brand-primary" size="lg">False</Button>
+          <Button  onClick={this.next} value={{model:model_id,class:false}} className="button-brand-primary" size="lg">False</Button>
         </Col>
         <Col>
-          <Button  onClick={this.props.history.goBack} className="button-brand-primary" size="lg">Back</Button>
+          <Button  onClick={this.props.history.goBack} className="button-brand-primary" size="lg">Edit {model}</Button>
         </Col>
       </Row>
       </FormGroup>

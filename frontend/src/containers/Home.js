@@ -6,7 +6,7 @@ import {getArticles, clearArticles} from '../actions/articles'
 import {setPage, setHomeSelections, getAllSources} from '../actions/filter'
 import {getSources, clearSources } from '../actions/sources'
 
-const API = '/api/articles/'
+const API = '/api/homearticles/'
 const API_SOURCES = '/api/homefilter/'
 const ARTICLE_URI = "/article/"
 const mapStateToProps = (state) => ({

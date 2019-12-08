@@ -11,7 +11,6 @@ export const  getAll = (get)=>(putAll)=>(url, params) =>{
   return async(dispatch, getState) => {
       let extra_params = params || ''
       let totalresp = await dispatch(get(url,extra_params))
-      console.log("resp:" + JSON.stringify(totalresp))
       if (totalresp.error) {
       //  // the last dispatched action has errored, break out of the promise chain.
         throw new Error("Promise flow received action error", totalresp);

@@ -63,13 +63,10 @@ def process_entry(post_title,
         tfidf = vectorizer.fit_transform(articles_text)
         from sklearn.metrics.pairwise import linear_kernel
         cosine_similarities = linear_kernel(tfidf[-1], tfidf[0:-1]).flatten()
-        parent_ids= sorted(np.array(articles_id)[cosine_similarities > threshold])
-        if len(parent_ids) > 0:
-            parent = parent_ids[-1]
-            parent_article = models.Article.objects.get(pk=parent)
-            article.parent = parent_article
+        match_ids= sorted(np.array(articles_id)[cosine_similarities > threshold])
+        if len(match_ids) > 0:
+            article.match.add(match_ids)
             article.save()
-
 
 
 #@shared_task
@@ -82,7 +79,6 @@ def process_rss_source(source_url, source_id, organization_id):
     """
     previous_week = timezone.now()-datetime.timedelta(days=7)
     articles = models.Article.objects.filter(upload_date__gt=previous_week,
-                                             parent__isnull=True,
                                              organization=organization_id)
     article_ids = [article.id for article in articles]
     article_text = [read.HTMLRead(article.text).read() for article in articles]

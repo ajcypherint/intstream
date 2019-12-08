@@ -68,5 +68,6 @@ urlpatterns=[
     path('token-verify/', TokenVerifyView.as_view()),
     path('auth', include('rest_framework.urls')),
     path('unclass/',views.RandomUnclassified.as_view()),
+    path("homearticles/",views.HomePage.as_view()),
     path('schema/', g_schema(title="IntStream API"))
 ]

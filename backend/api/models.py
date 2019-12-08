@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from polymorphic.models import PolymorphicModel
 from django.contrib.auth.models import AbstractUser
+from django.db.models.constraints import UniqueConstraint
 
 import uuid
 import os
@@ -93,7 +94,7 @@ class Article(PolymorphicModel):
     title = models.TextField(max_length=256)
     text = models.TextField(blank=True)
     upload_date = models.DateTimeField(default=timezone.now)
-    parent=models.ForeignKey('self',blank=True, null=True, on_delete=models.SET_NULL)
+    match=models.ManyToManyField('self',blank=True, null=True )
     encoding = models.CharField(max_length=15,default='utf8')
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
@@ -102,6 +103,11 @@ class Article(PolymorphicModel):
 
 
 class Classification(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['article', 'mlmodel','organization'], name='unique_classification'),
+            ]
+
     article = models.ForeignKey(Article,on_delete=models.CASCADE)
     target = models.BooleanField('target classification')
     mlmodel = models.ForeignKey(MLModel, on_delete=models.CASCADE)
