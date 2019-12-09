@@ -1,5 +1,5 @@
 [Unit]
-Description=celery beat service
+Description=celery worker service
 After=network.target
 
 [Service]

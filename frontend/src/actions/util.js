@@ -19,9 +19,8 @@ export const  getAll = (get)=>(putAll)=>(url, params) =>{
       let total = totalresp.payload.count
       let pages = Math.ceil(total / PAGINATION)
       //ACTIVE, duh time for bed.
-      for ( let i=0; i < pages; i++){
-       let page = i +1
-       let actionResponse = await dispatch(get(url,extra_params+'&page='+page));
+      for ( let i=1; i <= pages; i++){
+       let actionResponse = await dispatch(get(url,extra_params+'&page='+i));
       //
        if (actionResponse.error) {
          // the last dispatched action has errored, break out of the promise chain.
