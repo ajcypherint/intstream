@@ -9,10 +9,13 @@ let START = new Date();
 START.setHours(0,0,0,0);
 
 let END= new Date();
-END.setHours(23,59,59,999);
+END.setHours(23, 59, 59, 999);
 
+// use articlestmp to load pages and retrieve data
 const initialState ={
   articles:[],
+  articlestmp:[],
+  children:{},
   loading:false,
   totalcount:0,
   errors: {},
