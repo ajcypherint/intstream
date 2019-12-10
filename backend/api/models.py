@@ -139,6 +139,7 @@ class RSSArticle(Article):
 
 
 class Settings(models.Model):
+    similarity_threshold = models.IntegerField()
     aws_key = models.CharField(max_length=100)
     aws_secret = models.CharField(max_length=250)
     aws_region = models.CharField(max_length=15)
