@@ -65,7 +65,7 @@ def process_entry(post_title,
         cosine_similarities = linear_kernel(tfidf[-1], tfidf[0:-1]).flatten()
         match_ids= sorted(np.array(articles_id)[cosine_similarities > threshold])
         if len(match_ids) > 0:
-            article.match.add(match_ids)
+            article.match.add(*match_ids)
             article.save()
 
 
@@ -79,7 +79,6 @@ def process_rss_source(source_url, source_id, organization_id):
     """
     previous_week = timezone.now()-datetime.timedelta(days=7)
     articles = models.Article.objects.filter(upload_date__gt=previous_week,
-                                             match=None,
                                              organization=organization_id)
     article_ids = [article.id for article in articles]
     article_text = [read.HTMLRead(article.text).read() for article in articles]
