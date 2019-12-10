@@ -181,16 +181,38 @@ class HomePage(APIView):
             cum_child_articles=Window(ArrayAgg("match__id", filter=Q(match__id__isnull=False)),
                                       order_by=F("id").asc())).distinct("id")
 
+        sql_no_cummulate = models.Article.objects.filter(
+                                                    **filter_kwargs
+                                                    ).order_by("id")
+
+        # sort by id and remove similar so results stay consistent between sorts on the frontend
         # avoid pulling in entire model into memory
-        results = []
-        for i in sql:
-            if i.cum_child_articles is None:
-                results.append({"id":i.id,
+        nested_results = []
+        nested_accumulate_children=[]
+
+        level1_results=[]
+        level1_accumulate_children=[]
+
+        all_results=[]
+        for i in sql_no_cummulate:
+            # use this for showing only level 1 down
+            if i.id not in level1_accumulate_children:
+                level1_results.append({"id":i.id,
                     "upload_date":i.upload_date,
                     "source__name":i.source.name,
                     "title":i.title})
-            elif i.id not in i.cum_child_articles:
-                results.append({"id":i.id,
+                if i.match is not None:
+                    level1_accumulate_children.extend([i.id for i in i.match.all()])
+            # nested links hidden
+            if i.id not in nested_accumulate_children:
+                nested_results.append({"id":i.id,
+                    "upload_date":i.upload_date,
+                    "source__name":i.source.name,
+                    "title":i.title})
+            if i.match is not None:
+                nested_accumulate_children.extend([i.id for i in i.match.all()])
+            # all results
+            all_results.append( {"id":i.id,
                     "upload_date":i.upload_date,
                     "source__name":i.source.name,
                     "title":i.title})
@@ -210,9 +232,9 @@ class HomePage(APIView):
         # cannot do in queryset because if the window function cannot be used in a when clause
         list_of_models=[]
         if order_by[0] != "-":
-            list_of_models = sorted(results, key=lambda x: x[order_by])
+            list_of_models = sorted(nested_results, key=lambda x: x[order_by])
         else:
-            list_of_models = sorted(results, key=lambda x: x[test_order_by],reverse=True)
+            list_of_models = sorted(nested_results, key=lambda x: x[test_order_by],reverse=True)
 
         # retrieve page slicing
         total_count = len(list_of_models)
