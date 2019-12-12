@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, Component } from 'react';
 import {FormGroup,Label, Alert, Button, Jumbotron,  Form } from 'reactstrap';
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
@@ -11,13 +11,13 @@ export default class Edit extends Component {
   constructor(props){
     super(props)
     this.state={
-      show:false
+      show:false,
+      visible:false,
     }
-    const errors = this.props.errors || {}
-    const err_name = errors.name ||'' 
-    this.handle_source_check = this.handle_source_check.bind(this)
+   this.handle_source_check = this.handle_source_check.bind(this)
     this.handleAdd = this.handleAdd.bind(this)
     this.handle_train = this.handle_train.bind(this)
+    this.onDismiss = this.onDismiss.bind(this)
     //todo; bring in all sources;
     //create list of sources ids already linked.
   }
@@ -29,13 +29,22 @@ export default class Edit extends Component {
     event.preventDefault() //prevent form submission
     this.setState({show:true})
   }
+  onDismiss(){
+    this.setState({visible:false})
+  }
   handle_source_check(event){
     const target = event.target;
     const checked = target.checked  //true
     const value = JSON.parse(target.value);
+
     let object_new = Object.assign({},this.props.sources[0])
     if(checked === true){
+        if (typeof(object_new.sources)==="undefined"){
+            object_new.sources = [value]
+
+        } else {
         object_new.sources.push(value)
+        }
     } else {
       let filtered = object_new.sources.filter((source)=>{
           return value.id !== source.id
@@ -53,17 +62,23 @@ export default class Edit extends Component {
       const selected_ids = sources.map(source=>source.id)
       const all_sources = this.props.allSources || []
       const all_loaded = this.props.allSrcLoaded || false
+      const errors = this.props.errors || {}
+      const err_name = errors.name ||'' 
+      const err_sources = errors.sources || false
+ 
       sources.sort((a, b) => (a.name> b.name) ? 1 : -1)
       let object_name = this.props.object.name || ''
       return (
         <Form onSubmit={this.props.onSubmit} >
+          {this.props.errors.sources?
+              <Alert  > Sources: {this.props.errors.sources}</Alert> : ""}
           <FormGroup>
           <TextInput   
             onChange={this.props.handleChange}
             name={'name'}  
             label={'Name'}  
             value={object_name}  
-            error={this.err_name} />
+            error={err_name} />
         </FormGroup>
           <FormGroup>
            {this.state.show ?

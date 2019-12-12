@@ -136,6 +136,19 @@ class MLModelSerializer(serializers.ModelSerializer):
 
         model = MLModel
 
+    def create(self, validated_data):
+        sources = validated_data["sources"]
+        ids = [source["id"] for source in sources]
+        ob = MLModel(
+            name=validated_data["name"],
+            active=validated_data.get("active",False),
+            organization=validated_data["organization"]
+        )
+        ob.save()
+        ob.sources.set(ids, clear=True)
+        ob.save()
+        return ob
+
     def update(self, instance, validated_data):
         sources = validated_data.pop("sources")
         ids = [source["id"] for source in sources]

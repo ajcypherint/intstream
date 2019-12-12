@@ -5,6 +5,7 @@ import categories, * as fromCategories from './categories.js'
 import sources, * as fromSources from  './sources.js'
 import models, * as fromModels from  './models.js'
 import articles, * as fromArticles from  './articles.js'
+import childArticles, * as fromChildArticles from  './children.js'
 import randomArticle, * as fromRandomArticle from  './randomArticle.js'
 import filter, * as fromFilter from  './filter.js'
 import list, * as fromList from './listSelections.js'
@@ -18,7 +19,8 @@ export default combineReducers({
   articles:articles,
   models:models,
   list:list,
-  randomArticle:randomArticle
+  randomArticle:randomArticle,
+  childArticles:childArticles
 })
 
 //fromAuth
@@ -78,6 +80,17 @@ export const getListOrderDir = state => fromList.getOrderDir(state.list)
 export const getRandomArticle = state => fromRandomArticle.articles(state.randomArticle)
 export const getRandomErrors= state => fromRandomArticle.errors(state.randomArticle)
 export const getRandomLoading = state => fromRandomArticle.loading(state.randomArticle)
+
+//children articles
+export const getChildArticles= state => fromChildArticles.articles(state.articles)
+export const getChildArticleErrors = state => fromChildArticles.errors(state.articles)
+export const getChildArticleLoading = state => fromChildArticles.loading(state.articles)
+export const getChildArticleSaving = state => fromChildArticles.saving(state.articles)
+export const getChildArticleTotalCount = state => fromChildArticles.totalcount(state.articles)
+export const getChildArticleNextPage = state => fromChildArticles.nextPage(state.articles)
+export const getChildArticlePreviousPage = state => fromChildArticles.previousPage(state.articles)
+export const getChildren = state => fromChildArticles.children(state.articles)
+
 
 export function withAuth(headers={}) {
   return (state) => ({

@@ -71,7 +71,7 @@ class JobSource(Source):
 
 class MLModel(models.Model):
     sources = models.ManyToManyField(Source)
-    name = models.CharField(max_length=250)
+    name = models.CharField(max_length=250, unique=True)
     train = models.BooleanField(default=True)
     created_date = models.DateTimeField(default=timezone.now)
     base64_encoded_model = models.FileField(blank=True,null=True)
