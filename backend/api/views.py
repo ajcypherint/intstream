@@ -202,25 +202,28 @@ class HomePage(APIView):
         for i in sql_no_cummulate.iterator():
             # use this for showing only level 1 down
             if i["id"] not in level1_accumulate_children:
-                level1_results.append({"id":i["id"],
-                    "upload_date": i["upload_date"],
-                    "source__name": i["source__name"],
-                    "title": i["title"]})
+                if i["id"] not in level1_results:
+                    level1_results.append({"id":i["id"],
+                        "upload_date": i["upload_date"],
+                        "source__name": i["source__name"],
+                        "title": i["title"]})
                 if i["match"] is not None:
                     level1_accumulate_children.append(i["match"])
             # nested links hidden
             if i["id"] not in nested_accumulate_children:
-                nested_results.append({"id": i["id"],
-                    "upload_date": i["upload_date"],
-                    "source__name": i["source__name"],
-                    "title": i["title"]})
+                if i["id"] not in nested_results:
+                    nested_results.append({"id": i["id"],
+                        "upload_date": i["upload_date"],
+                        "source__name": i["source__name"],
+                        "title": i["title"]})
             if i["match"] is not None:
                 nested_accumulate_children.append(i["match"])
             # all results
-            all_results.append( {"id": i["id"],
-                    "upload_date": i["upload_date"],
-                    "source__name": i["source__name"],
-                    "title": i["title"]})
+            if i["id"] not in all_results:
+                all_results.append( {"id": i["id"],
+                        "upload_date": i["upload_date"],
+                        "source__name": i["source__name"],
+                        "title": i["title"]})
 
         #results = [{"id":i.id,
         #            "upload_date":i.upload_date,
