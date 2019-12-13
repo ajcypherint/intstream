@@ -183,7 +183,7 @@ class HomePage(APIView):
 
         sql_no_cummulate = models.Article.objects.filter(
                                                     **filter_kwargs
-                                                    ).order_by("id")
+                                                    ).order_by("id").prefetch_related("source")
 
         # sort by id and remove similar so results stay consistent between sorts on the frontend
         # avoid pulling in entire model into memory
