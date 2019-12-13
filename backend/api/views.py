@@ -222,7 +222,7 @@ class HomePage(APIView):
         level1_accumulate_children=[]
 
         all_results=[]
-        merged_results = self.merge_values(sql_no_cummulate)
+        merged_results = self.merge_values(sql_no_cummulate.iterator())
         for i in merged_results:
             # use this for showing only level 1 down
             if i["id"] not in level1_accumulate_children:
