@@ -183,7 +183,12 @@ class HomePage(APIView):
 
         sql_no_cummulate = models.Article.objects.filter(
                                                     **filter_kwargs
-                                                    ).order_by("id").select_related("source")
+                                                    ).order_by("id").\
+            select_related("source").values("upload_date",
+                                             "source__name",
+                                             "title",
+                                             "id",
+                                             "match")
 
         # sort by id and remove similar so results stay consistent between sorts on the frontend
         # avoid pulling in entire model into memory
@@ -194,28 +199,28 @@ class HomePage(APIView):
         level1_accumulate_children=[]
 
         all_results=[]
-        for i in sql_no_cummulate:
+        for i in sql_no_cummulate.iterator():
             # use this for showing only level 1 down
-            if i.id not in level1_accumulate_children:
-                level1_results.append({"id":i.id,
-                    "upload_date":i.upload_date,
-                    "source__name":i.source.name,
-                    "title":i.title})
-                if i.match is not None:
-                    level1_accumulate_children.extend([i.id for i in i.match.all()])
+            if i["id"] not in level1_accumulate_children:
+                level1_results.append({"id":i["id"],
+                    "upload_date": i["upload_date"],
+                    "source__name": i["source__name"],
+                    "title": i["title"]})
+                if i["match"] is not None:
+                    level1_accumulate_children.append(i["match"])
             # nested links hidden
-            if i.id not in nested_accumulate_children:
-                nested_results.append({"id":i.id,
-                    "upload_date":i.upload_date,
-                    "source__name":i.source.name,
-                    "title":i.title})
-            if i.match is not None:
-                nested_accumulate_children.extend([i.id for i in i.match.all()])
+            if i["id"] not in nested_accumulate_children:
+                nested_results.append({"id": i["id"],
+                    "upload_date": i["upload_date"],
+                    "source__name": i["source__name"],
+                    "title": i["title"]})
+            if i["match"] is not None:
+                nested_accumulate_children.append(i["match"])
             # all results
-            all_results.append( {"id":i.id,
-                    "upload_date":i.upload_date,
-                    "source__name":i.source.name,
-                    "title":i.title})
+            all_results.append( {"id": i["id"],
+                    "upload_date": i["upload_date"],
+                    "source__name": i["source__name"],
+                    "title": i["title"]})
 
         #results = [{"id":i.id,
         #            "upload_date":i.upload_date,
