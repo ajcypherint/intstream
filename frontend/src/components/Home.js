@@ -86,18 +86,15 @@ export class Main extends React.Component{
     )
     // update cascading filters
     this.props.setHomeSelections({
-      orderdir:ASC,
-      ordercol:'',
-      sourceChosen:'',
       page:1,
       startDate:startDate,
       endDate:endDate,
       })
     //fetch articles 
     this.props.fetchArticles(this.dateString(
-      ASC,// orderdir
-      '', // ordercol 
-      '', // sourceChosen
+      this.props.homeSelections.orderdir,// orderdir
+      this.props.homeSelections.ordercol, // ordercol 
+      this.props.homeSelections.sourceChosen,// sourceChosen
       1,  // page
       startDate,
       endDate
@@ -141,6 +138,7 @@ export class Main extends React.Component{
     const next = this.props.articleNext ;
     const previous = this.props.articlePrevious;
     const errors = this.props.articlesErrors || {}
+    const ids = this.props.sourcesList.map(a=>a.id.toString()) ||[]
     return(
       <div className="container mt-2 col-sm-8 offset-sm-2" >
         <Form onSubmit={this.onSubmit} >
@@ -162,11 +160,13 @@ export class Main extends React.Component{
          <Col sm="4">
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
-           <Input type="select" name="Source" id="source_id" onChange={this.handleSourceChange}>
+           <Input type="select" name="Source" value={selections.sourceChosen} id="source_id" onChange={this.handleSourceChange}>
              <option value={""}>---</option>
+             {ids.includes(selections.sourceChosen)===false && selections.sourceChosen!==''? 
+               <option value={selections.sourceChosen}>{selections.sourceChosen}</option>:''}
              {this.props.sourcesList.map((source)=>{
                return ( <option key={source.id} 
-                                value={source.id} selected={source.id.toString() === selections.sourceChosen? true: false}>
+                                value={source.id}>
                                 {source.name}</option>)
              })
              }
