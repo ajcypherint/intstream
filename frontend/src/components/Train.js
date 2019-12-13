@@ -4,7 +4,6 @@ import {Alert, Form, Row, Col, Button, FormGroup, Label, Input} from 'reactstrap
 export default class extends Component {
   constructor(props){
     super(props)
-    this.next = this.next.bind(this)
   }
   componentDidMount(){
     // if  not ADD form
@@ -13,10 +12,9 @@ export default class extends Component {
        } 
  
   }
-  next(event){
+  next(classification, event){
     // todo(aj)
-    let model_id = event.target.value.model
-    let value = event.target.value.class
+    let model_id = event.target.value
     this.props.fetchArticles(model_id) 
   }
   render(){
@@ -43,10 +41,10 @@ export default class extends Component {
       <FormGroup>
         <Row>
        <Col>
-          <Button  onClick={this.true} value={{model:model_id,class:true}} className="button-brand-primary" size="lg">True</Button>
+          <Button  onClick={this.next.bind(this,false)} value={model_id} className="button-brand-primary" size="lg">True</Button>
         </Col>
         <Col>
-          <Button  onClick={this.next} value={{model:model_id,class:false}} className="button-brand-primary" size="lg">False</Button>
+          <Button  onClick={this.next.bind(this,true)} value={model_id} className="button-brand-primary" size="lg">False</Button>
         </Col>
         <Col>
           <Button  onClick={this.props.history.goBack} className="button-brand-primary" size="lg">Edit {model}</Button>
