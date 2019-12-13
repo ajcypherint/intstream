@@ -24,6 +24,8 @@ from rest_framework.schemas import AutoSchema
 from django.db.models import F, Func, Window, Q, Case, When
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.conf import settings
+import itertools
+
 # Create your views here.
 
 class MLModelFilter(filters.FilterSet):
@@ -155,6 +157,27 @@ class HomePage(APIView):
                                  }
 
                              ))
+
+    def merge_values(self, values):
+        grouped_results = itertools.groupby(values, key=lambda value: value['id'])
+        merged_values = []
+        for k, g in grouped_results:
+            groups = list(g)
+            merged_value = {}
+            for group in groups:
+                for key, val in group.items():
+                    if not merged_value.get(key):
+                        merged_value[key] = val
+                    elif val != merged_value[key]:
+                        if isinstance(merged_value[key], list):
+                            if val not in merged_value[key]:
+                                merged_value[key].append(val)
+                        else:
+                            old_val = merged_value[key]
+                            merged_value[key] = [old_val, val]
+            merged_values.append(merged_value)
+        return merged_values
+
     @swagger_auto_schema(manual_parameters=[source_id,start_date,end_date], responses={200:response,404:error})
     def get(self, request, format=None):
         # todo(aj) filter by model id
@@ -199,7 +222,8 @@ class HomePage(APIView):
         level1_accumulate_children=[]
 
         all_results=[]
-        for i in sql_no_cummulate.iterator():
+        merged_results = self.merge_values(sql_no_cummulate)
+        for i in merged_results:
             # use this for showing only level 1 down
             if i["id"] not in level1_accumulate_children:
                 if i["id"] not in level1_results:
@@ -208,7 +232,10 @@ class HomePage(APIView):
                         "source__name": i["source__name"],
                         "title": i["title"]})
                 if i["match"] is not None:
-                    level1_accumulate_children.append(i["match"])
+                    if isinstance(i["match"],int):
+                        level1_accumulate_children.append(i["match"])
+                    else:
+                        level1_accumulate_children.extend(i["match"])
             # nested links hidden
             if i["id"] not in nested_accumulate_children:
                 if i["id"] not in nested_results:
@@ -217,7 +244,10 @@ class HomePage(APIView):
                         "source__name": i["source__name"],
                         "title": i["title"]})
             if i["match"] is not None:
-                nested_accumulate_children.append(i["match"])
+                if isinstance(i["match"],int):
+                    nested_accumulate_children.append(i["match"])
+                else:
+                    nested_accumulate_children.extend(i["match"])
             # all results
             if i["id"] not in all_results:
                 all_results.append( {"id": i["id"],
