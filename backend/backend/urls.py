@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from django.http import HttpResponseRedirect
+def redirect(request):
+    return HttpResponseRedirect("/intstream")
+
 API = 'api/'
 urlpatterns = [
+    path("",redirect),
     path('admin/', admin.site.urls),
     path(API,include('api.urls')),
     path('accounts/',include('django.contrib.auth.urls'))
