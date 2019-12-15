@@ -25,14 +25,14 @@ export class Main extends React.Component{
     this.fetch = this.fetch.bind(this)
   }
   componentDidMount() {
-    let selections = this.props.homeSelections
+    let selections = this.props.parent.homeSelections
     //todo() ordering
     this.props.fetchAllSources(
     "start_upload_date="+selections.startDate.toISOString()+
     "&end_upload_date="+selections.endDate.toISOString()+
     "&source__active=true"
     )
-    this.props.fetchArticles(this.dateString(
+    this.props.parent_func.fetchArticles(this.dateString(
         selections.orderdir,
         selections.ordercol,
         selections.sourceChosen,
@@ -41,16 +41,13 @@ export class Main extends React.Component{
         selections.endDate
         )) 
   }
-  showArticle(event){
-    event.preventDefault()
-    
-  }
+  
   handleStartChange(date){
-    let selections = this.props.homeSelections
+    let selections = this.props.parent.homeSelections
     this.updateDate(date,selections.endDate, true)
   }
   handleEndChange(date){
-    let selections = this.props.homeSelections
+    let selections = this.props.parent.homeSelections
     this.updateDate(selections.startDate,date,false)
   }
 
@@ -85,16 +82,16 @@ export class Main extends React.Component{
     "&source__active=true"
     )
     // update cascading filters
-    this.props.setHomeSelections({
+    this.props.parent_func.setHomeSelections({
       page:1,
       startDate:startDate,
       endDate:endDate,
       })
     //fetch articles 
-    this.props.fetchArticles(this.dateString(
-      this.props.homeSelections.orderdir,// orderdir
-      this.props.homeSelections.ordercol, // ordercol 
-      this.props.homeSelections.sourceChosen,// sourceChosen
+    this.props.parent_func.fetchArticles(this.dateString(
+      this.props.parent.homeSelections.orderdir,// orderdir
+      this.props.parent.homeSelections.ordercol, // ordercol 
+      this.props.parent.homeSelections.sourceChosen,// sourceChosen
       1,  // page
       startDate,
       endDate
@@ -104,12 +101,12 @@ export class Main extends React.Component{
   handleSourceChange(event){
     //last filter.  do not need to unset others
     event.preventDefault()
-    let selections = this.props.homeSelections
-    this.props.setHomeSelections({
+    let selections = this.props.parent.homeSelections
+    this.props.parent_func.setHomeSelections({
       sourceChosen:event.target.value,
       page:1
       })
-    this.props.fetchArticles(dateString(selections.orderdir,
+    this.props.parent_func.fetchArticles(dateString(selections.orderdir,
         selections.ordercol,
         event.target.value,
         1,
@@ -121,7 +118,7 @@ export class Main extends React.Component{
     event.preventDefault()
   } 
   fetch(selections,page){
-    this.props.fetchArticles(dateString(
+    this.props.parent_func.fetchArticles(dateString(
             selections.orderdir,
             selections.ordercol,
             selections.sourceChosen,
@@ -131,13 +128,13 @@ export class Main extends React.Component{
           ))
   }
   render(){
-    let selections = this.props.homeSelections
-    const articles = this.props.articlesList || [];
-    const loading = typeof this.props.articlesLoading === 'undefined' ? true : this.props.articlesLoading;
-    const totalcount= this.props.articlesTotalCount ||0;
-    const next = this.props.articleNext ;
-    const previous = this.props.articlePrevious;
-    const errors = this.props.articlesErrors || {}
+    let selections = this.props.parent.homeSelections
+    const articles = this.props.parent.articlesList || [];
+    const loading = typeof this.props.parent.articlesLoading === 'undefined' ? true : this.props.parent.articlesLoading;
+    const totalcount= this.props.parent.articlesTotalCount ||0;
+    const next = this.props.parent.articleNext ;
+    const previous = this.props.parent.articlePrevious;
+    const errors = this.props.parent.articlesErrors || {}
     const ids = this.props.sourcesList.map(a=>a.id.toString()) ||[]
     return(
       <div className="container mt-2 col-sm-8 offset-sm-2" >
@@ -180,9 +177,9 @@ export class Main extends React.Component{
            next,
            previous,
            this.fetch,
-           this.props.fetchArticlesFullUri,
-           this.props.homeSelections,
-           this.props.setPage)}
+           this.props.parent_func.fetchArticlesFullUri,
+           this.props.parent.homeSelections,
+           this.props.parent_func.setPage)}
        </Row>
         </Form>
 
@@ -192,24 +189,24 @@ export class Main extends React.Component{
              <td className="hover" onClick={(event)=>{this.changesort("title", 
                ASC, 
                DESC, 
-               this.props.fetchArticles,
+               this.props.parent_func.fetchArticles,
                selections,
-               this.props.setHomeSelections
+               this.props.parent_func.setHomeSelections
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
              DESC, 
-             this.props.fetchArticles,
+             this.props.parent_func.fetchArticles,
              selections,
-               this.props.setHomeSelections
+               this.props.parent_func.setHomeSelections
               )}}> Source </td>
 
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
-             this.props.fetchArticles,
+             this.props.parent_func.fetchArticles,
              selections,
-             this.props.setHomeSelections
+             this.props.parent_func.setHomeSelections
 
            )}}>Date</td>
              <td >Children</td>
