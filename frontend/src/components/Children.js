@@ -106,17 +106,16 @@ export class Children extends React.Component{
                        <td >{article.match.length}</td>
                           }
                 </tr>
-                   { this.props.level === 0 && article.id === parent_trail[parent_trail.length-1]?
-                            // //stop a if no childparent in level 1
+                   { this.props.level === 0 && article.id === parent_trail[0]?
+                      <tr>
                             <Children parent={this.props.children}
                              parent_func={this.props.children_func}
                              level={this.props.level+1}/>
+                      </tr>
                              :
                              null
                    }                    
  
-                 <tr>
-                 </tr>
                 </tbody>
                  )
              })
