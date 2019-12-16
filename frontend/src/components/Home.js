@@ -10,6 +10,7 @@ import Paginate from './Paginate'
 import {PAGINATION, dateString, addDays} from '../util/util'
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
+import {Children} from "./Children"
 
 export class Main extends React.Component{
   constructor(props){
@@ -20,9 +21,7 @@ export class Main extends React.Component{
     this.handleEndChange = this.handleEndChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.changesort = changesort.bind(this)
-    this.paginate = Paginate.bind(this)
     this.updateDate = this.updateDate.bind(this)
-    this.fetch = this.fetch.bind(this)
   }
   componentDidMount() {
     let selections = this.props.parent.homeSelections
@@ -172,73 +171,11 @@ export class Main extends React.Component{
           </div>
         </Col>
     </Row>
-       <Row>
-         {this.paginate(totalcount,
-           next,
-           previous,
-           this.fetch,
-           this.props.parent_func.fetchArticlesFullUri,
-           this.props.parent.homeSelections,
-           this.props.parent_func.setPage)}
-       </Row>
-        </Form>
-
-       <Table>
-         <thead>
-           <tr>
-             <td className="hover" onClick={(event)=>{this.changesort("title", 
-               ASC, 
-               DESC, 
-               this.props.parent_func.fetchArticles,
-               selections,
-               this.props.parent_func.setHomeSelections
-             )}}>Title</td>
-           <td className="hover" onClick={(event)=>{this.changesort("source__name", 
-             ASC, 
-             DESC, 
-             this.props.parent_func.fetchArticles,
-             selections,
-               this.props.parent_func.setHomeSelections
-              )}}> Source </td>
-
-           <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
-             ASC, 
-             DESC, 
-             this.props.parent_func.fetchArticles,
-             selections,
-             this.props.parent_func.setHomeSelections
-
-           )}}>Date</td>
-             <td >Children</td>
-           </tr>
-         </thead>
-         { !loading ?
-         <tbody>
-           {
-             articles.map((article)=>{
-                return (<tr key={article.id}>
-                  <td>
-                      <Link key={article.id+"link"} style={{color:'black'}} to={this.props.articleuri+ article.id}>
-                    {article.title}
-                        </Link>
-                      </td>
-                  <td >
-                    {article.source.name}
-                  </td>
-                  <td>{(new Date(article.upload_date)).toLocaleString()}</td>
-                  <td>{article.match.length}</td>
-                </tr>)
-             })
-           }
-        </tbody>
-             :<tbody><tr><td><span className="spinner-border" role="status">
-               <span className="sr-only">Loading...</span></span>
-           </td>
-           </tr>
-         </tbody>
-             }
-       </Table>
-    </div>
+    <Children parent_func={this.props.parent_func}
+      level={0}
+      parent={this.props.parent}/>
+  </Form>
+   </div>
     )
  
  }
