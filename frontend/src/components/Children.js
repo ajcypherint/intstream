@@ -47,6 +47,7 @@ export class Children extends React.Component{
       
       <tbody>
         <tr>
+          <td>
          {this.paginate(totalcount,
            next,
            previous,
@@ -54,8 +55,10 @@ export class Children extends React.Component{
            this.props.parent_func.fetchArticlesFullUri,
            this.props.parent.homeSelections,
            this.props.parent_func.setPage)}
+         </td>
        </tr>
       <tr>
+        <td>
        <Table>
          <thead>
            <tr>
@@ -126,6 +129,7 @@ export class Children extends React.Component{
          </tbody>
              }
        </Table>
+     </td>
       </tr>
     </tbody>
     )
