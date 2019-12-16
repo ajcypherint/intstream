@@ -8,6 +8,7 @@ import articles, * as fromArticles from  './articles.js'
 import childArticles, * as fromChildArticles from  './children.js'
 import randomArticle, * as fromRandomArticle from  './randomArticle.js'
 import filter, * as fromFilter from  './filter.js'
+import childFilter, * as fromChildFilter from  './childFilter.js'
 import list, * as fromList from './listSelections.js'
 
 export default combineReducers({
@@ -20,7 +21,8 @@ export default combineReducers({
   models:models,
   list:list,
   randomArticle:randomArticle,
-  childArticles:childArticles
+  childArticles:childArticles,
+  childFilter:childFilter
 })
 
 //fromAuth
@@ -82,14 +84,18 @@ export const getRandomErrors= state => fromRandomArticle.errors(state.randomArti
 export const getRandomLoading = state => fromRandomArticle.loading(state.randomArticle)
 
 //children articles
-export const getChildArticles= state => fromChildArticles.articles(state.articles)
-export const getChildArticleErrors = state => fromChildArticles.errors(state.articles)
-export const getChildArticleLoading = state => fromChildArticles.loading(state.articles)
-export const getChildArticleSaving = state => fromChildArticles.saving(state.articles)
-export const getChildArticleTotalCount = state => fromChildArticles.totalcount(state.articles)
-export const getChildArticleNextPage = state => fromChildArticles.nextPage(state.articles)
-export const getChildArticlePreviousPage = state => fromChildArticles.previousPage(state.articles)
-export const getChildren = state => fromChildArticles.children(state.articles)
+export const getChildArticles= state => fromChildArticles.articles(state.childArticles)
+export const getChildArticleErrors = state => fromChildArticles.errors(state.childArticles)
+export const getChildArticleLoading = state => fromChildArticles.loading(state.childArticles)
+export const getChildArticleTotalCount = state => fromChildArticles.totalcount(state.childArticles)
+export const getChildArticleNextPage = state => fromChildArticles.nextPage(state.childArticles)
+export const getChildArticlePreviousPage = state => fromChildArticles.previousPage(state.childArticles)
+export const getParentTrail = state => fromChildArticles.parentTrail(state.childArticles)
+
+//childfilter
+export const getChildHomeArticleSelections = state => fromChildFilter.getHomeSelections(state.childFilter)
+export const getChildFilterSources= state => fromChildFilter.sources(state.childFilter)
+
 
 
 export function withAuth(headers={}) {

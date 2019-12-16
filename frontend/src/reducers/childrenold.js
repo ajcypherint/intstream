@@ -5,16 +5,21 @@ import * as childArticles from '../actions/childArticles';
 import  URL  from  'url-parse'
 import {ASC, DESC} from "../util/util"
 
-
+const setChild = (state, parent, childArticles, loading, totalcount, errors, nextpage, previouspage, saving)=>{
+  let child = {  articles:articles,
+    loading:loading,
+    totalcount:totalcount,
+    errors: errors,
+    nextpage:nextpage,
+    previouspage:previouspage,
+    saving:saving
+  }
+  let state_new = Object.assign(state,{})
+  state_new[parent]=child
+  return state
+}
 // use articlestmp to load pages and retrieve data
 const initialState ={
-  parentTrail:[],
-  articles:[],
-  loading:false,
-  totalcount:0,
-  errors:{},
-  nextpage:null,
-  previouspage:null,
 
 }
 
@@ -31,53 +36,50 @@ export default (state=initialState, action) => {
 
     case childArticles.GET_ARTICLES_REQUEST:
       {
-        let new_parent_trail = state.parentTrail.concat(action.meta.parent)
-        return {
-          ...state,
-          parentTrail:new_parent_trail,
-          articles:[],
-          loading:true,
-          totalcount:0,
-          errors: {},
-          nextpage:null,
-          previouspage:null,
-          }
+        let children_new = Object.assign(initialState, {})
+        children_new[action.payload.parent]= { articles:[],
+                                                loading:true,
+                                                totalcount:0,
+                                                errors: {},
+                                                nextpage:null,
+                                                previouspage:null,
+                                                saving:false
+                                                }
+
+        return children_new
       }
 
     case childArticles.GET_ARTICLES_SUCCESS:
       {
-        // todo(aj) filter out any id in parentTrail
+        //let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
+        //#let newarticlesourcesData= {...result}
       return {
         ...state,
         articles:action.payload.results,
-        loading:false,
         totalcount:action.payload.count,
-        errors: {},
+        loading:false,
         nextpage:action.payload.next,
         previouspage:action.payload.previous,
-         }
+        errors: {},
+      }
       }
     case childArticles.GET_ARTICLES_FAILURE:
       {
-        var new_parent_trail = state.parentTrail.pop() //remove last entry
       return {
         ...state,
-        parentTrail:new_parent_trail,
         articles:[],
-        loading:false,
         totalcount:0,
-        errors: action.payload.response || {'non_field_errors': action.payload.statusText},
+        loading:false,
         nextpage:null,
         previouspage:null,
-        }
+         errors: action.payload.response || {'non_field_errors': action.payload.statusText},
+      }
       }
     default:
       return state
 
   }
 }
-
-
 
 export function totalcount(state){
   return state.totalcount;
@@ -88,7 +90,10 @@ export function articles(state) {
     return  state.articles
   }
 }
+export function children(state){
+  return state.children
 
+}
 export function nextPage(state){
   if (state.nextpage != null){
     let fullUrl = new URL(state.nextpage)
@@ -111,11 +116,12 @@ export function previousPage(state){
   }
 
 }
-export function parentTrail(state) {
-    return  state.parentTrail
-}
+
 export function loading(state) {
   return  state.loading
+}
+export function saving(state) {
+  return  state.saving
 }
 
 export function errors(state) {

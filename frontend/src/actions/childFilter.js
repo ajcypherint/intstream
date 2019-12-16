@@ -2,7 +2,7 @@ import { RSAA } from 'redux-api-middleware';
 import { withAuth } from '../reducers'
 import _ from 'lodash';
 import  URL  from  'url-parse'
-import {setParams} from './util'
+import {setParams, getAll} from './util'
 import {PAGINATION} from '../util/util'
 
 export const HOME = '@@childfilter/HOME';
@@ -27,7 +27,7 @@ export const setChildHomeSelections = (data)=>{
 }
 
 
-export const getChildfilter= (url, params=undefined)=>{
+export const getChildFilter= (url, params=undefined)=>{
   // filters - list[string]
   url = setParams(url,params)
   return {
