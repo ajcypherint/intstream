@@ -94,7 +94,6 @@ export const getParentTrail = state => fromChildArticles.parentTrail(state.child
 
 //childfilter
 export const getChildHomeArticleSelections = state => fromChildFilter.getHomeSelections(state.childFilter)
-export const getChildFilterSources= state => fromChildFilter.sources(state.childFilter)
 
 
 

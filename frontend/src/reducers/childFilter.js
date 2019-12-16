@@ -53,7 +53,7 @@ export default (state=initialState, action) => {
 
 }
 
-export function getChildHomeSelections(state){
+export function getHomeSelections(state){
   return  state.homeSelections
 }
 

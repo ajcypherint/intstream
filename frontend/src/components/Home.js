@@ -173,6 +173,7 @@ export class Main extends React.Component{
     </Row>
     <Children parent_func={this.props.parent_func}
       level={0}
+      child={this.props.child}
       parent={this.props.parent}/>
   </Form>
    </div>

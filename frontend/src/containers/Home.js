@@ -22,7 +22,7 @@ const mapStateToProps = (state) => ({
     articleuri:ARTICLE_URI,
   },
   child:{
-    children:reducers.getChildArticles(state),
+    parentTrail:reducers.getParentTrail(state)
   }
 })
 
