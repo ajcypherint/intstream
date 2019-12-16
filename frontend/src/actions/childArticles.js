@@ -25,7 +25,7 @@ export const setChildren = (articles)=>{
   }
 }
 
-export const getArticles= (url, params=undefined)=>{
+export const getChildArticles= (url, params=undefined)=>{
   // filters - list[string]
   url = setParams(url,params)
   return {
@@ -40,35 +40,4 @@ export const getArticles= (url, params=undefined)=>{
   }
 }
 }
-
-export const  getAll=(parent,url,params) =>{
-  return async(dispatch, getState) => {
-      let extra_params = params || ''
-      let totalresp = await dispatch(getArticles(url,extra_params))
-      if (totalresp.error) {
-      //  // the last dispatched action has errored, break out of the promise chain.
-        throw new Error("Promise flow received action error", totalresp);
-      }
-      let all = []
-      let total = totalresp.payload.count
-      let pages = Math.ceil(total / PAGINATION)
-      //ACTIVE, duh time for bed.
-      for ( let i=1; i <= pages; i++){
-       let actionResponse = await dispatch(getArticles(url,extra_params+'&page='+i));
-      //
-       if (actionResponse.error) {
-         // the last dispatched action has errored, break out of the promise chain.
-         throw new Error("Promise flow received action error", actionResponse);
-       }
-
-       all = all.concat(actionResponse.payload.results)
-        
-      }
-
-      // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
-      return await dispatch(setChildren(all, total,parent));
-    }
-}
-
-
 

@@ -3,7 +3,9 @@ import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import { Main} from '../components/Home'
 import {getArticles, clearArticles} from '../actions/articles'
+import {getChildArticles } from '../actions/childArticles'
 import {setPage, setHomeSelections, getAllSources} from '../actions/filter'
+import {setChildPage, setChildHomeSelections} from '../actions/childFilter'
 import {getSources, clearSources } from '../actions/sources'
 
 const API = '/api/homearticles/'
@@ -22,7 +24,15 @@ const mapStateToProps = (state) => ({
     articleuri:ARTICLE_URI,
   },
   child:{
-    parentTrail:reducers.getParentTrail(state)
+    parentTrail:reducers.getParentTrail(state),
+    homeSelections:reducers.getChildHomeArticleSelections(state),
+    articlesList:reducers.getChildArticles(state),
+    articlesLoading:reducers.getChildArticleLoading(state),
+    articlesErrors:reducers.getChildArticleErrors(state),
+    articlesTotalCount:reducers.getChildArticleTotalCount(state),
+    articleNext:reducers.getChildArticleNextPage(state),
+    articlePrevious:reducers.getChildArticlePreviousPage(state),
+    articleuri:ARTICLE_URI,
   }
 })
 
@@ -34,6 +44,13 @@ const mapDispatchToProps = (dispatch) => ({
     fetchArticles: (params=undefined) => dispatch(getArticles(API,params)),
     setHomeSelections: (data)=>dispatch(setHomeSelections(data)),
     setPage:(page)=>dispatch(setPage(page)),
+  },
+  child:{
+    fetchArticlesFullUri: (url,params=undefined) => dispatch(getChildArticles(url,params)),
+    fetchArticles: (params=undefined) => dispatch(getChildArticles(API,params)),
+    setHomeSelections: (data)=>dispatch(setChildHomeSelections(data)),
+    setPage:(page)=>dispatch(setChildPage(page)),
+ 
   }
 
 })

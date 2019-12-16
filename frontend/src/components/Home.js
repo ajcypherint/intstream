@@ -171,10 +171,12 @@ export class Main extends React.Component{
           </div>
         </Col>
     </Row>
+    <Table>
     <Children parent_func={this.props.parent_func}
       level={0}
       child={this.props.child}
       parent={this.props.parent}/>
+  </Table>
   </Form>
    </div>
     )

@@ -44,9 +44,9 @@ export class Children extends React.Component{
     let child = this.props.child || {}
     const parent_trail = child.parentTrail || [-1]
     return (
-      <div>
- <Form>
-       <Row>
+      
+      <tbody>
+        <tr>
          {this.paginate(totalcount,
            next,
            previous,
@@ -54,9 +54,8 @@ export class Children extends React.Component{
            this.props.parent_func.fetchArticlesFullUri,
            this.props.parent.homeSelections,
            this.props.parent_func.setPage)}
-       </Row>
-        </Form>
-
+       </tr>
+      <tr>
        <Table>
          <thead>
            <tr>
@@ -87,12 +86,12 @@ export class Children extends React.Component{
            </tr>
          </thead>
          { !loading ?
-         <tbody>
-           {
              articles.map((article)=>{
-                return (<tr key={article.id}>
+               return (
+                <tbody key={article.id}>
+                 <tr key={article.id}>
                   <td>
-                      <Link key={article.id+"link"} style={{color:'black'}} to={this.props.articleuri+ article.id}>
+                      <Link key={article.id+"link"} style={{color:'black'}} to={this.props.parent.articleuri+ article.id}>
                     {article.title}
                         </Link>
                       </td>
@@ -106,18 +105,21 @@ export class Children extends React.Component{
                            :
                        <td >{article.match.length}</td>
                           }
+                </tr>
                    { this.props.level === 0 && article.id === parent_trail[parent_trail.length-1]?
                             // //stop a if no childparent in level 1
                             <Children parent={this.props.children}
                              parent_func={this.props.children_func}
                              level={this.props.level+1}/>
                              :
-                             ""
+                             null
                    }                    
-                </tr>)
+ 
+                 <tr>
+                 </tr>
+                </tbody>
+                 )
              })
-           }
-        </tbody>
              :<tbody><tr><td><span className="spinner-border" role="status">
                <span className="sr-only">Loading...</span></span>
            </td>
@@ -125,8 +127,8 @@ export class Children extends React.Component{
          </tbody>
              }
        </Table>
-    
-      </div>
+      </tr>
+    </tbody>
     )
   }
 }

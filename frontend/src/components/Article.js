@@ -23,7 +23,7 @@ export default class extends Component {
         <Form>
          <FormGroup>
         <Label for="Article">{title}</Label>
-        <Input type="textarea" name="text" rows="15" id="Article" value={clean_text}/>
+        <Input type="textarea" className="bktextarea" name="text" rows="15" id="Article" readOnly value={clean_text}/>
       </FormGroup>
         <Button  onClick={this.props.history.goBack} className="button-brand-primary" size="lg">Back</Button>
       </Form>
