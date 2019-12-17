@@ -45,9 +45,9 @@ const mapDispatchToProps = (dispatch) => ({
     setHomeSelections: (data)=>dispatch(setHomeSelections(data)),
     setPage:(page)=>dispatch(setPage(page)),
   },
-  child:{
-    fetchArticlesFullUri: (url,params=undefined) => dispatch(getChildArticles(url,params)),
-    fetchArticles: (params=undefined) => dispatch(getChildArticles(API,params)),
+  child_func:{
+    fetchChildArticlesFullUri: (parent, url,params=undefined) => dispatch(getChildArticles(parent,url,params)),
+    fetchChildArticles: (parent,params=undefined) => dispatch(getChildArticles(parent,API,params)),
     setHomeSelections: (data)=>dispatch(setChildHomeSelections(data)),
     setPage:(page)=>dispatch(setChildPage(page)),
  

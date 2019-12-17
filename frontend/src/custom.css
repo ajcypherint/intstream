@@ -45,3 +45,9 @@
   padding: 0 ;
   margin: 0 ;
 }
+
+.hometable{
+ border: 0;
+ cellpadding: 1;
+ cellspacing: 0;
+}

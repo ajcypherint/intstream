@@ -25,7 +25,7 @@ export const setChildren = (articles)=>{
   }
 }
 
-export const getChildArticles= (url, params=undefined)=>{
+export const getChildArticles= (parent, url, params=undefined)=>{
   // filters - list[string]
   url = setParams(url,params)
   return {
@@ -35,7 +35,12 @@ export const getChildArticles= (url, params=undefined)=>{
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
-       GET_ARTICLES_REQUEST, GET_ARTICLES_SUCCESS, GET_ARTICLES_FAILURE
+        {type: GET_ARTICLES_REQUEST,
+          meta:{parent:parent}}, 
+        {type:GET_ARTICLES_SUCCESS,
+          meta:{parent:parent}},
+        {type:GET_ARTICLES_FAILURE,
+          meta:{parent:parent}}
       ]
   }
 }

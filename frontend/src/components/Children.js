@@ -7,7 +7,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import '../custom.css';
 import Paginate from './Paginate'
-import {PAGINATION, dateString, addDays} from '../util/util'
+import {PAGINATION, dateString, childString, addDays} from '../util/util'
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
 
@@ -17,11 +17,29 @@ export class Children extends React.Component{
     super(props)
     this.paginate = Paginate.bind(this)
     this.fetch = this.fetch.bind(this)
+    this.childFetch = this.childFetch.bind(this)
     this.changesort = changesort.bind(this)
   }
   showChildren(parent,level){
     // call fetch for children based on level
     let i = 1
+    this.props.child_func.fetchChildArticles(parent, childString(
+      "",//orderdir
+      "title", //ordercol
+      1, //page
+      parent //parent
+      ))
+
+  }
+  childFetch( selections, page){
+    this.props.parent_func.fetchChildArticles(this.props.parent.parentTrail[0], childString(
+      selections.orderdir,
+      selections.ordercol,
+      page,
+      this.props.parent.parentTrail[0] //parent
+      ))
+
+
   }
   fetch(selections,page){
     this.props.parent_func.fetchArticles(dateString(
@@ -43,15 +61,19 @@ export class Children extends React.Component{
     const errors = this.props.parent.articlesErrors || {}
     let child = this.props.child || {}
     const parent_trail = child.parentTrail || [-1]
+    const cols = "col-sm-"+(12-this.props.level)
+    const offset = "offset-sm-"+this.props.level
+    const page_fetch = this.props.level === 0 ? this.fetch : this.childFetch
     return (
       
+    <table className={"table table-sm "+cols + " " + offset}>
       <tbody>
         <tr>
           <td>
          {this.paginate(totalcount,
            next,
            previous,
-           this.fetch,
+           page_fetch,
            this.props.parent_func.fetchArticlesFullUri,
            this.props.parent.homeSelections,
            this.props.parent_func.setPage)}
@@ -59,7 +81,7 @@ export class Children extends React.Component{
        </tr>
       <tr>
         <td>
-       <Table>
+       <table className={"table table-sm"}>
          <thead>
            <tr>
              <td className="hover" onClick={(event)=>{this.changesort("title", 
@@ -85,7 +107,7 @@ export class Children extends React.Component{
              this.props.parent_func.setHomeSelections
 
            )}}>Date</td>
-             <td >Children</td>
+             <td >Similar Articles</td>
            </tr>
          </thead>
          { !loading ?
@@ -111,9 +133,11 @@ export class Children extends React.Component{
                 </tr>
                    { this.props.level === 0 && article.id === parent_trail[0]?
                       <tr>
-                            <Children parent={this.props.children}
-                             parent_func={this.props.children_func}
+                        <td colspan="4">
+                            <Children parent={this.props.child}
+                             parent_func={this.props.child_func}
                              level={this.props.level+1}/>
+                         </td>
                       </tr>
                              :
                              null
@@ -128,10 +152,11 @@ export class Children extends React.Component{
            </tr>
          </tbody>
              }
-       </Table>
+       </table>
      </td>
       </tr>
     </tbody>
+  </table>
     )
   }
 }

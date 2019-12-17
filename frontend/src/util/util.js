@@ -6,6 +6,18 @@ export const ALL = "---"
 export const ASC = ''
 export const DESC = '-'
 
+export function childString(
+  orderdir,
+  ordercol,
+  page,
+  parent
+){
+   return "ordering=" + orderdir+
+        ordercol +
+    "&page=" + page +
+    "&match_inc=" + parent
+
+}
 
 export function dateString(
   orderdir,

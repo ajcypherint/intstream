@@ -171,12 +171,11 @@ export class Main extends React.Component{
           </div>
         </Col>
     </Row>
-    <table className="nopadding col-sm-12">
     <Children parent_func={this.props.parent_func}
       level={0}
       child={this.props.child}
+      child_func={this.props.child_func}
       parent={this.props.parent}/>
-  </table>
   </Form>
    </div>
     )
