@@ -7,7 +7,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import '../custom.css';
 import Paginate from './Paginate'
-import {PAGINATION, dateString, addDays} from '../util/util'
+import {PAGINATION,childString, dateString, addDays} from '../util/util'
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
 import {Children} from "./Children"
@@ -22,6 +22,7 @@ export class Main extends React.Component{
     this.onSubmit = this.onSubmit.bind(this)
     this.changesort = changesort.bind(this)
     this.updateDate = this.updateDate.bind(this)
+    this.showChildren = this.showChildren.bind(this)
   }
   componentDidMount() {
     let selections = this.props.parent.homeSelections
@@ -39,6 +40,19 @@ export class Main extends React.Component{
         selections.startDate,
         selections.endDate
         )) 
+  }
+  showChildren(event){
+    // call fetch for children based on level
+    let {param}= event.target.dataset
+    let parent = parseInt(param)
+    let i = 1
+    this.props.child_func.fetchChildArticles(parent, childString(
+      "",//orderdir
+      "title", //ordercol
+      1, //page
+      parent //parent
+      ))
+
   }
   
   handleStartChange(date){
@@ -175,7 +189,10 @@ export class Main extends React.Component{
       level={0}
       child={this.props.child}
       child_func={this.props.child_func}
+      showChildren={this.showChildren}
+      parent_id = {-1}
       parent={this.props.parent}/>
+
   </Form>
    </div>
     )

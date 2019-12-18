@@ -20,17 +20,7 @@ export class Children extends React.Component{
     this.childFetch = this.childFetch.bind(this)
     this.changesort = changesort.bind(this)
   }
-  showChildren(parent,level){
-    // call fetch for children based on level
-    let i = 1
-    this.props.child_func.fetchChildArticles(parent, childString(
-      "",//orderdir
-      "title", //ordercol
-      1, //page
-      parent //parent
-      ))
-
-  }
+  
   childFetch( selections, page){
     this.props.parent_func.fetchChildArticles(this.props.parent.parentTrail[0], childString(
       selections.orderdir,
@@ -87,14 +77,16 @@ export class Children extends React.Component{
              <td className="hover" onClick={(event)=>{this.changesort("title", 
                ASC, 
                DESC, 
-               this.props.parent_func.fetchArticles,
+               this.props.level===0 ? this.props.parent_func.fetchArticles  : this.props.parent_func.fetchChildArticles,
                selections,
-               this.props.parent_func.setHomeSelections
+               this.props.parent_func.setHomeSelections,
+               this.props.level,
+               this.props.parent_id
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
              DESC, 
-             this.props.parent_func.fetchArticles,
+             this.props.level === 0 ? this.props.parent_func.fetchArticles  : this.props.parent_func.fetchChildArticles,
              selections,
                this.props.parent_func.setHomeSelections
               )}}> Source </td>
@@ -102,7 +94,7 @@ export class Children extends React.Component{
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
-             this.props.parent_func.fetchArticles,
+             this.props.level === 0 ? this.props.parent_func.fetchArticles :  this.props.parent_func.fetchChildArticles,
              selections,
              this.props.parent_func.setHomeSelections
 
@@ -126,7 +118,8 @@ export class Children extends React.Component{
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
                    {
                        article.match.length > 0 ?
-                       <td className="hover" onClick={this.showChildren.bind(this,article.id,this.props.level)}>{article.match.length}</td>
+                       <td className="hover" data-param={article.id}
+                          onClick={this.props.showChildren}>{article.match.length}</td>
                            :
                        <td >{article.match.length}</td>
                           }
@@ -136,6 +129,8 @@ export class Children extends React.Component{
                         <td colspan="4">
                             <Children parent={this.props.child}
                              parent_func={this.props.child_func}
+                             showChildren={this.props.showChildren}
+                             parent_id={article.id}
                              level={this.props.level+1}/>
                          </td>
                       </tr>
