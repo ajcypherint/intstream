@@ -39,8 +39,6 @@ export function  changesort(column_name,
                                                                             column_name,
                                                                             1,
                                                                             parent)
-       fetch(fetch_string)
-       level === 0 ? fetch(fetch_string) : fetch(parent,fetch_string)
         }
       else{
        setHomeSelections({orderdir:ASC,page:1})

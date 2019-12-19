@@ -15,7 +15,7 @@ export function childString(
    return "ordering=" + orderdir+
         ordercol +
     "&page=" + page +
-    "&match_inc=" + parent
+    "&match=" + parent
 
 }
 

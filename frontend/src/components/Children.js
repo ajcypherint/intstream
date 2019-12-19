@@ -22,11 +22,11 @@ export class Children extends React.Component{
   }
   
   childFetch( selections, page){
-    this.props.parent_func.fetchChildArticles(this.props.parent.parentTrail[0], childString(
+    this.props.parent_func.fetchChildArticles(this.props.parent_id, childString(
       selections.orderdir,
       selections.ordercol,
       page,
-      this.props.parent.parentTrail[0] //parent
+      this.props.parent_id //parent
       ))
 
 
@@ -88,7 +88,9 @@ export class Children extends React.Component{
              DESC, 
              this.props.level === 0 ? this.props.parent_func.fetchArticles  : this.props.parent_func.fetchChildArticles,
              selections,
-               this.props.parent_func.setHomeSelections
+              this.props.parent_func.setHomeSelections,
+              this.props.level,
+              this.props.parent_id
               )}}> Source </td>
 
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
@@ -96,8 +98,9 @@ export class Children extends React.Component{
              DESC, 
              this.props.level === 0 ? this.props.parent_func.fetchArticles :  this.props.parent_func.fetchChildArticles,
              selections,
-             this.props.parent_func.setHomeSelections
-
+             this.props.parent_func.setHomeSelections,
+             this.props.level,
+             this.props.parent_id
            )}}>Date</td>
              <td >Similar Articles</td>
            </tr>

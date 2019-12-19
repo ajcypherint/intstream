@@ -27,7 +27,7 @@ export const setChildren = (articles)=>{
 
 export const getChildArticles= (parent, url, params=undefined)=>{
   // filters - list[string]
-  url = setParams(url,params)
+  url = setParams(url, params) 
   return {
   [RSAA]:{
    endpoint: url,

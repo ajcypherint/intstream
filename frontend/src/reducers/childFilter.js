@@ -16,9 +16,6 @@ const initialState ={
       page:1,
       ordercol:'',
       orderdir:ASC,
-      next:null,
-      previous:null,
-      showChildren:false
   },
 }
 

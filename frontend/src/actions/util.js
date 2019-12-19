@@ -1,5 +1,13 @@
 import {PAGINATION} from "../util/util"
 
+export const setParamsParent = function(url, params, parent){
+  url+="?article_match_id="+parent
+  if ( typeof params !== 'undefined'){
+    url+=params;
+  }
+  return url;
+}
+ 
 export const setParams = function(url, params){
   if ( typeof params !== 'undefined'){
     url+='?'+params;
