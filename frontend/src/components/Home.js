@@ -43,10 +43,18 @@ export class Main extends React.Component{
   }
   showChildren(event){
     // call fetch for children based on level
-    let {param}= event.target.dataset
+    let {param,level}= event.target.dataset
     let parent = parseInt(param)
+    let level_int = parseInt(level)
     let i = 1
-    this.props.child_func.fetchChildArticles(parent, childString(
+    //todo(aj) clear children selections.gt
+    //todo(aj) move into children
+    if (level_int === 0){
+      // clear child selections
+      console.log("clear")
+
+    }
+    this.props.child_func.fetchArticles(parent, childString(
       "",//orderdir
       "title", //ordercol
       1, //page

@@ -143,11 +143,7 @@ class HomePage(APIView):
                                          "id":openapi.Schema(type=openapi.TYPE_INTEGER),
                                         "title":openapi.Schema(type=openapi.TYPE_STRING),
                                          "clean_text":openapi.Schema(type=openapi.TYPE_STRING),
-                                         "match":openapi.Schema(type=openapi.TYPE_ARRAY,
-                                                                items=openapi.Schema(type=openapi.TYPE_OBJECT,
-                                                                                     properties={
-                                                                                         "id":openapi.Schema(type=openapi.TYPE_INTEGER),
-                                                                                     }))
+                                         "match":openapi.Schema(type=openapi.TYPE_INTEGER)
                                     })))
     error = openapi.Response("error",
                              openapi.Schema(
@@ -189,6 +185,7 @@ class HomePage(APIView):
         order_by = "id" if order_by == "" else order_by
         page = int(self.request.query_params.get("page", 1))
         page = 1 if page == "" else page
+        match_id = self.request.query_params.getlist("match")
         filter_kwargs = {}
         if source_id != "":
             filter_kwargs["source_id"] = source_id
@@ -196,6 +193,8 @@ class HomePage(APIView):
             filter_kwargs["upload_date__gte"] = start_date
         if end_date != "":
             filter_kwargs["upload_date__lte"] = end_date
+        if len(match_id) != 0:
+            filter_kwargs["match__in"] = match_id
 
         # filter out match indexes sorted by id
         sql = models.Article.objects.filter(
@@ -416,6 +415,8 @@ class ArticleFilter(filters.FilterSet):
     source__name = filters.CharFilter(lookup_expr='exact')
     start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
     end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
+    match_article_id = filters.NumberFilter(field_name="match__id", lookup_expr=("exact"))
+
     ordering = filters.OrderingFilter(
         fields=[('source__name','source_name'),
                 ('title','title'),
@@ -423,7 +424,7 @@ class ArticleFilter(filters.FilterSet):
     )
     class Meta:
         model = models.Article
-        fields = ('id','source','title','upload_date', 'source__name','source__mlmodel__id')
+        fields = ('id','source','title','upload_date', 'source__name','source__mlmodel__id',"match")
 
 
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet):

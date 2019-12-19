@@ -22,7 +22,7 @@ export class Children extends React.Component{
   }
   
   childFetch( selections, page){
-    this.props.parent_func.fetchChildArticles(this.props.parent_id, childString(
+    this.props.parent_func.fetchArticles(this.props.parent_id, childString(
       selections.orderdir,
       selections.ordercol,
       page,
@@ -77,7 +77,7 @@ export class Children extends React.Component{
              <td className="hover" onClick={(event)=>{this.changesort("title", 
                ASC, 
                DESC, 
-               this.props.level===0 ? this.props.parent_func.fetchArticles  : this.props.parent_func.fetchChildArticles,
+               this.props.parent_func.fetchArticles,
                selections,
                this.props.parent_func.setHomeSelections,
                this.props.level,
@@ -86,7 +86,7 @@ export class Children extends React.Component{
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
              DESC, 
-             this.props.level === 0 ? this.props.parent_func.fetchArticles  : this.props.parent_func.fetchChildArticles,
+             this.props.parent_func.fetchArticles,
              selections,
               this.props.parent_func.setHomeSelections,
               this.props.level,
@@ -96,7 +96,7 @@ export class Children extends React.Component{
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
-             this.props.level === 0 ? this.props.parent_func.fetchArticles :  this.props.parent_func.fetchChildArticles,
+             this.props.parent_func.fetchArticles,
              selections,
              this.props.parent_func.setHomeSelections,
              this.props.level,
@@ -121,7 +121,7 @@ export class Children extends React.Component{
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
                    {
                        article.match.length > 0 ?
-                       <td className="hover" data-param={article.id}
+                       <td className="hover" data-param={article.id} data-level={this.props.level}
                           onClick={this.props.showChildren}>{article.match.length}</td>
                            :
                        <td >{article.match.length}</td>
