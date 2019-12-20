@@ -5,7 +5,13 @@ import * as childArticles from '../actions/childArticles';
 import  URL  from  'url-parse'
 import {ASC, DESC} from "../util/util"
 
+export const createParent = (id,title)=>{
+  return {
+    id:id,
+    title:title
+  }
 
+}
 // use articlestmp to load pages and retrieve data
 const initialState ={
   parentTrail:[],
@@ -32,7 +38,8 @@ export default (state=initialState, action) => {
 
     case childArticles.GET_ARTICLES_REQUEST:
       {
-        let new_parent_trail = state.parentTrail.concat(action.meta.parent)
+        let new_parent_trail = state.parentTrail.concat(
+                    createParent(action.meta.parent,action.meta.parent_title))
         return {
           ...state,
           parentTrail:new_parent_trail,

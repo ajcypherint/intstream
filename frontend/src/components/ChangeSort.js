@@ -38,7 +38,7 @@ export function  changesort(column_name,
                                           selections.endDate) : childString(DESC,
                                                                             column_name,
                                                                             1,
-                                                                            parent)
+                                                                            parent.id)
         }
       else{
        setHomeSelections({orderdir:ASC,page:1})
@@ -51,7 +51,7 @@ export function  changesort(column_name,
                                              selections.endDate) : childString(ASC,
                                                                                column_name,
                                                                                1,
-                                                                               parent)
+                                                                               parent.id)
                                             
       }
     }
@@ -66,7 +66,7 @@ export function  changesort(column_name,
                                                   selections.endDate) : childString(ASC,
                                                                                     column_name,
                                                                                     1,
-                                                                                    parent)
+                                                                                    parent.id)
  
       //call asc sort
          }

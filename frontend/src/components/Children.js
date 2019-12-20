@@ -10,6 +10,7 @@ import Paginate from './Paginate'
 import {PAGINATION, dateString, childString, addDays} from '../util/util'
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
+import {createParent} from "../reducers/children"
 
 
 export class Children extends React.Component{
@@ -23,37 +24,37 @@ export class Children extends React.Component{
   }
   showChildren(event){
     // call fetch for children based on level
-    let {param,level}= event.target.dataset
-    let parent = parseInt(param)
+    let {parent,level}= event.target.dataset
+    let parentobj = JSON.parse(parent)
     let level_int = parseInt(level)
     //todo(aj) clear children selections.gt
     //todo(aj) move into children
     if (level_int === 0){
       // clear child selections
       this.props.child_func.clearParent()
-     this.props.child_func.fetchArticles(parent, childString(
+     this.props.child_func.fetchArticles(parentobj, childString(
       "",//orderdir
       "title", //ordercol
       1, //page
-      parent //parent
+      parentobj.id //parent
       ))
     }
     else {
-      this.props.parent_func.fetchArticles(parent, childString(
+      this.props.parent_func.fetchArticles(parentobj, childString(
       "",//orderdir
       "title", //ordercol
       1, //page
-      parent //parent
+      parentobj.id //parent
       ))
     }
   }
   
   childFetch( selections, page){
-    this.props.parent_func.fetchArticles(this.props.parent_id, childString(
+    this.props.parent_func.fetchArticles(this.props.parent_obj, childString(
       selections.orderdir,
       selections.ordercol,
       page,
-      this.props.parent_id //parent
+      this.props.parent_obj.id //parent
       ))
 
 
@@ -77,10 +78,14 @@ export class Children extends React.Component{
     const previous = this.props.parent.articlePrevious;
     const errors = this.props.parent.articlesErrors || {}
     let child = this.props.child || {}
-    const parent_trail = this.props.parent_trail || [-1]
+    const parent_trail = this.props.parent_trail
+    const parent_first_id = this.props.parent_trail.length > 0 ? parent_trail[0].id : -1
     const cols = "col-sm-"+(12-this.props.level)
     const offset = "offset-sm-"+this.props.level
     const page_fetch = this.props.level === 0 ? this.fetch : this.childFetch
+    const parent_obj = this.props.parent_obj || {}
+    const parent_id = parent_obj.id || undefined
+    const i = 1
     return (
       
     <table className={"table table-sm "+cols + " " + offset}>
@@ -95,28 +100,22 @@ export class Children extends React.Component{
            this.props.parent.homeSelections,
            this.props.parent_func.setPage)}
          </td>
-       </tr>
-       {this.props.level > 0 ?
-                     <tr colSpan="4">
-                       <td>
+       </tr>{this.props.level > 0 ?
+        <tr colSpan="4"><td>
                          <ol>
                            {
                              parent_trail.map((parent_info,index)=>{
                                return(
-                                   <li key={parent_info}>
-                                     {parent_info}
+                                   <li key={index}>
+                                     {parent_info.title}
                                    </li>
                                )
                               }
                              )
                            }
                          </ol>
-                       </td>
-                      </tr>
-                     :null
-                   }
- 
-      <tr>
+                       </td></tr>
+           :null}<tr>
         <td>
        <table className={"table table-sm"}>
          <thead>
@@ -128,7 +127,7 @@ export class Children extends React.Component{
                selections,
                this.props.parent_func.setHomeSelections,
                this.props.level,
-               this.props.parent_id
+               parent_obj
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
@@ -137,9 +136,8 @@ export class Children extends React.Component{
              selections,
               this.props.parent_func.setHomeSelections,
               this.props.level,
-              this.props.parent_id
+             parent_obj
               )}}> Source </td>
-
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
@@ -147,10 +145,9 @@ export class Children extends React.Component{
              selections,
              this.props.parent_func.setHomeSelections,
              this.props.level,
-             this.props.parent_id
+             parent_obj
            )}}>Date</td>
-             <td >Similar Articles</td>
-           </tr>
+             <td >Similar Articles</td></tr>
          </thead>
          { !loading ?
              articles.map((article)=>{
@@ -168,18 +165,18 @@ export class Children extends React.Component{
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
                    {
                        article.match.length > 0 ?
-                       <td className="hover" data-param={article.id} data-level={this.props.level}
+                       <td className="hover" data-parent={JSON.stringify(createParent(article.id,article.title))} data-level={this.props.level}
                           onClick={this.showChildren}>{article.match.length}</td>
                            :
                        <td >{article.match.length}</td>
                           }
                 </tr>
-                   { this.props.level === 0 && article.id === parent_trail[0]?
+                   { this.props.level === 0 && article.id === parent_first_id?
                       <tr>
                         <td colSpan="4">
                             <Children parent={this.props.child}
                              parent_func={this.props.child_func}
-                             parent_id={article.id}
+                             parent_obj={createParent(article.id,article.title)}
                              parent_title={article.title}
                              parent_trail={this.props.child.parentTrail}
                              level={this.props.level+1}/>
