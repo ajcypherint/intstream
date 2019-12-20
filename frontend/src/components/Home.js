@@ -22,7 +22,6 @@ export class Main extends React.Component{
     this.onSubmit = this.onSubmit.bind(this)
     this.changesort = changesort.bind(this)
     this.updateDate = this.updateDate.bind(this)
-    this.showChildren = this.showChildren.bind(this)
   }
   componentDidMount() {
     let selections = this.props.parent.homeSelections
@@ -41,28 +40,7 @@ export class Main extends React.Component{
         selections.endDate
         )) 
   }
-  showChildren(event){
-    // call fetch for children based on level
-    let {param,level}= event.target.dataset
-    let parent = parseInt(param)
-    let level_int = parseInt(level)
-    let i = 1
-    //todo(aj) clear children selections.gt
-    //todo(aj) move into children
-    if (level_int === 0){
-      // clear child selections
-      console.log("clear")
-
-    }
-    this.props.child_func.fetchArticles(parent, childString(
-      "",//orderdir
-      "title", //ordercol
-      1, //page
-      parent //parent
-      ))
-
-  }
-  
+ 
   handleStartChange(date){
     let selections = this.props.parent.homeSelections
     this.updateDate(date,selections.endDate, true)
@@ -197,8 +175,8 @@ export class Main extends React.Component{
       level={0}
       child={this.props.child}
       child_func={this.props.child_func}
-      showChildren={this.showChildren}
       parent_id = {-1}
+      parent_trail={this.props.child.parentTrail}
       parent={this.props.parent}/>
 
   </Form>

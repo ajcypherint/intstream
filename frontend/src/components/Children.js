@@ -19,6 +19,33 @@ export class Children extends React.Component{
     this.fetch = this.fetch.bind(this)
     this.childFetch = this.childFetch.bind(this)
     this.changesort = changesort.bind(this)
+    this.showChildren = this.showChildren.bind(this)
+  }
+  showChildren(event){
+    // call fetch for children based on level
+    let {param,level}= event.target.dataset
+    let parent = parseInt(param)
+    let level_int = parseInt(level)
+    //todo(aj) clear children selections.gt
+    //todo(aj) move into children
+    if (level_int === 0){
+      // clear child selections
+      this.props.child_func.clearParent()
+     this.props.child_func.fetchArticles(parent, childString(
+      "",//orderdir
+      "title", //ordercol
+      1, //page
+      parent //parent
+      ))
+    }
+    else {
+      this.props.parent_func.fetchArticles(parent, childString(
+      "",//orderdir
+      "title", //ordercol
+      1, //page
+      parent //parent
+      ))
+    }
   }
   
   childFetch( selections, page){
@@ -50,7 +77,7 @@ export class Children extends React.Component{
     const previous = this.props.parent.articlePrevious;
     const errors = this.props.parent.articlesErrors || {}
     let child = this.props.child || {}
-    const parent_trail = child.parentTrail || [-1]
+    const parent_trail = this.props.parent_trail || [-1]
     const cols = "col-sm-"+(12-this.props.level)
     const offset = "offset-sm-"+this.props.level
     const page_fetch = this.props.level === 0 ? this.fetch : this.childFetch
@@ -69,6 +96,26 @@ export class Children extends React.Component{
            this.props.parent_func.setPage)}
          </td>
        </tr>
+       {this.props.level > 0 ?
+                     <tr colSpan="4">
+                       <td>
+                         <ol>
+                           {
+                             parent_trail.map((parent_info,index)=>{
+                               return(
+                                   <li key={parent_info}>
+                                     {parent_info}
+                                   </li>
+                               )
+                              }
+                             )
+                           }
+                         </ol>
+                       </td>
+                      </tr>
+                     :null
+                   }
+ 
       <tr>
         <td>
        <table className={"table table-sm"}>
@@ -109,8 +156,8 @@ export class Children extends React.Component{
              articles.map((article)=>{
                return (
                 <tbody key={article.id}>
-                 <tr key={article.id}>
-                  <td>
+                <tr key={article.id}>
+                 <td>
                       <Link key={article.id+"link"} style={{color:'black'}} to={this.props.parent.articleuri+ article.id}>
                     {article.title}
                         </Link>
@@ -122,18 +169,19 @@ export class Children extends React.Component{
                    {
                        article.match.length > 0 ?
                        <td className="hover" data-param={article.id} data-level={this.props.level}
-                          onClick={this.props.showChildren}>{article.match.length}</td>
+                          onClick={this.showChildren}>{article.match.length}</td>
                            :
                        <td >{article.match.length}</td>
                           }
                 </tr>
                    { this.props.level === 0 && article.id === parent_trail[0]?
                       <tr>
-                        <td colspan="4">
+                        <td colSpan="4">
                             <Children parent={this.props.child}
                              parent_func={this.props.child_func}
-                             showChildren={this.props.showChildren}
                              parent_id={article.id}
+                             parent_title={article.title}
+                             parent_trail={this.props.child.parentTrail}
                              level={this.props.level+1}/>
                          </td>
                       </tr>

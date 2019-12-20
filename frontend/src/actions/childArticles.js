@@ -11,10 +11,9 @@ export const SET_CHILDREN = '@@childarticles/SET_ARTICLES_REQUEST';
 
 export const CLEAR = '@@childarticles/CLEAR';
 
-export const clear= ()=>{
+export const clearParent= ()=>{
   return {
     type:CLEAR,
-
   }
 }
 

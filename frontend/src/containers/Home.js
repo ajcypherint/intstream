@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import { Main} from '../components/Home'
 import {getArticles, clearArticles} from '../actions/articles'
-import {getChildArticles } from '../actions/childArticles'
+import {getChildArticles,clearParent} from '../actions/childArticles'
 import {setPage, setHomeSelections, getAllSources} from '../actions/filter'
 import {setChildPage, setChildHomeSelections} from '../actions/childFilter'
 import {getSources, clearSources } from '../actions/sources'
@@ -50,6 +50,7 @@ const mapDispatchToProps = (dispatch) => ({
     fetchArticles: (parent,params=undefined) => dispatch(getChildArticles(parent, API,params)),
     setHomeSelections: (data)=>dispatch(setChildHomeSelections(data)),
     setPage:(page)=>dispatch(setChildPage(page)),
+    clearParent:()=>dispatch(clearParent())
  
   }
 

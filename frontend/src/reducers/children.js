@@ -25,7 +25,8 @@ export default (state=initialState, action) => {
     case childArticles.CLEAR:
       {
         return {
-         ...initialState,
+          ...state,
+          parentTrail:[]
         }
       }
 
