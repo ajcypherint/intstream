@@ -38,8 +38,16 @@ export default (state=initialState, action) => {
 
     case childArticles.GET_ARTICLES_REQUEST:
       {
-        let new_parent_trail = state.parentTrail.concat(
-                    createParent(action.meta.parent,action.meta.parent_title))
+        let new_parent_trail = state.parentTrail.slice()
+        if(new_parent_trail.length === 0){
+             new_parent_trail = state.parentTrail.concat(
+                      createParent(action.meta.parent,action.meta.parent_title))
+        } else {
+          if( action.meta.parent != new_parent_trail[new_parent_trail.length -1].id){
+          new_parent_trail = state.parentTrail.concat(
+                      createParent(action.meta.parent,action.meta.parent_title))
+          }
+        }
         return {
           ...state,
           parentTrail:new_parent_trail,
