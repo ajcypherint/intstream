@@ -5,6 +5,7 @@ from django.contrib.sites.shortcuts import get_current_site
 import urllib.parse as urlparse
 from urllib.parse import urlencode
 from random import randint
+from dateutil.parser import parse
 from django.utils import timezone
 from . import serializers
 from django.utils import timezone
@@ -174,6 +175,28 @@ class HomePage(APIView):
             merged_values.append(merged_value)
         return merged_values
 
+    def filter_matches(self,values,
+                       source="",
+                       start_upload_date="",
+                       end_upload_date=""):
+        new_values = []
+        for i in values:
+            if i["match"] is None:
+                new_values.append(i)
+            else:
+                boolean_pred = []
+                if source != "":
+                    boolean_pred.append(["match__source_id"] == source)
+                if start_upload_date != "":
+                    startdate = parse(start_upload_date)
+                    boolean_pred.append(i["match__upload_date"] >= startdate)
+                if end_upload_date != "":
+                    enddate = parse(end_upload_date)
+                    boolean_pred.append(i["match__upload_date"] <= enddate)
+                if  all(boolean_pred):
+                    new_values.append(i)
+        return new_values
+
     @swagger_auto_schema(manual_parameters=[source_id,start_date,end_date], responses={200:response,404:error})
     def get(self, request, format=None):
         # todo(aj) filter by model id
@@ -210,7 +233,8 @@ class HomePage(APIView):
                                              "source__name",
                                              "title",
                                              "id",
-                                             "match")
+                                             "match",
+                                            )
 
         # sort by id and remove similar so results stay consistent between sorts on the frontend
         # avoid pulling in entire model into memory
@@ -304,11 +328,43 @@ class HomePage(APIView):
         sliced_ids = [i["id"] for i in sliced]
         # retrieve sliced data from database in preserved order;
         preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(sliced_ids)])
+        queryset_filter = models.Article.objects.filter(pk__in=sliced_ids).order_by(preserved).values(
+                                            "upload_date",
+                                             "source__name",
+                                             "title",
+                                             "id",
+                                             "text",
+                                             "match",
+                                             "match__upload_date",
+                                             "match__source__id"
+                                                )
+        filtered = self.filter_matches(queryset_filter,
+                                       source=source_id,
+                                       start_upload_date=start_date,
+                                       end_upload_date=end_date)
+        merged_filtered = self.merge_values(filtered)
         queryset = models.Article.objects.filter(pk__in=sliced_ids).order_by(preserved)
         serial = serializers.ArticleSerializer(queryset, many=True)
+        data = serial.data
+        for i in data:
+            q_id = i["id"]
+            replace_list = list(filter(lambda d: d['id'] == q_id, merged_filtered))
+            if len(replace_list) == 0:
+                i["match"]=[]
+            else:
+                f_match = list(filter(lambda d: d['id'] == q_id, merged_filtered))[0]["match"]
+                #todo(aj) fix merge function to set a list instead of int and none
+                if f_match is None:
+                    i["match"]=[]
+                elif isinstance(f_match,int):
+                    i["match"]=[f_match]
+                else:
+                    i["match"]=f_match
+
+        # replace match in serial.
         response = {
             "count": len(list_of_models),
-            "results": serial.data,
+            "results": data,
             "next": next_full_uri,
             "previous": prev_full_uri,
 
