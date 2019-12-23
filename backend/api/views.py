@@ -287,9 +287,9 @@ class HomePage(APIView):
         # cannot do in queryset because if the window function cannot be used in a when clause
         list_of_models=[]
         if order_by[0] != "-":
-            list_of_models = sorted(nested_results, key=lambda x: x[order_by])
+            list_of_models = sorted(level1_results, key=lambda x: x[order_by])
         else:
-            list_of_models = sorted(nested_results, key=lambda x: x[test_order_by],reverse=True)
+            list_of_models = sorted(level1_results, key=lambda x: x[test_order_by],reverse=True)
 
         # retrieve page slicing
         total_count = len(list_of_models)
