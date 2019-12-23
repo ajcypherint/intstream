@@ -219,12 +219,6 @@ class HomePage(APIView):
         if len(match_id) != 0:
             filter_kwargs["match__in"] = match_id
 
-        # filter out match indexes sorted by id
-        sql = models.Article.objects.filter(
-                                        **filter_kwargs
-                                    ).annotate(
-            cum_child_articles=Window(ArrayAgg("match__id", filter=Q(match__id__isnull=False)),
-                                      order_by=F("id").asc())).distinct("id")
 
         sql_no_cummulate = models.Article.objects.filter(
                                                     **filter_kwargs
@@ -333,7 +327,6 @@ class HomePage(APIView):
                                              "source__name",
                                              "title",
                                              "id",
-                                             "text",
                                              "match",
                                              "match__upload_date",
                                              "match__source__id"
