@@ -23,6 +23,7 @@ export class Main extends React.Component{
     this.changesort = changesort.bind(this)
     this.updateDate = this.updateDate.bind(this)
   }
+  
   componentDidMount() {
     let selections = this.props.parent.homeSelections
     //todo() ordering
@@ -44,10 +45,12 @@ export class Main extends React.Component{
   handleStartChange(date){
     let selections = this.props.parent.homeSelections
     this.updateDate(date,selections.endDate, true)
+    this.props.child_func.clearParent()
   }
   handleEndChange(date){
     let selections = this.props.parent.homeSelections
     this.updateDate(selections.startDate,date,false)
+    this.props.child_func.clearParent()
   }
 
   updateDate(startDate,endDate,start_filter=true){
@@ -112,6 +115,7 @@ export class Main extends React.Component{
         selections.startDate,
         selections.endDate)) 
 
+   this.props.child_func.clearParent()
   }
   onSubmit(event){
     event.preventDefault()
@@ -177,7 +181,9 @@ export class Main extends React.Component{
       child_func={this.props.child_func}
       parent_id = {-1}
       parent_trail={this.props.child.parentTrail}
+      show_children={this.showChildren}
       parent={this.props.parent}/>
+
 
   </Form>
    </div>

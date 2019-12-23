@@ -13,6 +13,10 @@ END.setHours(23,59,59,999);
 
 const initialState ={
   homeSelections: {
+      startDate: START,
+      endDate: END,
+      sourceChosen:'',
+      loadSources:false,
       page:1,
       ordercol:'',
       orderdir:ASC,

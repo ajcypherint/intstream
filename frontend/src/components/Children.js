@@ -24,37 +24,49 @@ export class Children extends React.Component{
   }
   showChildren(event){
     // call fetch for children based on level
+
     let {parent,level}= event.target.dataset
-    let parentobj = JSON.parse(parent)
+    let parentobj = JSON.parse(parent) //{id,title}
     let level_int = parseInt(level)
-    //todo(aj) clear children selections.gt
-    //todo(aj) move into children
-    if (level_int === 0){
-      // clear child selections
+    //parentobj : {id,title}
+    if( level== 0){
       this.props.child_func.clearParent()
-     this.props.child_func.fetchArticles(parentobj, childString(
+      this.props.child_func.fetchArticles(parentobj, dateString(
       "",//orderdir
       "title", //ordercol
+      this.props.parent.homeSelections.sourceChosen,
       1, //page
-      parentobj.id //parent
+      this.props.parent.homeSelections.startDate,
+      this.props.parent.homeSelections.endDate,
       ))
-    }
-    else {
-      this.props.parent_func.fetchArticles(parentobj, childString(
+      this.props.child_func.setHomeSelections({
+      page:1,
+      orderCol:"title",
+      startDate:this.props.parent.homeSelections.startDate,
+      endDate:this.props.parent.homeSelections.endDate,
+      sourceChosen:this.props.parent.homeSelections.sourceChosen
+      })
+    } else {
+     this.props.parent_func.fetchArticles(parentobj, dateString(
       "",//orderdir
       "title", //ordercol
+       this.props.source_chosen,
       1, //page
-      parentobj.id //parent
+      this.props.start_date,
+      this.props.end_date
       ))
+
     }
   }
   
   childFetch( selections, page){
-    this.props.parent_func.fetchArticles(this.props.parent_obj, childString(
+    this.props.parent_func.fetchArticles(this.props.parent_obj, dateString(
       selections.orderdir,
       selections.ordercol,
+      this.props.source_chosen,
       page,
-      this.props.parent_obj.id //parent
+      this.props.start_date,
+      this.props.end_date//parent
       ))
 
 
@@ -70,6 +82,7 @@ export class Children extends React.Component{
           ))
   }
   render(){
+
     let selections = this.props.parent.homeSelections
     const articles = this.props.parent.articlesList || [];
     const loading = typeof this.props.parent.articlesLoading === 'undefined' ? true : this.props.parent.articlesLoading;
@@ -80,6 +93,7 @@ export class Children extends React.Component{
     let child = this.props.child || {}
     const parent_trail = this.props.parent_trail
     const parent_first_id = this.props.parent_trail.length > 0 ? parent_trail[0].id : -1
+    const parent_last_obj = this.props.parent_trail.length > 0 ? parent_trail[parent_trail.length-1] : undefined
     const cols = "col-sm-"+(12-this.props.level)
     const offset = "offset-sm-"+this.props.level
     const page_fetch = this.props.level === 0 ? this.fetch : this.childFetch
@@ -127,7 +141,7 @@ export class Children extends React.Component{
                selections,
                this.props.parent_func.setHomeSelections,
                this.props.level,
-               parent_obj
+               parent_last_obj
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
@@ -136,7 +150,7 @@ export class Children extends React.Component{
              selections,
               this.props.parent_func.setHomeSelections,
               this.props.level,
-             parent_obj
+             parent_last_obj
               )}}> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
@@ -145,7 +159,7 @@ export class Children extends React.Component{
              selections,
              this.props.parent_func.setHomeSelections,
              this.props.level,
-             parent_obj
+             parent_last_obj
            )}}>Date</td>
              <td >Similar Articles</td></tr>
          </thead>
@@ -179,6 +193,9 @@ export class Children extends React.Component{
                              parent_obj={createParent(article.id,article.title)}
                              parent_title={article.title}
                              parent_trail={this.props.child.parentTrail}
+                             start_date={selections.startDate}
+                             end_date={selections.endDate}
+                             source_chosen={selections.sourceChosen}
                              level={this.props.level+1}/>
                          </td>
                       </tr>

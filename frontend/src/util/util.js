@@ -6,16 +6,24 @@ export const ALL = "---"
 export const ASC = ''
 export const DESC = '-'
 
+
+ 
 export function childString(
   orderdir,
   ordercol,
   page,
-  parent
+  parent,
+  sourceChosen,
+  start,
+  end
 ){
    return "ordering=" + orderdir+
         ordercol +
     "&page=" + page +
-    "&match=" + parent
+    "&match=" + parent +
+    "&source=" + sourceChosen +
+    "&start_upload_date=" + start.toISOString() +
+    "&end_upload_date=" + end.toISOString()
 
 }
 

@@ -30,44 +30,35 @@ export function  changesort(column_name,
       if(selections.orderdir===ASC){
        setHomeSelections({orderdir:DESC,page:1})
         //call desc sort
-       fetch_string = level === 0 ? dateString(DESC,
-                                          column_name,
-                                          selections.sourceChosen,
-                                          1,
-                                          selections.startDate,
-                                          selections.endDate) : childString(DESC,
-                                                                            column_name,
-                                                                            1,
-                                                                            parent.id)
+       fetch_string = dateString(DESC,
+                                column_name,
+                                selections.sourceChosen,
+                                1,
+                                selections.startDate,
+                                selections.endDate) 
         }
       else{
        setHomeSelections({orderdir:ASC,page:1})
         //call asc sort
-        fetch_string = level === 0 ? dateString(ASC,
-                                             column_name,
-                                             selections.sourceChosen,
-                                             1,
-                                             selections.startDate,
-                                             selections.endDate) : childString(ASC,
-                                                                               column_name,
-                                                                               1,
-                                                                               parent.id)
-                                            
+        fetch_string =  dateString(ASC,
+                                   column_name,
+                                   selections.sourceChosen,
+                                   1,
+                                   selections.startDate,
+                                   selections.endDate) 
+                                  
       }
     }
     else{
       //sort by this column ascending; first time sorting this column
       setHomeSelections({ordercol:column_name,orderdir:ASC,page:1}) 
-      fetch_string = level === 0 ? dateString(ASC,
-                                                  column_name,
-                                                  selections.sourceChosen,
-                                                  1,
-                                                  selections.startDate,
-                                                  selections.endDate) : childString(ASC,
-                                                                                    column_name,
-                                                                                    1,
-                                                                                    parent.id)
- 
+      fetch_string = dateString(ASC,
+                                column_name,
+                                selections.sourceChosen,
+                                1,
+                                selections.startDate,
+                                selections.endDate) 
+
       //call asc sort
          }
    level === 0 ? fetch(fetch_string) : fetch(parent,fetch_string)
