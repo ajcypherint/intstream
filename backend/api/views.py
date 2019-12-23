@@ -186,7 +186,7 @@ class HomePage(APIView):
             else:
                 boolean_pred = []
                 if source != "":
-                    boolean_pred.append(["match__source_id"] == source)
+                    boolean_pred.append(i["match__source__id"] == int(source))
                 if start_upload_date != "":
                     startdate = parse(start_upload_date)
                     boolean_pred.append(i["match__upload_date"] >= startdate)
