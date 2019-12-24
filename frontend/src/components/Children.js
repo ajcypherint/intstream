@@ -161,7 +161,9 @@ export class Children extends React.Component{
              this.props.level,
              parent_last_obj
            )}}>Date</td>
-             <td >Similar Articles</td></tr>
+         {this.props.level===0 ? 
+             <td >Similar Articles</td> : null}
+           </tr>
          </thead>
          { !loading ?
              articles.map((article)=>{
@@ -178,11 +180,12 @@ export class Children extends React.Component{
                   </td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
                    {
-                       article.match.length > 0 ?
-                       <td className="hover" data-parent={JSON.stringify(createParent(article.id,article.title))} data-level={this.props.level}
+                       article.match.length > 0  && this.props.level === 0 ?
+                       <td className="hover" data-parent={JSON.stringify(createParent(article.id,article.title,article.match))} data-level={this.props.level}
                           onClick={this.showChildren}>{article.match.length}</td>
-                           :
-                       <td >{article.match.length}</td>
+                           :null}
+                    {article.match.length === 0 && this.props.level ===0 ?
+                       <td >{article.match.length}</td>: null
                           }
                 </tr>
                    { this.props.level === 0 && article.id === parent_first_id?
@@ -190,7 +193,7 @@ export class Children extends React.Component{
                         <td colSpan="4">
                             <Children parent={this.props.child}
                              parent_func={this.props.child_func}
-                             parent_obj={createParent(article.id,article.title)}
+                             parent_obj={createParent(article.id,article.title,article.match)}
                              parent_title={article.title}
                              parent_trail={this.props.child.parentTrail}
                              start_date={selections.startDate}

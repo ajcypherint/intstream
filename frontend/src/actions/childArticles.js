@@ -24,10 +24,12 @@ export const setChildren = (articles)=>{
   }
 }
 
-export const getChildArticles= ({id,title}, url, params=undefined)=>{
+export const getChildArticles= ({id,title,match}, url, params=undefined)=>{
   // filters - list[string]
   url = setParams(url, params) 
-  url = url+"&match="+id
+  for (const x of match){
+    url+="&article_id_multi="+x
+  }
   return {
   [RSAA]:{
    endpoint: url,

@@ -10,6 +10,7 @@ import {getSources, clearSources } from '../actions/sources'
 
 const API = '/api/homearticles/'
 const API_SOURCES = '/api/homefilter/'
+const API_ARTICLE = '/api/articles/'
 const ARTICLE_URI = "/article/"
 const mapStateToProps = (state) => ({
   sourcesList:reducers.getFilterSources(state),
@@ -47,7 +48,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   child_func:{
     fetchArticlesFullUri: (parent, url,params=undefined) => dispatch(getChildArticles(parent, url,params)),
-    fetchArticles: (parent,params=undefined) => dispatch(getChildArticles(parent, API,params)),
+    fetchArticles: (parent,params=undefined) => dispatch(getChildArticles(parent, API_ARTICLE, params)),
     setHomeSelections: (data)=>dispatch(setChildHomeSelections(data)),
     setPage:(page)=>dispatch(setChildPage(page)),
     clearParent:()=>dispatch(clearParent())

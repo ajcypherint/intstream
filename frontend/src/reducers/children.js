@@ -5,10 +5,11 @@ import * as childArticles from '../actions/childArticles';
 import  URL  from  'url-parse'
 import {ASC, DESC} from "../util/util"
 
-export const createParent = (id,title)=>{
+export const createParent = (id,title,match)=>{
   return {
     id:id,
-    title:title
+    title:title,
+    match:match
   }
 
 }
