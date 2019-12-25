@@ -78,7 +78,8 @@ export class Children extends React.Component{
             selections.sourceChosen,
             page,
             selections.startDate,
-            selections.endDate
+            selections.endDate,
+            selections.threshold
           ))
   }
   render(){

@@ -22,8 +22,26 @@ export class Main extends React.Component{
     this.onSubmit = this.onSubmit.bind(this)
     this.changesort = changesort.bind(this)
     this.updateDate = this.updateDate.bind(this)
+    this.handleThresholdChange = this.handleThresholdChange.bind(this)
   }
-  
+  handleThresholdChange(event){
+    this.props.parent_func.setHomeSelections({
+      page:1,
+      threshold:event.target.value
+    })
+    this.props.parent_func.fetchArticles(this.dateString(
+      this.props.parent.homeSelections.orderdir,// orderdir
+      this.props.parent.homeSelections.ordercol, // ordercol 
+      this.props.parent.homeSelections.sourceChosen,// sourceChosen
+      1,  // page //probably fewer pages
+      this.props.parent.homeSelections.startDate,
+      this.props.parent.homeSelections.endDate,
+      event.target.value
+    )) 
+
+
+    this.props.child_func.clearParent()
+  }
   componentDidMount() {
     let selections = this.props.parent.homeSelections
     //todo() ordering
@@ -38,7 +56,8 @@ export class Main extends React.Component{
         selections.sourceChosen,
         selections.page,
         selections.startDate,
-        selections.endDate
+      selections.endDate,
+      selections.threshold
         )) 
   }
  
@@ -96,7 +115,8 @@ export class Main extends React.Component{
       this.props.parent.homeSelections.sourceChosen,// sourceChosen
       1,  // page
       startDate,
-      endDate
+      endDate,
+      this.props.parent.homeSelections.threshold
     )) 
 
  }
@@ -109,11 +129,12 @@ export class Main extends React.Component{
       page:1
       })
     this.props.parent_func.fetchArticles(dateString(selections.orderdir,
-        selections.ordercol,
-        event.target.value,
-        1,
-        selections.startDate,
-        selections.endDate)) 
+      selections.ordercol,
+      event.target.value,
+      1,
+      selections.startDate,
+      selections.endDate,
+      selections.threshold)) 
 
    this.props.child_func.clearParent()
   }
@@ -122,12 +143,13 @@ export class Main extends React.Component{
   } 
   fetch(selections,page){
     this.props.parent_func.fetchArticles(dateString(
-            selections.orderdir,
-            selections.ordercol,
-            selections.sourceChosen,
-            page,
-            selections.startDate,
-            selections.endDate
+      selections.orderdir,
+      selections.ordercol,
+      selections.sourceChosen,
+      page,
+      selections.startDate,
+      selections.endDate,
+      selections.threshold
           ))
   }
   render(){
@@ -139,18 +161,23 @@ export class Main extends React.Component{
     const previous = this.props.parent.articlePrevious;
     const errors = this.props.parent.articlesErrors || {}
     const ids = this.props.sourcesList.map(a=>a.id.toString()) ||[]
+    const threshold_values = []
+    for(let i=100;i>=0;i-=5){
+      threshold_values.push(i)
+    }
     return(
       <div className="container mt-2 col-sm-8 offset-sm-2" >
         <Form onSubmit={this.onSubmit} >
           {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
+       <FormGroup>
        <Row>
-        <Col sm="4">
+        <Col sm="3">
           <label  htmlFor={"start_id"}>{"Start Date"}</label>
           <div className = "mb-2 ">
           <DatePicker style={{width:'100%'}} id={"startDate"}  selected={selections.startDate} onChange={this.handleStartChange} />
           </div>
         </Col>
-        <Col sm="4" >
+        <Col sm="3" >
           <label  htmlFor={"end_id"}>{"End Date"}</label>
           <div className = "mb-2 ">
           <DatePicker  id={"endDate"}  selected={selections.endDate} onChange={this.handleEndChange}/>
@@ -174,7 +201,18 @@ export class Main extends React.Component{
 
           </div>
         </Col>
+        <Col sm="2">
+           <label  htmlFor={"threshold"}>{"Similarity"}</label> 
+           <Input type="select" name="threshold" value={selections.threshold} id="threshold_id" onChange={this.handleThresholdChange}>
+             {threshold_values.map((value)=>{
+               return (<option key={value} value={value}>{value}</option>
+               )
+             }
+             )}
+           </Input>
+        </Col>
     </Row>
+  </FormGroup>
     <Children parent_func={this.props.parent_func}
       level={0}
       child={this.props.child}

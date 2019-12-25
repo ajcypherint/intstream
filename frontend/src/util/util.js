@@ -8,32 +8,14 @@ export const DESC = '-'
 
 
  
-export function childString(
-  orderdir,
-  ordercol,
-  page,
-  parent,
-  sourceChosen,
-  start,
-  end
-){
-   return "ordering=" + orderdir+
-        ordercol +
-    "&page=" + page +
-    "&match=" + parent +
-    "&source=" + sourceChosen +
-    "&start_upload_date=" + start.toISOString() +
-    "&end_upload_date=" + end.toISOString()
-
-}
-
 export function dateString(
   orderdir,
   ordercol,
   sourceChosen,
   page,
   start,
-  end
+  end,
+  threshold
 ){
   // :param orderdir: str
   // :param ordercol: str
@@ -42,12 +24,13 @@ export function dateString(
   // :param start: date
   // :param end: date
   
-   return "ordering=" + orderdir+
+   return "ordering=" + orderdir +
         ordercol +
         "&source=" + sourceChosen +
         "&page=" + page +
         "&start_upload_date=" + start.toISOString() +
-        "&end_upload_date=" + end.toISOString()
+    "&end_upload_date=" + end.toISOString() +
+    "&threshold=" + threshold
 
 
 }

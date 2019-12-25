@@ -16,6 +16,7 @@ const initialState ={
       startDate: START,
       endDate: END,
       sourceChosen:'',
+      threshold:90,
       loadSources:false,
       page:1,
       ordercol:'',

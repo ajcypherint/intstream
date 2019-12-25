@@ -38,11 +38,11 @@ export const getChildArticles= ({id,title,match}, url, params=undefined)=>{
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
         {type: GET_ARTICLES_REQUEST,
-          meta:{parent:id,parent_title:title}}, 
+          meta:{parent:id,parent_title:title,parent_match:match}}, 
         {type:GET_ARTICLES_SUCCESS,
-          meta:{parent:id,parent_title:title}},
+          meta:{parent:id,parent_title:title,parent_match:match}},
         {type:GET_ARTICLES_FAILURE,
-          meta:{parent:id,parent_title:title}}
+          meta:{parent:id,parent_title:title,parent_match:match}}
       ]
   }
 }
