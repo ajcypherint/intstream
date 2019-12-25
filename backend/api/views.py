@@ -134,11 +134,19 @@ class HomePage(APIView):
                             description="end date",
                             type=openapi.TYPE_STRING)
 
+    threshold = openapi.Parameter('thresh',
+                            in_=openapi.IN_QUERY,
+                            required=True,
+                            description="end date",
+                            type=openapi.TYPE_INTEGER)
+
+
     source_id = openapi.Parameter('source_id',
                             in_=openapi.IN_QUERY,
                             required=True,
                             description="source_id",
                             type=openapi.TYPE_INTEGER)
+
 
     response = openapi.Response('articles',
             openapi.Schema( type=openapi.TYPE_ARRAY,
@@ -149,6 +157,7 @@ class HomePage(APIView):
                                          "clean_text":openapi.Schema(type=openapi.TYPE_STRING),
                                          "match":openapi.Schema(type=openapi.TYPE_INTEGER)
                                     })))
+
     error = openapi.Response("error",
                              openapi.Schema(
                                 type=openapi.TYPE_OBJECT,
@@ -200,7 +209,7 @@ class HomePage(APIView):
                     new_values.append(i)
         return new_values
 
-    @swagger_auto_schema(manual_parameters=[source_id,start_date,end_date], responses={200:response,404:error})
+    @swagger_auto_schema(manual_parameters=[source_id,start_date,end_date,threshold], responses={200:response,404:error})
     def get(self, request, format=None):
         # todo(aj) filter by model id
         # either pass in source ids list to filter by or double nested
@@ -212,6 +221,12 @@ class HomePage(APIView):
         page = int(self.request.query_params.get("page", 1))
         page = 1 if page == "" else page
         match_id = self.request.query_params.getlist("match")
+        threshold = int(self.request.query_params.get("threshold",100))
+        if not isinstance(threshold,int) :
+            return Response({"detail":"threshold must be and integer"}, status=status.HTTP_400_BAD_REQUEST)
+        if threshold > 100 or threshold < 0 :
+            return Response({"detail":"threshold must between 0 and 100"}, status=status.HTTP_400_BAD_REQUEST)
+        threshold = threshold / 100.0
         filter_kwargs = {}
         if source_id != "":
             filter_kwargs["source_id"] = source_id
@@ -222,7 +237,6 @@ class HomePage(APIView):
         if len(match_id) != 0:
             filter_kwargs["match__in"] = match_id
 
-        threshold = .7
         sql_no_cummulate = models.Article.objects.filter(
                                                     **filter_kwargs
                                                     ).order_by("id").\

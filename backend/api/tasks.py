@@ -23,8 +23,6 @@ def process_entry(post_title,
                   post_id,
                   post_link,
                   source_id,
-                  articles_id,
-                  articles_text,
                   organization_id
                   ):
     """
@@ -61,16 +59,6 @@ def process_entry(post_title,
     article.source_id = source_id
     article.organization_id=organization_id
     article.save()
-    # check that there are historical articles
-    if len(articles_text) > 0:
-        articles_text.append(read.HTMLRead(article.text).read())
-        tfidf = vectorizer.fit_transform(articles_text)
-        from sklearn.metrics.pairwise import linear_kernel
-        cosine_similarities = linear_kernel(tfidf[-1], tfidf[0:-1]).flatten()
-        match_ids= sorted(np.array(articles_id)[cosine_similarities > threshold])
-        if len(match_ids) > 0:
-            article.match.add(*match_ids)
-            article.save()
 
 
 #@shared_task
@@ -81,11 +69,6 @@ def process_rss_source(source_url, source_id, organization_id):
     :param source_id: int
     :return:
     """
-    previous_week = timezone.now()-datetime.timedelta(days=7)
-    articles = models.Article.objects.filter(upload_date__gt=previous_week,
-                                             organization=organization_id)
-    article_ids = [article.id for article in articles]
-    article_text = [read.HTMLRead(article.text).read() for article in articles]
     data = feedparser.parse(source_url)
     logger.debug("source_url:" + str(source_url))
     for post in data.entries:
@@ -103,8 +86,6 @@ def process_rss_source(source_url, source_id, organization_id):
                                 post.id,
                                 post.link,
                                 source_id,
-                                article_ids,
-                                article_text,
                                 organization_id
                                 )
 
