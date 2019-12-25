@@ -247,8 +247,6 @@ class HomePage(APIView):
                                             "text",
                                              "id",
                                             )
-        res1 = sql_no_cummulate[1]
-        #data = {d["id"]: d for d in sql_no_cummulate}
         vectorizer = vector.StemmedTfidfVectorizer(decode_error="ignore",
                                                    clean_html=True,
                                                    clean_hashes=True)
