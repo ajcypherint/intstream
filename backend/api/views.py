@@ -444,7 +444,7 @@ class ArticleFilter(filters.FilterSet):
     article_id_multi = filters.AllValuesMultipleFilter(field_name="id", lookup_expr=("exact"))
 
     ordering = filters.OrderingFilter(
-        fields=[('source__name','source_name'),
+        fields=[('source__name','source__name'),
                 ('title','title'),
                 ('upload_date','upload_date')]
     )
@@ -457,7 +457,7 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.ArticleSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ARTICLE_SORT_FIELDS
+    filterset_fields = ('id','source','title','upload_date', 'source__name')
     filterset_class = ArticleFilter
 
     def get_queryset(self):

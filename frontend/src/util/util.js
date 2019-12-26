@@ -17,6 +17,7 @@ export function dateString(
   end,
   threshold
 ){
+  threshold = threshold || ""
   // :param orderdir: str
   // :param ordercol: str
   // :param sourceChosen: str

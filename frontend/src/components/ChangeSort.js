@@ -35,7 +35,9 @@ export function  changesort(column_name,
                                 selections.sourceChosen,
                                 1,
                                 selections.startDate,
-                                selections.endDate) 
+                                selections.endDate,
+                                selections.threshold) 
+
         }
       else{
        setHomeSelections({orderdir:ASC,page:1})
@@ -45,7 +47,8 @@ export function  changesort(column_name,
                                    selections.sourceChosen,
                                    1,
                                    selections.startDate,
-                                   selections.endDate) 
+                                   selections.endDate,
+                                   selections.threshold) 
                                   
       }
     }
@@ -57,7 +60,8 @@ export function  changesort(column_name,
                                 selections.sourceChosen,
                                 1,
                                 selections.startDate,
-                                selections.endDate) 
+                                selections.endDate,
+                                selections.threshold) 
 
       //call asc sort
          }
