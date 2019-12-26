@@ -155,7 +155,6 @@ class HomePage(APIView):
                                          "id":openapi.Schema(type=openapi.TYPE_INTEGER),
                                         "title":openapi.Schema(type=openapi.TYPE_STRING),
                                          "clean_text":openapi.Schema(type=openapi.TYPE_STRING),
-                                         "match":openapi.Schema(type=openapi.TYPE_INTEGER)
                                     })))
 
     error = openapi.Response("error",
@@ -440,7 +439,6 @@ class ArticleFilter(filters.FilterSet):
     source__name = filters.CharFilter(lookup_expr='exact')
     start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
     end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
-    match_article_id = filters.NumberFilter(field_name="match__id", lookup_expr=("exact"))
     article_id_multi = filters.AllValuesMultipleFilter(field_name="id", lookup_expr=("exact"))
 
     ordering = filters.OrderingFilter(
@@ -450,7 +448,7 @@ class ArticleFilter(filters.FilterSet):
     )
     class Meta:
         model = models.Article
-        fields = ('id','source','title','upload_date', 'source__name','source__mlmodel__id',"match")
+        fields = ('id','source','title','upload_date', 'source__name','source__mlmodel__id')
 
 
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet):

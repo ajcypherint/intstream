@@ -11,6 +11,7 @@ import {PAGINATION, dateString, childString, addDays} from '../util/util'
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
 import {createParent} from "../reducers/children"
+import Match from "./Match"
 
 
 export class Children extends React.Component{
@@ -84,6 +85,7 @@ export class Children extends React.Component{
   }
   render(){
 
+    const level = this.props.level || 0
     let selections = this.props.parent.homeSelections
     const articles = this.props.parent.articlesList || [];
     const loading = typeof this.props.parent.articlesLoading === 'undefined' ? true : this.props.parent.articlesLoading;
@@ -95,9 +97,9 @@ export class Children extends React.Component{
     const parent_trail = this.props.parent_trail
     const parent_first_id = this.props.parent_trail.length > 0 ? parent_trail[0].id : -1
     const parent_last_obj = this.props.parent_trail.length > 0 ? parent_trail[parent_trail.length-1] : undefined
-    const cols = "col-sm-"+(12-this.props.level)
-    const offset = "offset-sm-"+this.props.level
-    const page_fetch = this.props.level === 0 ? this.fetch : this.childFetch
+    const cols = "col-sm-"+(12-level)
+    const offset = "offset-sm-"+level
+    const page_fetch = level === 0 ? this.fetch : this.childFetch
     const parent_obj = this.props.parent_obj || {}
     const parent_id = parent_obj.id || undefined
     const i = 1
@@ -115,7 +117,7 @@ export class Children extends React.Component{
            this.props.parent.homeSelections,
            this.props.parent_func.setPage)}
          </td>
-       </tr>{this.props.level > 0 ?
+       </tr>{level > 0 ?
         <tr colSpan="4"><td>
                          <ol>
                            {
@@ -141,7 +143,7 @@ export class Children extends React.Component{
                this.props.parent_func.fetchArticles,
                selections,
                this.props.parent_func.setHomeSelections,
-               this.props.level,
+               level,
                parent_last_obj
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
@@ -150,7 +152,7 @@ export class Children extends React.Component{
              this.props.parent_func.fetchArticles,
              selections,
               this.props.parent_func.setHomeSelections,
-              this.props.level,
+              level,
              parent_last_obj
               )}}> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
@@ -159,10 +161,10 @@ export class Children extends React.Component{
              this.props.parent_func.fetchArticles,
              selections,
              this.props.parent_func.setHomeSelections,
-             this.props.level,
+             level,
              parent_last_obj
            )}}>Date</td>
-         {this.props.level===0 ? 
+         {level===0 ? 
              <td >Similar Articles</td> : null}
            </tr>
          </thead>
@@ -180,16 +182,9 @@ export class Children extends React.Component{
                     {article.source.name}
                   </td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
-                   {
-                       article.match.length > 0  && this.props.level === 0 ?
-                       <td className="hover" data-parent={JSON.stringify(createParent(article.id,article.title,article.match))} data-level={this.props.level}
-                          onClick={this.showChildren}>{article.match.length}</td>
-                           :null}
-                    {article.match.length === 0 && this.props.level ===0 ?
-                       <td >{article.match.length}</td>: null
-                          }
-                </tr>
-                   { this.props.level === 0 && article.id === parent_first_id?
+                  <Match level={level} article={article} showChildren={this.showChildren}/>
+               </tr>
+                   { level === 0 && article.id === parent_first_id?
                       <tr>
                         <td colSpan="4">
                             <Children parent={this.props.child}
@@ -200,7 +195,7 @@ export class Children extends React.Component{
                              start_date={selections.startDate}
                              end_date={selections.endDate}
                              source_chosen={selections.sourceChosen}
-                             level={this.props.level+1}/>
+                             level={level+1}/>
                          </td>
                       </tr>
                              :

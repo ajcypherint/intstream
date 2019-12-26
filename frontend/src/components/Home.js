@@ -171,20 +171,20 @@ export class Main extends React.Component{
           {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
        <FormGroup>
        <Row>
-        <Col sm="3">
+        <Col sm="3" md="3" lg="2">
           <label  htmlFor={"start_id"}>{"Start Date"}</label>
           <div className = "mb-2 ">
           <DatePicker style={{width:'100%'}} id={"startDate"}  selected={selections.startDate} onChange={this.handleStartChange} />
           </div>
         </Col>
-        <Col sm="3" >
+        <Col sm="3" md="3" lg="2">
           <label  htmlFor={"end_id"}>{"End Date"}</label>
           <div className = "mb-2 ">
           <DatePicker  id={"endDate"}  selected={selections.endDate} onChange={this.handleEndChange}/>
           </div>
         </Col>
 
-         <Col sm="4">
+         <Col sm="3" md="3" lg="5">
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
            <Input type="select" name="Source" value={selections.sourceChosen} id="source_id" onChange={this.handleSourceChange}>
@@ -201,7 +201,7 @@ export class Main extends React.Component{
 
           </div>
         </Col>
-        <Col sm="2">
+        <Col sm="3" md="3" lg="3">
            <label  htmlFor={"threshold"}>{"Similarity"}</label> 
            <Input type="select" name="threshold" value={selections.threshold} id="threshold_id" onChange={this.handleThresholdChange}>
              {threshold_values.map((value)=>{

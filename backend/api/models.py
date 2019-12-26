@@ -94,7 +94,6 @@ class Article(PolymorphicModel):
     title = models.TextField(max_length=256)
     text = models.TextField(blank=True)
     upload_date = models.DateTimeField(default=timezone.now)
-    match=models.ManyToManyField('self',blank=True, null=True )
     encoding = models.CharField(max_length=15,default='utf8')
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
