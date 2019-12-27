@@ -188,11 +188,11 @@ export class Main extends React.Component{
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
            <Input type="select" name="Source" value={selections.sourceChosen} id="source_id" onChange={this.handleSourceChange}>
-             <option value={""}>---</option>
+             <option className="black" value={""}>---</option>
              {ids.includes(selections.sourceChosen)===false && selections.sourceChosen!==''? 
-               <option value={selections.sourceChosen}>{selections.sourceChosen}</option>:''}
+               <option className="black" value={selections.sourceChosen}>{selections.sourceChosen}</option>:''}
              {this.props.sourcesList.map((source)=>{
-               return ( <option key={source.id} 
+               return ( <option className="black" key={source.id} 
                                 value={source.id}>
                                 {source.name}</option>)
              })
@@ -205,7 +205,7 @@ export class Main extends React.Component{
            <label  htmlFor={"threshold"}>{"Max Diff"}</label> 
            <Input type="select" name="threshold" value={selections.threshold} id="threshold_id" onChange={this.handleThresholdChange}>
              {threshold_values.map((value)=>{
-               return (<option key={value} value={value}>{value}</option>
+               return (<option className="black" key={value} value={value}>{value}</option>
                )
              }
              )}
