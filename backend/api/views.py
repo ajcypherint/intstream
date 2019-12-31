@@ -46,9 +46,12 @@ class SourceTypeViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class SourceFilter(filters.FilterSet):
+    article___upload_date__gte = filters.IsoDateTimeFilter(field_name="article__upload_date",lookup_expr="gte")
+    article___upload_date__lte = filters.IsoDateTimeFilter(field_name="article__upload_date", lookup_expr="lte")
+
     class Meta:
         model = models.Source
-        fields = ('id','name','active')
+        fields = ('id','name','active',"article","mlmodel")
 
 class HomeFilterSetting(filters.FilterSet):
     start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))

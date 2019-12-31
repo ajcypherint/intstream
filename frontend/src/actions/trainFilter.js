@@ -9,6 +9,7 @@ import {getSources} from './sources'
 export const ALL_SOURCES = '@@trainfilter/TOTALSOURCES';
 export const ALL_MLMODELS = '@@trainfilter/TOTALMLMODELS';
 
+export const CLEAR = '@@trainfilter/CLEAR';
 export const HOME = '@@trainfilter/HOME';
 export const PAGE = '@@trainfilter/PAGE';
 
@@ -16,7 +17,11 @@ export const GET_FILTER_REQUEST = '@@trainfilter/GET_FILTER_REQUEST';
 export const GET_FILTER_SUCCESS = '@@trainfilter/GET_FILTER_SUCCESS';
 export const GET_FILTER_FAILURE = '@@trainfilter/GET_FILTER_FAILURE';
 
-
+export const clear=()=>{
+  return {
+    type:CLEAR,
+  }
+}
 export const setPage= (data)=>{
   return {
     type:PAGE,

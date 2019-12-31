@@ -8,6 +8,7 @@ import articles, * as fromArticles from  './articles.js'
 import childArticles, * as fromChildArticles from  './children.js'
 import randomArticle, * as fromRandomArticle from  './randomArticle.js'
 import filter, * as fromFilter from  './filter.js'
+import trainFilter, * as fromTrainFilter from  './trainFilter.js'
 import childFilter, * as fromChildFilter from  './childFilter.js'
 import list, * as fromList from './listSelections.js'
 
@@ -22,7 +23,8 @@ export default combineReducers({
   list:list,
   randomArticle:randomArticle,
   childArticles:childArticles,
-  childFilter:childFilter
+  childFilter:childFilter,
+  trainFilter:trainFilter
 })
 
 //fromAuth
@@ -72,6 +74,11 @@ export const getModelPreviousPage = state => fromModels.previousPage(state.model
 //filter
 export const getHomeArticleSelections = state => fromFilter.getHomeSelections(state.filter)
 export const getFilterSources= state => fromFilter.sources(state.filter)
+
+//trainFilter
+export const getTrainSelections = state => fromTrainFilter.getSelections(state.trainFilter)
+export const getTrainFilterSources= state => fromTrainFilter.sources(state.trainFilter)
+export const getTrainFilterMLModels= state => fromTrainFilter.mlmodels(state.trainFilter)
 
 //listSelections
 export const getListPage = state => fromList.getPage(state.list)

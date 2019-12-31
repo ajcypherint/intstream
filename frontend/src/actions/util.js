@@ -14,7 +14,6 @@ export const setParams = function(url, params){
   }
   return url;
 }
- 
 export const  getAll = (get)=>(putAll)=>(url, params) =>{
   return async(dispatch, getState) => {
       let extra_params = params || ''

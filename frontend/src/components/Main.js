@@ -28,7 +28,7 @@ const Main = (props)=>(
 
     <Route exact path="/article/:id" component={Article} />
     <Route exact path="/train/:id/:model" component={Train} />
-    <Route exact path="/train_list/" component={TrainList} />
+    <Route exact path="/train_list" component={TrainList} />
     <Route exact path="/sources_upload" component={SourcesUploadList} />
     <Route exact path="/sources_upload_add" 
       render={()=>

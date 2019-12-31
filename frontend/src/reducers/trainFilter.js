@@ -4,7 +4,7 @@ import _ from 'lodash';
 import  URL  from  'url-parse'
 import {ASC, DESC} from "../util/util"
 import * as filter from '../actions/trainFilter'
-
+export const NONE = "-Select-"
 let START = new Date();
 START.setHours(0,0,0,0);
 
@@ -15,7 +15,7 @@ const initialState ={
   Selections: {
       startDate: START,
       endDate: END,
-      mlmodelChosen:undefined,
+      mlmodelChosen:NONE,
       sourceChosen:'',
       loadSources:false,
       page:1,
@@ -30,6 +30,13 @@ const initialState ={
 
 export default (state=initialState, action) => {
   switch(action.type) {
+      case filter.CLEAR:
+      {
+        return {
+          ...initialState
+          }
+
+      }
       case filter.PAGE:
       {
         return {
@@ -60,6 +67,14 @@ export default (state=initialState, action) => {
         }
 
       }
+     case filter.ALL_MLMODELS:
+      {
+        return {
+          ...state,
+          mlmodels:action.payload,
+        }
+
+      }
  
      default:
       return state
@@ -73,4 +88,7 @@ export function getSelections(state){
 
 export function sources(state){
   return state.sources
+}
+export function mlmodels(state){
+  return state.mlmodels
 }
