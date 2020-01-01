@@ -250,37 +250,43 @@ class HomePage(APIView):
         vectorizer = vector.StemmedTfidfVectorizer(decode_error="ignore",
                                                    clean_html=True,
                                                    clean_hashes=True)
-        similarity = None
+        all_results=[]
+        if len(sql_no_cummulate) == 1:
+             element = {"id":sql_no_cummulate[0]["id"],
+                        "upload_date": sql_no_cummulate[0]["upload_date"],
+                        "source__name":sql_no_cummulate[0]["source__name"],
+                        "source": {"id":sql_no_cummulate[0]["source__id"],
+                                   "name":sql_no_cummulate[0]["source__name"]},
+                       "match":[],
+                        "title": sql_no_cummulate[0]["title"]}
+             all_results.append(element)
+
         if len(sql_no_cummulate) > 1:
             tfidf = vectorizer.fit_transform([i["text"] for i in sql_no_cummulate])
             tfidf = tfidf.todense()
             Z = hierarchy.linkage(tfidf, "average", metric="cosine")
             C = hierarchy.fcluster(Z, threshold, criterion="distance")
-
-
-        distinct_clusters = set(C)
-        found_clusters = []
-
-        all_results=[]
-        all_results_cluster_indexes = {}
-        for index, cluster_id in enumerate(C):
-            cluster_id = int(cluster_id)
-            if cluster_id not in found_clusters:
-                # use this for showing only level 1 down
-                element = {"id":sql_no_cummulate[index]["id"],
-                            "upload_date": sql_no_cummulate[index]["upload_date"],
-                            "source__name":sql_no_cummulate[index]["source__name"],
-                            "source": {"id":sql_no_cummulate[index]["source__id"],
-                                       "name":sql_no_cummulate[index]["source__name"]},
-                           "match":[],
-                            "title": sql_no_cummulate[index]["title"]}
-                all_results.append(element)
-                found_clusters.append(cluster_id)
-                all_results_cluster_indexes[str(cluster_id)]=len(all_results)-1
-            else:
-                all_result_index = all_results_cluster_indexes[str(cluster_id)]
-                matched_id = sql_no_cummulate[index]["id"]
-                all_results[all_result_index]["match"].append(matched_id)
+            distinct_clusters = set(C)
+            found_clusters = []
+            all_results_cluster_indexes = {}
+            for index, cluster_id in enumerate(C):
+                cluster_id = int(cluster_id)
+                if cluster_id not in found_clusters:
+                    # use this for showing only level 1 down
+                    element = {"id":sql_no_cummulate[index]["id"],
+                                "upload_date": sql_no_cummulate[index]["upload_date"],
+                                "source__name":sql_no_cummulate[index]["source__name"],
+                                "source": {"id":sql_no_cummulate[index]["source__id"],
+                                           "name":sql_no_cummulate[index]["source__name"]},
+                               "match":[],
+                                "title": sql_no_cummulate[index]["title"]}
+                    all_results.append(element)
+                    found_clusters.append(cluster_id)
+                    all_results_cluster_indexes[str(cluster_id)]=len(all_results)-1
+                else:
+                    all_result_index = all_results_cluster_indexes[str(cluster_id)]
+                    matched_id = sql_no_cummulate[index]["id"]
+                    all_results[all_result_index]["match"].append(matched_id)
 
 
         #results = [{"id":i.id,
