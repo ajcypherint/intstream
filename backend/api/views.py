@@ -251,7 +251,7 @@ class HomePage(APIView):
                                                    clean_html=True,
                                                    clean_hashes=True)
         similarity = None
-        if len(sql_no_cummulate) > 0:
+        if len(sql_no_cummulate) > 1:
             tfidf = vectorizer.fit_transform([i["text"] for i in sql_no_cummulate])
             tfidf = tfidf.todense()
             Z = hierarchy.linkage(tfidf, "average", metric="cosine")
