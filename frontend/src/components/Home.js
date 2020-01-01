@@ -202,7 +202,7 @@ export class Main extends React.Component{
           </div>
         </Col>
         <Col sm="3" md="3" lg="3">
-           <label  htmlFor={"threshold"}>{"Similarity"}</label> 
+           <label  htmlFor={"threshold"}>{"Max Diff"}</label> 
            <Input type="select" name="threshold" value={selections.threshold} id="threshold_id" onChange={this.handleThresholdChange}>
              {threshold_values.map((value)=>{
                return (<option key={value} value={value}>{value}</option>

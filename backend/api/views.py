@@ -29,6 +29,7 @@ from django.contrib.postgres.aggregates import ArrayAgg
 from django.conf import settings
 import itertools
 from utils import vector, read
+from scipy.cluster import  hierarchy
 
 # Create your views here.
 
@@ -252,35 +253,35 @@ class HomePage(APIView):
         similarity = None
         if len(sql_no_cummulate) > 0:
             tfidf = vectorizer.fit_transform([i["text"] for i in sql_no_cummulate])
-            similarity = cosine_similarity(tfidf,tfidf)
+            tfidf = tfidf.todense()
+            Z = hierarchy.linkage(tfidf, "average", metric="cosine")
+            C = hierarchy.fcluster(Z, threshold, criterion="distance")
 
-        # sort by id and remove similar so results stay consistent between sorts on the frontend
-        # avoid pulling in entire model into memory
-        nested_results = []
-        nested_accumulate_children=[]
 
-        level1_results=[]
-        level1_accumulate_children=[]
+        distinct_clusters = set(C)
+        found_clusters = []
 
         all_results=[]
-        for row_num, i in enumerate(sql_no_cummulate):
-            # use this for showing only level 1 down
-            if i["id"] not in level1_accumulate_children:
-                element = {"id":i["id"],
-                        "upload_date": i["upload_date"],
-                        "source__name":i["source__name"],
-                        "source": {"id":i["source__id"],
-                                   "name":i["source__name"]},
-                        "title": i["title"]}
-                if i["id"] not in level1_results:
-                    level1_results.append(element)
-                #find > threshold and not row_num == index
-                thresholds_row = np.where(similarity[row_num] > threshold)[0]
-                thresholds_row = [ z for z in thresholds_row if z != row_num]
-                matches = [sql_no_cummulate[int(j)]["id"] for j in thresholds_row]
-                matches = [i for i in matches if i not in level1_accumulate_children]
-                level1_accumulate_children.extend(matches)
-                element["match"]=matches
+        all_results_cluster_indexes = {}
+        for index, cluster_id in enumerate(C):
+            cluster_id = int(cluster_id)
+            if cluster_id not in found_clusters:
+                # use this for showing only level 1 down
+                element = {"id":sql_no_cummulate[index]["id"],
+                            "upload_date": sql_no_cummulate[index]["upload_date"],
+                            "source__name":sql_no_cummulate[index]["source__name"],
+                            "source": {"id":sql_no_cummulate[index]["source__id"],
+                                       "name":sql_no_cummulate[index]["source__name"]},
+                           "match":[],
+                            "title": sql_no_cummulate[index]["title"]}
+                all_results.append(element)
+                found_clusters.append(cluster_id)
+                all_results_cluster_indexes[str(cluster_id)]=len(all_results)-1
+            else:
+                all_result_index = all_results_cluster_indexes[str(cluster_id)]
+                matched_id = sql_no_cummulate[index]["id"]
+                all_results[all_result_index]["match"].append(matched_id)
+
 
         #results = [{"id":i.id,
         #            "upload_date":i.upload_date,
@@ -297,9 +298,9 @@ class HomePage(APIView):
         # cannot do in queryset because if the window function cannot be used in a when clause
         list_of_models=[]
         if order_by[0] != "-":
-            list_of_models = sorted(level1_results, key=lambda x: x[order_by])
+            list_of_models = sorted(all_results, key=lambda x: x[order_by])
         else:
-            list_of_models = sorted(level1_results, key=lambda x: x[test_order_by],reverse=True)
+            list_of_models = sorted(all_results, key=lambda x: x[test_order_by],reverse=True)
 
         # retrieve page slicing
         total_count = len(list_of_models)

@@ -28,6 +28,7 @@ docx2txt = "*"
 gunicorn = "*"
 feedparser = "*"
 celery-singleton = "*"
+scipy = "*"
 
 [requires]
 python_version = "3.6"
