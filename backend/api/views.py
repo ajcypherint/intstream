@@ -264,7 +264,7 @@ class HomePage(APIView):
         if len(sql_no_cummulate) > 1:
             tfidf = vectorizer.fit_transform([i["text"] for i in sql_no_cummulate])
             tfidf = tfidf.todense()
-            Z = hierarchy.linkage(tfidf, "ward", )
+            Z = hierarchy.linkage(tfidf, "average", metric="cosine")
             C = hierarchy.fcluster(Z, threshold, criterion="distance")
             distinct_clusters = set(C)
             found_clusters = []
