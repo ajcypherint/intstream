@@ -4,6 +4,7 @@ import { PAGINATION } from '../util/util'
 //
 //
 //CANNOT be an arrow function or 'this' will not work... dont ask how long i spent on that.
+//CANNOT be part of a form as the onclick events cause page submissions.  2+ hours.
 export default function  (totalcount,next,previous,fetchit, fetchFullUri, selections, setPage){
   //
   // totalcount: int

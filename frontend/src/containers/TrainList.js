@@ -31,6 +31,7 @@ const mapDispatchToProps = (dispatch) => ({
   fetchAllMLModels: (params = undefined) => dispatch(getAllMLModels(API_MODELS, params)),
   fetchArticlesFullUri: (url,params=undefined) => dispatch(getArticles(url, params)),
   fetchArticles: (params=undefined) => dispatch(getArticles(API_ARTICLES, params)),
+  clearArticles:()=>dispatch(clearArticles()),
   setSelections: (data)=>dispatch(setSelections(data)),
   setPage:(page)=>dispatch(setPage(page)),
   clear: ()=>dispatch(clear())

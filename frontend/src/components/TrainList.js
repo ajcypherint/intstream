@@ -18,16 +18,18 @@ export default class extends Component {
     this.updateDate = this.updateDate.bind(this)
     this.paginate = Paginate.bind(this)
     this.changesort = changesort.bind(this)
+    this.fetchit = this.fetchit.bind(this)
   }
   handleModelChange(event){
     event.preventDefault()
     let id = event.target.value
     if(id!==NONE){
       let selections = this.props.selections
-      //todo() ordering
+      //todo() ordering add model
       this.props.fetchAllSources(
       "start_upload_date="+selections.startDate.toISOString()+
       "&end_upload_date="+selections.endDate.toISOString()+
+      "&source__mlmodel="+id+
       "&source__active=true"
       )
       this.props.setSelections(
@@ -40,13 +42,13 @@ export default class extends Component {
       1,
       selections.startDate,
       selections.endDate,
-      )) 
+      )+"&source__mlmodel="+id) 
 
 
     } else {
       this.props.clear()
       this.props.fetchAllMLModels("ordering=name&active=true")
-      //todo clear articles
+      this.props.clearArticles()
 
     }
 
@@ -82,10 +84,10 @@ export default class extends Component {
     startDate.setHours(0,0,0,0);
     endDate.setHours(23,59,59,999);
         
-    // todo add model
     this.props.fetchAllSources(
     "start_upload_date="+startDate.toISOString()+
     "&end_upload_date="+endDate.toISOString()+
+      "&source__mlmodel="+this.props.selections.mlmodelChosen+
     "&source__active=true"
     )
     // update cascading filters
@@ -95,7 +97,6 @@ export default class extends Component {
       endDate:endDate,
       })
     //fetch articles 
-    //todo add model 
     this.props.fetchArticles(dateString(
       this.props.selections.orderdir,// orderdir
       this.props.selections.ordercol, // ordercol 
@@ -103,7 +104,7 @@ export default class extends Component {
       1,  // page
       startDate,
       endDate,
-    )) 
+    )+ "&source__mlmodel="+this.props.selections.mlmodelChosen)
 
  }
  
@@ -121,10 +122,12 @@ export default class extends Component {
       1,
       selections.startDate,
       selections.endDate,
-      )) 
+      )+ "&source__mlmodel="+selections.mlmodelChosen) 
 
   }
-  fetch(selections,page){
+
+  fetchit(selections,page){
+    let s = selections
     this.props.fetchArticles(dateString(
             selections.orderdir,
             selections.ordercol,
@@ -132,8 +135,7 @@ export default class extends Component {
             page,
             selections.startDate,
             selections.endDate,
-            selections.threshold
-          ))
+          )+"&source__mlmodel="+selections.mlmodelChosen)
   }
  
   componentDidMount(){
@@ -161,7 +163,7 @@ export default class extends Component {
         <Form>
        <FormGroup>
          <Row>
-        <Col sm="2" >
+        <Col sm="3" >
           <label  htmlFor={"model_id"}>{"Model"}</label>
            <Input type="select" name="Model" value={selections.mlmodelChosen} id="source_id" onChange={this.handleModelChange}>
                 <option value={NONE}>{NONE}</option>
@@ -178,20 +180,20 @@ export default class extends Component {
         <Col sm="2">
           <label  htmlFor={"start_id"}>{"Start Date"}</label>
           <div className = "mb-2 ">
-          <DatePicker style={{width:'100%'}} id={"startDate"}  selected={selections.startDate} onChange={this.handleStartChange} />
+          <DatePicker style={{width:'100%'}} id={"startDate"} disabled={selections.mlmodelChosen===NONE} selected={selections.startDate} onChange={this.handleStartChange} />
           </div>
         </Col>
         <Col sm="2">
           <label  htmlFor={"end_id"}>{"End Date"}</label>
           <div className = "mb-2 ">
-          <DatePicker  id={"endDate"}  selected={selections.endDate} onChange={this.handleEndChange}/>
+          <DatePicker  id={"endDate"}  selected={selections.endDate} disabled={selections.mlmodelChosen===NONE}onChange={this.handleEndChange}/>
           </div>
         </Col>
 
-         <Col sm="4" >
+         <Col sm="3" >
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
-           <Input type="select" name="Source" value={selections.sourceChosen} id="source_id" onChange={this.handleSourceChange}>
+           <Input type="select" name="Source" value={selections.sourceChosen} disabled={selections.mlmodelChosen===NONE} id="source_id" onChange={this.handleSourceChange}>
              <option value={""}>---</option>
              {ids.includes(selections.sourceChosen)===false && selections.sourceChosen!==''? 
                <option value={selections.sourceChosen}>{selections.sourceChosen}</option>:''}
@@ -207,7 +209,7 @@ export default class extends Component {
         </Col>
         <Col sm="2">
            <label  htmlFor={"target"}>{"Target"}</label> 
-           <Input type="select" name="target" value={selections.target} id="target_id" onChange={this.handleTargetChange}>
+           <Input type="select" name="target" value={selections.target} id="target_id" disabled={selections.mlmodelChosen===NONE} onChange={this.handleTargetChange}>
              <option value={""}>---</option>
              <option value={true}>True</option>
              <option value={false}>False</option>
@@ -216,6 +218,8 @@ export default class extends Component {
  
       </Row>
     </FormGroup>
+  </Form> {//this MUST be here.  the paginate function will cause page refreshes
+  }
     <table className={"table table-sm "}>
       <tbody>
         <tr>
@@ -223,7 +227,7 @@ export default class extends Component {
          {this.paginate(totalcount,
            next,
            previous,
-           this.fetch,
+           this.fetchit,
            this.props.fetchArticlesFullUri,
            this.props.selections,
            this.props.setPage)}
@@ -236,23 +240,23 @@ export default class extends Component {
              <td className="hover" onClick={(event)=>{this.changesort("title", 
                ASC, 
                DESC, 
-               this.props.parent_func.fetchArticles,
+               this.props.fetchArticles,
                selections,
-               this.props.parent_func.setHomeSelections,
+               this.props.setSelections,
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
              DESC, 
-             this.props.parent_func.fetchArticles,
+             this.props.fetchArticles,
              selections,
-              this.props.parent_func.setHomeSelections,
+              this.props.setSelections,
               )}}> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
-             this.props.parent_func.fetchArticles,
+             this.props.fetchArticles,
              selections,
-             this.props.parent_func.setHomeSelections,
+             this.props.setSelections,
            )}}>Date</td>
              <td>True</td> 
              <td>False</td> 
@@ -273,7 +277,7 @@ export default class extends Component {
                   </td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
                   <td>
-                    <div class="custom-control custom-checkbox">
+                    <div className="custom-control custom-checkbox">
                       <Input type="checkbox" checked={false}/>
                     </div>
                   </td>
@@ -283,6 +287,8 @@ export default class extends Component {
                     </div>
                   </td>
                </tr>
+               {//todo selected article
+               }
 
                 </tbody>
                  )
@@ -298,7 +304,6 @@ export default class extends Component {
   </tr>
       </tbody>
     </table>
-    </Form>
       </div>
 
     )

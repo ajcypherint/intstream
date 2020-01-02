@@ -58,7 +58,7 @@ class HomeFilterSetting(filters.FilterSet):
     end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
     class Meta:
         model = models.Article
-        fields = ("source","source__active")
+        fields = ("source","source__active","source__mlmodel")
 
 class RandomUnclassified(APIView):
 
@@ -102,6 +102,7 @@ class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
     permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.SourceSerializer
     filterset_class = HomeFilterSetting
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
 
     def get_queryset(self):
         return models.Article.objects.filter(organization=self.request.user.organization).\
@@ -458,14 +459,14 @@ class ArticleFilter(filters.FilterSet):
     )
     class Meta:
         model = models.Article
-        fields = ('id','source','title','upload_date', 'source__name','source__mlmodel__id')
+        fields = ('id','source','title','upload_date', 'source__name','source__mlmodel')
 
 
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.ArticleSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','source','title','upload_date', 'source__name')
+    filterset_fields = ('id','source','title','upload_date', 'source__name', "source_mlmodel")
     filterset_class = ArticleFilter
 
     def get_queryset(self):

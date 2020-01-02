@@ -5,6 +5,7 @@ import  URL  from  'url-parse'
 import {ASC, DESC} from "../util/util"
 import * as filter from '../actions/trainFilter'
 export const NONE = "-Select-"
+export const NONEVAL = ""
 let START = new Date();
 START.setHours(0,0,0,0);
 
