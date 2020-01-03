@@ -31,6 +31,7 @@ import itertools
 from utils import vector, read
 from scipy.cluster import  hierarchy
 
+MAX_CLUSTER = 1000
 # Create your views here.
 
 class MLModelFilter(filters.FilterSet):
@@ -266,31 +267,46 @@ class HomePage(APIView):
              all_results.append(element)
 
         if len(sql_no_cummulate) > 1:
-            tfidf = vectorizer.fit_transform([i["text"] for i in sql_no_cummulate])
-            tfidf = tfidf.todense()
-            Z = hierarchy.linkage(tfidf, "average", metric="cosine")
-            C = hierarchy.fcluster(Z, threshold, criterion="distance")
-            distinct_clusters = set(C)
-            found_clusters = []
-            all_results_cluster_indexes = {}
-            for index, cluster_id in enumerate(C):
-                cluster_id = int(cluster_id)
-                if cluster_id not in found_clusters:
-                    # use this for showing only level 1 down
-                    element = {"id":sql_no_cummulate[index]["id"],
-                                "upload_date": sql_no_cummulate[index]["upload_date"],
-                                "source__name":sql_no_cummulate[index]["source__name"],
-                                "source": {"id":sql_no_cummulate[index]["source__id"],
-                                           "name":sql_no_cummulate[index]["source__name"]},
+            if threshold != 0:
+                if len(sql_no_cummulate) > MAX_CLUSTER:
+                    return Response({"detail":"Set MAX_DIFF to 0 or filter results; Max number of articles for clustering is " +
+                                              str(MAX_CLUSTER)}, status=status.HTTP_400_BAD_REQUEST)
+                tfidf = vectorizer.fit_transform([i["text"] for i in sql_no_cummulate])
+                tfidf = tfidf.todense()
+                Z = hierarchy.linkage(tfidf, "average", metric="cosine")
+                C = hierarchy.fcluster(Z, threshold, criterion="distance")
+                distinct_clusters = set(C)
+                found_clusters = []
+                all_results_cluster_indexes = {}
+                for index, cluster_id in enumerate(C):
+                    cluster_id = int(cluster_id)
+                    if cluster_id not in found_clusters:
+                        # use this for showing only level 1 down
+                        element = {"id": sql_no_cummulate[index]["id"],
+                                    "upload_date": sql_no_cummulate[index]["upload_date"],
+                                    "source__name": sql_no_cummulate[index]["source__name"],
+                                    "source": {"id": sql_no_cummulate[index]["source__id"],
+                                               "name": sql_no_cummulate[index]["source__name"]},
+                                   "match":[],
+                                    "title": sql_no_cummulate[index]["title"]}
+                        all_results.append(element)
+                        found_clusters.append(cluster_id)
+                        all_results_cluster_indexes[str(cluster_id)]=len(all_results)-1
+                    else:
+                        all_result_index = all_results_cluster_indexes[str(cluster_id)]
+                        matched_id = sql_no_cummulate[index]["id"]
+                        all_results[all_result_index]["match"].append(matched_id)
+            else:
+                for i,value in enumerate(sql_no_cummulate):
+                     element = {"id": sql_no_cummulate[i]["id"],
+                                "upload_date": sql_no_cummulate[i]["upload_date"],
+                                "source__name": sql_no_cummulate[i]["source__name"],
+                                "source": {"id": sql_no_cummulate[i]["source__id"],
+                                           "name": sql_no_cummulate[i]["source__name"]},
                                "match":[],
-                                "title": sql_no_cummulate[index]["title"]}
-                    all_results.append(element)
-                    found_clusters.append(cluster_id)
-                    all_results_cluster_indexes[str(cluster_id)]=len(all_results)-1
-                else:
-                    all_result_index = all_results_cluster_indexes[str(cluster_id)]
-                    matched_id = sql_no_cummulate[index]["id"]
-                    all_results[all_result_index]["match"].append(matched_id)
+                                "title": sql_no_cummulate[i]["title"]}
+                     all_results.append(element)
+
 
 
         #results = [{"id":i.id,
