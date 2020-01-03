@@ -22,6 +22,12 @@ export class Children extends React.Component{
     this.childFetch = this.childFetch.bind(this)
     this.changesort = changesort.bind(this)
     this.showChildren = this.showChildren.bind(this)
+    this.getArticle = this.getArticle.bind(this)
+  }
+  getArticle(event){
+    let {id}= event.target.dataset
+    this.props.clearSelect()
+    this.props.fetchSelect(id)
   }
   showChildren(event){
     // call fetch for children based on level
@@ -103,6 +109,7 @@ export class Children extends React.Component{
     const parent_obj = this.props.parent_obj || {}
     const parent_id = parent_obj.id || undefined
     const i = 1
+    const selectArticles = this.props.selectArticles || {}
     return (
       
     <table className={"table table-sm "+cols + " " + offset}>
@@ -117,22 +124,8 @@ export class Children extends React.Component{
            this.props.parent.homeSelections,
            this.props.parent_func.setPage)}
          </td>
-       </tr>{level > 0 ?
-        <tr colSpan="4"><td>
-                         <ol>
-                           {
-                             parent_trail.map((parent_info,index)=>{
-                               return(
-                                   <li key={index}>
-                                     {parent_info.title}
-                                   </li>
-                               )
-                              }
-                             )
-                           }
-                         </ol>
-                       </td></tr>
-           :null}<tr>
+         </tr>
+         <tr>
         <td>
        <table className={"table table-sm"}>
          <thead>
@@ -173,10 +166,8 @@ export class Children extends React.Component{
                return (
                 <tbody key={article.id}>
                 <tr key={article.id}>
-                 <td>
-                      <Link key={article.id+"link"} style={{color:'black'}} to={this.props.parent.articleuri+ article.id}>
+                 <td className="hover" data-id={article.id} onClick={this.getArticle}>
                     {article.title}
-                        </Link>
                       </td>
                   <td >
                     {article.source.name}
@@ -184,10 +175,32 @@ export class Children extends React.Component{
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
                   <Match level={level} article={article} showChildren={this.showChildren}/>
                </tr>
+                  {//todo selected article
+                                 article.id in selectArticles ?
+                                  <tr>
+                                    {selectArticles[article.id].loading===true?
+                                        <td>
+                                          <span className="spinner-border" role="status">
+                                            <span className="sr-only">Loading...</span>
+                                          </span>
+                                        </td>: 
+                                          <td colSpan="5">
+                                            <Input type="textarea" className="bktextarea" 
+                                              name="text" rows="15" id="Article" readOnly 
+                                              value={selectArticles[article.id].data.clean_text}/>
+                                          </td>
+                                    }
+                                  </tr>
+                                   : null
+                                 //if article.id in this.props.selectArticles.keys()
+                               }
+
+
                    { level === 0 && article.id === parent_first_id?
                       <tr>
                         <td colSpan="4">
-                            <Children parent={this.props.child}
+                          <Children 
+                             parent={this.props.child}
                              parent_func={this.props.child_func}
                              parent_obj={createParent(article.id,article.title,article.match)}
                              parent_title={article.title}
@@ -195,6 +208,12 @@ export class Children extends React.Component{
                              start_date={selections.startDate}
                              end_date={selections.endDate}
                              source_chosen={selections.sourceChosen}
+
+                             selectArticles={this.props.selectArticles}
+                             selectErrors={this.props.selectErrors}
+                             fetchSelect={this.props.fetchSelect}
+                             clearSelect={this.props.clearSelect}
+
                              level={level+1}/>
                          </td>
                       </tr>

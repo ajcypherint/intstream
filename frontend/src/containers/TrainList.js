@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import Main from '../components/TrainList'
 import {getArticles, clearArticles} from '../actions/articles'
+import * as fromSelect from '../actions/selectArticle'
 import {getAllSources,getAllMLModels, setPage, setSelections, clear} from '../actions/trainFilter'
 import {getSources, clearSources } from '../actions/sources'
 
@@ -22,7 +23,8 @@ const mapStateToProps = (state) => ({
   articleNext:reducers.getArticleNextPage(state),
   articlePrevious:reducers.getArticlePreviousPage(state),
   articleuri:ARTICLE_URI,
-
+  selectArticles:reducers.getSelectArticles(state),
+  selectErrors:reducers.getSelectErrors(state)
 })
 
 
@@ -34,7 +36,9 @@ const mapDispatchToProps = (dispatch) => ({
   clearArticles:()=>dispatch(clearArticles()),
   setSelections: (data)=>dispatch(setSelections(data)),
   setPage:(page)=>dispatch(setPage(page)),
-  clear: ()=>dispatch(clear())
+  clear: ()=>dispatch(clear()),
+  fetchSelect: (id)=>dispatch(fromSelect.getArticle(API_ARTICLES,id)),
+  clearSelect: ()=>dispatch(fromSelect.clearArticles()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

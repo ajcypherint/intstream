@@ -213,13 +213,20 @@ export class Main extends React.Component{
         </Col>
     </Row>
   </FormGroup>
-    <Children parent_func={this.props.parent_func}
+  <Children 
+      parent_func={this.props.parent_func}
       level={0}
       child={this.props.child}
       child_func={this.props.child_func}
       parent_id = {-1}
       parent_trail={this.props.child.parentTrail}
       show_children={this.showChildren}
+
+      selectArticles={this.props.selectArticles}
+      selectErrors={this.props.selectErrors}
+      fetchSelect={this.props.fetchSelect}
+      clearSelect={this.props.clearSelect}
+
       parent={this.props.parent}/>
 
 

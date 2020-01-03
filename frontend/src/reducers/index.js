@@ -11,6 +11,7 @@ import filter, * as fromFilter from  './filter.js'
 import trainFilter, * as fromTrainFilter from  './trainFilter.js'
 import childFilter, * as fromChildFilter from  './childFilter.js'
 import list, * as fromList from './listSelections.js'
+import selectArticles, * as fromSelect from "./selectArticles.js"
 
 export default combineReducers({
   auth: auth,
@@ -24,7 +25,8 @@ export default combineReducers({
   randomArticle:randomArticle,
   childArticles:childArticles,
   childFilter:childFilter,
-  trainFilter:trainFilter
+  trainFilter:trainFilter,
+  selectArticles:selectArticles
 })
 
 //fromAuth
@@ -102,6 +104,9 @@ export const getParentTrail = state => fromChildArticles.parentTrail(state.child
 //childfilter
 export const getChildHomeArticleSelections = state => fromChildFilter.getHomeSelections(state.childFilter)
 
+//fromSelect
+export const getSelectArticles = state => fromSelect.articles(state.selectArticles)
+export const getSelectErrors= state => fromSelect.errors(state.selectArticles)
 
 
 export function withAuth(headers={}) {

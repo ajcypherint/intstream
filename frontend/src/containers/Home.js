@@ -7,6 +7,7 @@ import {getChildArticles,clearParent} from '../actions/childArticles'
 import {setPage, setHomeSelections, getAllSources} from '../actions/filter'
 import {setChildPage, setChildHomeSelections} from '../actions/childFilter'
 import {getSources, clearSources } from '../actions/sources'
+import * as fromSelect from '../actions/selectArticle'
 
 const API = '/api/homearticles/'
 const API_SOURCES = '/api/homefilter/'
@@ -14,6 +15,8 @@ const API_ARTICLE = '/api/articles/'
 const ARTICLE_URI = "/article/"
 const mapStateToProps = (state) => ({
   sourcesList:reducers.getFilterSources(state),
+  selectArticles:reducers.getSelectArticles(state),
+  selectErrors:reducers.getSelectErrors(state),
   parent:{
     homeSelections:reducers.getHomeArticleSelections(state),
     articlesList:reducers.getArticles(state),
@@ -40,6 +43,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
+  fetchSelect: (id)=>dispatch(fromSelect.getArticle(API_ARTICLE,id)),
+  clearSelect: ()=>dispatch(fromSelect.clearArticles()),
   parent_func:{
     fetchArticlesFullUri: (url,params=undefined) => dispatch(getArticles(url,params)),
     fetchArticles: (params=undefined) => dispatch(getArticles(API,params)),

@@ -19,6 +19,7 @@ export default class extends Component {
     this.paginate = Paginate.bind(this)
     this.changesort = changesort.bind(this)
     this.fetchit = this.fetchit.bind(this)
+    this.getArticle = this.getArticle.bind(this)
   }
   handleModelChange(event){
     event.preventDefault()
@@ -125,7 +126,11 @@ export default class extends Component {
       )+ "&source__mlmodel="+selections.mlmodelChosen) 
 
   }
-
+  getArticle(event){
+    let {id}= event.target.dataset
+    this.props.clearSelect()
+    this.props.fetchSelect(id)
+  }
   fetchit(selections,page){
     let s = selections
     this.props.fetchArticles(dateString(
@@ -139,10 +144,10 @@ export default class extends Component {
   }
  
   componentDidMount(){
-
     //action
+    this.props.clearSelect()
+    this.props.clearArticles()
     this.props.fetchAllMLModels("ordering=name&active=true")
-    // model = first model retrieved
   }
   render(){
     let articles = this.props.articlesList || [];
@@ -154,6 +159,7 @@ export default class extends Component {
     const next = this.props.articleNext ;
     const previous = this.props.articlePrevious;
     const loading = this.props.articlesLoading
+    const selectArticles = this.props.selectArticles || {}
  
     return (
 
@@ -165,7 +171,7 @@ export default class extends Component {
          <Row>
         <Col sm="3" >
           <label  htmlFor={"model_id"}>{"Model"}</label>
-           <Input type="select" name="Model" value={selections.mlmodelChosen} id="source_id" onChange={this.handleModelChange}>
+           <Input type="select" name="Model" value={selections.mlmodelChosen} id="model_id" onChange={this.handleModelChange}>
                 <option value={NONE}>{NONE}</option>
              {
              models.map((model, index)=>{
@@ -267,10 +273,8 @@ export default class extends Component {
                return (
                 <tbody key={article.id}>
                 <tr key={article.id}>
-                 <td>
-                      <Link key={article.id+"link"} style={{color:'black'}} to={this.props.articleuri+ article.id}>
+                 <td className="hover" data-id={article.id} onClick={this.getArticle}>
                     {article.title}
-                        </Link>
                       </td>
                   <td >
                     {article.source.name}
@@ -282,12 +286,29 @@ export default class extends Component {
                     </div>
                   </td>
                   <td>
-                    <div class="custom-control custom-checkbox">
+                    <div className="custom-control custom-checkbox">
                       <Input type="checkbox" checked={false}/>
                     </div>
                   </td>
                </tr>
                {//todo selected article
+                 article.id in selectArticles ?
+                  <tr>
+                    {selectArticles[article.id].loading===true?
+                        <td>
+                          <span className="spinner-border" role="status">
+                            <span className="sr-only">Loading...</span>
+                          </span>
+                        </td>: 
+                          <td colSpan="5">
+                            <Input type="textarea" className="bktextarea" 
+                              name="text" rows="15" id="Article" readOnly 
+                              value={selectArticles[article.id].data.clean_text}/>
+                          </td>
+                    }
+                  </tr>
+                   : null
+                 //if article.id in this.props.selectArticles.keys()
                }
 
                 </tbody>
