@@ -145,9 +145,20 @@ export default class extends Component {
  
   componentDidMount(){
     //action
-    this.props.clearSelect()
-    this.props.clearArticles()
     this.props.fetchAllMLModels("ordering=name&active=true")
+    let selections = this.props.selections
+    if (selections.mlmodelChosen===NONE){
+      this.props.clearArticles()
+    } else {
+      this.props.fetchArticles(dateString(
+            selections.orderdir,
+            selections.ordercol,
+            selections.sourceChosen,
+            selections.page,
+            selections.startDate,
+            selections.endDate,
+          )+"&source__mlmodel="+selections.mlmodelChosen)
+    }
   }
   render(){
     let articles = this.props.articlesList || [];
