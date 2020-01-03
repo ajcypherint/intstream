@@ -252,7 +252,8 @@ class HomePage(APIView):
                                             "text",
                                              "id",
                                             )
-        vectorizer = vector.StemmedTfidfVectorizer(decode_error="ignore",
+        vectorizer = vector.StemmedTfidfVectorizer(ngram_range=(1,2),
+                                                   decode_error="ignore",
                                                    clean_html=True,
                                                    clean_hashes=True)
         all_results=[]
