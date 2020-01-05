@@ -3,6 +3,8 @@ import { withAuth } from '../reducers'
 import  URL  from  'url-parse'
 import {setParams} from './util'
 
+export const ARTICLE_URL = "/api/articles"
+
 export const GET_ARTICLES_REQUEST = '@@articles/GET_ARTICLES_REQUEST';
 export const GET_ARTICLES_SUCCESS = '@@articles/GET_ARTICLES_SUCCESS';
 export const GET_ARTICLES_FAILURE = '@@articles/GET_ARTICLES_FAILURE';

@@ -39,7 +39,7 @@ export const totalSources = (data, total) =>{
     payload:{sources:data,totalCount:total}
   }
 }
-export const getSources= (url, params=undefined)=>{
+export const getSources = (url, params=undefined) =>{
   // filters - list[string]
   url = setParams(url,params)
   return {

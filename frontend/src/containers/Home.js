@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import { Main} from '../components/Home'
-import {getArticles, clearArticles} from '../actions/articles'
+import {getArticles, clearArticles, ARTICLE_URL} from '../actions/articles'
 import {getChildArticles,clearParent} from '../actions/childArticles'
 import {setPage, setHomeSelections, getAllSources} from '../actions/filter'
 import {setChildPage, setChildHomeSelections} from '../actions/childFilter'
@@ -11,7 +11,7 @@ import * as fromSelect from '../actions/selectArticle'
 
 const API = '/api/homearticles/'
 const API_SOURCES = '/api/homefilter/'
-const API_ARTICLE = '/api/articles/'
+const API_ARTICLE = ARTICLE_URL
 const ARTICLE_URI = "/article/"
 const mapStateToProps = (state) => ({
   sourcesList:reducers.getFilterSources(state),

@@ -37,7 +37,7 @@ export default class extends Component {
         {mlmodelChosen:id}
       )
       //todo add model 
-     this.props.fetchArticles(dateString(selections.orderdir,
+     this.props.fetchArticlesClassif(id,dateString(selections.orderdir,
       selections.ordercol,
       selections.sourceChosen,
       1,
@@ -98,7 +98,8 @@ export default class extends Component {
       endDate:endDate,
       })
     //fetch articles 
-    this.props.fetchArticles(dateString(
+    this.props.fetchArticlesClassif(this.props.selections.mlmodelChosen,
+      dateString(
       this.props.selections.orderdir,// orderdir
       this.props.selections.ordercol, // ordercol 
       this.props.selections.sourceChosen,// sourceChosen
@@ -117,7 +118,8 @@ export default class extends Component {
       sourceChosen:event.target.value,
       page:1
       })
-    this.props.fetchArticles(dateString(selections.orderdir,
+    this.props.fetchArticlesClassif(selections.mlmodelChosen,
+      dateString(selections.orderdir,
       selections.ordercol,
       event.target.value,
       1,
@@ -133,7 +135,7 @@ export default class extends Component {
   }
   fetchit(selections,page){
     let s = selections
-    this.props.fetchArticles(dateString(
+    this.props.fetchArticlesClassif(selections.mlmodelChosen,dateString(
             selections.orderdir,
             selections.ordercol,
             selections.sourceChosen,
@@ -150,7 +152,8 @@ export default class extends Component {
     if (selections.mlmodelChosen===NONE){
       this.props.clearArticles()
     } else {
-      this.props.fetchArticles(dateString(
+      this.props.fetchArticlesClassif(selections.mlmodelChosen,
+        dateString(
             selections.orderdir,
             selections.ordercol,
             selections.sourceChosen,
