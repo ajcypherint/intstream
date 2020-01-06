@@ -12,6 +12,8 @@ export const GET_CLASSIFICATIONS_FAILURE = "@@classification/GET_CLASSIFICATIONS
 
 export const GET_TOTAL_CLASSIFICATIONS= "@@classification/GET_TOTAL_CLASSIFICATIONS"
 
+export const GET_TOTAL_CLASSIFICATIONS_REQUEST= "@@classification/GET_TOTAL_CLASSIFICATIONS_REQUEST"
+
 export const SET_CLASSIFICATION_REQUEST = "@@classification/SET_CLASSIFICATION_REQUEST"
 export const SET_CLASSIFICATION_SUCCESS = "@@classification/SET_CLASSIFICATION_SUCCESS"
 export const SET_CLASSIFICATION_FAILURE = "@@classification/SET_CLASSIFICATION_FAILURE"
@@ -58,13 +60,18 @@ export const setClassification= (url,data,method='POST' )=>{
 }
 
 export const totalClassifications = (data, total) =>{
-
   return {
     type:GET_TOTAL_CLASSIFICATIONS,
     payload:{classif:data,totalCount:total}
   }
 }
 
+export const totalClassificationsRequest = ()=> {
+  return {
+    type:GET_TOTAL_CLASSIFICATIONS_REQUEST,
+  }
+
+}
 
 export const getArticleParams = (articles,mlmodel) =>{
   // articles list[int]
@@ -88,8 +95,8 @@ export const getArticlesClassif = (model, article_params='')=>{
       articles.push(resp.payload.results[i].id)
     }
     let total_params = getArticleParams(articles,model)
-
-    resp =  dispatch(getAllClassifications(BASE_URL,total_params))
+    let res = await dispatch(totalClassificationsRequest()) 
+    resp =  await dispatch(getAllClassifications(BASE_URL,total_params))
     if(resp.error){
         throw new Error("Promise flow received action error", resp);
     }

@@ -12,6 +12,7 @@ import trainFilter, * as fromTrainFilter from  './trainFilter.js'
 import childFilter, * as fromChildFilter from  './childFilter.js'
 import list, * as fromList from './listSelections.js'
 import selectArticles, * as fromSelect from "./selectArticles.js"
+import classifications, * as fromClassif from "./classifications"
 
 export default combineReducers({
   auth: auth,
@@ -26,7 +27,8 @@ export default combineReducers({
   childArticles:childArticles,
   childFilter:childFilter,
   trainFilter:trainFilter,
-  selectArticles:selectArticles
+  selectArticles:selectArticles,
+  classifications:classifications
 })
 
 //fromAuth
@@ -107,6 +109,10 @@ export const getChildHomeArticleSelections = state => fromChildFilter.getHomeSel
 //fromSelect
 export const getSelectArticles = state => fromSelect.articles(state.selectArticles)
 export const getSelectErrors= state => fromSelect.errors(state.selectArticles)
+
+//fromClassif
+export const getClassifications = state => fromClassif.classifications(state.classifications)
+export const getClassifErrors = state => fromClassif.errors(state.classifications)
 
 
 export function withAuth(headers={}) {

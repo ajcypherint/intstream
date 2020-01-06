@@ -7,6 +7,7 @@ import {NONE} from "../reducers/trainFilter"
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
 import { Link } from 'react-router-dom';
+import TrueFalse from "./TrueFalse"
 
 export default class extends Component {
   constructor(props){
@@ -174,7 +175,7 @@ export default class extends Component {
     const previous = this.props.articlePrevious;
     const loading = this.props.articlesLoading
     const selectArticles = this.props.selectArticles || {}
- 
+    const classifications = this.props.classif 
     return (
 
       <div className="container mt-2 col-sm-8 offset-sm-2" >
@@ -294,17 +295,14 @@ export default class extends Component {
                     {article.source.name}
                   </td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
-                  <td>
-                    <div className="custom-control custom-checkbox">
-                      <Input type="checkbox" checked={false}/>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="custom-control custom-checkbox">
-                      <Input type="checkbox" checked={false}/>
-                    </div>
-                  </td>
-               </tr>
+                  <TrueFalse trueFalse={true} 
+                    articleId={article.id} 
+                    classif={classifications}/>
+                  <TrueFalse trueFalse={false} 
+                    articleId={article.id} 
+                    classif={classifications}/>
+ 
+                </tr>
                {//todo selected article
                  article.id in selectArticles ?
                   <tr>

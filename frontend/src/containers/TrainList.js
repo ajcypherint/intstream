@@ -25,7 +25,9 @@ const mapStateToProps = (state) => ({
   articlePrevious:reducers.getArticlePreviousPage(state),
   articleuri:ARTICLE_URI,
   selectArticles:reducers.getSelectArticles(state),
-  selectErrors:reducers.getSelectErrors(state)
+  selectErrors:reducers.getSelectErrors(state),
+  classif:reducers.getClassifications(state),
+  classifErrors:reducers.getClassifErrors(state)
 })
 
 
