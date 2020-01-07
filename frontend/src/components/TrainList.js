@@ -21,6 +21,12 @@ export default class extends Component {
     this.changesort = changesort.bind(this)
     this.fetchit = this.fetchit.bind(this)
     this.getArticle = this.getArticle.bind(this)
+    this.handleClassifChange = this.handleClassifChange.bind(this)
+  }
+  handleClassifChange(event){
+    let {articleId}= event.target.dataset
+
+
   }
   handleModelChange(event){
     event.preventDefault()
@@ -297,10 +303,12 @@ export default class extends Component {
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
                   <TrueFalse trueFalse={true} 
                     articleId={article.id} 
-                    classif={classifications}/>
+                    classif={classifications}
+                    handleChange={this.handleClassifChange}/>
                   <TrueFalse trueFalse={false} 
                     articleId={article.id} 
-                    classif={classifications}/>
+                    classif={classifications}
+                    handleChange={this.handleClassifChange}/>
  
                 </tr>
                {//todo selected article
@@ -315,7 +323,7 @@ export default class extends Component {
                           <td colSpan="5">
                             <Input type="textarea" className="bktextarea" 
                               name="text" rows="15" id="Article" readOnly 
-                              value={selectArticles[article.id].data.clean_text}/>
+                              value={selectArticles[article.id].clean_text}/>
                           </td>
                     }
                   </tr>

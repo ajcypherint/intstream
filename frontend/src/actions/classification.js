@@ -43,7 +43,15 @@ export const getClassifications = (url,params=undefined)=>{
   }
 }
 
-export const setClassification= (url,data,method='POST' )=>{
+export const setClassification= ( mlmodel,
+                                 article,
+                                 target,
+                                 method='POST' )=>{
+  let data = {
+    article:article,
+    mlmodel:mlmodel,
+    target:target
+    }
   // filters - list[string]
   return {
   [RSAA]:{
@@ -103,3 +111,4 @@ export const getArticlesClassif = (model, article_params='')=>{
   }
 
 }
+

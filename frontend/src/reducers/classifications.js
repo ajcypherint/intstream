@@ -1,11 +1,13 @@
 import * as classif from "../actions/classification"
 
-const createEntry = (id,data={})=>{
-  
+
+const createEntry = (mlmodel,target,articleId)=>{
   return {
-    id:id,
-    data:data
+    mlmodel:mlmodel,
+    target:target,
+    article:articleId
   }
+
 }
 
 const add = (id, Entry,mapping)=>{
@@ -29,11 +31,12 @@ const remove = (id, mapping) => {
 }
 
 const addResults = (payloadResults, classif)=>{
+  //payloadResults: list[createEntry]
+  //classif original state
   // does not change state
   let new_classif={}
   for(let i = 0;i<payloadResults.length;i++){
-    let entry = createEntry(payloadResults[i].id,
-                                 payloadResults[i])
+    let entry = {...payloadResults[i]}
     new_classif= add(payloadResults[i].article,
                           entry,
                              classif)
@@ -81,7 +84,26 @@ export default (state=initialState, action) => {
           errors: action.payload.response || {'non_field_errors': action.payload.statusText},
         }
       }
-     case classif.CLEAR:
+
+    case classif.SET_CLASSIFICATION_REQUEST:
+      {
+        //todo
+        return state
+        
+      }
+    case classif.SET_CLASSIFICATION_SUCCESS:
+      {
+        //todo
+        return state
+        
+      }
+    case classif.SET_CLASSIFICATION_FAILURE:
+      {
+        //todo
+        return state
+        
+      }
+    case classif.CLEAR:
       {
         return {
           ...initialState
@@ -89,7 +111,7 @@ export default (state=initialState, action) => {
 
       }
  
-     default:
+    default:
       return state
 
   }

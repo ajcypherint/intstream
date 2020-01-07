@@ -43,7 +43,9 @@ const mapDispatchToProps = (dispatch) => ({
   fetchSelect: (id)=>dispatch(fromSelect.getArticle(API_ARTICLES,id)),
   clearSelect: ()=>dispatch(fromSelect.clearArticles()),
   fetchArticlesClassif: (model,article_params)=>dispatch(
-                            fromClassif.getArticlesClassif(model, article_params))
+                            fromClassif.getArticlesClassif(model, article_params)),
+  setClassif: (mlmodel, articleId, target)=>
+                dispatch(fromClassif.setClassification(mlmodel, articleId, target)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
