@@ -616,3 +616,12 @@ class ClassificationViewSet(OrgViewSet):
 
     def get_queryset(self):
         return models.Classification.objects.filter(organization=self.request.user.organization)
+
+class OrganizationViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+    serializer_class = serializers.OrganizationSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ("id", "name")
+
+    def get_queryset(self):
+        return models.Organization.objects.all()

@@ -43,6 +43,8 @@ router.register("homefilter",views.HomeFilter, basename="homefilter")
 #classifications
 router.register("classifications",views.ClassificationViewSet, basename="classifications")
 
+router.register("organization",views.OrganizationViewSet, basename="organization")
+
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi

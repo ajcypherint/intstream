@@ -6,7 +6,7 @@ from .models import (MLModel, JobSource,
                      UploadSource, RSSSource,
                      SourceType, ArticleType,
                      HtmlArticle, RSSArticle,
-                     Classification)
+                     Classification, Organization)
 
 from utils import read
 from django.core.validators import MaxLengthValidator
@@ -310,3 +310,11 @@ class ClassificationSerializer(serializers.ModelSerializer):
             "organization"
         )
         model = Classification
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=(
+            "id",
+            "name"
+        )
+        model = Organization
