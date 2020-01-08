@@ -41,7 +41,12 @@ class SourceType(models.Model):
 
 # name / active #
 class Source(PolymorphicModel):
-    name = models.CharField(max_length=100, unique=True)
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['name','organization'], name='unique_name'),
+            ]
+
+    name = models.CharField(max_length=100, )
     active = models.BooleanField(default=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     def __str__(self):
