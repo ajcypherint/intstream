@@ -233,6 +233,7 @@ class HomePage(APIView):
             return Response({"detail":"threshold must between 0 and 100"}, status=status.HTTP_400_BAD_REQUEST)
         threshold = threshold / 100.0
         filter_kwargs = {}
+        filter_kwargs["organization"] = self.request.user.organization
         if source_id != "":
             filter_kwargs["source_id"] = source_id
         if start_date != "":
