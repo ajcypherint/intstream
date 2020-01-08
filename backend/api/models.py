@@ -21,7 +21,7 @@ class Organization(models.Model):
 
 class UserIntStream(AbstractUser):
     is_integrator= models.BooleanField('integrator status', default=False)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE,)
     REQUIRED_FIELDS = ["organization"] # createsuperuser
 
 

@@ -7,11 +7,11 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = UserIntStream
-        fields = ('username', 'email',"is_staff","is_integrator","is_superuser")
+        fields = ('username', 'email',"is_staff","is_integrator","is_superuser","organization")
 
 
 class CustomUserChangeForm(UserChangeForm):
 
     class Meta:
         model = UserIntStream
-        fields = ('username', 'email',"is_staff","is_integrator","is_superuser")
+        fields = ('username', 'email',"is_staff","is_integrator","is_superuser","organization")
