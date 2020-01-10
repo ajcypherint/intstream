@@ -1,4 +1,5 @@
 import {PAGINATION} from "../util/util"
+import {getArticles, ARTICLE_URL} from "../actions/articles"
 
 export const setParamsParent = function(url, params, parent){
   url+="?article_match_id="+parent
@@ -14,6 +15,7 @@ export const setParams = function(url, params){
   }
   return url;
 }
+
 export const  getAll = (get)=>(putAll)=>(url, params) =>{
   return async(dispatch, getState) => {
       let extra_params = params || ''

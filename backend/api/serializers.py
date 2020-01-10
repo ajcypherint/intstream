@@ -311,6 +311,7 @@ class ClassificationSerializer(serializers.ModelSerializer):
         )
         model = Classification
 
+
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         fields=(
@@ -318,3 +319,14 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "name"
         )
         model = Organization
+
+    def create(self, validated_data):
+        classification, created = Classification.objects.update_or_create(
+            article = validated_data.get("article", None),
+            mlmodel = validated_data.get("mlmodel", None),
+            organization = validated_data.get("organization", None),
+            defaults={
+                "target":validated_data.get("target", None)
+            }
+            )
+        return classification

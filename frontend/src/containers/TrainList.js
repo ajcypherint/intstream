@@ -2,13 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import Main from '../components/TrainList'
-import {getArticles, clearArticles} from '../actions/articles'
+import {getArticles, clearArticles, ARTICLE_URL} from '../actions/articles'
 import * as fromSelect from '../actions/selectArticle'
 import {getAllSources,getAllMLModels, setPage, setSelections, clear} from '../actions/trainFilter'
 import {getSources, clearSources } from '../actions/sources'
+import * as fromClassif from "../actions/classification"
 
 const API_SOURCES = '/api/homefilter/'
-const API_ARTICLES = '/api/articles/'
+const API_ARTICLES = ARTICLE_URL
 const API_MODELS = '/api/mlmodels/'
 const ARTICLE_URI = "/article/"
 const mapStateToProps = (state) => ({
@@ -24,7 +25,9 @@ const mapStateToProps = (state) => ({
   articlePrevious:reducers.getArticlePreviousPage(state),
   articleuri:ARTICLE_URI,
   selectArticles:reducers.getSelectArticles(state),
-  selectErrors:reducers.getSelectErrors(state)
+  selectErrors:reducers.getSelectErrors(state),
+  classif:reducers.getClassifications(state),
+  classifErrors:reducers.getClassifErrors(state)
 })
 
 
@@ -39,6 +42,10 @@ const mapDispatchToProps = (dispatch) => ({
   clear: ()=>dispatch(clear()),
   fetchSelect: (id)=>dispatch(fromSelect.getArticle(API_ARTICLES,id)),
   clearSelect: ()=>dispatch(fromSelect.clearArticles()),
+  fetchArticlesClassif: (model,article_params)=>dispatch(
+                            fromClassif.getArticlesClassif(model, article_params)),
+  setClassif: (mlmodel, articleId, target)=>
+                dispatch(fromClassif.setClassification(mlmodel, articleId, target)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

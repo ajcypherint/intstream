@@ -7,6 +7,7 @@ import {NONE} from "../reducers/trainFilter"
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
 import { Link } from 'react-router-dom';
+import TrueFalse from "./TrueFalse"
 
 export default class extends Component {
   constructor(props){
@@ -20,6 +21,30 @@ export default class extends Component {
     this.changesort = changesort.bind(this)
     this.fetchit = this.fetchit.bind(this)
     this.getArticle = this.getArticle.bind(this)
+    this.handleClassifChange = this.handleClassifChange.bind(this)
+  }
+  //todo remove classification
+  handleClassifChange(event){
+    let {articleid,mlmodel,truefalse}= event.target.dataset
+    // if off then delete the classification
+    if (truefalse === "true"){
+      let target = event.target.checked 
+      if(target){
+        this.props.setClassif(mlmodel, articleid, true)
+      } else {
+        //remove classification
+      }
+    }
+    if (truefalse === "false"){
+      let target = event.target.checked 
+      if(target){
+        this.props.setClassif(mlmodel, articleid, false)
+      } else {
+        //remove classification
+      }
+    }
+
+
   }
   handleModelChange(event){
     event.preventDefault()
@@ -37,7 +62,7 @@ export default class extends Component {
         {mlmodelChosen:id}
       )
       //todo add model 
-     this.props.fetchArticles(dateString(selections.orderdir,
+     this.props.fetchArticlesClassif(id,dateString(selections.orderdir,
       selections.ordercol,
       selections.sourceChosen,
       1,
@@ -98,7 +123,8 @@ export default class extends Component {
       endDate:endDate,
       })
     //fetch articles 
-    this.props.fetchArticles(dateString(
+    this.props.fetchArticlesClassif(this.props.selections.mlmodelChosen,
+      dateString(
       this.props.selections.orderdir,// orderdir
       this.props.selections.ordercol, // ordercol 
       this.props.selections.sourceChosen,// sourceChosen
@@ -117,7 +143,8 @@ export default class extends Component {
       sourceChosen:event.target.value,
       page:1
       })
-    this.props.fetchArticles(dateString(selections.orderdir,
+    this.props.fetchArticlesClassif(selections.mlmodelChosen,
+      dateString(selections.orderdir,
       selections.ordercol,
       event.target.value,
       1,
@@ -133,7 +160,7 @@ export default class extends Component {
   }
   fetchit(selections,page){
     let s = selections
-    this.props.fetchArticles(dateString(
+    this.props.fetchArticlesClassif(selections.mlmodelChosen,dateString(
             selections.orderdir,
             selections.ordercol,
             selections.sourceChosen,
@@ -150,7 +177,8 @@ export default class extends Component {
     if (selections.mlmodelChosen===NONE){
       this.props.clearArticles()
     } else {
-      this.props.fetchArticles(dateString(
+      this.props.fetchArticlesClassif(selections.mlmodelChosen,
+        dateString(
             selections.orderdir,
             selections.ordercol,
             selections.sourceChosen,
@@ -163,6 +191,7 @@ export default class extends Component {
   render(){
     let articles = this.props.articlesList || [];
     const errors = this.props.articlesErrors || {}
+    const classifErrors = this.props.classifErrors || {}
     let selections = this.props.selections || {}
     let models = this.props.modelsList || []
     const ids = this.props.sourcesList.map(a=>a.id.toString()) ||[]
@@ -171,12 +200,13 @@ export default class extends Component {
     const previous = this.props.articlePrevious;
     const loading = this.props.articlesLoading
     const selectArticles = this.props.selectArticles || {}
- 
+    const classifications = this.props.classif 
     return (
 
       <div className="container mt-2 col-sm-8 offset-sm-2" >
 
-        {errors.error?<Alert color="danger">{errors.error}</Alert>:""}
+        {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+        {classifErrors.non_field_errors?<Alert color="danger">{JSON.stringify(classifErrors.non_field_errors)}</Alert>:""}
         <Form>
        <FormGroup>
          <Row>
@@ -291,17 +321,18 @@ export default class extends Component {
                     {article.source.name}
                   </td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
-                  <td>
-                    <div className="custom-control custom-checkbox">
-                      <Input type="checkbox" checked={false}/>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="custom-control custom-checkbox">
-                      <Input type="checkbox" checked={false}/>
-                    </div>
-                  </td>
-               </tr>
+                  <TrueFalse trueFalse={true} 
+                    articleId={article.id} 
+                    classif={classifications}
+                    mlModel={selections.mlmodelChosen}
+                    handleChange={this.handleClassifChange}/>
+                  <TrueFalse trueFalse={false} 
+                    articleId={article.id} 
+                    mlModel={selections.mlmodelChosen}
+                    classif={classifications}
+                    handleChange={this.handleClassifChange}/>
+ 
+                </tr>
                {//todo selected article
                  article.id in selectArticles ?
                   <tr>
@@ -314,7 +345,7 @@ export default class extends Component {
                           <td colSpan="5">
                             <Input type="textarea" className="bktextarea" 
                               name="text" rows="15" id="Article" readOnly 
-                              value={selectArticles[article.id].data.clean_text}/>
+                              value={selectArticles[article.id].clean_text}/>
                           </td>
                     }
                   </tr>

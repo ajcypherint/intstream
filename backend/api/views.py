@@ -396,6 +396,24 @@ class SourceViewSet(OrgViewSet):
     def get_queryset(self):
         return models.Source.objects.filter(organization=self.request.user.organization)
 
+class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
+    pass
+
+class ClassificationFilter(filters.FilterSet):
+    article_id_in= NumberInFilter(field_name="article", lookup_expr=("in"))
+    class Meta:
+        model = models.Classification
+        fields = ('article','target',"mlmodel",)
+
+
+class ClassificationViewSet(OrgViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    serializer_class = serializers.ClassificationSerializer
+    filterset_class = ClassificationFilter
+
+    def get_queryset(self):
+        return models.Classification.objects.filter(organization=self.request.user.organization)
 
 class RssFilter(filters.FilterSet):
     class Meta:
@@ -615,18 +633,6 @@ class ArticleTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.ArticleType.objects.all()
     serializer_class = serializers.ArticleTypeSerializer
 
-class ClassificationFilter(filters.FilterSet):
-    #article__title = filters.CharFilter(lookup_expr='exact')
-    class Meta:
-        model = models.Classification
-        fields = ( "mlmodel", "target", "article")
-
-class ClassificationViewSet(OrgViewSet):
-    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
-    serializer_class = serializers.ClassificationSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ("id", "mlmodel", "target", "article")
-    filterset_class = ClassificationFilter
 
     def get_queryset(self):
         return models.Classification.objects.filter(organization=self.request.user.organization)
