@@ -23,8 +23,26 @@ export default class extends Component {
     this.getArticle = this.getArticle.bind(this)
     this.handleClassifChange = this.handleClassifChange.bind(this)
   }
+  //todo remove classification
   handleClassifChange(event){
-    let {articleId}= event.target.dataset
+    let {articleid,mlmodel,truefalse}= event.target.dataset
+    // if off then delete the classification
+    if (truefalse === "true"){
+      let target = event.target.checked 
+      if(target){
+        this.props.setClassif(mlmodel, articleid, true)
+      } else {
+        //remove classification
+      }
+    }
+    if (truefalse === "false"){
+      let target = event.target.checked 
+      if(target){
+        this.props.setClassif(mlmodel, articleid, false)
+      } else {
+        //remove classification
+      }
+    }
 
 
   }
@@ -173,6 +191,7 @@ export default class extends Component {
   render(){
     let articles = this.props.articlesList || [];
     const errors = this.props.articlesErrors || {}
+    const classifErrors = this.props.classifErrors || {}
     let selections = this.props.selections || {}
     let models = this.props.modelsList || []
     const ids = this.props.sourcesList.map(a=>a.id.toString()) ||[]
@@ -186,7 +205,8 @@ export default class extends Component {
 
       <div className="container mt-2 col-sm-8 offset-sm-2" >
 
-        {errors.error?<Alert color="danger">{errors.error}</Alert>:""}
+        {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+        {classifErrors.non_field_errors?<Alert color="danger">{JSON.stringify(classifErrors.non_field_errors)}</Alert>:""}
         <Form>
        <FormGroup>
          <Row>
@@ -304,9 +324,11 @@ export default class extends Component {
                   <TrueFalse trueFalse={true} 
                     articleId={article.id} 
                     classif={classifications}
+                    mlModel={selections.mlmodelChosen}
                     handleChange={this.handleClassifChange}/>
                   <TrueFalse trueFalse={false} 
                     articleId={article.id} 
+                    mlModel={selections.mlmodelChosen}
                     classif={classifications}
                     handleChange={this.handleClassifChange}/>
  

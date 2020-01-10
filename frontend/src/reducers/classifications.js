@@ -24,7 +24,6 @@ const remove = (id, mapping) => {
   let new_mapping = {
     ...mapping
   }
-
   delete new_mapping[id]
   return new_mapping
 
@@ -34,12 +33,12 @@ const addResults = (payloadResults, classif)=>{
   //payloadResults: list[createEntry]
   //classif original state
   // does not change state
-  let new_classif={}
+  let new_classif={...classif}
   for(let i = 0;i<payloadResults.length;i++){
     let entry = {...payloadResults[i]}
     new_classif= add(payloadResults[i].article,
                           entry,
-                             classif)
+                             new_classif)
   }
   return new_classif
 
@@ -94,13 +93,23 @@ export default (state=initialState, action) => {
     case classif.SET_CLASSIFICATION_SUCCESS:
       {
         //todo
+        let new_classif = addResults([action.payload], state.classif)       
+        return {
+          ...state,
+          classif:new_classif,
+          totalLoading:false,
+          errors:{}
+        }
         return state
         
       }
     case classif.SET_CLASSIFICATION_FAILURE:
       {
         //todo
-        return state
+        return {
+          ...state,
+          errors:action.payload.response || {'non_field_errors': action.payload.statusText}
+        }
         
       }
     case classif.CLEAR:

@@ -4,7 +4,7 @@ import { withAuth } from '../reducers'
 import  URL  from  'url-parse'
 import {getArticles,ARTICLE_URL} from "./articles"
 
-const BASE_URL = "/api/classifications"
+const BASE_URL = "/api/classifications/"
 
 export const GET_CLASSIFICATIONS_REQUEST = "@@classification/GET_CLASSIFICATIONS_REQUEST"
 export const GET_CLASSIFICATIONS_SUCCESS = "@@classification/GET_CLASSIFICATIONS_SUCCESS"
@@ -31,7 +31,7 @@ export const getClassifications = (url,params=undefined)=>{
   url = setParams(url,params)
   return {
   [RSAA]:{
-   endpoint: url,
+    endpoint: url,
       method: 'GET',
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
