@@ -219,6 +219,7 @@ class HomePage(APIView):
         # todo(aj) filter by model id
         # either pass in source ids list to filter by or double nested
         max_df = int(self.request.query_params.get("max_df",80)) / 100.0
+        min_df = int(self.request.query_params.get("max_df",10)) / 100.0
         source_id = self.request.query_params.get("source","")
         start_date = self.request.query_params.get("start_upload_date","")
         end_date = self.request.query_params.get("end_upload_date","")
@@ -257,6 +258,7 @@ class HomePage(APIView):
         vectorizer = vector.StemmedTfidfVectorizer( decode_error="ignore",
                                                    clean_html=True,
                                                    clean_hashes=True,
+                                                    min_df=min_df,
                                                     max_df=max_df)
         all_results=[]
         if len(sql_no_cummulate) == 1:
