@@ -255,6 +255,14 @@ class HomePage(APIView):
                                             "text",
                                              "id",
                                             )
+        if len(sql_no_cummulate) == 0:
+            response = {
+            "count": 0,
+            "results": [],
+            "next": None,
+            "previous": None,
+            }
+            return Response(response, status=status.HTTP_200_OK)
         vectorizer = vector.StemmedTfidfVectorizer( decode_error="ignore",
                                                    clean_html=True,
                                                    clean_hashes=True,
@@ -336,6 +344,7 @@ class HomePage(APIView):
         # retrieve page slicing
         total_count = len(list_of_models)
         total_pages = math.ceil(total_count / settings.REST_FRAMEWORK["PAGE_SIZE"])
+
         if page > total_pages:
             return Response({"detail":"page: " + str(page) + " out of bounds"},status=status.HTTP_400_BAD_REQUEST)
         start_slice = (page - 1) * settings.REST_FRAMEWORK["PAGE_SIZE"]
