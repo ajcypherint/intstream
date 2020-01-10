@@ -23,6 +23,36 @@ export class Main extends React.Component{
     this.changesort = changesort.bind(this)
     this.updateDate = this.updateDate.bind(this)
     this.handleThresholdChange = this.handleThresholdChange.bind(this)
+    this.handleMaxDfChange = this.handleMaxDfChange.bind(this)
+    this.handleMinDfChange = this.handleMinDfChange.bind(this)
+  }
+  handleMaxDfChange(event){
+    this.props.parent_func.setHomeSelections({
+      maxDf:event.target.value,
+    })
+    this.props.parent_func.fetchArticles(this.dateString(
+      this.props.parent.homeSelections.orderdir,// orderdir
+      this.props.parent.homeSelections.ordercol, // ordercol 
+      this.props.parent.homeSelections.sourceChosen,// sourceChosen
+      1,  // page //probably fewer pages
+      this.props.parent.homeSelections.startDate,
+      this.props.parent.homeSelections.endDate,
+      this.props.parent.homeSelections.threshold,
+    )+"&max_df="+event.target.value+"&min_df="+this.props.parent.homeSelections.minDf) 
+  }
+  handleMinDfChange(event){
+    this.props.parent_func.setHomeSelections({
+      minDf:event.target.value,
+    })
+    this.props.parent_func.fetchArticles(this.dateString(
+      this.props.parent.homeSelections.orderdir,// orderdir
+      this.props.parent.homeSelections.ordercol, // ordercol 
+      this.props.parent.homeSelections.sourceChosen,// sourceChosen
+      1,  // page //probably fewer pages
+      this.props.parent.homeSelections.startDate,
+      this.props.parent.homeSelections.endDate,
+      this.props.parent.homeSelections.threshold,
+    )+"&max_df="+this.props.parent.homeSelections.maxDf+"&min_df="+event.target.value) 
   }
   handleThresholdChange(event){
     this.props.parent_func.setHomeSelections({
@@ -37,8 +67,8 @@ export class Main extends React.Component{
       this.props.parent.homeSelections.startDate,
       this.props.parent.homeSelections.endDate,
       event.target.value
-    )) 
-
+    )+"&max_df="+this.props.parent.homeSelections.maxDf
+      +"&min_df="+this.props.parent.homeSelections.minDf) 
 
     this.props.child_func.clearParent()
   }
@@ -57,8 +87,10 @@ export class Main extends React.Component{
         selections.page,
         selections.startDate,
       selections.endDate,
-      selections.threshold
-        )) 
+      selections.threshold)
+      +"&max_df="+selections.maxDf
+      +"&min_df="+selections.minDf) 
+
   }
  
   handleStartChange(date){
@@ -117,7 +149,8 @@ export class Main extends React.Component{
       startDate,
       endDate,
       this.props.parent.homeSelections.threshold
-    )) 
+    )+"&max_df="+this.props.parent.homeSelections.maxDf+
+      "&min_df="+this.props.parent.homeSelections.minDf) 
 
  }
   handleSourceChange(event){
@@ -134,7 +167,10 @@ export class Main extends React.Component{
       1,
       selections.startDate,
       selections.endDate,
-      selections.threshold)) 
+      selections.threshold) 
+      +"&max_df="+selections.maxDf
+      +"&min_df="+selections.minDf) 
+
 
    this.props.child_func.clearParent()
   }
@@ -149,8 +185,10 @@ export class Main extends React.Component{
       page,
       selections.startDate,
       selections.endDate,
-      selections.threshold
-          ))
+      selections.threshold)
+      +"&max_df="+selections.maxDf
+      +"&min_df="+selections.minDf) 
+
   }
   render(){
     let selections = this.props.parent.homeSelections
@@ -166,25 +204,25 @@ export class Main extends React.Component{
       threshold_values.push(i)
     }
     return(
-      <div className="container mt-2 col-sm-8 offset-sm-2" >
+      <div className="container mt-2 col-sm-12" >
         <Form onSubmit={this.onSubmit} >
           {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
        <FormGroup>
        <Row>
-        <Col sm="3" md="3" lg="2">
+        <Col sm="2" md="2" lg="2">
           <label  htmlFor={"start_id"}>{"Start Date"}</label>
           <div className = "mb-2 ">
           <DatePicker style={{width:'100%'}} id={"startDate"}  selected={selections.startDate} onChange={this.handleStartChange} />
           </div>
         </Col>
-        <Col sm="3" md="3" lg="2">
+        <Col sm="2" md="2" lg="2">
           <label  htmlFor={"end_id"}>{"End Date"}</label>
           <div className = "mb-2 ">
           <DatePicker  id={"endDate"}  selected={selections.endDate} onChange={this.handleEndChange}/>
           </div>
         </Col>
 
-         <Col sm="3" md="3" lg="5">
+         <Col sm="2" md="2" lg="5">
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
            <Input type="select" name="Source" value={selections.sourceChosen} id="source_id" onChange={this.handleSourceChange}>
@@ -201,8 +239,8 @@ export class Main extends React.Component{
 
           </div>
         </Col>
-        <Col sm="3" md="3" lg="3">
-           <label  htmlFor={"threshold"}>{"Max Diff"}</label> 
+        <Col sm="2" md="2" lg="1">
+           <label  htmlFor={"threshold"}>{"Max Cluster Dif"}</label> 
            <Input type="select" name="threshold" value={selections.threshold} id="threshold_id" onChange={this.handleThresholdChange}>
              {threshold_values.map((value)=>{
                return (<option key={value} value={value}>{value}</option>
@@ -211,26 +249,52 @@ export class Main extends React.Component{
              )}
            </Input>
         </Col>
+        <Col sm="2" md="2" lg="1">
+           <label  htmlFor={"min_df"}>{"Min Doc Freq"}</label> 
+           <Input type="select" name="min_df" disabled={selections.threshold==="0"}
+             value={selections.minDf} id="min_df" onChange={this.handleMinDfChange}>
+             {threshold_values.map((value)=>{
+               return (<option key={value} value={value}>{value}</option>
+               )
+             }
+             )}
+           </Input>
+        </Col>
+        <Col sm="2" md="2" lg="1">
+           <label  htmlFor={"max_df"}>{"Max Doc Freq"}</label> 
+           <Input type="select" name="max_df" disabled={selections.threshold==="0"}
+             value={selections.maxDf} id="max_df" onChange={this.handleMaxDfChange}>
+             {threshold_values.map((value)=>{
+               return (<option key={value} value={value}>{value}</option>
+               )
+             }
+             )}
+           </Input>
+        </Col>
+
+
+
     </Row>
   </FormGroup>
-  <Children 
-      parent_func={this.props.parent_func}
-      level={0}
-      child={this.props.child}
-      child_func={this.props.child_func}
-      parent_id = {-1}
-      parent_trail={this.props.child.parentTrail}
-      show_children={this.showChildren}
+      <div className="container mt-2 col-sm-8 offset-sm-2" >
+      <Children 
+          parent_func={this.props.parent_func}
+          level={0}
+          child={this.props.child}
+          child_func={this.props.child_func}
+          parent_id = {-1}
+          parent_trail={this.props.child.parentTrail}
+          show_children={this.showChildren}
 
-      selectArticles={this.props.selectArticles}
-      selectErrors={this.props.selectErrors}
-      fetchSelect={this.props.fetchSelect}
-      clearSelect={this.props.clearSelect}
+          selectArticles={this.props.selectArticles}
+          selectErrors={this.props.selectErrors}
+          fetchSelect={this.props.fetchSelect}
+          clearSelect={this.props.clearSelect}
 
-      parent={this.props.parent}/>
+          parent={this.props.parent}/>
 
-
-  </Form>
+      </div>
+      </Form>
    </div>
     )
  

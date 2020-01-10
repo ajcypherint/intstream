@@ -16,6 +16,8 @@ const initialState ={
       startDate: START,
       endDate: END,
       sourceChosen:'',
+      minDf:"0",
+      maxDf:"80",
       threshold:"0",
       loadSources:false,
       page:1,
