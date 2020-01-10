@@ -219,7 +219,7 @@ class HomePage(APIView):
         # todo(aj) filter by model id
         # either pass in source ids list to filter by or double nested
         max_df = int(self.request.query_params.get("max_df",80)) / 100.0
-        min_df = int(self.request.query_params.get("max_df",10)) / 100.0
+        min_df = int(self.request.query_params.get("min_df",0)) / 100.0
         source_id = self.request.query_params.get("source","")
         start_date = self.request.query_params.get("start_upload_date","")
         end_date = self.request.query_params.get("end_upload_date","")
