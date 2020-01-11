@@ -94,7 +94,7 @@ def process_rss_source(source_url, source_id, organization_id):
 #@shared_task(base=Singleton)
 @shared_task()
 def process_rss_sources():
-    sources = models.RSSSource.objects.all()
+    sources = models.RSSSource.objects.filter(active=True).all()
     for source in sources:
         logger.debug("source:" + source.name)
         process_rss_source(source.url,source.id,source.organization_id)
