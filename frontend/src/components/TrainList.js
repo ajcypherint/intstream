@@ -347,7 +347,7 @@ export default class extends Component {
                           <td colSpan="5">
                             <Input type="textarea" className="bktextarea" 
                               name="text" rows="15" id="Article" readOnly 
-                              value={selectArticles[article.id].clean_text}/>
+                              value={article.clean_text}/>
                           </td>
                     }
                   </tr>
