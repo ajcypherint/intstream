@@ -9,7 +9,13 @@ export default ({trueFalse, articleId , classif, handleChange, mlModel}) => {
       return (
         <td>
           <div className="custom-control custom-checkbox">
-            <Input type="checkbox" data-articleid={articleId} data-mlmodel={mlModel} data-truefalse={trueFalse} checked={false} onChange={handleChange}/>
+            <Input type="checkbox" 
+              data-id={undefined}
+              data-articleid={articleId} 
+              data-mlmodel={mlModel} 
+              data-truefalse={trueFalse} 
+              checked={false} 
+              onChange={handleChange}/>
            </div>
         </td>
       )
@@ -18,8 +24,13 @@ export default ({trueFalse, articleId , classif, handleChange, mlModel}) => {
   return (
       <td>
         <div className="custom-control custom-checkbox">
-          <Input type="checkbox" data-articleid={articleId} data-truefalse={trueFalse} data-mlmodel={mlModel} 
-            checked={entry.target===trueFalse} onChange={handleChange}/>
+          <Input type="checkbox" 
+            data-articleid={articleId} 
+            data-id={entry.id}
+            data-truefalse={trueFalse} 
+            data-mlmodel={mlModel} 
+            checked={entry.target===trueFalse} 
+            onChange={handleChange}/>
          </div>
       </td>
   )

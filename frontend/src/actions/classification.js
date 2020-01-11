@@ -18,6 +18,11 @@ export const SET_CLASSIFICATION_REQUEST = "@@classification/SET_CLASSIFICATION_R
 export const SET_CLASSIFICATION_SUCCESS = "@@classification/SET_CLASSIFICATION_SUCCESS"
 export const SET_CLASSIFICATION_FAILURE = "@@classification/SET_CLASSIFICATION_FAILURE"
 
+export const DEL_CLASSIFICATION_REQUEST = "@@classification/DEL_CLASSIFICATION_REQUEST"
+export const DEL_CLASSIFICATION_SUCCESS = "@@classification/DEL_CLASSIFICATION_SUCCESS"
+export const DEL_CLASSIFICATION_FAILURE = "@@classification/DEL_CLASSIFICATION_FAILURE"
+
+
 export const CLEAR = "@@classification/CLEAR"
 
 export const clear = ( ) => {
@@ -41,6 +46,24 @@ export const getClassifications = (url,params=undefined)=>{
 
   }
   }
+}
+
+export const deleteClassification= ( id, article_id )=>{
+  // filters - list[string]
+  return {
+  [RSAA]:{
+    endpoint: BASE_URL +  id + "/",
+      method: "DELETE",
+      body: '',
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+        {type:DEL_CLASSIFICATION_REQUEST, meta:{id:article_id}},
+        {type:DEL_CLASSIFICATION_SUCCESS, meta:{id:article_id}},
+        {type:DEL_CLASSIFICATION_FAILURE, meta:{id:article_id}}
+      ]
+
+  }
+}
 }
 
 export const setClassification= ( mlmodel,
@@ -99,16 +122,18 @@ export const getArticlesClassif = (model, article_params='')=>{
         throw new Error("Promise flow received action error", resp);
      }
     let articles = []
-    for(let i =0;i<resp.payload.results.length;i++){
-      articles.push(resp.payload.results[i].id)
-    }
-    let total_params = getArticleParams(articles,model)
-    let res = await dispatch(totalClassificationsRequest()) 
-    resp =  await dispatch(getAllClassifications(BASE_URL,total_params))
-    if(resp.error){
-        throw new Error("Promise flow received action error", resp);
+    if(resp.payload.results.length > 0){
+      for(let i =0;i<resp.payload.results.length;i++){
+        articles.push(resp.payload.results[i].id)
+      }
+      let total_params = getArticleParams(articles,model)
+      let resclear = await dispatch(clear())
+      let res = await dispatch(totalClassificationsRequest()) 
+      resp =  await dispatch(getAllClassifications(BASE_URL,total_params))
+      if(resp.error){
+          throw new Error("Promise flow received action error", resp);
+      }
     }
   }
-
 }
 

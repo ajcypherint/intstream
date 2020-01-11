@@ -84,11 +84,15 @@ export default (state=initialState, action) => {
         }
       }
 
-    case classif.SET_CLASSIFICATION_REQUEST:
+    case classif.DEL_CLASSIFICATION_SUCCESS:
       {
-        //todo
-        return state
-        
+        let new_classif = remove(action.meta.id, state.classif)
+        return {
+          ...state,
+          classif:new_classif,
+          errors:{}
+        }
+
       }
     case classif.SET_CLASSIFICATION_SUCCESS:
       {
@@ -104,6 +108,7 @@ export default (state=initialState, action) => {
         
       }
     case classif.SET_CLASSIFICATION_FAILURE:
+    case classif.DEL_CLASSIFICATION_FAILURE:
       {
         //todo
         return {

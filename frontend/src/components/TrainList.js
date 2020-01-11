@@ -25,7 +25,7 @@ export default class extends Component {
   }
   //todo remove classification
   handleClassifChange(event){
-    let {articleid,mlmodel,truefalse}= event.target.dataset
+    let {articleid,mlmodel,truefalse,id}= event.target.dataset
     // if off then delete the classification
     if (truefalse === "true"){
       let target = event.target.checked 
@@ -33,6 +33,7 @@ export default class extends Component {
         this.props.setClassif(mlmodel, articleid, true)
       } else {
         //remove classification
+        this.props.deleteClassification(id, parseInt(articleid,10))
       }
     }
     if (truefalse === "false"){
@@ -41,6 +42,7 @@ export default class extends Component {
         this.props.setClassif(mlmodel, articleid, false)
       } else {
         //remove classification
+        this.props.deleteClassification(id, parseInt(articleid,10))
       }
     }
 
