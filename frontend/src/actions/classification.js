@@ -22,6 +22,7 @@ export const DEL_CLASSIFICATION_REQUEST = "@@classification/DEL_CLASSIFICATION_R
 export const DEL_CLASSIFICATION_SUCCESS = "@@classification/DEL_CLASSIFICATION_SUCCESS"
 export const DEL_CLASSIFICATION_FAILURE = "@@classification/DEL_CLASSIFICATION_FAILURE"
 
+export const SET_COUNTS = "@@classification/COUNTS"
 
 export const CLEAR = "@@classification/CLEAR"
 
@@ -30,6 +31,18 @@ export const clear = ( ) => {
     type:CLEAR
   }
 }
+
+export const setCounts = (total, true_count, false_count) =>{
+  return {
+    type:SET_COUNTS,
+    payload:{
+      true_count:true_count,
+      false_count:false_count,
+      total:total
+    }
+  }
+}
+
 
 export const getClassifications = (url,params=undefined)=>{
   // filters - list[string]
@@ -48,6 +61,22 @@ export const getClassifications = (url,params=undefined)=>{
   }
 }
 
+export const getCounts = (params='')=>{
+ return async (dispatch, getState)=>{
+   let true_resp = await dispatch(getClassifications(BASE_URL, params+"&target=true"))
+   if (true_resp.error) {
+     throw new Error("Promise flow received action error", true_resp);
+   }
+   let false_resp = await dispatch(getClassifications(BASE_URL, params+"&target=false"))
+     if (true_resp.error) {
+       throw new Error("Promise flow received action error", false_resp);
+   }
+   let true_count = parseInt(true_resp.payload.count, 10)
+   let false_count = parseInt(false_resp.payload.count, 10)
+   let total =true_count + false_count
+   return await dispatch(setCounts(total, true_count, false_count))
+ }
+}
 export const deleteClassification= ( id, article_id )=>{
   // filters - list[string]
   return {
@@ -128,12 +157,18 @@ export const getArticlesClassif = (model, article_params='')=>{
       }
       let total_params = getArticleParams(articles,model)
       let resclear = await dispatch(clear())
+      let resp_counts = await dispatch(getCounts("mlmodel="+model))
+      if(resp_counts.error){
+          throw new Error("Promise flow received action error", resp_counts);
+      }
       let res = await dispatch(totalClassificationsRequest()) 
       resp =  await dispatch(getAllClassifications(BASE_URL,total_params))
       if(resp.error){
           throw new Error("Promise flow received action error", resp);
       }
-    }
+   } else {
+     return await dispatch(setCounts(0,0,0))
+   }
   }
 }
 

@@ -203,6 +203,10 @@ export default class extends Component {
     const loading = this.props.articlesLoading
     const selectArticles = this.props.selectArticles || {}
     const classifications = this.props.classif 
+    const counts = this.props.classifCounts
+    const true_pct = (counts.true_count / counts.total) * 100
+    const false_pct = (counts.false_count / counts.total) * 100
+    let i = 1
     return (
 
       <div className="container mt-2 col-sm-8 offset-sm-2" >
@@ -226,13 +230,13 @@ export default class extends Component {
            </Input>
 
         </Col>
-        <Col sm="2">
+        <Col sm="3">
           <label  htmlFor={"start_id"}>{"Start Date"}</label>
           <div className = "mb-2 ">
           <DatePicker style={{width:'100%'}} id={"startDate"} disabled={selections.mlmodelChosen===NONE} selected={selections.startDate} onChange={this.handleStartChange} />
           </div>
         </Col>
-        <Col sm="2">
+        <Col sm="3">
           <label  htmlFor={"end_id"}>{"End Date"}</label>
           <div className = "mb-2 ">
           <DatePicker  id={"endDate"}  selected={selections.endDate} disabled={selections.mlmodelChosen===NONE}onChange={this.handleEndChange}/>
@@ -256,14 +260,6 @@ export default class extends Component {
 
           </div>
         </Col>
-        <Col sm="2">
-           <label  htmlFor={"target"}>{"Target"}</label> 
-           <Input type="select" name="target" value={selections.target} id="target_id" disabled={selections.mlmodelChosen===NONE} onChange={this.handleTargetChange}>
-             <option value={""}>---</option>
-             <option value={true}>True</option>
-             <option value={false}>False</option>
-           </Input>
-        </Col>
  
       </Row>
     </FormGroup>
@@ -281,8 +277,18 @@ export default class extends Component {
            this.props.selections,
            this.props.setPage)}
          </td>
+         <td align="left">
+           <font>True: {(counts.true_count/counts.total*100).toFixed(1)} %</font>
+
+         </td>
+         <td align="left">
+           <font>False: {(counts.false_count/counts.total*100).toFixed(1)} %</font>
+         </td>
+         <td align="left">
+           <Button className="button-brand-primary mb-1" size="md">Train</Button>
+         </td>
        </tr>
-       <tr><td>
+       <tr><td colSpan="4">
            <table className={"table table-sm"}>
          <thead>
            <tr>

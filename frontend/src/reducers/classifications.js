@@ -47,6 +47,7 @@ const initialState = {
 
   classif:{},
   loading:false,
+  counts:{total:0,true_count:0,false_count:0},
   totalLoading:false,
   errors: {},
 
@@ -117,6 +118,15 @@ export default (state=initialState, action) => {
         }
         
       }
+    case classif.SET_COUNTS:
+      {
+        return {
+          ...state,
+          counts:{...action.payload},
+          errors:{}
+        }
+
+      }
     case classif.CLEAR:
       {
         return {
@@ -139,3 +149,6 @@ export function errors(state) {
   return state.errors
 }
 
+export function counts(state){
+  return state.counts
+}

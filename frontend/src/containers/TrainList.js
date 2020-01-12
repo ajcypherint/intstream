@@ -27,7 +27,8 @@ const mapStateToProps = (state) => ({
   selectArticles:reducers.getSelectArticles(state),
   selectErrors:reducers.getSelectErrors(state),
   classif:reducers.getClassifications(state),
-  classifErrors:reducers.getClassifErrors(state)
+  classifErrors:reducers.getClassifErrors(state),
+  classifCounts:reducers.getClassifCounts(state)
 })
 
 

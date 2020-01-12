@@ -113,6 +113,7 @@ export const getSelectErrors= state => fromSelect.errors(state.selectArticles)
 //fromClassif
 export const getClassifications = state => fromClassif.classifications(state.classifications)
 export const getClassifErrors = state => fromClassif.errors(state.classifications)
+export const getClassifCounts = state => fromClassif.counts(state.classifications)
 
 
 export function withAuth(headers={}) {
