@@ -46,7 +46,6 @@ const addResults = (payloadResults, classif)=>{
 const initialState = {
 
   classif:{},
-  loading:false,
   counts:{total:0,true_count:0,false_count:0},
   totalLoading:false,
   errors: {},
@@ -79,7 +78,6 @@ export default (state=initialState, action) => {
       {
         return {
           classif:{},
-          loading:false,
           totalLoading:false,
           errors: action.payload.response || {'non_field_errors': action.payload.statusText},
         }

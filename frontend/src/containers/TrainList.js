@@ -43,11 +43,14 @@ const mapDispatchToProps = (dispatch) => ({
   clear: ()=>dispatch(clear()),
   fetchSelect: (id)=>dispatch(fromSelect.getArticle(API_ARTICLES,id)),
   clearSelect: ()=>dispatch(fromSelect.clearArticles()),
-  fetchArticlesClassif: (model,article_params)=>dispatch(
-                            fromClassif.getArticlesClassif(model, article_params)),
-  deleteClassification: (id, article_id)=>dispatch(fromClassif.deleteClassification(id, article_id)),
-  setClassif: (mlmodel, articleId, target)=>
-                dispatch(fromClassif.setClassification(mlmodel, articleId, target)),
+  fetchArticlesAndClassif: (model,article_params)=>dispatch(
+                            fromClassif.getArticlesAndClassif(model, article_params)),
+  deleteClassification: (id, article_id, params)=>dispatch(
+                          fromClassif.deleteClassificationLoadCounts(id, article_id, params)),
+  setClassif: (mlmodel, articleId, target, params)=>
+                dispatch(fromClassif.setClassificationLoadCounts(mlmodel, articleId, target, params)),
+  fetchClassifCounts:(params) =>dispatch(fromClassif.getCounts(params)),
+  clearClassif: ()=>dispatch(fromClassif.clear())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

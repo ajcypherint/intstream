@@ -30,27 +30,57 @@ export default class extends Component {
     if (truefalse === "true"){
       let target = event.target.checked 
       if(target){
-        this.props.setClassif(mlmodel, articleid, true)
+        this.props.setClassif(mlmodel, articleid, true,
+          dateString(this.props.selections.orderdir,
+          this.props.selections.ordercol,
+          this.props.selections.sourceChosen,
+          this.props.selections.page,
+          this.props.selections.startDate,
+          this.props.selections.endDate,
+          )+"&source__mlmodel="+mlmodel)
       } else {
         //remove classification
-        this.props.deleteClassification(id, parseInt(articleid,10))
+        this.props.deleteClassification(id, parseInt(articleid,10),
+          dateString(this.props.selections.orderdir,
+          this.props.selections.ordercol,
+          this.props.selections.sourceChosen,
+          this.props.selections.page,
+          this.props.selections.startDate,
+          this.props.selections.endDate,
+          )+"&source__mlmodel="+mlmodel 
+        )
       }
     }
     if (truefalse === "false"){
       let target = event.target.checked 
       if(target){
-        this.props.setClassif(mlmodel, articleid, false)
+        this.props.setClassif(mlmodel, articleid, false,
+          dateString(this.props.selections.orderdir,
+          this.props.selections.ordercol,
+          this.props.selections.sourceChosen,
+          this.props.selections.page,
+          this.props.selections.startDate,
+          this.props.selections.endDate,
+          )+"&source__mlmodel="+mlmodel 
+        )
       } else {
         //remove classification
-        this.props.deleteClassification(id, parseInt(articleid,10))
+        this.props.deleteClassification(id, parseInt(articleid,10),
+          dateString(this.props.selections.orderdir,
+          this.props.selections.ordercol,
+          this.props.selections.sourceChosen,
+          this.props.selections.page,
+          this.props.selections.startDate,
+          this.props.selections.endDate,
+          )+"&source__mlmodel="+mlmodel 
+        )
       }
     }
-
-
   }
   handleModelChange(event){
     event.preventDefault()
     let id = event.target.value
+    this.props.clearClassif()
     if(id!==NONE){
       let selections = this.props.selections
       //todo() ordering add model
@@ -64,17 +94,16 @@ export default class extends Component {
         {mlmodelChosen:id}
       )
       //todo add model 
-     this.props.fetchArticlesClassif(id,dateString(selections.orderdir,
-      selections.ordercol,
-      selections.sourceChosen,
-      1,
-      selections.startDate,
-      selections.endDate,
-      )+"&source__mlmodel="+id) 
-
+       this.props.fetchArticlesAndClassif(id,dateString(selections.orderdir,
+        selections.ordercol,
+        selections.sourceChosen,
+        1,
+        selections.startDate,
+        selections.endDate,
+        )+"&source__mlmodel="+id) 
 
     } else {
-      this.props.clear()
+      this.props.clear() //selections
       this.props.fetchAllMLModels("ordering=name&active=true")
       this.props.clearArticles()
 
@@ -125,7 +154,7 @@ export default class extends Component {
       endDate:endDate,
       })
     //fetch articles 
-    this.props.fetchArticlesClassif(this.props.selections.mlmodelChosen,
+    this.props.fetchArticlesAndClassif(this.props.selections.mlmodelChosen,
       dateString(
       this.props.selections.orderdir,// orderdir
       this.props.selections.ordercol, // ordercol 
@@ -145,7 +174,7 @@ export default class extends Component {
       sourceChosen:event.target.value,
       page:1
       })
-    this.props.fetchArticlesClassif(selections.mlmodelChosen,
+    this.props.fetchArticlesAndClassif(selections.mlmodelChosen,
       dateString(selections.orderdir,
       selections.ordercol,
       event.target.value,
@@ -162,7 +191,7 @@ export default class extends Component {
   }
   fetchit(selections,page){
     let s = selections
-    this.props.fetchArticlesClassif(selections.mlmodelChosen,dateString(
+    this.props.fetchArticlesAndClassif(selections.mlmodelChosen,dateString(
             selections.orderdir,
             selections.ordercol,
             selections.sourceChosen,
@@ -174,12 +203,13 @@ export default class extends Component {
  
   componentDidMount(){
     //action
+    this.props.clearClassif()
     this.props.fetchAllMLModels("ordering=name&active=true")
     let selections = this.props.selections
     if (selections.mlmodelChosen===NONE){
       this.props.clearArticles()
     } else {
-      this.props.fetchArticlesClassif(selections.mlmodelChosen,
+      this.props.fetchArticlesAndClassif(selections.mlmodelChosen,
         dateString(
             selections.orderdir,
             selections.ordercol,
@@ -278,11 +308,11 @@ export default class extends Component {
            this.props.setPage)}
          </td>
          <td align="left">
-           <font>True: {(counts.true_count/counts.total*100).toFixed(1)} %</font>
+           <font>True: {isFinite(true_pct) ? true_pct.toFixed(1): ""}%</font>
 
          </td>
          <td align="left">
-           <font>False: {(counts.false_count/counts.total*100).toFixed(1)} %</font>
+           <font>False: {isFinite(false_pct) ? false_pct.toFixed(1): ""}%</font>
          </td>
          <td align="left">
            <Button className="button-brand-primary mb-1" size="md">Train</Button>

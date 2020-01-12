@@ -2,9 +2,13 @@ import { RSAA } from 'redux-api-middleware';
 import {setParams,getAll} from './util'
 import { withAuth } from '../reducers'
 import  URL  from  'url-parse'
-import {getArticles,ARTICLE_URL} from "./articles"
+import * as fromArticle from "./articles"
 
 const BASE_URL = "/api/classifications/"
+export const GET_ARTICLES_REQUEST = "@@classification/GET_ARTICLES_REQUEST"
+export const GET_ARTICLES_SUCCESS = "@@classification/GET_ARTICLES_SUCCESS"
+export const GET_ARTICLES_FAILURE = "@@classification/GET_ARTICLES_FAILURE"
+
 
 export const GET_CLASSIFICATIONS_REQUEST = "@@classification/GET_CLASSIFICATIONS_REQUEST"
 export const GET_CLASSIFICATIONS_SUCCESS = "@@classification/GET_CLASSIFICATIONS_SUCCESS"
@@ -25,6 +29,24 @@ export const DEL_CLASSIFICATION_FAILURE = "@@classification/DEL_CLASSIFICATION_F
 export const SET_COUNTS = "@@classification/COUNTS"
 
 export const CLEAR = "@@classification/CLEAR"
+
+export const getArticles= (url, params=undefined)=>{
+  // filters - list[string]
+  url = setParams(url,params)
+  return {
+  [RSAA]:{
+   endpoint: url,
+      method: 'GET',
+      body: '',
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+       GET_ARTICLES_REQUEST, GET_ARTICLES_SUCCESS, GET_ARTICLES_FAILURE
+      ]
+
+  }
+}
+}
+
 
 export const clear = ( ) => {
   return {
@@ -62,21 +84,23 @@ export const getClassifications = (url,params=undefined)=>{
 }
 
 export const getCounts = (params='')=>{
+  let new_params = Object.assign({},params)
  return async (dispatch, getState)=>{
-   let true_resp = await dispatch(getClassifications(BASE_URL, params+"&target=true"))
+   let true_resp = await dispatch(getClassifications(BASE_URL, new_params+"&target=true"))
    if (true_resp.error) {
      throw new Error("Promise flow received action error", true_resp);
    }
-   let false_resp = await dispatch(getClassifications(BASE_URL, params+"&target=false"))
-     if (true_resp.error) {
+   let false_resp = await dispatch(getClassifications(BASE_URL, new_params+"&target=false"))
+     if (false_resp.error) {
        throw new Error("Promise flow received action error", false_resp);
    }
    let true_count = parseInt(true_resp.payload.count, 10)
    let false_count = parseInt(false_resp.payload.count, 10)
    let total =true_count + false_count
-   return await dispatch(setCounts(total, true_count, false_count))
+   await dispatch(setCounts(total, true_count, false_count))
  }
 }
+
 export const deleteClassification= ( id, article_id )=>{
   // filters - list[string]
   return {
@@ -94,7 +118,16 @@ export const deleteClassification= ( id, article_id )=>{
   }
 }
 }
+export const deleteClassificationLoadCounts = (id, article_id, params)=>{
+  return async(dispatch, getState)=>{
+    let resp = await dispatch(deleteClassification(id, article_id))
+    if(resp.errors){
+      throw new Error("Promise flow received action error", resp);
+    }
+    await dispatch(getCounts(params))
+  }
 
+}
 export const setClassification= ( mlmodel,
                                  article,
                                  target,
@@ -117,6 +150,23 @@ export const setClassification= ( mlmodel,
 
   }
 }
+}
+
+export const setClassificationLoadCounts = (mlmodel,
+                                      article,
+                                      target,
+                                      params
+                                      )=>{
+    return async(dispatch, getState)=>{
+    let resp = await dispatch(setClassification(mlmodel, article, target))
+    if(resp.errors){
+      throw new Error("Promise flow received action error", resp);
+      }
+    await dispatch(getCounts(params))
+ 
+  }
+  
+
 }
 
 export const totalClassifications = (data, total) =>{
@@ -143,9 +193,20 @@ export const getArticleParams = (articles,mlmodel) =>{
 
 export const getAllClassifications = getAll(getClassifications)(totalClassifications);
 
+export const getArticlesAndClassif = (model, article_params = '')=>{
+  return async(dispatch, getState)=>{
+    let resp = await dispatch(fromArticle.getArticles(fromArticle.ARTICLE_URL,article_params))
+    if (resp.error) {
+      // the last dispatched action has errored, break out of the promise chain.
+      throw new Error("Promise flow received action error", resp);
+    }
+    return await dispatch(getArticlesClassif(model, article_params))
+ 
+  }
+}
 export const getArticlesClassif = (model, article_params='')=>{
   return async(dispatch,getState)=>{
-    let resp = await dispatch(getArticles(ARTICLE_URL,article_params))
+    let resp = await dispatch(getArticles(fromArticle.ARTICLE_URL,article_params))
      if (resp.error) {
       //  // the last dispatched action has errored, break out of the promise chain.
         throw new Error("Promise flow received action error", resp);
@@ -156,16 +217,10 @@ export const getArticlesClassif = (model, article_params='')=>{
         articles.push(resp.payload.results[i].id)
       }
       let total_params = getArticleParams(articles,model)
-      let resclear = await dispatch(clear())
-      let resp_counts = await dispatch(getCounts("mlmodel="+model))
-      if(resp_counts.error){
-          throw new Error("Promise flow received action error", resp_counts);
-      }
+      //todo(aj) move this to component instead.??
+      await dispatch(getCounts("mlmodel="+model))
       let res = await dispatch(totalClassificationsRequest()) 
-      resp =  await dispatch(getAllClassifications(BASE_URL,total_params))
-      if(resp.error){
-          throw new Error("Promise flow received action error", resp);
-      }
+      await dispatch(getAllClassifications(BASE_URL,total_params))
    } else {
      return await dispatch(setCounts(0,0,0))
    }
