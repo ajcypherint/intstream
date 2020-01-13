@@ -190,7 +190,6 @@ export default class extends Component {
     this.props.fetchSelect(id)
   }
   fetchit(selections,page){
-    let s = selections
     this.props.fetchArticlesAndClassif(selections.mlmodelChosen,dateString(
             selections.orderdir,
             selections.ordercol,
@@ -328,13 +327,19 @@ export default class extends Component {
                this.props.fetchArticles,
                selections,
                this.props.setSelections,
+               0,
+               undefined,
+               "&source__mlmodel="+selections.mlmodelChosen
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
              DESC, 
              this.props.fetchArticles,
              selections,
-              this.props.setSelections,
+             this.props.setSelections,
+             0,
+             undefined,
+             "&source__mlmodel="+selections.mlmodelChosen
               )}}> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
@@ -342,6 +347,9 @@ export default class extends Component {
              this.props.fetchArticles,
              selections,
              this.props.setSelections,
+             0,
+             undefined,
+             "&source__mlmodel="+selections.mlmodelChosen
            )}}>Date</td>
              <td>True</td> 
              <td>False</td> 

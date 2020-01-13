@@ -16,7 +16,8 @@ export function  changesort(column_name,
                             selections,
                             setHomeSelections,
                             level = 0,
-                            parent = undefined
+                            parent = undefined,
+                            additional = undefined
   ){
   // column_name: str
   // ASC: str
@@ -36,7 +37,7 @@ export function  changesort(column_name,
                                 1,
                                 selections.startDate,
                                 selections.endDate,
-                                selections.threshold) 
+                                selections.threshold)+(additional || '')
 
         }
       else{
@@ -48,7 +49,7 @@ export function  changesort(column_name,
                                    1,
                                    selections.startDate,
                                    selections.endDate,
-                                   selections.threshold) 
+                                   selections.threshold)+(additional || '') 
                                   
       }
     }
@@ -61,7 +62,7 @@ export function  changesort(column_name,
                                 1,
                                 selections.startDate,
                                 selections.endDate,
-                                selections.threshold) 
+                                selections.threshold)+(additional || '')
 
       //call asc sort
          }
