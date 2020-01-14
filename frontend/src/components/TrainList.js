@@ -294,10 +294,8 @@ export default class extends Component {
     </FormGroup>
   </Form> {//this MUST be here.  the paginate function will cause page refreshes
   }
-    <table className={"table table-sm "}>
-      <tbody>
-        <tr>
-          <td>
+    <Row>
+          <Col>
          {this.paginate(totalcount,
            next,
            previous,
@@ -305,20 +303,19 @@ export default class extends Component {
            this.props.fetchArticlesFullUri,
            this.props.selections,
            this.props.setPage)}
-         </td>
-         <td align="left">
+         </Col>
+         <Col align="left">
            <font>True: {isFinite(true_pct) ? true_pct.toFixed(1): ""}%</font>
 
-         </td>
-         <td align="left">
+         </Col>
+         <Col align="left">
            <font>False: {isFinite(false_pct) ? false_pct.toFixed(1): ""}%</font>
-         </td>
-         <td align="left">
+         </Col>
+         <Col align="left">
            <Button className="button-brand-primary mb-1" size="md">Train</Button>
-         </td>
-       </tr>
-       <tr><td colSpan="4">
-           <table className={"table table-sm"}>
+         </Col>
+       </Row>
+         <table className={"table table-sm"}>
          <thead>
            <tr>
              <td className="hover" onClick={(event)=>{this.changesort("title", 
@@ -408,12 +405,8 @@ export default class extends Component {
            </tr>
          </tbody>
              }
-     </table>
-   </td>
-  </tr>
-      </tbody>
     </table>
-      </div>
+  </div>
 
     )
   }

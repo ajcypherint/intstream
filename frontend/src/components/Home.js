@@ -292,8 +292,8 @@ export class Main extends React.Component{
           clearSelect={this.props.clearSelect}
 
           parent={this.props.parent}/>
+      </div>
 
-   </div>
     )
  
  }

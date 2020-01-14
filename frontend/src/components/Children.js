@@ -103,8 +103,10 @@ export class Children extends React.Component{
     const parent_trail = this.props.parent_trail
     const parent_first_id = this.props.parent_trail.length > 0 ? parent_trail[0].id : -1
     const parent_last_obj = this.props.parent_trail.length > 0 ? parent_trail[parent_trail.length-1] : undefined
-    const cols = "col-sm-"+(12-level)
-    const offset = "offset-sm-"+level
+    const col_num = level===0 ? 8 : 11
+    const cols = "col-sm-"+ col_num
+    const offset_num = level === 0 ? 2 : 1
+    const offset = "offset-sm-"+ offset_num
     const page_fetch = level === 0 ? this.fetch : this.childFetch
     const parent_obj = this.props.parent_obj || {}
     const parent_id = parent_obj.id || undefined
