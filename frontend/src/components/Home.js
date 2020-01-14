@@ -276,7 +276,7 @@ export class Main extends React.Component{
 
     </Row>
   </FormGroup>
-      <div className="container mt-2 col-sm-8 offset-sm-2" >
+      </Form>
       <Children 
           parent_func={this.props.parent_func}
           level={0}
@@ -293,8 +293,6 @@ export class Main extends React.Component{
 
           parent={this.props.parent}/>
 
-      </div>
-      </Form>
    </div>
     )
  
