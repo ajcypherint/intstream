@@ -15,14 +15,15 @@ export default ({level,article,showChildren}) => {
   }
   if (level===0 ){
     return (
-      <div>
+        <div>
         { match.length > 0  ?
-          <td className="hover" 
+          <font className="hover" 
               data-parent={JSON.stringify(createParent(id,title,match))} 
               data-level={level}
-              onClick={showChildren}>{match.length}</td>:
-           <td >{match.length}</td>
+              onClick={showChildren}>{match.length}</font>:
+
+           <font >{match.length}</font>
       }
-      </div>)
+    </div>)
   }
 }

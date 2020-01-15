@@ -175,7 +175,9 @@ export class Children extends React.Component{
                     {article.source.name}
                   </td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
-                  <Match level={level} article={article} showChildren={this.showChildren}/>
+                  <td>
+                    <Match level={level} article={article} showChildren={this.showChildren}/>
+                  </td>
                </tr>
                   {//todo selected article
                                  article.id in selectArticles ?
