@@ -220,7 +220,7 @@ export const getArticlesClassif = (model, article_params='')=>{
       await dispatch(totalClassificationsRequest()) 
       await dispatch(getAllClassifications(BASE_URL,total_params))
    } else {
-     return await dispatch(setCounts(0,0,0))
+     return await dispatch(getCounts(model))
    }
   }
 }
