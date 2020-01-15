@@ -83,14 +83,13 @@ export const getClassifications = (url,params=undefined)=>{
   }
 }
 
-export const getCounts = (params='')=>{
-  let new_params = Object.assign({},params)
+export const getCounts = (mlmodel)=>{
  return async (dispatch, getState)=>{
-   let true_resp = await dispatch(getClassifications(BASE_URL, new_params+"&target=true"))
+   let true_resp = await dispatch(getClassifications(BASE_URL, "mlmodel="+mlmodel+"&target=true"))
    if (true_resp.error) {
      throw new Error("Promise flow received action error", true_resp);
    }
-   let false_resp = await dispatch(getClassifications(BASE_URL, new_params+"&target=false"))
+   let false_resp = await dispatch(getClassifications(BASE_URL, "mlmodel="+mlmodel+"&target=false"))
      if (false_resp.error) {
        throw new Error("Promise flow received action error", false_resp);
    }
@@ -118,13 +117,13 @@ export const deleteClassification= ( id, article_id )=>{
   }
 }
 }
-export const deleteClassificationLoadCounts = (id, article_id, params)=>{
+export const deleteClassificationLoadCounts = (id, article_id, mlmodel)=>{
   return async(dispatch, getState)=>{
     let resp = await dispatch(deleteClassification(id, article_id))
     if(resp.errors){
       throw new Error("Promise flow received action error", resp);
     }
-    await dispatch(getCounts(params))
+    await dispatch(getCounts(mlmodel))
   }
 
 }
@@ -155,14 +154,13 @@ export const setClassification= ( mlmodel,
 export const setClassificationLoadCounts = (mlmodel,
                                       article,
                                       target,
-                                      params
                                       )=>{
     return async(dispatch, getState)=>{
     let resp = await dispatch(setClassification(mlmodel, article, target))
     if(resp.errors){
       throw new Error("Promise flow received action error", resp);
       }
-    await dispatch(getCounts(params))
+    await dispatch(getCounts(mlmodel))
  
   }
   
@@ -218,8 +216,8 @@ export const getArticlesClassif = (model, article_params='')=>{
       }
       let total_params = getArticleParams(articles,model)
       //todo(aj) move this to component instead.??
-      await dispatch(getCounts("mlmodel="+model))
-      let res = await dispatch(totalClassificationsRequest()) 
+      await dispatch(getCounts(model))
+      await dispatch(totalClassificationsRequest()) 
       await dispatch(getAllClassifications(BASE_URL,total_params))
    } else {
      return await dispatch(setCounts(0,0,0))

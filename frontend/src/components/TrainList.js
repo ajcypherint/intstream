@@ -30,49 +30,22 @@ export default class extends Component {
     if (truefalse === "true"){
       let target = event.target.checked 
       if(target){
-        this.props.setClassif(mlmodel, articleid, true,
-          dateString(this.props.selections.orderdir,
-          this.props.selections.ordercol,
-          this.props.selections.sourceChosen,
-          this.props.selections.page,
-          this.props.selections.startDate,
-          this.props.selections.endDate,
-          )+"&source__mlmodel="+mlmodel)
+        this.props.setClassif(mlmodel, articleid, true, mlmodel)
       } else {
         //remove classification
         this.props.deleteClassification(id, parseInt(articleid,10),
-          dateString(this.props.selections.orderdir,
-          this.props.selections.ordercol,
-          this.props.selections.sourceChosen,
-          this.props.selections.page,
-          this.props.selections.startDate,
-          this.props.selections.endDate,
-          )+"&source__mlmodel="+mlmodel 
+          mlmodel 
         )
       }
     }
     if (truefalse === "false"){
       let target = event.target.checked 
       if(target){
-        this.props.setClassif(mlmodel, articleid, false,
-          dateString(this.props.selections.orderdir,
-          this.props.selections.ordercol,
-          this.props.selections.sourceChosen,
-          this.props.selections.page,
-          this.props.selections.startDate,
-          this.props.selections.endDate,
-          )+"&source__mlmodel="+mlmodel 
-        )
+        this.props.setClassif(mlmodel, articleid, false, mlmodel)
       } else {
         //remove classification
         this.props.deleteClassification(id, parseInt(articleid,10),
-          dateString(this.props.selections.orderdir,
-          this.props.selections.ordercol,
-          this.props.selections.sourceChosen,
-          this.props.selections.page,
-          this.props.selections.startDate,
-          this.props.selections.endDate,
-          )+"&source__mlmodel="+mlmodel 
+          mlmodel 
         )
       }
     }
@@ -93,7 +66,6 @@ export default class extends Component {
       this.props.setSelections(
         {mlmodelChosen:id}
       )
-      //todo add model 
        this.props.fetchArticlesAndClassif(id,dateString(selections.orderdir,
         selections.ordercol,
         selections.sourceChosen,
