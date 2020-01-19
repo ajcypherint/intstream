@@ -34,6 +34,7 @@ RSSSOURCE = 'sourcesrss'
 JOBSOURCE = 'sourcesjob'
 SOURCE = 'sources'
 
+
 router.register(UPLOADSOURCE, views.UploadSourceViewSet, basename="uploadsource")
 router.register(RSSSOURCE, views.RssSourceViewSet, basename="rsssource")
 router.register(JOBSOURCE, views.JobSourceViewSet, basename="jobsource")
@@ -44,6 +45,9 @@ router.register("homefilter",views.HomeFilter, basename="homefilter")
 router.register("classifications",views.ClassificationViewSet, basename="classifications")
 
 router.register("organization",views.OrganizationViewSet, basename="organization")
+
+SETTINGS = "setting"
+router.register(SETTINGS,views.SettingsViewSet, basename="setting")
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view

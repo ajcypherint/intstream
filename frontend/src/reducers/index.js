@@ -13,6 +13,7 @@ import childFilter, * as fromChildFilter from  './childFilter.js'
 import list, * as fromList from './listSelections.js'
 import selectArticles, * as fromSelect from "./selectArticles.js"
 import classifications, * as fromClassif from "./classifications"
+import settings, * as fromSettings from "./settings"
 
 export default combineReducers({
   auth: auth,
@@ -28,7 +29,8 @@ export default combineReducers({
   childFilter:childFilter,
   trainFilter:trainFilter,
   selectArticles:selectArticles,
-  classifications:classifications
+  classifications:classifications,
+  settings:settings
 })
 
 //fromAuth
@@ -115,6 +117,12 @@ export const getClassifications = state => fromClassif.classifications(state.cla
 export const getClassifErrors = state => fromClassif.errors(state.classifications)
 export const getClassifCounts = state => fromClassif.counts(state.classifications)
 
+//fromSettings
+//fromModels
+export const getSettings= state => fromSettings.settings(state.settings)
+export const getSettingsErrors = state => fromSettings.errors(state.settings)
+export const getSettingsLoading = state => fromSettings.loading(state.settings)
+export const getSettingsSaving = state => fromSettings.saving(state.settings)
 
 export function withAuth(headers={}) {
   return (state) => ({

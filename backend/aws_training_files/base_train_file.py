@@ -20,12 +20,14 @@ import sys
 from operator import add
 from pyspark import SparkContext
 
+INPUT_BUCKET = ""
+OUTPUT_BUCKET = ""
 
 if __name__ == "__main__":
     # Start SparkContext
     sc = SparkContext(appName="PythonWordCount")
     # Load data from S3 bucket
-    lines = sc.textFile("s3://input_bucket/", 1)
+    lines = sc.textFile(INPUT_BUCKET, 1)
     # Calculate word counts
     counts = lines.flatMap(lambda x: x.split(' ')) \
                   .map(lambda x: (x, 1)) \
@@ -35,6 +37,6 @@ if __name__ == "__main__":
     for (word, count) in output:
         print("%s: %i" % (word, count))
     # Save word counts in S3 bucket
-    counts.saveAsTextFile("s3://output_bucket/")
+    counts.saveAsTextFile(OUTPUT_BUCKET)
     # Stop SparkContext
     sc.stop()

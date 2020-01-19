@@ -142,9 +142,10 @@ class RSSArticle(Article):
     guid = models.CharField(max_length=200,unique=True)
 
 
-class Settings(models.Model):
-    similarity_threshold = models.IntegerField()
+class Setting(models.Model):
     aws_key = models.CharField(max_length=100)
     aws_secret = models.CharField(max_length=250)
     aws_region = models.CharField(max_length=15)
+    aws_s3_log_base = models.CharField(max_length=500)
+    aws_s3_upload_base = models.CharField(max_length=500)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)

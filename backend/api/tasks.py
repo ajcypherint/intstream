@@ -8,7 +8,7 @@ from celery_singleton import Singleton
 from celery.utils.log import get_task_logger
 import numpy as np
 logger = get_task_logger(__name__)
-from utils import vector, read
+from utils import vector, read, train
 @shared_task
 def add(x,y):
     return x + y
@@ -100,3 +100,20 @@ def process_rss_sources():
         process_rss_source(source.url,source.id,source.organization_id)
 
 
+@shared_task(bind=True)
+def train_model(model,
+                s3_bucket_logs,
+                s3_bucket_temp_files,
+                s3_region,
+                aws_access_key_id,
+                aws_secret_access_key_id,
+                ):
+    trainer = train.DeployPySparkScriptOnAws(model=model,
+                s3_bucket_logs=s3_bucket_logs,
+                s3_bucket_temp_files=s3_bucket_temp_files,
+                s3_region=s3_region,
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key_id=aws_secret_access_key_id,
+                task = self.request.id)
+
+    trainer.run()

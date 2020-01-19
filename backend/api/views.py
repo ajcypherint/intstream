@@ -5,6 +5,7 @@ import math
 import numpy as np
 from django.contrib.sites.shortcuts import get_current_site
 import urllib.parse as urlparse
+from . import tasks
 from urllib.parse import urlencode
 from random import randint
 from dateutil.parser import parse
@@ -123,6 +124,43 @@ def set_query_params(url, page):
     url_parts_next[4] = urlencode(nextpage_query_param)
     next_full_uri = urlparse.urlunparse(url_parts_next)
     return next_full_uri
+
+
+class Train(APIView):
+    permission_classes = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+    response = openapi.Response('model_info',
+            openapi.Schema( type=openapi.TYPE_OBJECT,
+                            properties={
+                                    "job_id":openapi.Schema(type=openapi.TYPE_STRING),
+                                    }))
+    model_id = openapi.Parameter('model_id',
+                            in_=openapi.IN_BODY,
+                            required=True,
+                            description="start date",
+                            type=openapi.TYPE_STRING)
+
+    error = openapi.Response("error",
+                             openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                 properties={
+                                     "error":openapi.Schema(type=openapi.TYPE_STRING)
+                                 }
+
+                             ))
+
+    @swagger_auto_schema(operation_description="create training job", manual_parameters=[model_id], responses={200:response,404:error})
+    def post(self, request, format=None):
+        org = self.request.user.organization
+        aws_settings = models.Settings.objects.filter(organization=org).get()
+        result = tasks.train_model.delay(model=request.model,
+                          s3_bucket_logs=aws_settings.aws_s3_log_base,
+                          s3_bucket_temp_files=aws_settings.aws_s3_upload_base,
+                          s3_region=aws_settings.aws_region,
+                          aws_access_key_id=aws_settings.aws_key,
+                          aws_secret_access_key_id=aws_settings.aws_secret
+                          )
+        return Response({"job_id":result.id},status.HTTP_200_OK)
+
 
 
 class HomePage(APIView):
@@ -414,6 +452,16 @@ class ClassificationViewSet(OrgViewSet):
 
     def get_queryset(self):
         return models.Classification.objects.filter(organization=self.request.user.organization)
+
+
+class SettingsViewSet(OrgViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    serializer_class = serializers.SettingSerializer
+
+    def get_queryset(self):
+        return models.Setting.objects.filter(organization=self.request.user.organization)
+
 
 class RssFilter(filters.FilterSet):
     class Meta:
