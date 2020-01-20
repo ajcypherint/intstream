@@ -57,6 +57,7 @@ export default (state=initialState, action) => {
       return {
         ...state,
         loading:true,
+        saving:false,
         errors:{}
       }
       }
@@ -76,6 +77,7 @@ export default (state=initialState, action) => {
       return {
         settings:[],
         loading:false,
+        saving:false,
         errors: action.payload.response || {'non_field_errors': action.payload.statusText},
       }
       }

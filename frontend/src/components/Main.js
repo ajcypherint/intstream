@@ -8,6 +8,8 @@ import SourcesUploadEdit from "../containers/SourcesUploadEdit"
 import SourcesRssList from "../containers/SourcesRSSList"
 import SourcesRSSEdit from "../containers/SourcesRSSEdit"
 
+import SettingsEdit from "../containers/SettingsEdit"
+
 import ModelsList from "../containers/ModelsList"
 import ModelsEdit from "../containers/ModelsEdit"
 
@@ -72,6 +74,11 @@ const Main = (props)=>(
         }}
         match={match}/>} 
       />
+
+    <Route exact path="/settings"       
+      component={SettingsEdit}
+      />
+
 
 
     <Route exact path="/sources_rss" component={SourcesRssList} />
