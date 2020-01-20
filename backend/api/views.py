@@ -133,7 +133,7 @@ class Train(APIView):
                             properties={
                                     "job_id":openapi.Schema(type=openapi.TYPE_STRING),
                                     }))
-    model_id = openapi.Parameter('model_id',
+    mlmodel = openapi.Parameter('mlmodel',
                             in_=openapi.IN_BODY,
                             required=True,
                             description="start date",
@@ -148,11 +148,13 @@ class Train(APIView):
 
                              ))
 
-    @swagger_auto_schema(operation_description="create training job", manual_parameters=[model_id], responses={200:response,404:error})
+    @swagger_auto_schema(operation_description="create training job", manual_parameters=[mlmodel], responses={200:response,404:error})
     def post(self, request, format=None):
+        if "mlmodel" not in self.request.data.keys():
+            return Response({"detail":"mlmodel is required"}, status=status.HTTP_400_BAD_REQUEST)
         org = self.request.user.organization
-        aws_settings = models.Settings.objects.filter(organization=org).get()
-        result = tasks.train_model.delay(model=request.model,
+        aws_settings = models.Setting.objects.filter(organization=org).get()
+        result = tasks.train_model.delay(model=request.mlmodel,
                           s3_bucket_logs=aws_settings.aws_s3_log_base,
                           s3_bucket_temp_files=aws_settings.aws_s3_upload_base,
                           s3_region=aws_settings.aws_region,

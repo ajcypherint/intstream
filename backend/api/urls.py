@@ -49,6 +49,8 @@ router.register("organization",views.OrganizationViewSet, basename="organization
 SETTINGS = "setting"
 router.register(SETTINGS,views.SettingsViewSet, basename="setting")
 
+
+
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -75,5 +77,6 @@ urlpatterns=[
     path('auth', include('rest_framework.urls')),
     path('unclass/',views.RandomUnclassified.as_view()),
     path("homearticles/",views.HomePage.as_view()),
+    path("train/",views.Train.as_view()),
     path('schema/', g_schema(title="IntStream API"))
 ]

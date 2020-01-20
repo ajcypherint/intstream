@@ -316,12 +316,16 @@ class SettingSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         setting, created = Setting.objects.update_or_create(
-            aws_key=validated_data.get("aws_key", None),
-            aws_secret=validated_data.get("aws_secret", None),
-            aws_s3_log_base=validated_data.get("aws_s3_log_base", None),
-            aws_s3_upload_base=validated_data.get("aws_s3_upload_base", None),
-            aws_region=validated_data.get("aws_region", None),
-            organization=validated_data.get("organization", None)
+            organization=validated_data.get("organization", None),
+            defaults={
+                "aws_key":validated_data.get("aws_key", None),
+                "aws_secret":validated_data.get("aws_secret", None),
+                "aws_s3_log_base":validated_data.get("aws_s3_log_base", None),
+                "aws_s3_upload_base":validated_data.get("aws_s3_upload_base", None),
+                "aws_region":validated_data.get("aws_region", None),
+                "organization":validated_data.get("organization", None)
+
+            }
         )
         return setting
 
