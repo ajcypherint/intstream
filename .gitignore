@@ -5,6 +5,8 @@
 /frontend/.pnp
 /frontend/.pnp.js
 
+/backend/celerybeat.pid
+
 # testing
 /frontend//coverage
 
