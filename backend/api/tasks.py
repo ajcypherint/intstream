@@ -49,12 +49,6 @@ def process_entry(post_title,
         link=post_link,
         text=response.text
         )
-    # todo(aj) hardcoded for now
-    settings = models.Setting.objects.filter(organization=organization_id).first()
-    if not settings or settings.threshold is None:
-        threshold = .7
-    else:
-        threshold = settings.threshold
 
     article.source_id = source_id
     article.organization_id=organization_id
