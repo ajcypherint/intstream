@@ -29,6 +29,7 @@ feedparser = "*"
 celery-singleton = "*"
 scipy = "*"
 aioboto3 = "*"
+django-fernet-fields = "*"
 
 [requires]
 python_version = "3.6"

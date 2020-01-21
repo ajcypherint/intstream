@@ -6,6 +6,8 @@ from django.db.models.constraints import UniqueConstraint
 
 import uuid
 import os
+from fernet_fields import EncryptedTextField
+
 
 #todo(aj) mutitenant - organization table
 # all queries filter by org
@@ -143,8 +145,8 @@ class RSSArticle(Article):
 
 
 class Setting(models.Model):
-    aws_key = models.CharField(max_length=100)
-    aws_secret = models.CharField(max_length=250)
+    aws_key = EncryptedTextField(max_length=100)
+    aws_secret = EncryptedTextField(max_length=250)
     aws_region = models.CharField(max_length=15)
     aws_s3_log_base = models.CharField(max_length=500)
     aws_s3_upload_base = models.CharField(max_length=500)
