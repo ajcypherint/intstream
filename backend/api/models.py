@@ -141,7 +141,7 @@ class HtmlArticle(Article):
 class RSSArticle(Article):
     description = models.TextField(blank=True, null=True)
     link = models.URLField()
-    guid = models.CharField(max_length=200,)
+    guid = models.CharField(max_length=800,)
 
 
 class Setting(models.Model):
