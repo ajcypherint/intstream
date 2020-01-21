@@ -50,7 +50,7 @@ def process_entry(post_title,
         text=response.text
         )
     # todo(aj) hardcoded for now
-    settings = models.Settings.objects.filter(organization=organization_id).first()
+    settings = models.Setting.objects.filter(organization=organization_id).first()
     if not settings or settings.threshold is None:
         threshold = .7
     else:
