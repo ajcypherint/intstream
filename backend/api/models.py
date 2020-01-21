@@ -78,7 +78,7 @@ class JobSource(Source):
 
 class MLModel(models.Model):
     sources = models.ManyToManyField(Source)
-    name = models.CharField(max_length=250, unique=True)
+    name = models.CharField(max_length=250, )
     train = models.BooleanField(default=True)
     created_date = models.DateTimeField(default=timezone.now)
     base64_encoded_model = models.FileField(blank=True,null=True)
@@ -141,7 +141,7 @@ class HtmlArticle(Article):
 class RSSArticle(Article):
     description = models.TextField(blank=True, null=True)
     link = models.URLField()
-    guid = models.CharField(max_length=200,unique=True)
+    guid = models.CharField(max_length=200,)
 
 
 class Setting(models.Model):
