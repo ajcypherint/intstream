@@ -16,6 +16,7 @@ class CustomUserAdmin(UserAdmin):
     list_editable = ['is_staff','is_superuser','is_integrator']
 
 admin.site.register(models.MLModel)
+admin.site.register(models.Organization)
 admin.site.register(models.TxtArticle)
 admin.site.register(models.UserIntStream,CustomUserAdmin)
 
