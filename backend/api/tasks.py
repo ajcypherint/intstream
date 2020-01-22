@@ -97,7 +97,8 @@ def process_rss_sources():
 
 
 @shared_task(bind=True)
-def train_model(model,
+def train_model(self,
+                model,
                 s3_bucket_logs,
                 s3_bucket_temp_files,
                 s3_region,
@@ -110,6 +111,6 @@ def train_model(model,
                 s3_region=s3_region,
                 aws_access_key_id=aws_access_key_id,
                 aws_secret_access_key_id=aws_secret_access_key_id,
-                task = self.request.id)
+                task=self.request.id)
 
     trainer.run()
