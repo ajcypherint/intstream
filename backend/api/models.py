@@ -77,6 +77,11 @@ class JobSource(Source):
 
 
 class MLModel(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['name','organization'], name='unique_model_name'),
+            ]
+
     sources = models.ManyToManyField(Source)
     name = models.CharField(max_length=250, )
     train = models.BooleanField(default=True)
@@ -139,6 +144,7 @@ class HtmlArticle(Article):
 
 # Rss Articles
 class RSSArticle(Article):
+
     description = models.TextField(blank=True, null=True)
     link = models.URLField()
     guid = models.CharField(max_length=800,)
