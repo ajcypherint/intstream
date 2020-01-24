@@ -107,7 +107,7 @@ export default class Example extends React.Component {
                   <DropdownItem tag={Link} to="/train_list">
                     History
                   </DropdownItem>
-                  <DropdownItem tag={Link} to="/aws_settings">
+                  <DropdownItem tag={Link} to="/settings">
                     AWS Settings
                   </DropdownItem>
 

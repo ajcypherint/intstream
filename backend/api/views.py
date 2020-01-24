@@ -154,13 +154,16 @@ class Train(APIView):
             return Response({"detail":"mlmodel is required"}, status=status.HTTP_400_BAD_REQUEST)
         org = self.request.user.organization
         aws_settings = models.Setting.objects.filter(organization=org).get()
+        model = self.request.data["mlmodel"]
+        files = models.Article.objects.filter(source__mlmodel=model).all()
         result = tasks.train_model.delay(
-                          model=self.request.data["mlmodel"],
-                          s3_bucket_logs=aws_settings.aws_s3_log_base,
-                          s3_bucket_temp_files=aws_settings.aws_s3_upload_base,
-                          s3_region=aws_settings.aws_region,
-                          aws_access_key_id=aws_settings.aws_key,
-                          aws_secret_access_key_id=aws_settings.aws_secret
+                          self.request.data["mlmodel"],
+                          files,
+                          aws_settings.aws_s3_log_base,
+                          aws_settings.aws_s3_upload_base,
+                          aws_settings.aws_region,
+                          aws_settings.aws_key,
+                          aws_settings.aws_secret
                           )
         return Response({"job_id":result.id},status.HTTP_200_OK)
 

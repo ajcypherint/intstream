@@ -21,7 +21,11 @@ import boto3
 import botocore
 from django.conf import settings
 import tempfile
+import asyncio_pool
 logger = logging.getLogger(__name__)
+
+def handle_exception(loop, exception):
+    pass
 
 def terminate(error_message=None):
     """
@@ -50,13 +54,15 @@ class DeployPySparkScriptOnAws(object):
 
     def __init__(self,
                  model,
+                 text_iterator,
                  s3_bucket_logs,
                  s3_bucket_temp_files,
                  s3_region,
                  aws_access_key_id,
                  aws_secret_access_key_id,
                  training_script=None,
-                 tmp_dir = "/tmp"
+                 tmp_dir = "/tmp",
+                 task = None
                  ):
         """
         :param model: str
@@ -72,6 +78,8 @@ class DeployPySparkScriptOnAws(object):
         self.AWS_TRAIN_DIR = os.path.join(settings.BASE_DIR,"aws_training_files/")
         self.job_flow_id = None # Returned by AWS in start_spark_cluster()
         self.job_name = None    # Filled by generate_job_name()
+        self.task_id = task
+        self.text_iterator = text_iterator
 
         self.app_name = model
         training_script = "base_train_file.py" if training_script is None else training_script
@@ -86,6 +94,9 @@ class DeployPySparkScriptOnAws(object):
         self.tmp_dir=tmp_dir
         self.script_tar = tempfile.NamedTemporaryFile(suffix='.tar.gz',
                                                       dir=self.tmp_dir)
+        self.session = aioboto3.Session(aws_access_key_id=self.aws_access_key_id,
+                                    aws_secret_access_key=self.aws_secret_access_key)        # Select AWS IAM profile
+        self.s3 = self.session.resource('s3')                         # Open S3 connection
 
 
 
@@ -106,7 +117,7 @@ class DeployPySparkScriptOnAws(object):
     def unlock(self):
         pass
 
-    def _upload_articles(self):
+    async def _upload_articles(self):
         pass
 
     def run(self):
@@ -115,19 +126,20 @@ class DeployPySparkScriptOnAws(object):
         self.lock()
         try:
             loop = asyncio.get_event_loop()
-            session = aioboto3.Session(aws_access_key_id=self.aws_access_key_id,
-                                    aws_secret_access_key=self.aws_secret_access_key)        # Select AWS IAM profile
-            s3 = session.resource('s3')                         # Open S3 connection
-            loop.run_until_complete(self._upload_articles())
+
             self.generate_job_name()                            # Generate job name
-            self.temp_bucket_exists(s3)                         # Check if S3 bucket to store temporary files in exists
-            self.tar_python_script()                            # Tar the Python Spark script
-            self.upload_temp_files(s3)                          # Move the Spark files to a S3 bucket for temporary files
-            c = session.client('emr')                           # Open EMR connection
-            self.start_spark_cluster(c)                         # Start Spark EMR cluster
-            self.step_spark_submit(c)                           # Add step 'spark-submit'
-            self.describe_status_until_terminated(c)            # Describe cluster status until terminated
-            self.remove_temp_files(s3)                          # Remove files from the temporary files S3 bucket
+            res = loop.run_until_complete(self.temp_bucket_exists(self.s3))# Check if S3 bucket to store temporary files in exists
+            if res:
+                self.tar_python_script()                            # Tar the Python Spark script
+                files = models.Article.objects.filter(source__mlmodel=self.app_name).all()
+                pool = asyncio_pool.AioPool(10)
+                loop.run_until_complete(pool.map(self.upload_article,files))
+                loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
+                c = self.session.client('emr')                           # Open EMR connection
+                self.start_spark_cluster(c)                         # Start Spark EMR cluster
+                self.step_spark_submit(c)                           # Add step 'sggpark-submit'
+                self.describe_status_until_terminated(c)            # Describe cluster status until terminated
+                self.remove_temp_files(self.s3)                          # Remove files from the temporary files S3 bucket
             # todo(aj) remove lock file
         finally:
             self.unlock()
@@ -136,7 +148,7 @@ class DeployPySparkScriptOnAws(object):
         self.job_name = "intstream-{}.{}".format(self.app_name,
                                           datetime.now().strftime("%Y%m%d.%H%M%S.%f"))
 
-    def temp_bucket_exists(self, s3):
+    async def temp_bucket_exists(self, s3):
         """
         Check if the bucket we are going to use for temporary files exists.
         :param s3:
@@ -149,9 +161,12 @@ class DeployPySparkScriptOnAws(object):
             # If it was a 404 error, then the bucket does not exist.
             error_code = int(e.response['Error']['Code'])
             if error_code == 404:
-                terminate("Bucket for temporary files does not exist")
-            terminate("Error while connecting to Bucket")
+                logger.error("Bucket for temporary files does not exist")
+                return False
+            logger.error("Error while connecting to Bucket")
+            return False
         logger.info("S3 bucket for temporary files exists")
+        return True
 
     def tar_python_script(self):
         """
@@ -166,16 +181,17 @@ class DeployPySparkScriptOnAws(object):
             logger.info("Added %s to tar-file" % f)
         t_file.close()
 
+
+    async def upload_article(self, article):
+        await s3.Object(self.s3_bucket_temp_files, self.job_name +"/data/"+str(article.id))\
+                .put(Body=article.text, ContentType='text/plain')
+
     async def upload_temp_files(self, s3):
         """
         Move the PySpark script files to the S3 bucket we use to store temporary files
         :param s3:
         :return:
         """
-        files = models.MLModel.objects.filter(id=self.app_name).all()
-        for f in files:
-            await s3.Object(self.s3_bucket_temp_files, self.job_name +"/data/"+f)\
-                .put(Body=open(os.path.join(settings.MEDIA_ROOT,f), 'rb'), ContentType='text/plain')
         await s3.Object(self.s3_bucket_temp_files, self.job_name + '/setup.sh')\
           .put(Body=open(os.path.join(self.AWS_DIR,'setup.sh'), 'rb'), ContentType='text/x-sh')
         # Shell file: Terminate idle cluster

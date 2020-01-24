@@ -30,6 +30,7 @@ celery-singleton = "*"
 scipy = "*"
 aioboto3 = "*"
 django-fernet-fields = "*"
+asyncio-pool = "*"
 
 [requires]
 python_version = "3.6"

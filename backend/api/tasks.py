@@ -13,9 +13,6 @@ from utils import vector, read, train
 def add(x,y):
     return x + y
 
-@shared_task
-def train_model():
-    pass
 
 @shared_task
 def process_entry(post_title,
@@ -36,10 +33,6 @@ def process_entry(post_title,
     :param articles_text: list[string]
     :return:
     """
-    # todo(aj) hard coded clean_html and clean_hashes for now
-    vectorizer = vector.StemmedTfidfVectorizer(decode_error="ignore",
-                                               clean_html=True,
-                                               clean_hashes=True)
 
     response = requests.get(post_link)
     article = models.RSSArticle(
@@ -55,7 +48,6 @@ def process_entry(post_title,
     article.save()
 
 
-#@shared_task
 def process_rss_source(source_url, source_id, organization_id):
     """
     will launch them async
@@ -87,7 +79,6 @@ def process_rss_source(source_url, source_id, organization_id):
 
 
 
-#@shared_task(base=Singleton)
 @shared_task()
 def process_rss_sources():
     sources = models.RSSSource.objects.filter(active=True).all()
@@ -95,6 +86,10 @@ def process_rss_sources():
         logger.debug("source:" + source.name)
         process_rss_source(source.url,source.id,source.organization_id)
 
+
+def iterate(instances):
+    for i in instances:
+        yield i.text
 
 @shared_task(bind=True)
 def train_model(self,
