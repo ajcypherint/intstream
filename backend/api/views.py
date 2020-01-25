@@ -155,10 +155,8 @@ class Train(APIView):
         org = self.request.user.organization
         aws_settings = models.Setting.objects.filter(organization=org).get()
         model = self.request.data["mlmodel"]
-        files = models.Article.objects.filter(source__mlmodel=model).all()
         result = tasks.train_model.delay(
                           self.request.data["mlmodel"],
-                          files,
                           aws_settings.aws_s3_log_base,
                           aws_settings.aws_s3_upload_base,
                           aws_settings.aws_region,

@@ -19,9 +19,12 @@ from __future__ import print_function
 import sys
 from operator import add
 from pyspark import SparkContext
+#todo(aj)  options
+# 2. find and replace the values below when uploading script.
+# this way is easier for now.
 
-INPUT_BUCKET = ""
-OUTPUT_BUCKET = ""
+INPUT_BUCKET = "#define_input_bucket#"
+OUTPUT_FILE = "#define_output_bucket#"
 
 if __name__ == "__main__":
     # Start SparkContext
@@ -37,6 +40,6 @@ if __name__ == "__main__":
     for (word, count) in output:
         print("%s: %i" % (word, count))
     # Save word counts in S3 bucket
-    counts.saveAsTextFile(OUTPUT_BUCKET)
+    counts.saveAsTextFile(OUTPUT_FILE)
     # Stop SparkContext
     sc.stop()

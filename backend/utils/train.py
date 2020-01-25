@@ -54,14 +54,12 @@ class DeployPySparkScriptOnAws(object):
 
     def __init__(self,
                  model,
-                 text_iterator,
                  s3_bucket_logs,
                  s3_bucket_temp_files,
                  s3_region,
                  aws_access_key_id,
                  aws_secret_access_key_id,
                  training_script=None,
-                 tmp_dir = "/tmp",
                  task = None
                  ):
         """
@@ -74,16 +72,23 @@ class DeployPySparkScriptOnAws(object):
         :param profile_name: str; profile name
         :param training_script: str; script to upload to EWS for training
         """
+        self.DATA_DIR = "data"
+        self.OUTPUT_DIR = "output"
+        self.MODEL_NAME = "output.clf"
+        self.TRAIN_SCRIPT = "train.py"
         self.AWS_DIR = os.path.join(settings.BASE_DIR,"awsfiles/")
         self.AWS_TRAIN_DIR = os.path.join(settings.BASE_DIR,"aws_training_files/")
         self.job_flow_id = None # Returned by AWS in start_spark_cluster()
-        self.job_name = None    # Filled by generate_job_name()
-        self.task_id = task
-        self.text_iterator = text_iterator
-
         self.app_name = model
+        self.job_name = self.generate_job_name(model)    # Filled by generate_job_name()
+        self.task_id = task
+        self.UPLOAD_DIR = self.job_name + "/" + self.DATA_DIR + "/"
+        self.OUTPUT_FILE = self.job_name + "/" + self.OUTPUT_DIR + "/" + self.MODEL_NAME
+
         training_script = "base_train_file.py" if training_script is None else training_script
-        self.script = training_script
+        self.script = tempfile.NamedTemporaryFile()
+        self._write_script(training_script, s3_bucket_temp_files, self.UPLOAD_DIR, self.OUTPUT_FILE)
+
 
         self.ec2_key_name = model
         self.s3_bucket_logs = s3_bucket_logs
@@ -91,12 +96,20 @@ class DeployPySparkScriptOnAws(object):
         self.s3_region = s3_region
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key_id
-        self.tmp_dir=tmp_dir
-        self.script_tar = tempfile.NamedTemporaryFile(suffix='.tar.gz',
-                                                      dir=self.tmp_dir)
+        self.script_tar = tempfile.NamedTemporaryFile(suffix='.tar.gz', )
         self.session = aioboto3.Session(aws_access_key_id=self.aws_access_key_id,
                                     aws_secret_access_key=self.aws_secret_access_key)        # Select AWS IAM profile
         self.s3 = self.session.resource('s3')                         # Open S3 connection
+
+    def _write_script(self,script, input_bucket, upload_dir, output_model_file):
+        input_bucket = "s3:///"+input_bucket+"/"+upload_dir
+        output_model_file = "s3:///"+self.OUTPUT_DIR+"/"+output_model_file
+        with open(os.path.join(settings.BASE_DIR,self.AWS_TRAIN_DIR,script),"rb") as f:
+            text = f.read().decode("utf-8",errors="ignore").replace("#define_input_bucket#", input_bucket)
+            text = text.replace("#define_output_bucket#",output_model_file)
+            with open(self.script.name, "w") as f:
+                f.write(text)
+
 
 
 
@@ -120,6 +133,11 @@ class DeployPySparkScriptOnAws(object):
     async def _upload_articles(self):
         pass
 
+    def chunks(self, lst, n):
+        """Yield successive n-sized chunks from lst."""
+        for i in range(0, len(lst), n):
+            yield lst[i:i + n]
+
     def run(self):
         # todo(aj) check for lock file
         # write lock file
@@ -127,25 +145,24 @@ class DeployPySparkScriptOnAws(object):
         try:
             loop = asyncio.get_event_loop()
 
-            self.generate_job_name()                            # Generate job name
             res = loop.run_until_complete(self.temp_bucket_exists(self.s3))# Check if S3 bucket to store temporary files in exists
             if res:
                 self.tar_python_script()                            # Tar the Python Spark script
-                files = models.Article.objects.filter(source__mlmodel=self.app_name).all()
-                pool = asyncio_pool.AioPool(10)
-                loop.run_until_complete(pool.map(self.upload_article,files))
+                files = models.Article.objects.filter(source__mlmodel=self.app_name)
+                for chunk in self.chunks(files,20):
+                    pool = asyncio_pool.AioPool(4)
+                    loop.run_until_complete(pool.map(self.upload_article, chunk))
                 loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
-                c = self.session.client('emr')                           # Open EMR connection
-                self.start_spark_cluster(c)                         # Start Spark EMR cluster
-                self.step_spark_submit(c)                           # Add step 'sggpark-submit'
-                self.describe_status_until_terminated(c)            # Describe cluster status until terminated
-                self.remove_temp_files(self.s3)                          # Remove files from the temporary files S3 bucket
-            # todo(aj) remove lock file
+                #c = self.session.client('emr')                           # Open EMR connection
+                #self.start_spark_cluster(c)                         # Start Spark EMR cluster
+                #self.step_spark_submit(c)                           # Add step 'sggpark-submit'
+                #self.describe_status_until_terminated(c)            # Describe cluster status until terminated
+                #self.remove_temp_files(self.s3)                          # Remove files from the temporary files S3 bucket
         finally:
             self.unlock()
 
-    def generate_job_name(self):
-        self.job_name = "intstream-{}.{}".format(self.app_name,
+    def generate_job_name(self, app_name):
+        return "intstream-{}.{}".format(app_name,
                                           datetime.now().strftime("%Y%m%d.%H%M%S.%f"))
 
     async def temp_bucket_exists(self, s3):
@@ -175,7 +192,7 @@ class DeployPySparkScriptOnAws(object):
         # Create tar.gz file
         t_file = tarfile.open(self.script_tar.name, 'w:gz')
         # Add Spark script path to tar.gz file
-        t_file.add(os.path.join(self.AWS_TRAIN_DIR, self.script), arcname=self.script)
+        t_file.add(os.path.join(self.AWS_TRAIN_DIR, self.script.name), arcname=self.TRAIN_SCRIPT)
         # List all files in tar.gz
         for f in t_file.getnames():
             logger.info("Added %s to tar-file" % f)
@@ -183,7 +200,7 @@ class DeployPySparkScriptOnAws(object):
 
 
     async def upload_article(self, article):
-        await s3.Object(self.s3_bucket_temp_files, self.job_name +"/data/"+str(article.id))\
+        await self.s3.Object(self.s3_bucket_temp_files, self.UPLOAD_DIR+str(article.id))\
                 .put(Body=article.text, ContentType='text/plain')
 
     async def upload_temp_files(self, s3):
@@ -199,7 +216,7 @@ class DeployPySparkScriptOnAws(object):
           .put(Body=open(os.path.join(self.AWS_DIR,'terminate_idle_cluster.sh'), 'rb'), ContentType='text/x-sh')
         # Compressed Python script files (tar.gz)
         await s3.Object(self.s3_bucket_temp_files, self.job_name + '/script.tar.gz')\
-          .put(Body=open(os.path.join(self.tmp_dir,'script.tar.gz'), 'rb'), ContentType='application/x-tar')
+          .put(Body=open(os.path.join(self.script_tar.name), 'rb'), ContentType='application/x-tar')
         logger.info("Uploaded files to key '{}' in bucket '{}'".format(self.job_name, self.s3_bucket_temp_files))
         return True
 
@@ -310,7 +327,7 @@ class DeployPySparkScriptOnAws(object):
                         'Jar': 'command-runner.jar',
                         'Args': [
                             "spark-submit",
-                            "/home/hadoop/wordcount.py",
+                            "/home/hadoop/"+self.TRAIN_SCRIPT,
                             arguments
                         ]
                     }
