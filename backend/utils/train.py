@@ -60,7 +60,8 @@ class DeployPySparkScriptOnAws(object):
                  aws_access_key_id,
                  aws_secret_access_key_id,
                  training_script=None,
-                 task = None
+                 task = None,
+                 ec2_key_name = None
                  ):
         """
         :param model: str
@@ -90,7 +91,7 @@ class DeployPySparkScriptOnAws(object):
         self._write_script(training_script, s3_bucket_temp_files, self.UPLOAD_DIR, self.OUTPUT_FILE)
 
 
-        self.ec2_key_name = model
+        self.ec2_key_name = ec2_key_name
         self.s3_bucket_logs = s3_bucket_logs
         self.s3_bucket_temp_files = s3_bucket_temp_files
         self.s3_region = s3_region
@@ -99,12 +100,15 @@ class DeployPySparkScriptOnAws(object):
         self.script_tar = tempfile.NamedTemporaryFile(suffix='.tar.gz', )
         self.session = aioboto3.Session(aws_access_key_id=self.aws_access_key_id,
                                     aws_secret_access_key=self.aws_secret_access_key)        # Select AWS IAM profile
+        self.sync_session = boto3.Session(aws_access_key_id=self.aws_access_key_id,
+                                    aws_secret_access_key=self.aws_secret_access_key)        # Select AWS IAM profileboto
         self.s3 = self.session.resource('s3')                         # Open S3 connection
+        self.sync_s3 = self.sync_session.resource("s3")
 
     def _write_script(self,script, input_bucket, upload_dir, output_model_file):
-        input_bucket = "s3:///"+input_bucket+"/"+upload_dir
-        output_model_file = "s3:///"+self.OUTPUT_DIR+"/"+output_model_file
-        with open(os.path.join(settings.BASE_DIR,self.AWS_TRAIN_DIR,script),"rb") as f:
+        input_bucket = "s3://"+input_bucket+"/"+upload_dir
+        output_model_file = "s3://"+self.OUTPUT_DIR+"/"+output_model_file
+        with open(os.path.join(self.AWS_TRAIN_DIR,script),"rb") as f:
             text = f.read().decode("utf-8",errors="ignore").replace("#define_input_bucket#", input_bucket)
             text = text.replace("#define_output_bucket#",output_model_file)
             with open(self.script.name, "w") as f:
@@ -153,12 +157,12 @@ class DeployPySparkScriptOnAws(object):
                     pool = asyncio_pool.AioPool(4)
                     loop.run_until_complete(pool.map(self.upload_article, chunk))
                 loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
-                #c = self.session.client('emr')                           # Open EMR connection
-                #self.start_spark_cluster(c)                         # Start Spark EMR cluster
-                #self.step_spark_submit(c)                           # Add step 'sggpark-submit'
-                #self.describe_status_until_terminated(c)            # Describe cluster status until terminated
-                #self.remove_temp_files(self.s3)                          # Remove files from the temporary files S3 bucket
+                c = self.sync_session.client('emr', region_name="us-east-1")                           # Open EMR connection
+                self.start_spark_cluster(c)                         # Start Spark EMR cluster
+                self.step_spark_submit(c)                           # Add step 'spark-submit'
+                self.describe_status_until_terminated(c)            # Describe cluster status until terminated
         finally:
+            self.remove_temp_files(self.sync_s3)                         # Remove files from the temporary files S3 bucket
             self.unlock()
 
     def generate_job_name(self, app_name):
@@ -172,7 +176,7 @@ class DeployPySparkScriptOnAws(object):
         :return:
         """
         try:
-            s3.meta.client.head_bucket(Bucket=self.s3_bucket_temp_files)
+            await s3.meta.client.head_bucket(Bucket=self.s3_bucket_temp_files)
         except botocore.exceptions.ClientError as e:
             # If a client error is thrown, then check that it was a 404 error.
             # If it was a 404 error, then the bucket does not exist.
@@ -241,22 +245,20 @@ class DeployPySparkScriptOnAws(object):
         response = c.run_job_flow(
             Name=self.job_name,
             LogUri="s3://{}/{}/".format(self.s3_bucket_logs,self.job_name),
-            ReleaseLabel="emr-4.4.0",
+            ReleaseLabel="emr-5.28.0",
             Instances={
                 'InstanceGroups': [
                     {
                         'Name': 'EmrMaster',
-                        'Market': 'SPOT',
+                        'Market': 'ON_DEMAND',
                         'InstanceRole': 'MASTER',
-                        'BidPrice': '0.05',
                         'InstanceType': 'm3.xlarge',
                         'InstanceCount': 1,
                     },
                     {
                         'Name': 'EmrCore',
-                        'Market': 'SPOT',
+                        'Market': 'ON_DEMAND',
                         'InstanceRole': 'CORE',
-                        'BidPrice': '0.05',
                         'InstanceType': 'm3.xlarge',
                         'InstanceCount': 2,
                     },
@@ -282,7 +284,6 @@ class DeployPySparkScriptOnAws(object):
                     'Name': 'idle timeout',
                     'ScriptBootstrapAction': {
                         'Path':'s3n://{}/{}/terminate_idle_cluster.sh'.format(self.s3_bucket_temp_files, self.job_name),
-                        'Args': ['3600', '300']
                     }
                 },
             ],
@@ -311,7 +312,7 @@ class DeployPySparkScriptOnAws(object):
             logger.info(state)
             time.sleep(30)  # Prevent ThrottlingException by limiting number of requests
 
-    def step_spark_submit(self, c, arguments):
+    def step_spark_submit(self, c):
         """
 
         :param c:
@@ -321,6 +322,14 @@ class DeployPySparkScriptOnAws(object):
             JobFlowId=self.job_flow_id,
             Steps=[
                 {
+                    'Name': 'Setup Hadoop Debugging',
+                    'ActionOnFailure': 'TERMINATE_CLUSTER',
+                    'HadoopJarStep': {
+                        'Jar': 'command-runner.jar',
+                        'Args': ['state-pusher-script']
+                    }
+                },
+                {
                     'Name': 'Spark Application',
                     'ActionOnFailure': 'CONTINUE',
                     'HadoopJarStep': {
@@ -328,13 +337,12 @@ class DeployPySparkScriptOnAws(object):
                         'Args': [
                             "spark-submit",
                             "/home/hadoop/"+self.TRAIN_SCRIPT,
-                            arguments
                         ]
                     }
                 },
             ]
         )
-        logger.info("Added step 'spark-submit' with argument '{}'".format(arguments))
+        logger.info("Added step 'spark-submit' ")
         time.sleep(1)  # Prevent ThrottlingException
 
     def step_copy_data_between_s3_and_hdfs(self, c, src, dest):
