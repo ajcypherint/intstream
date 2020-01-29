@@ -126,8 +126,10 @@ def set_query_params(url, page):
     return next_full_uri
 
 
-class Train(APIView):
+class Upload(APIView):
     permission_classes = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+
+
     response = openapi.Response('model_info',
             openapi.Schema( type=openapi.TYPE_OBJECT,
                             properties={
@@ -137,8 +139,7 @@ class Train(APIView):
                             in_=openapi.IN_BODY,
                             required=True,
                             description="start date",
-                            type=openapi.TYPE_STRING)
-
+                            type=openapi.TYPE_STRING,)
     error = openapi.Response("error",
                              openapi.Schema(
                                 type=openapi.TYPE_OBJECT,
@@ -154,15 +155,53 @@ class Train(APIView):
             return Response({"detail":"mlmodel is required"}, status=status.HTTP_400_BAD_REQUEST)
         org = self.request.user.organization
         aws_settings = models.Setting.objects.filter(organization=org).get()
-        model = self.request.data["mlmodel"]
+        result = tasks.upload_docs.delay(
+                              self.request.data["mlmodel"],
+                              aws_settings.aws_s3_log_base,
+                              aws_settings.aws_s3_upload_base,
+                              aws_settings.aws_region,
+                              aws_settings.aws_key,
+                              aws_settings.aws_secret
+                              )
+        return Response({"job_id":result.id},status.HTTP_200_OK)
+
+
+class Train(APIView):
+    permission_classes = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+
+    response = openapi.Response('model_info',
+            openapi.Schema( type=openapi.TYPE_OBJECT,
+                            properties={
+                                    "job_id":openapi.Schema(type=openapi.TYPE_STRING),
+                                    }))
+    mlmodel = openapi.Parameter('mlmodel',
+                            in_=openapi.IN_BODY,
+                            required=True,
+                            description="start date",
+                            type=openapi.TYPE_STRING,)
+    error = openapi.Response("error",
+                             openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                 properties={
+                                     "error":openapi.Schema(type=openapi.TYPE_STRING)
+                                 }
+
+                             ))
+
+    @swagger_auto_schema(operation_description="create training job", manual_parameters=[mlmodel], responses={200:response,404:error})
+    def post(self, request, format=None):
+        if "mlmodel" not in self.request.data.keys():
+            return Response({"detail":"mlmodel is required"}, status=status.HTTP_400_BAD_REQUEST)
+        org = self.request.user.organization
+        aws_settings = models.Setting.objects.filter(organization=org).get()
         result = tasks.train_model.delay(
-                          self.request.data["mlmodel"],
-                          aws_settings.aws_s3_log_base,
-                          aws_settings.aws_s3_upload_base,
-                          aws_settings.aws_region,
-                          aws_settings.aws_key,
-                          aws_settings.aws_secret
-                          )
+                              self.request.data["mlmodel"],
+                              aws_settings.aws_s3_log_base,
+                              aws_settings.aws_s3_upload_base,
+                              aws_settings.aws_region,
+                              aws_settings.aws_key,
+                              aws_settings.aws_secret
+                              )
         return Response({"job_id":result.id},status.HTTP_200_OK)
 
 

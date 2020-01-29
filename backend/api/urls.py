@@ -78,5 +78,6 @@ urlpatterns=[
     path('unclass/',views.RandomUnclassified.as_view()),
     path("homearticles/",views.HomePage.as_view()),
     path("train/",views.Train.as_view()),
+    path("upload-docs/",views.Upload.as_view()),
     path('schema/', g_schema(title="IntStream API"))
 ]

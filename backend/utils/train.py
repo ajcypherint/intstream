@@ -9,7 +9,9 @@
 Created on April 6, 2016
 @author: thom.hopmans
 """
+from rest_framework.renderers import JSONRenderer
 from api import models
+from api import serializers
 import logging
 import asyncio
 import aioboto3
@@ -27,6 +29,25 @@ logger = logging.getLogger(__name__)
 def handle_exception(loop, exception):
     pass
 
+
+class Locked(Exception):
+    pass
+
+
+class TrainResult(object):
+    SUCCESS = "SUCCESS"
+    UPLOAD_FAILED="UPLOAD FAILED"
+    TRAIN_FAILED = "TRAIN FAILED"
+    LOCKED = "LOCKED"
+    S3_NOT_EXIST = "S3_NOT_EXIST"
+
+    def __init__(self, status, clf, message, job_name, emr_version):
+        self.status = status
+        self.clf = clf
+        self.message = message
+        self.job_name = job_name
+        self.emr_version = emr_version
+
 def terminate(error_message=None):
     """
     Method to exit the Python script. It will log the given message and then exit().
@@ -37,15 +58,6 @@ def terminate(error_message=None):
     logger.critical('The script is now terminating')
     exit()
 
-class classifications(object):
-    def __init__(self, category, article_ids):
-        """
-
-        :param category: str
-        :param article_ids: list[int]
-        """
-        self.category = category
-        self.article_ids = article_ids
 
 class DeployPySparkScriptOnAws(object):
     """
@@ -56,12 +68,13 @@ class DeployPySparkScriptOnAws(object):
                  model,
                  s3_bucket_logs,
                  s3_bucket_temp_files,
-                 s3_region,
+                 region,
                  aws_access_key_id,
                  aws_secret_access_key_id,
                  training_script=None,
-                 task = None,
-                 ec2_key_name = None
+                 task=None,
+                 ec2_key_name=None,
+                 emr_version="emr-5.28.0" #python3.6 spark
                  ):
         """
         :param model: str
@@ -77,6 +90,7 @@ class DeployPySparkScriptOnAws(object):
         self.OUTPUT_DIR = "output"
         self.MODEL_NAME = "output.clf"
         self.TRAIN_SCRIPT = "train.py"
+        self.EMR_VERSION = emr_version
         self.AWS_DIR = os.path.join(settings.BASE_DIR,"awsfiles/")
         self.AWS_TRAIN_DIR = os.path.join(settings.BASE_DIR,"aws_training_files/")
         self.job_flow_id = None # Returned by AWS in start_spark_cluster()
@@ -85,16 +99,13 @@ class DeployPySparkScriptOnAws(object):
         self.task_id = task
         self.UPLOAD_DIR = self.job_name + "/" + self.DATA_DIR + "/"
         self.OUTPUT_FILE = self.job_name + "/" + self.OUTPUT_DIR + "/" + self.MODEL_NAME
-
-        training_script = "base_train_file.py" if training_script is None else training_script
-        self.script = tempfile.NamedTemporaryFile()
-        self._write_script(training_script, s3_bucket_temp_files, self.UPLOAD_DIR, self.OUTPUT_FILE)
-
-
+        self.input_bucket = "s3://"+s3_bucket_temp_files+"/"+self.UPLOAD_DIR
+        self.output_model_file = "s3://"+s3_bucket_temp_files+"/"+self.UPLOAD_DIR+"/"+self.MODEL_NAME
+        self.training_script = "base_train_file.py" if training_script is None else training_script
         self.ec2_key_name = ec2_key_name
         self.s3_bucket_logs = s3_bucket_logs
         self.s3_bucket_temp_files = s3_bucket_temp_files
-        self.s3_region = s3_region
+        self.region = region
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key_id
         self.script_tar = tempfile.NamedTemporaryFile(suffix='.tar.gz', )
@@ -105,33 +116,12 @@ class DeployPySparkScriptOnAws(object):
         self.s3 = self.session.resource('s3')                         # Open S3 connection
         self.sync_s3 = self.sync_session.resource("s3")
 
-    def _write_script(self,script, input_bucket, upload_dir, output_model_file):
-        input_bucket = "s3://"+input_bucket+"/"+upload_dir
-        output_model_file = "s3://"+self.OUTPUT_DIR+"/"+output_model_file
-        with open(os.path.join(self.AWS_TRAIN_DIR,script),"rb") as f:
-            text = f.read().decode("utf-8",errors="ignore").replace("#define_input_bucket#", input_bucket)
-            text = text.replace("#define_output_bucket#",output_model_file)
-            with open(self.script.name, "w") as f:
-                f.write(text)
-
-
-
-
-    def _read_script(self,script):
-        """
-        read base_train_file - find and replace input s3, and output s3;
-        write a new file to tmp_dir
-        :param app_name:
-        :return:
-        """
-        with open(os.path.join(settings.BASE_DIR,self.AWS_TRAIN_DIR,script)) as file:
-            script = file.read()
-            return script
-
     def lock(self):
+        #todo(aj)
         pass
 
     def unlock(self):
+        #todo(aj)
         pass
 
     async def _upload_articles(self):
@@ -142,28 +132,71 @@ class DeployPySparkScriptOnAws(object):
         for i in range(0, len(lst), n):
             yield lst[i:i + n]
 
-    def run(self):
-        # todo(aj) check for lock file
-        # write lock file
-        self.lock()
-        try:
-            loop = asyncio.get_event_loop()
+    def upload_classifications(self):
+        """
+        :return: bool - True success
+        """
+        targets = models.Classification.objects.filter(mlmodel=self.app_name)
+        serial = serializers.ClassificationSerializer(targets, many=True)
+        json_serial = JSONRenderer().render(serial.data)
+        res = self.sync_s3.Object(self.s3_bucket_temp_files, self.job_name + "/targets.json")\
+                .put(Body=json_serial, ContentType='text/plain')
+        return res["ResponseMetadata"]["HTTPStatusCode"] == 200
 
-            res = loop.run_until_complete(self.temp_bucket_exists(self.s3))# Check if S3 bucket to store temporary files in exists
-            if res:
-                self.tar_python_script()                            # Tar the Python Spark script
-                files = models.Article.objects.filter(source__mlmodel=self.app_name)
-                for chunk in self.chunks(files,20):
-                    pool = asyncio_pool.AioPool(4)
-                    loop.run_until_complete(pool.map(self.upload_article, chunk))
-                loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
-                c = self.sync_session.client('emr', region_name="us-east-1")                           # Open EMR connection
-                self.start_spark_cluster(c)                         # Start Spark EMR cluster
-                self.step_spark_submit(c)                           # Add step 'spark-submit'
-                self.describe_status_until_terminated(c)            # Describe cluster status until terminated
+    def upload(self):
+        """
+        returns True if successful else false
+        :return:  bool -
+        """
+        loop = asyncio.get_event_loop()
+        self.temp_bucket_exists(self.sync_s3)# Check if S3 bucket to store temporary files in exists
+        self.tar_python_script()                            # Tar the Python Spark script
+        #todo(aj) filter by classification
+        files = models.Article.objects.filter(source__mlmodel=self.app_name,
+                                              classification__target__isnull=False,
+                                              )
+        if len(files) == 0:
+            return False
+        for chunk in self.chunks(files,20):
+            pool = asyncio_pool.AioPool(4)
+            loop.run_until_complete(pool.map(self.upload_article, chunk))
+        res = loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
+        return res
+
+    def locked(self):
+        return False
+
+    def run(self, delete=True):
+        """
+        :return: TrainResult
+        """
+        if not self.temp_bucket_exists(self.sync_s3):
+            return TrainResult(TrainResult.S3_NOT_EXIST, None, "extra stuff", self.job_name, self.EMR_VERSION)
+
+        # todo(aj) check for lock file
+        if self.locked():
+            return TrainResult(TrainResult.LOCKED, None, "extra stuff", self.job_name, self.EMR_VERSION)
+        # write lock file
+        self.lock() #todo set running flag in database
+        try:
+            if self.upload() and self.upload_classifications():
+                try:
+                    c = self.sync_session.client('emr', region_name=self.region)                           # Open EMR connection
+                    self.start_spark_cluster(c)                         # Start Spark EMR cluster
+                    self.step_spark_submit(c)                           # Add step 'spark-submit'
+                    res = self.describe_status_until_terminated(c)            # Describe cluster status until terminated
+                    if res:
+                        #todo download classifier to bytestring from amazon
+                        return TrainResult(TrainResult.SUCCESS, b"CLASSIFIER", "extra stuff", self.job_name,self.EMR_VERSION)
+                    else:
+                        return TrainResult(TrainResult.TRAIN_FAILED, None, "extra stuff", self.job_name, self.EMR_VERSION)
+                finally:
+                    if delete:
+                        self.remove_temp_files(self.sync_s3)                         # Remove files from the temporary files S3 bucket
+            else:
+                return TrainResult(TrainResult.UPLOAD_FAILED, None, "extra stuff", self.job_name, self.EMR_VERSION)
         finally:
-            self.remove_temp_files(self.sync_s3)                         # Remove files from the temporary files S3 bucket
-            self.unlock()
+            self.unlock() #todo(aj) unset running flag in database
 
     def generate_job_name(self, app_name):
         return "intstream-{}.{}".format(app_name,
@@ -196,12 +229,11 @@ class DeployPySparkScriptOnAws(object):
         # Create tar.gz file
         t_file = tarfile.open(self.script_tar.name, 'w:gz')
         # Add Spark script path to tar.gz file
-        t_file.add(os.path.join(self.AWS_TRAIN_DIR, self.script.name), arcname=self.TRAIN_SCRIPT)
+        t_file.add(os.path.join(self.AWS_TRAIN_DIR, self.training_script), arcname=self.TRAIN_SCRIPT)
         # List all files in tar.gz
         for f in t_file.getnames():
             logger.info("Added %s to tar-file" % f)
         t_file.close()
-
 
     async def upload_article(self, article):
         await self.s3.Object(self.s3_bucket_temp_files, self.UPLOAD_DIR+str(article.id))\
@@ -213,16 +245,22 @@ class DeployPySparkScriptOnAws(object):
         :param s3:
         :return:
         """
-        await s3.Object(self.s3_bucket_temp_files, self.job_name + '/setup.sh')\
+        res = await s3.Object(self.s3_bucket_temp_files, self.job_name + '/setup.sh')\
           .put(Body=open(os.path.join(self.AWS_DIR,'setup.sh'), 'rb'), ContentType='text/x-sh')
         # Shell file: Terminate idle cluster
-        await s3.Object(self.s3_bucket_temp_files, self.job_name + '/terminate_idle_cluster.sh')\
+        res2 = await s3.Object(self.s3_bucket_temp_files, self.job_name + '/terminate_idle_cluster.sh')\
           .put(Body=open(os.path.join(self.AWS_DIR,'terminate_idle_cluster.sh'), 'rb'), ContentType='text/x-sh')
         # Compressed Python script files (tar.gz)
-        await s3.Object(self.s3_bucket_temp_files, self.job_name + '/script.tar.gz')\
+        res3 = await s3.Object(self.s3_bucket_temp_files, self.job_name + '/script.tar.gz')\
           .put(Body=open(os.path.join(self.script_tar.name), 'rb'), ContentType='application/x-tar')
         logger.info("Uploaded files to key '{}' in bucket '{}'".format(self.job_name, self.s3_bucket_temp_files))
-        return True
+        stat = res["ResponseMetadata"]["HTTPStatusCode"]
+        stat2 = res2["ResponseMetadata"]["HTTPStatusCode"]
+        stat3 = res3["ResponseMetadata"]["HTTPStatusCode"]
+        if stat == 200 and stat2 == 200 and stat3 == 200:
+            return True
+        else:
+            return False
 
     def remove_temp_files(self, s3):
         """
@@ -245,19 +283,19 @@ class DeployPySparkScriptOnAws(object):
         response = c.run_job_flow(
             Name=self.job_name,
             LogUri="s3://{}/{}/".format(self.s3_bucket_logs,self.job_name),
-            ReleaseLabel="emr-5.28.0",
+            ReleaseLabel=self.EMR_VERSION,
             Instances={
                 'InstanceGroups': [
                     {
                         'Name': 'EmrMaster',
-                        'Market': 'ON_DEMAND',
+                        'Market': 'SPOT',
                         'InstanceRole': 'MASTER',
                         'InstanceType': 'm3.xlarge',
                         'InstanceCount': 1,
                     },
                     {
                         'Name': 'EmrCore',
-                        'Market': 'ON_DEMAND',
+                        'Market': 'SPOT',
                         'InstanceRole': 'CORE',
                         'InstanceType': 'm3.xlarge',
                         'InstanceCount': 2,
@@ -300,14 +338,17 @@ class DeployPySparkScriptOnAws(object):
     def describe_status_until_terminated(self, c):
         """
         :param c:
-        :return:
+        :return: boolean - True if success else False
         """
-        stop = False
-        while stop is False:
+        while True:
             description = c.describe_cluster(ClusterId=self.job_flow_id)
             state = description['Cluster']['Status']['State']
             if state == 'TERMINATED' or state == 'TERMINATED_WITH_ERRORS':
-                stop = True
+                logger.info(state)
+                if state == "TERMINATED":
+                    return True
+                else:
+                    return False
             #todo(aj) write state to database and link to  database ad link to task id
             logger.info(state)
             time.sleep(30)  # Prevent ThrottlingException by limiting number of requests
@@ -337,6 +378,8 @@ class DeployPySparkScriptOnAws(object):
                         'Args': [
                             "spark-submit",
                             "/home/hadoop/"+self.TRAIN_SCRIPT,
+                            self.input_bucket,
+                            self.output_model_file
                         ]
                     }
                 },

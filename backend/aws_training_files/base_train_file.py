@@ -24,11 +24,17 @@ from pyspark import SparkContext
 # 2. find and replace the values below when uploading script.
 # this way is easier for now.
 
-INPUT_BUCKET = "#define_input_bucket#"
-OUTPUT_FILE = "#define_output_bucket#"
+class MissingArgs(Exception):
+    pass
+
+
+INPUT_BUCKET = sys.argv[1]
+OUTPUT_FILE = sys.argv[2]
 
 if __name__ == "__main__":
     # Start SparkContext
+    if len(sys.argv) != 3:
+        raise MissingArgs
     sc = SparkContext(appName="PythonWordCount")
     # Load data from S3 bucket
     lines = sc.textFile(INPUT_BUCKET, 1)

@@ -92,20 +92,42 @@ def iterate(instances):
         yield i.text
 
 @shared_task(bind=True)
-def train_model(self,
+def upload_docs(self,
                 model,
                 s3_bucket_logs,
                 s3_bucket_temp_files,
-                s3_region,
+                region,
                 aws_access_key_id,
                 aws_secret_access_key_id,
                 ):
     trainer = train.DeployPySparkScriptOnAws(model=model,
                 s3_bucket_logs=s3_bucket_logs,
                 s3_bucket_temp_files=s3_bucket_temp_files,
-                s3_region=s3_region,
+                region=region,
                 aws_access_key_id=aws_access_key_id,
                 aws_secret_access_key_id=aws_secret_access_key_id,
                 task=self.request.id)
 
-    trainer.run()
+    trainer.upload()
+
+@shared_task(bind=True)
+def train_model(self,
+                model,
+                s3_bucket_logs,
+                s3_bucket_temp_files,
+                region,
+                aws_access_key_id,
+                aws_secret_access_key_id,
+                ):
+    trainer = train.DeployPySparkScriptOnAws(model=model,
+                s3_bucket_logs=s3_bucket_logs,
+                s3_bucket_temp_files=s3_bucket_temp_files,
+                region=region,
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key_id=aws_secret_access_key_id,
+                task=self.request.id)
+
+    result = trainer.run()
+    #todo(aj) write train.status,train.clf, train.message, train.job_name to train result table
+    # train.clf will be null if failed.
+
