@@ -71,7 +71,7 @@ class DeployPySparkScriptOnAws(object):
                  region,
                  aws_access_key_id,
                  aws_secret_access_key_id,
-                 training_script=None,
+                 training_script_folder=None,
                  task=None,
                  ec2_key_name=None,
                  emr_version="emr-5.28.0" #python3.6 spark
@@ -86,10 +86,11 @@ class DeployPySparkScriptOnAws(object):
         :param profile_name: str; profile name
         :param training_script: str; script to upload to EWS for training
         """
+        self.TRAIN_CLASSIFY = "train_classify.py"
         self.DATA_DIR = "data"
         self.OUTPUT_DIR = "output"
         self.MODEL_NAME = "output.clf"
-        self.TRAIN_SCRIPT = "train.py"
+        self.TRAIN_SCRIPT = "base_train_file.py"
         self.EMR_VERSION = emr_version
         self.AWS_DIR = os.path.join(settings.BASE_DIR,"awsfiles/")
         self.AWS_TRAIN_DIR = os.path.join(settings.BASE_DIR,"aws_training_files/")
@@ -101,7 +102,8 @@ class DeployPySparkScriptOnAws(object):
         self.OUTPUT_FILE = self.job_name + "/" + self.OUTPUT_DIR + "/" + self.MODEL_NAME
         self.input_bucket = "s3://"+s3_bucket_temp_files+"/"+self.UPLOAD_DIR
         self.output_model_file = "s3://"+s3_bucket_temp_files+"/"+self.UPLOAD_DIR+"/"+self.MODEL_NAME
-        self.training_script = "base_train_file.py" if training_script is None else training_script
+        self.training_script_folder = "uuid-original-default" \
+            if training_script_folder is None else training_script_folder
         self.ec2_key_name = ec2_key_name
         self.s3_bucket_logs = s3_bucket_logs
         self.s3_bucket_temp_files = s3_bucket_temp_files
@@ -227,9 +229,16 @@ class DeployPySparkScriptOnAws(object):
         :return:
         """
         # Create tar.gz file
+        REQ = "requirements.txt"
         t_file = tarfile.open(self.script_tar.name, 'w:gz')
         # Add Spark script path to tar.gz file
-        t_file.add(os.path.join(self.AWS_TRAIN_DIR, self.training_script), arcname=self.TRAIN_SCRIPT)
+        t_file.add(os.path.join(self.AWS_TRAIN_DIR,
+                                self.TRAIN_SCRIPT), arcname=self.TRAIN_SCRIPT)
+        t_file.add(os.path.join(self.AWS_TRAIN_DIR, self.training_script_folder, self.TRAIN_CLASSIFY),
+                   arcname=self.TRAIN_CLASSIFY)
+        t_file.add(os.path.join(self.AWS_TRAIN_DIR, self.training_script_folder, REQ),
+                   arcname=REQ)
+
         # List all files in tar.gz
         for f in t_file.getnames():
             logger.info("Added %s to tar-file" % f)
@@ -292,6 +301,17 @@ class DeployPySparkScriptOnAws(object):
                         'InstanceRole': 'MASTER',
                         'InstanceType': 'm3.xlarge',
                         'InstanceCount': 1,
+                        'Configurations':[{
+                                "Classification": "spark-env",
+                                "Configurations": [
+                                    {
+                                        "Classification": "export",
+                                        "Properties": {
+                                            "PYSPARK_PYTHON": "/usr/bin/python3"
+                                        }
+                                    }
+                                ]
+                            }]
                     },
                     {
                         'Name': 'EmrCore',
@@ -299,6 +319,19 @@ class DeployPySparkScriptOnAws(object):
                         'InstanceRole': 'CORE',
                         'InstanceType': 'm3.xlarge',
                         'InstanceCount': 2,
+                        'Configurations':[
+                            {
+                                "Classification": "spark-env",
+                                "Configurations": [
+                                    {
+                                        "Classification": "export",
+                                        "Properties": {
+                                            "PYSPARK_PYTHON": "/usr/bin/python3"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
                     },
                 ],
                 'Ec2KeyName': self.ec2_key_name,

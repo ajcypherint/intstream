@@ -19,7 +19,7 @@ trainer = train.DeployPySparkScriptOnAws(model=1,
                                          region="us-east-1",
                                          aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID",""),
                                          aws_secret_access_key_id=os.environ.get("AWS_SECRET_ACCESS_KEY",""),
-                                         training_script="base_train_file.py",
+                                         training_script_folder="uuid-original-default",
                                          task = None,
                                          ec2_key_name="CypherInt-Master-Key"
                                         )

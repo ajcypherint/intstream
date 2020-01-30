@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 import sys
 from operator import add
 from pyspark import SparkContext
-from train_classify import train
 #todo(aj)  options
 # 2. find and replace the values below when uploading script.
 # this way is easier for now.
@@ -29,12 +28,37 @@ from train_classify import train
 class MissingArgs(Exception):
     pass
 
+def classify(text):
+    """
 
-INPUT_BUCKET = sys.argv[1]
-OUTPUT_FILE = sys.argv[2]
+    :param text:
+    :return: boolean
+    """
+    pass
 
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        raise MissingArgs
-    train(INPUT_BUCKET, OUTPUT_FILE)
+def train(input_bucket, output_file):
+    """
+    read files from input_bucket
+    save model to output_file using pickle
+
+    :param input_bucket: str
+    :param output_file:  str
+    :return:
+    """
+    sc = SparkContext(appName="PythonWordCount")
+    # Load data from S3 bucket
+    lines = sc.textFile(input_bucket, 1)
+    # Calculate word counts
+    counts = lines.flatMap(lambda x: x.split(' ')) \
+                  .map(lambda x: (x, 1)) \
+                  .reduceByKey(add)
+    output = counts.collect()
+    # Print word counts
+    for (word, count) in output:
+        print("%s: %i" % (word, count))
+    # Save word counts in S3 bucket
+    counts.saveAsTextFile(output_file)
+    # Stop SparkContext
+    sc.stop()
+
 

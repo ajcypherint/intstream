@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 # Parse arguments
 s3_bucket="$1"
@@ -9,6 +10,6 @@ aws s3 cp $s3_bucket_script /home/hadoop/script.tar.gz
 
 # Untar file
 tar zxvf "/home/hadoop/script.tar.gz" -C /home/hadoop/
-
+python --version
 # Install requirements for Python script
-# sudo python2.7 -m pip install referer_parser
+sudo /usr/bin/python3 -m pip install -r /home/hadoop/requirements.txt
