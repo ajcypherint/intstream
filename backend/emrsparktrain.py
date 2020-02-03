@@ -13,7 +13,7 @@ from utils import train
 
 model = 1
 
-trainer = train.DeployPySparkScriptOnAws(model=1,
+trainer = train.DeployPySparkScriptOnAws(model=2,
                                          s3_bucket_logs="intstream-train-log",
                                          s3_bucket_temp_files="intstream-train-upload",
                                          region="us-east-1",
@@ -23,6 +23,8 @@ trainer = train.DeployPySparkScriptOnAws(model=1,
                                          task = None,
                                          ec2_key_name="CypherInt-Master-Key"
                                         )
-trainer.run(delete=False)
+#trainer.run(delete=False)
+trainer.upload()
+trainer.upload_classifications()
 
 

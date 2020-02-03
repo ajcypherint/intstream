@@ -32,9 +32,10 @@ class MissingArgs(Exception):
 
 INPUT_BUCKET = sys.argv[1]
 OUTPUT_FILE = sys.argv[2]
+OUTPUT_METRIC_FILE = sys.argv[3]
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         raise MissingArgs
-    train(INPUT_BUCKET, OUTPUT_FILE)
+    train(INPUT_BUCKET, OUTPUT_FILE, OUTPUT_METRIC_FILE)
 

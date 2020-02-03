@@ -4,14 +4,20 @@ import Stemmer #Pystemmer
 
 import re
 from selectolax.parser import HTMLParser
+
 class ExceptionNoBody(Exception):
     pass
+
+def clean_html_regex(raw_html):
+    cleanr = re.compile('<.*?>')
+    cleantext = re.sub(cleanr,'',raw_html)
+    return cleantext
 
 def clean_html(raw):
     tree = HTMLParser(raw)
 
     if tree.body is None:
-        raise ExceptionNoBody
+        return raw
 
     for tag in tree.css('script'):
         tag.decompose()
@@ -71,10 +77,7 @@ class StemmedTfidfVectorizer(TfidfVectorizer):
         def fixup(doc):
             result = None
             for operation in self.operations:
-                try:
-                    result = operation(doc)
-                except ExceptionNoBody as e:
-                    result = doc
+                result = operation(doc)
             return result
 
         return lambda doc: self.stemmer.stemWords(analyzer(fixup(doc)))

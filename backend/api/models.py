@@ -84,15 +84,26 @@ class MLModel(models.Model):
 
     sources = models.ManyToManyField(Source)
     name = models.CharField(max_length=250, )
-    train = models.BooleanField(default=True)
+    train_lock = models.BooleanField(default=True)
     created_date = models.DateTimeField(default=timezone.now)
-    base64_encoded_model = models.FileField(blank=True,null=True)
     active = models.BooleanField(default=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):
         return self.name + " (" + str(self.id) + ")"
 
+class ModelVersion(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['version','organization'], name='unique_model_version'),
+            ]
+    model = models.ForeignKey(MLModel,on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    version = models.CharField(max_length=500)
+    file = models.FileField(upload_to='model_versions')
+    selected = models.BooleanField(default=False)
+    metric_name = models.CharField(max_length=200)
+    metric_value = models.FloatField()
 
 # name and api_endpoint for frontend  / sdk
 class ArticleType(models.Model):
