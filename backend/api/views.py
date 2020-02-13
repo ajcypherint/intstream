@@ -39,7 +39,7 @@ class MLModelFilter(filters.FilterSet):
     #source__name = filters.CharFilter(lookup_expr='exact')
     class Meta:
         model = models.MLModel
-        fields = ('id','name','created_date','train','active')
+        fields = ('id','name','created_date','train_lock','active')
 
 
 class SourceTypeViewSet(viewsets.ReadOnlyModelViewSet):
@@ -177,8 +177,19 @@ class Train(APIView):
     mlmodel = openapi.Parameter('mlmodel',
                             in_=openapi.IN_BODY,
                             required=True,
-                            description="start date",
+                            description="model id",
                             type=openapi.TYPE_STRING,)
+    script_directory = openapi.Parameter('script_directory',
+                            in_=openapi.IN_BODY,
+                            required=True,
+                            description="train script directory",
+                            type=openapi.TYPE_STRING,)
+    metric_name = openapi.Parameter('metric_name',
+                            in_=openapi.IN_BODY,
+                            required=True,
+                            description="f1, precision, recall, etc",
+                            type=openapi.TYPE_STRING,)
+
     error = openapi.Response("error",
                              openapi.Schema(
                                 type=openapi.TYPE_OBJECT,
@@ -190,17 +201,23 @@ class Train(APIView):
 
     @swagger_auto_schema(operation_description="create training job", manual_parameters=[mlmodel], responses={200:response,404:error})
     def post(self, request, format=None):
-        if "mlmodel" not in self.request.data.keys():
-            return Response({"detail":"mlmodel is required"}, status=status.HTTP_400_BAD_REQUEST)
+        REQ_FIELD = ["mlmodel","metric_name","script_directory"]
+        for field in REQ_FIELD:
+            if field not in self.request.data.keys():
+                return Response({"detail":field + " is required"}, status=status.HTTP_400_BAD_REQUEST)
         org = self.request.user.organization
         aws_settings = models.Setting.objects.filter(organization=org).get()
         result = tasks.train_model.delay(
-                              self.request.data["mlmodel"],
-                              aws_settings.aws_s3_log_base,
-                              aws_settings.aws_s3_upload_base,
-                              aws_settings.aws_region,
-                              aws_settings.aws_key,
-                              aws_settings.aws_secret
+                              model=self.request.data["mlmodel"],
+                              organization=org.id,
+                              metric=self.request.data["metric_name"],
+                              s3_bucket_logs=aws_settings.aws_s3_log_base,
+                              s3_bucket_temp_files=aws_settings.aws_s3_upload_base,
+                              region=aws_settings.aws_region,
+                              aws_access_key_id=aws_settings.aws_key,
+                              aws_secret_access_key_id=aws_settings.aws_secret,
+                              training_script_folder=self.request.data["script_directory"],
+                              ec2_key_name=aws_settings.ec2_key_name
                               )
         return Response({"job_id":result.id},status.HTTP_200_OK)
 

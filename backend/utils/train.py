@@ -74,7 +74,8 @@ class DeployPySparkScriptOnAws(object):
                  training_script_folder=None,
                  task=None,
                  ec2_key_name=None,
-                 emr_version="emr-5.28.0" #python3.6 spark
+                 emr_version="emr-5.28.0", #python3.6 spark
+                 metric=None,
                  ):
         """
         :param model: str
@@ -86,10 +87,12 @@ class DeployPySparkScriptOnAws(object):
         :param profile_name: str; profile name
         :param training_script: str; script to upload to EWS for training
         """
+        self.metric=metric
+        self.METRIC_FILE="metrics.file"
         self.TRAIN_CLASSIFY = "train_classify.py"
         self.DATA_DIR = "data"
         self.OUTPUT_DIR = "output"
-        self.MODEL_NAME = "output.clf"
+        self.MODEL_NAME = "model.clf"
         self.TRAIN_SCRIPT = "base_train_file.py"
         self.EMR_VERSION = emr_version
         self.AWS_DIR = os.path.join(settings.BASE_DIR,"awsfiles/")
@@ -100,8 +103,6 @@ class DeployPySparkScriptOnAws(object):
         self.task_id = task
         self.UPLOAD_DIR = self.job_name + "/" + self.DATA_DIR + "/"
         self.OUTPUT_FILE = self.job_name + "/" + self.OUTPUT_DIR + "/" + self.MODEL_NAME
-        self.input_bucket = "s3://"+s3_bucket_temp_files+"/"+self.UPLOAD_DIR
-        self.output_model_file = "s3://"+s3_bucket_temp_files+"/"+self.UPLOAD_DIR+"/"+self.MODEL_NAME
         self.training_script_folder = "uuid-original-default" \
             if training_script_folder is None else training_script_folder
         self.ec2_key_name = ec2_key_name
@@ -168,8 +169,10 @@ class DeployPySparkScriptOnAws(object):
     def locked(self):
         return False
 
-    def run(self, delete=True):
+    def run(self, delete=True, status_callback=None):
         """
+        :param delete: bool - clean s3 bucket after run
+        :param status_callback: function(str)
         :return: TrainResult
         """
         if not self.temp_bucket_exists(self.sync_s3):
@@ -278,10 +281,7 @@ class DeployPySparkScriptOnAws(object):
         :return:
         """
         bucket = s3.Bucket(self.s3_bucket_temp_files)
-        for key in bucket.objects.all():
-            if key.key.startswith(self.job_name) is True:
-                key.delete()
-                logger.info("Removed '{}' from bucket for temporary files".format(key.key))
+        bucket.objects.filter(Prefix=self.job_name).delete()
 
     def start_spark_cluster(self, c):
         """
@@ -302,16 +302,23 @@ class DeployPySparkScriptOnAws(object):
                         'InstanceType': 'm3.xlarge',
                         'InstanceCount': 1,
                         'Configurations':[{
-                                "Classification": "spark-env",
-                                "Configurations": [
-                                    {
-                                        "Classification": "export",
-                                        "Properties": {
-                                            "PYSPARK_PYTHON": "/usr/bin/python3"
-                                        }
-                                    }
-                                ]
-                            }]
+                                            "Classification": "spark-env",
+                                            "Configurations": [
+                                                {
+                                                    "Classification": "export",
+                                                    "Properties": {
+                                                        "PYSPARK_PYTHON": "/usr/bin/python3"
+                                                    }
+                                                }
+                                                ]
+                                           },
+                            {"Classification":"spark-defaults",
+                              "Properties":{
+                                         "spark.jars.packages":"ml.combust.mleap:mleap-spark_2.11:0.15.0"
+                                     }
+                            }
+
+                        ]
                     },
                     {
                         'Name': 'EmrCore',
@@ -330,7 +337,13 @@ class DeployPySparkScriptOnAws(object):
                                         }
                                     }
                                 ]
+                            },
+                            {"Classification":"spark-defaults",
+                              "Properties":{
+                                         "spark.jars.packages":"ml.combust.mleap:mleap-spark_2.11:0.15.0"
+                                     }
                             }
+
                         ]
                     },
                 ],
@@ -368,9 +381,59 @@ class DeployPySparkScriptOnAws(object):
 
         logger.info("Created Spark EMR-4.4.0 cluster with JobFlowId {}".format(self.job_flow_id))
 
-    def describe_status_until_terminated(self, c):
+    def make_tarfile(self, output_filename, source_dir):
+        with tarfile.open(output_filename, "w:gz") as tar:
+            tar.add(source_dir, arcname=os.path.basename(source_dir))
+
+    def download_metric(self, local_filename):
+        self.sync_s3.Bucket(self.s3_bucket_temp_files).\
+            download_file(os.path.join(self.job_name,self.METRIC_FILE), local_filename)
+
+    def download_dir(self, prefix, local, bucket, ):
         """
+        params:
+        - prefix: pattern to match in s3
+        - local: local path to folder in which to place files
+        - bucket: s3 bucket with target contents
+        - client: initialized s3 client object
+        """
+        s3 = boto3.client("s3",aws_access_key_id=self.aws_access_key_id,
+                                        aws_secret_access_key=self.aws_secret_access_key)
+        keys = []
+        dirs = []
+        next_token = ''
+        base_kwargs = {
+            'Bucket': bucket,
+            'Prefix': prefix,
+        }
+        while next_token is not None:
+            kwargs = base_kwargs.copy()
+            if next_token != '':
+                kwargs.update({'ContinuationToken': next_token})
+            results = s3.list_objects_v2(**kwargs)
+            contents = results.get('Contents')
+            for i in contents:
+                k = i.get('Key')
+                if k[-1] != '/':
+                    keys.append(k)
+                else:
+                    dirs.append(k)
+            next_token = results.get('NextContinuationToken')
+        for d in dirs:
+            dest_pathname = os.path.join(local, d)
+            if not os.path.exists(os.path.dirname(dest_pathname)):
+                os.makedirs(os.path.dirname(dest_pathname))
+        for k in keys:
+            dest_pathname = os.path.join(local, k)
+            if not os.path.exists(os.path.dirname(dest_pathname)):
+                os.makedirs(os.path.dirname(dest_pathname))
+            s3.download_file(bucket, k, dest_pathname)
+
+    def describe_status_until_terminated(self, c, callback=None):
+        """
+        #todo(aj) add callback that will send back a me
         :param c:
+        :param callback: function(job_name:str,status:str)
         :return: boolean - True if success else False
         """
         while True:
@@ -384,6 +447,8 @@ class DeployPySparkScriptOnAws(object):
                     return False
             #todo(aj) write state to database and link to  database ad link to task id
             logger.info(state)
+            if callback is not None:
+                callback(self.job_name, state)
             time.sleep(30)  # Prevent ThrottlingException by limiting number of requests
 
     def step_spark_submit(self, c):
@@ -411,8 +476,11 @@ class DeployPySparkScriptOnAws(object):
                         'Args': [
                             "spark-submit",
                             "/home/hadoop/"+self.TRAIN_SCRIPT,
-                            self.input_bucket,
-                            self.output_model_file
+                            self.s3_bucket_temp_files, # bucket
+                            self.job_name, # subfolder
+                            self.MODEL_NAME, # model file
+                            self.METRIC_FILE, # metric file
+                            self.metric
                         ]
                     }
                 },

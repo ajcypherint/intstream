@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+from __future__ import print_function
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import substring_index, col
 from pyspark.sql.types import IntegerType
@@ -7,18 +9,19 @@ from pyspark.ml.param.shared import HasInputCol, HasOutputCol, Param, Params, Ty
 # Available in PySpark >= 2.3.0
 from pyspark.ml.util import DefaultParamsReadable, DefaultParamsWritable
 from pyspark.sql.functions import udf
-from pyspark.sql.types import ArrayType, StringType
 from selectolax.parser import HTMLParser
 from pyspark.ml import Pipeline
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.evaluation import BinaryClassificationEvaluator, MulticlassClassificationEvaluator
 from pyspark.ml.feature import Tokenizer, StopWordsRemover, CountVectorizer, IDF, StringIndexer
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
+from pyspark.sql.types import ArrayType, StructField, StructType, StringType, IntegerType
+
 
 from pyspark.ml.classification import LogisticRegression
-
 import re
-import os
+import boto3
+from os import path
 
 
 class CleanHtml(
@@ -100,22 +103,36 @@ class MissingArgs(Exception):
     pass
 
 
-def classify(text):
+def classify(text, classifier):
+    spark = SparkSession.builder.appName('Classify').getOrCreate()
+    schema = StructType([
+        StructField('text', StringType(), True),
+    ])
+    rdd = spark.sparkContenxt.parrallelize(text)
+    df = spark.createDataFrame(rdd,schema)
+    classifier = Pipeline.load(classifier)
+    targets = classifier.transform(df)
+    targets_list = [row.prediction for row in targets.collect()]
+    return targets_list
+
+def train(input_bucket,
+          job_name,
+          output_model_file_key,
+          output_metric_file_key,
+          metric):
     """
-
-    :param text:
-    :return: boolean
+    :param input_bucket: str
+    :param output_file: str
+    :param output_metric_file: str
+    :param metric: str
+    :return:
     """
-    pass
-
-
-def train(input_bucket, output_file, output_metric_file):
     spark = SparkSession.builder.appName('train').getOrCreate()
 
     # merge text and targets
-    rdd = spark.sparkContext.wholeTextFiles(os.path.join(input_bucket,"data/"))
+    rdd = spark.sparkContext.wholeTextFiles(path.join("s3://", input_bucket, job_name, "data/"))
     dfWithSchema = spark.createDataFrame(rdd).toDF("file", "text")
-    targets = spark.read.json(os.path.join("targets.json"))
+    targets = spark.read.json(path.join("s3://", input_bucket, job_name, "targets.json"))
     targets = targets.drop("id")
     res = dfWithSchema.select(col("*"), substring_index(col("file"), "/", -1).alias("id"))
     joined = res.join(targets, res.id == targets.article, "inner")
@@ -128,24 +145,28 @@ def train(input_bucket, output_file, output_metric_file):
     stopremove = StopWordsRemover(inputCol='token_text', outputCol='stop_tokens')
     count_vec = CountVectorizer(inputCol='stop_tokens', outputCol='c_vec')  # TF
     idf = IDF(inputCol="c_vec", outputCol="tf_idf")  # IDF Scaler
-    lr = LogisticRegression(maxIter=20, featuresCol='features', labelCol='target_int')
     clean_up = VectorAssembler(inputCols=['tf_idf'], outputCol='features')
+    lr = LogisticRegression(maxIter=20, featuresCol='features', labelCol='target_int')
     pipeline = Pipeline(stages=[cleanhtml, tokenizer, stopremove, count_vec, idf, clean_up, lr])
     paramGrid = ParamGridBuilder() \
         .addGrid(lr.regParam, [0.1, 0.001]) \
         .build()
     crossval = CrossValidator(estimator=pipeline,
                               estimatorParamMaps=paramGrid,
-                              evaluator=MulticlassClassificationEvaluator(labelCol="target_int", metricName='f1'),
+                              evaluator=MulticlassClassificationEvaluator(labelCol="target_int", metricName=metric),
                               numFolds=2)
     # fit model
     mdl = crossval.fit(joined)
     mymodel = mdl.bestModel
 
-    #save model file
-    mymodel.save(output_file)
-    metricRdd = spark.sparkContext.parallelize([sorted(mdl.avgMetrics)[-1]])  # for writing int (5)
+    #required: save metric file
+    s3 = boto3.resource("s3")
+    score = sorted(mdl.avgMetrics)[-1]  # for writing int (5)
+    res3 = s3.Object(input_bucket,path.join(job_name,output_metric_file_key))\
+          .put(Body=str(score), ContentType='text/plain')
 
-    #save metric file
-    metricRdd.saveAsTextFile(output_metric_file)
-    
+    #required: save model file;
+    mymodel.save(path.join("s3://",input_bucket,path.join(job_name,output_model_file_key)))
+
+
+

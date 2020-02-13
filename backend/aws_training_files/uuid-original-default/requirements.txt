@@ -1,1 +1,4 @@
-requests
+boto3
+selectolax
+jip
+mleap

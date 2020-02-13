@@ -19,22 +19,17 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 import sys
-from operator import add
-from pyspark import SparkContext
 from train_classify import classify
+
 #todo(aj)  options
 # 2. find and replace the values below when uploading script.
 # this way is easier for now.
 
-
-class MissingArgs(Exception):
-    pass
-
-
-text = sys.argv[1]
-
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        raise MissingArgs
-    print(classify(text))
+    #activate virtualenv
+    #todo(aj) split incoming text
+    input_json = eval(sys.stdin.read()) # {'text':'','classifier':''}
+    text = input_json["text"]
+    classifier_folder = input_json["classifier"]
+    print(classify(text,classifier_folder))
 

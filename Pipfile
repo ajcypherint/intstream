@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-django = "*"
 psycopg2-binary = "*"
 django-polymorphic = "*"
 django-generate-secret-key = "*"
@@ -22,7 +21,6 @@ pystemmer = "*"
 selectolax = "*"
 celery = {extras = ["redis"],version = "*"}
 django-celery-beat = "*"
-pdfminer-six = "*"
 docx2txt = "*"
 gunicorn = "*"
 feedparser = "*"
@@ -31,6 +29,11 @@ scipy = "*"
 aioboto3 = "*"
 django-fernet-fields = "*"
 asyncio-pool = "*"
+pipfile = "*"
+django = "==2.2"
+pdfminer-six = "*"
+pip = "*"
+virtualenv = "*"
 
 [requires]
 python_version = "3.6"
