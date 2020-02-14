@@ -92,7 +92,7 @@ class DeployPySparkScriptOnAws(object):
         self.TRAIN_CLASSIFY = "train_classify.py"
         self.DATA_DIR = "data"
         self.OUTPUT_DIR = "output"
-        self.MODEL_NAME = "model.clf"
+        self.MODEL_NAME = settings.MODEL_FOLDER
         self.TRAIN_SCRIPT = "base_train_file.py"
         self.EMR_VERSION = emr_version
         self.AWS_DIR = os.path.join(settings.BASE_DIR,"awsfiles/")

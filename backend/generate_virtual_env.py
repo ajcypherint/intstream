@@ -5,5 +5,5 @@ django.setup()
 
 from api.tasks import classify
 
-classify("uuid-original-default",["some text ", "another string of text"])
+classify("uuid-original-default",["some text ", "another string of text"], 16)
 

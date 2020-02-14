@@ -19,6 +19,7 @@ import tempfile
 from shutil import copyfile
 import virtualenv
 import json
+import tarfile
 
 class Venv(Exception):
     pass
@@ -150,13 +151,23 @@ def classify(directory, text_list, model_version_id):
     :return:
     """
     model = ModelVersion.objects.get(id=model_version_id)
-    model_bytes = model.file.read()
     #todo(aj) extract tar.gz  model_bytes to tmp dir folder if not already exists
-    model_directory = None #todo(aj) set to model directory created above
+    model_directory = os.path.join(settings.VENV_DIR, MODEL+str(model.id))
+    full_model_dir = os.path.join(model_directory,settings.MODEL_FOLDER)
+    # create model dir
+    if not os.path.exists(model_directory):
+        model_tar = tarfile.open(mode="r:gz", fileobj=model.file)
+        try:
+            model_tar.extractall(path=model_directory)
+        except Exception as e:
+            if os.path.exists(model_directory):
+                os.rmdir(model_directory)
+            raise e
+    #create venv and program folders
     create_dirs(directory)
     script_directory = os.path.join(settings.VENV_DIR, SCRIPT + directory)
     venv_directory = os.path.join(settings.VENV_DIR, VENV + directory)
-    json_data = {"classifier":model_directory, "text":text_list}
+    json_data = {"classifier":full_model_dir, "text":text_list}
     path_python = os.path.join(venv_directory,"bin","python"),
     script = os.path.join(script_directory,BASE_CLASSIFY_FILE)
     res = subprocess.run([
