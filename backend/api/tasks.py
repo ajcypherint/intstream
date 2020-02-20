@@ -20,12 +20,19 @@ from shutil import copyfile
 import virtualenv
 import json
 import tarfile
+from utils.train import TrainResult
 
 class Venv(Exception):
     pass
 
+
+class ClassifyError(Exception):
+    pass
+
+
 class Create(Venv):
     pass
+
 
 class Pip(Venv):
     pass
@@ -33,7 +40,6 @@ class Pip(Venv):
 @shared_task
 def add(x,y):
     return x + y
-
 
 @shared_task
 def process_entry(post_title,
@@ -67,6 +73,7 @@ def process_entry(post_title,
     article.source_id = source_id
     article.organization_id=organization_id
     article.save()
+    return article.__dict__
 
 
 def process_rss_source(source_url, source_id, organization_id):
@@ -78,6 +85,7 @@ def process_rss_source(source_url, source_id, organization_id):
     """
     data = feedparser.parse(source_url)
     logger.debug("source_url:" + str(source_url))
+    added=[]
     for post in data.entries:
         if "id" not in post.keys():
             if "guid" in post.keys():
@@ -90,14 +98,27 @@ def process_rss_source(source_url, source_id, organization_id):
         exists = models.RSSArticle.objects.filter(guid=post.id,
                                                   organization=organization_id).exists()
         if not exists:
-            process_entry.delay(post.title,
+            article = process_entry.delay(post.title,
                                 post.description,
                                 post.id,
                                 post.link,
                                 source_id,
                                 organization_id
                                 )
+            added.append(article)
 
+    # filter ModelVersion by model__source=source and model__active=True
+    active_model_versions = models.ModelVersion.objects.filter(mlmodel__active=True,
+                                                       mlmodel__source__id=source_id)
+    for model_version in active_model_versions:
+        predictions = classify(model_version.mlmodel.script_directory, added, model_version.id)
+        org = models.Organization.objects.get(id=organization_id)
+        for i,article in enumerate(added):
+            prediction = models.Prediction(article=article,
+                                           organization=org,
+                                           mlmodel=model_version.mlmodel,
+                                           target=predictions[i])
+            prediction.save()
 
 
 @shared_task()
@@ -132,10 +153,6 @@ def upload_docs(self,
     trainer.upload()
 
 
-@shared_task
-def task_create_virtual_env(script_directory, proxy=None):
-    pass
-
 SCRIPT = "script_"
 VENV = "venv_"
 MODEL = "model_"
@@ -151,7 +168,6 @@ def classify(directory, text_list, model_version_id):
     :return:
     """
     model = ModelVersion.objects.get(id=model_version_id)
-    #todo(aj) extract tar.gz  model_bytes to tmp dir folder if not already exists
     model_directory = os.path.join(settings.VENV_DIR, MODEL+str(model.id))
     full_model_dir = os.path.join(model_directory,settings.MODEL_FOLDER)
     # create model dir
@@ -168,18 +184,35 @@ def classify(directory, text_list, model_version_id):
     script_directory = os.path.join(settings.VENV_DIR, SCRIPT + directory)
     venv_directory = os.path.join(settings.VENV_DIR, VENV + directory)
     json_data = {"classifier":full_model_dir, "text":text_list}
-    path_python = os.path.join(venv_directory,"bin","python"),
+    path_python = os.path.join(venv_directory,"bin","python")
     script = os.path.join(script_directory,BASE_CLASSIFY_FILE)
-    res = subprocess.run([
-        path_python,
-        script,
-        ],
-        env={"PYTHON_PATH":venv_directory},
-        stdin=json.dumps(json_data).encode("utf-8"),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE)
+    proc = None
+    timeout = 530
+    try:
+        proc = subprocess.run([
+            path_python,
+            script,
+            ],
+            env={"VIRTUAL_ENV":venv_directory,
+                 "PATH":os.path.join(venv_directory,"bin") + ":" + os.environ["PATH"],
+                 "PYSPARK_PYTHON":path_python},
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+        timeout=timeout,
+        input=json.dumps(json_data))
 
-    classifications = json.loads(res.stdout)
+        if proc.returncode != 0:
+            raise ClassifyError("ErrorCode: "+ str(proc.returncode) +
+                                "\nstdout: " + proc.stdout +
+                                "\nstderr: " + proc.stderr)
+
+    except TimeoutError:
+        proc.kill()
+        outs, errs = proc.communicate()
+        raise ClassifyError("Timeout reached: " + str(timeout))
+
+    classifications = json.loads(proc.stdout)
     return classifications
 
 
@@ -214,7 +247,6 @@ def create_script_directory(script_directory):
 def create_virtual_env(script_directory):
     """
     generate virtual env in dir for models
-    todo(aj) allow proxy
     :param script_directory: str
     :param proxy: str
     :return:
@@ -223,13 +255,14 @@ def create_virtual_env(script_directory):
     directory = os.path.join(settings.VENV_DIR, VENV + script_directory)
     if not os.path.exists(directory):
         try:
+            env = None
             if proxy is not None:
-                #todo(aj)
-                proxy_str = "--proxy " + proxy
+                env={"http_proxy":proxy,"https_proxy":proxy}
             res = subprocess.run(["python",
                             "-m",
                             "virtualenv",
                             directory],
+                                 env=env,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE)
             logger.info("create venv stderr: " + str(res.stderr))
@@ -266,6 +299,17 @@ def create_virtual_env(script_directory):
             raise e
 
 
+def update_status(job_name, status):
+    """
+    :param job_name: str
+    :param status: str
+    :return:
+    """
+    model_version = models.ModelVersion.objects.get(model_version=job_name)
+    model_version.status=status
+    model_version.save()
+
+
 @shared_task(bind=True)
 def train_model(self,
                 model,
@@ -288,7 +332,7 @@ def train_model(self,
                                              training_script_folder=training_script_folder,
                                              task=self.request.id.__str__(),
                                              ec2_key_name=ec2_key_name,
-                                             metric=metric# possible metric f1,recall,precision
+                                             metric=metric,# possible metric f1,recall,precision
                                              )
     try:
         # insert job_id into model version
@@ -300,27 +344,32 @@ def train_model(self,
                                      version=trainer.job_name,
                                      metric_name=metric)
         model_version.save()
-        # todo(aj) pass in callback callback(job_name, status)
-        # upserts the database with jobname
+        # todo(aj) pass in callback callback(job_name, org, status)
         result = trainer.run(delete=False)
-        temp_dir = tempfile.TemporaryDirectory()
+        mversion = models.ModelVersion.objects.get(mlmodel=model)
+        mversion.status = result.status
+        mversion.save()
+        if result.status == TrainResult.SUCCESS:
+            temp_dir = tempfile.TemporaryDirectory()
 
-        # download model
-        trainer.download_dir(os.path.join(trainer.job_name, trainer.MODEL_NAME), temp_dir.name,
-                             trainer.s3_bucket_temp_files)
-        temp_file = tempfile.NamedTemporaryFile(suffix=".tar.gz")
-        trainer.make_tarfile(temp_file.name, os.path.join(temp_dir.name, trainer.job_name, trainer.MODEL_NAME))
-        with open(temp_file.name, "rb") as f:
-            model_version.file = File(f, os.path.basename(f.name))
-            model_version.save()
+            # download model
+            trainer.download_dir(os.path.join(trainer.job_name, trainer.MODEL_NAME), temp_dir.name,
+                                 trainer.s3_bucket_temp_files)
+            temp_file = tempfile.NamedTemporaryFile(suffix=".tar.gz")
+            trainer.make_tarfile(temp_file.name, os.path.join(temp_dir.name, trainer.job_name, trainer.MODEL_NAME))
+            with open(temp_file.name, "rb") as f:
+                model_version.file = File(f, os.path.basename(f.name))
+                model_version.save()
 
-        # download metric
-        temp_metric_file = tempfile.NamedTemporaryFile()
-        trainer.download_metric(temp_metric_file.name)
-        with open(temp_metric_file.name, encoding="ascii") as f:
-            value = f.read()
-            model_version.metric_value = float(value)
-            model_version.save()
+            # download metric
+            temp_metric_file = tempfile.NamedTemporaryFile()
+            trainer.download_metric(temp_metric_file.name)
+            with open(temp_metric_file.name, encoding="ascii") as f:
+                value = f.read()
+                model_version.metric_value = float(value)
+                model_version.save()
+        else:
+            pass
 
     finally:
         # cleanup

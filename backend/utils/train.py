@@ -43,8 +43,8 @@ class TrainResult(object):
 
     def __init__(self, status, clf, message, job_name, emr_version):
         self.status = status
-        self.clf = clf
-        self.message = message
+        self.clf = clf # unused
+        self.message = message #unused
         self.job_name = job_name
         self.emr_version = emr_version
 
@@ -71,11 +71,11 @@ class DeployPySparkScriptOnAws(object):
                  region,
                  aws_access_key_id,
                  aws_secret_access_key_id,
-                 training_script_folder=None,
+                 training_script_folder,
+                 ec2_key_name,
+                 metric,
                  task=None,
-                 ec2_key_name=None,
                  emr_version="emr-5.28.0", #python3.6 spark
-                 metric=None,
                  ):
         """
         :param model: str
@@ -191,7 +191,6 @@ class DeployPySparkScriptOnAws(object):
                     self.step_spark_submit(c)                           # Add step 'spark-submit'
                     res = self.describe_status_until_terminated(c)            # Describe cluster status until terminated
                     if res:
-                        #todo download classifier to bytestring from amazon
                         return TrainResult(TrainResult.SUCCESS, b"CLASSIFIER", "extra stuff", self.job_name,self.EMR_VERSION)
                     else:
                         return TrainResult(TrainResult.TRAIN_FAILED, None, "extra stuff", self.job_name, self.EMR_VERSION)
@@ -433,7 +432,7 @@ class DeployPySparkScriptOnAws(object):
         """
         #todo(aj) add callback that will send back a me
         :param c:
-        :param callback: function(job_name:str,status:str)
+        :param callback: function(job_name:str, org:int, status:str)
         :return: boolean - True if success else False
         """
         while True:

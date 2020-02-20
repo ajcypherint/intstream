@@ -494,8 +494,10 @@ class SourceViewSet(OrgViewSet):
     def get_queryset(self):
         return models.Source.objects.filter(organization=self.request.user.organization)
 
+
 class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
     pass
+
 
 class ClassificationFilter(filters.FilterSet):
     article_id_in= NumberInFilter(field_name="article", lookup_expr=("in"))
@@ -587,7 +589,6 @@ class JobSourceViewSet(OrgViewSet):
         return models.JobSource.objects.filter(organization=self.request.user.organization)
 
 
-
 class MLModelViewSet(OrgViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.MLModelSerializer
@@ -673,6 +674,7 @@ class HtmlArticleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return models.HtmlArticle.objects.filter(organization=self.request.user.organization)
 
+
 class TxtArticleFilter(filters.FilterSet):
     class Meta:
         model = models.TxtArticle
@@ -694,10 +696,12 @@ class TxtArticleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return models.TxtArticle.objects.filter(organization=self.request.user.organization)
 
+
 class WordDocxArticleFilter(filters.FilterSet):
     class Meta:
         model = models.WordDocxArticle
         fields = ARTICLE_SORT_FIELDS
+
 
 class WordDocxArticleViewSet(viewsets.ModelViewSet):
     permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
@@ -715,10 +719,12 @@ class WordDocxArticleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return models.WordDocxArticle.objects.filter(organization=self.request.user.organization)
 
+
 class PDFArticleFilter(filters.FilterSet):
     class Meta:
         model = models.PDFArticle
         fields = ARTICLE_SORT_FIELDS
+
 
 class PDFArticleViewSet(viewsets.ModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
@@ -736,14 +742,15 @@ class PDFArticleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return models.PDFArticle.objects.filter(organization=self.request.user.organization)
 
+
 class ArticleTypeViewSet(viewsets.ReadOnlyModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     queryset = models.ArticleType.objects.all()
     serializer_class = serializers.ArticleTypeSerializer
 
-
     def get_queryset(self):
         return models.Classification.objects.filter(organization=self.request.user.organization)
+
 
 class OrganizationViewSet(viewsets.ModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)

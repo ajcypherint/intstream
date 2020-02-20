@@ -33,9 +33,8 @@ trainer = train.DeployPySparkScriptOnAws(model=MODEL,
                                          aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID",""),
                                          aws_secret_access_key_id=os.environ.get("AWS_SECRET_ACCESS_KEY",""),
                                          training_script_folder="uuid-original-default",
-                                         task=None,
                                          ec2_key_name="CypherInt-Master-Key",
-                                         metric=METRIC #possible metric f1,recall,precision
+                                         metric=METRIC, #possible metric f1,recall,precision
                                         )
 try:
     #insert job_id into model version

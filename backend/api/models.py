@@ -75,14 +75,11 @@ class JobSource(Source):
     arguments = models.TextField(max_length=1000)
     task = models.TextField() # todo(aj) foreignkey to
 
+
 class ModelVersion(models.Model):
-    class Meta:
-        constraints = [
-            UniqueConstraint(fields=['version','organization'], name='unique_model_version'),
-            ]
     model = models.ForeignKey('MLModel',on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    version = models.CharField(max_length=500) #job_name
+    version = models.CharField(max_length=500,unique=True ) #job_name = model-id + time
     metric_name = models.CharField(max_length=200)
     virtual_env_loc = models.CharField(max_length=1000, null=True)
     status = models.CharField(max_length=100, default="NA")
@@ -98,6 +95,7 @@ class MLModel(models.Model):
 
     sources = models.ManyToManyField(Source)
     name = models.CharField(max_length=250, )
+    script_directory = models.CharField(max_length=500, default="uuid-original-default")
     train_lock = models.BooleanField(default=True)
     created_date = models.DateTimeField(default=timezone.now)
     active = models.BooleanField(default=False)
@@ -114,13 +112,12 @@ class ArticleType(models.Model):
     api_endpoint = models.TextField(max_length=100, unique=True)
 
 
-
 class Article(PolymorphicModel):
     source = models.ForeignKey(Source,on_delete=models.CASCADE)
     title = models.TextField(max_length=256)
     text = models.TextField(blank=True)
     upload_date = models.DateTimeField(default=timezone.now)
-    encoding = models.CharField(max_length=15,default='utf8')
+    encoding = models.CharField(max_length=15, default='utf8')
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):
@@ -137,6 +134,22 @@ class Classification(models.Model):
     target = models.BooleanField('target classification')
     mlmodel = models.ForeignKey(MLModel, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+
+
+class Prediction(models.Model):
+    """
+    model predictions
+    """
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['article', 'mlmodel','organization'], name='unique_model_classification'),
+            ]
+
+    article = models.ForeignKey(Article,on_delete=models.CASCADE)
+    target = models.BooleanField('target classification')
+    mlmodel = models.ForeignKey(MLModel, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+
 
 # Upload Articles
 class WordDocxArticle(Article):

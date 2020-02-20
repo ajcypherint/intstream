@@ -138,4 +138,7 @@ npm run build
 #todo move file to /etc/rc.local
 cat "$base_dir/intstream/utility/rc.local" >> /etc/rc.local
 
-
+# pyspark requires java 1.8 
+sudo apt install openjdk-8-jdk
+#https://stackoverflow.com/questions/53583199/pyspark-error-unsupported-class-file-major-version-55
+sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java

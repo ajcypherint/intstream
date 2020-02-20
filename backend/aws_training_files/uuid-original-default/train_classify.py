@@ -108,7 +108,7 @@ def classify(text, classifier):
     schema = StructType([
         StructField('text', StringType(), True),
     ])
-    rdd = spark.sparkContenxt.parrallelize(text)
+    rdd = spark.sparkContext.parrallelize(text)
     df = spark.createDataFrame(rdd,schema)
     classifier = Pipeline.load(classifier)
     targets = classifier.transform(df)
