@@ -1,5 +1,7 @@
 from celery import shared_task
 import feedparser
+import asyncio
+import aiohttp
 import datetime
 from . import models
 import requests
@@ -45,6 +47,14 @@ class Pip(Venv):
 @shared_task
 def add(x,y):
     return x + y
+
+async def fetch(url):
+    async with aiohttp.ClientSession as session:
+        async with session.get(url) as response:
+            if response.status != 200:
+                return "Failed to retrieve text"
+            return await response.text()
+
 
 @shared_task
 def process_entry(post_title,
@@ -103,6 +113,7 @@ def process_rss_source(source_url, source_id, organization_id):
     """
     data = feedparser.parse(source_url)
     logger.debug("source_url:" + str(source_url))
+    collect = []
     for post in data.entries:
         if "id" not in post.keys():
             if "guid" in post.keys():
@@ -115,13 +126,54 @@ def process_rss_source(source_url, source_id, organization_id):
         exists = models.RSSArticle.objects.filter(guid=post.id,
                                                   organization=organization_id).exists()
         if not exists:
-            process_entry.delay(post.title,
-                                post.description,
-                                post.id,
-                                post.link,
-                                source_id,
-                                organization_id
-                                )
+            collect.append(post)
+
+    loop = asyncio.get_event_loop()
+    tasks = []
+    for post in collect:
+        tasks.append(fetch(post.link))
+
+    htmls = loop.run_until_complete(asyncio.gather(*tasks))
+    articles = []
+    for html in htmls:
+        article = models.RSSArticle(
+            title=post.title,
+            description=post.description,
+            guid=post.id,
+            link=post.link,
+            text=html
+            )
+
+        article.source_id = source_id
+        article.organization_id=organization_id
+        article.save()
+        articles.append(article)
+
+        # filter ModelVersion by model__source=source and model__active=True
+    active_model_versions = models.ModelVersion.objects.filter(organization__id=organization_id,
+                                                               model__sources__id=source_id,
+                                                               model__active=True,
+                                                               active=True)
+    #todo(aj) implement paging here to prevent overload
+    article_texts = [[i.text] for i in articles]
+    for version in active_model_versions:
+        directory = version.model.script_directory
+        predictions = classify(directory, article_texts, version.id)
+        for article in articles:
+            prediction = models.Prediction(article=article,
+                                               organization__id=organization_id,
+                                               mlmodel=version.model,
+                                               target=predictions[0])
+            prediction.save()
+
+
+        #process_entry.delay(post.title,
+            #                    post.description,
+            #                    post.id,
+            #                    post.link,
+            #                    source_id,
+            #                    organization_id
+            #                    )
 
 
 
