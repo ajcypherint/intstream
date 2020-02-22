@@ -3,10 +3,12 @@ from django.utils import timezone
 from polymorphic.models import PolymorphicModel
 from django.contrib.auth.models import AbstractUser
 from django.db.models.constraints import UniqueConstraint
+from django.db.models import Q
 
 import uuid
 import os
 from fernet_fields import EncryptedTextField
+from django.conf import settings
 
 
 #todo(aj) mutitenant - organization table
@@ -77,14 +79,20 @@ class JobSource(Source):
 
 
 class ModelVersion(models.Model):
-    model = models.ForeignKey('MLModel',on_delete=models.CASCADE)
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["model"], condition=Q(active=True), name="unique_model_version")
+        ]
+        # only one model can have active = True
+    model = models.ForeignKey('MLModel', on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    version = models.CharField(max_length=500,unique=True ) #job_name = model-id + time
+    version = models.CharField(max_length=500, unique=True ) #job_name = model-id + time
     metric_name = models.CharField(max_length=200)
     virtual_env_loc = models.CharField(max_length=1000, null=True)
     status = models.CharField(max_length=100, default="NA")
     file = models.FileField(upload_to='model_versions',blank=True, null=True)
     metric_value = models.FloatField(blank=True, null=True)
+    active = models.BooleanField(default=False)
 
 
 class MLModel(models.Model):
@@ -95,12 +103,11 @@ class MLModel(models.Model):
 
     sources = models.ManyToManyField(Source)
     name = models.CharField(max_length=250, )
-    script_directory = models.CharField(max_length=500, default="uuid-original-default")
+    script_directory = models.CharField(max_length=500, default=settings.DEFAULT_SCRIPT_MODEL)
     train_lock = models.BooleanField(default=True)
     created_date = models.DateTimeField(default=timezone.now)
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(default=False) # allow to show in gui
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    version_selected = models.ForeignKey(ModelVersion,on_delete=models.CASCADE,null=True)
 
     def __str__(self):
         return self.name + " (" + str(self.id) + ")"

@@ -10,8 +10,7 @@ from .models import (MLModel, JobSource,
                      Classification, Organization)
 
 from utils import read
-from django.core.validators import MaxLengthValidator
-
+from django.conf import settings
 
 
 class SourceTypeSerializer(serializers.ModelSerializer):
@@ -58,6 +57,7 @@ class JobSourceSerializer(serializers.ModelSerializer):
 
         ]
         model = JobSource
+
 
 class UploadSourceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -129,9 +129,9 @@ class MLModelSerializer(serializers.ModelSerializer):
             'sources',
             'name',
             'created_date',
-            'base64_encoded_model',
             'active',
-            'train',
+            'train_lock',
+            'script_directory',
             'organization',
         ]
 
@@ -142,6 +142,7 @@ class MLModelSerializer(serializers.ModelSerializer):
         ids = [source["id"] for source in sources]
         ob = MLModel(
             name=validated_data["name"],
+            script_directory=validated_data.get("script_directory",settings.DEFAULT_SCRIPT_MODEL),
             active=validated_data.get("active",False),
             organization=validated_data["organization"]
         )
@@ -156,7 +157,8 @@ class MLModelSerializer(serializers.ModelSerializer):
         instance.sources.set(ids, clear=True)
         instance.name = validated_data.get("name",instance.name)
         instance.active = validated_data.get("active",instance.active)
-        instance.train = validated_data.get("train",instance.train)
+        instance.train_lock = validated_data.get("train_lock",instance.train_lock)
+        instance.script_directory = validated_data.get("script_directory", instance.script_directory)
         instance.organization = validated_data.get("organization",instance.organization)
         instance.save()
         return instance

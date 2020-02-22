@@ -13,6 +13,7 @@ import venv
 from api.models import ModelVersion, MLModel, Organization
 from django.core.files import File
 from django.conf import settings
+from celery import group
 import os
 import subprocess
 import tempfile
@@ -21,6 +22,10 @@ import virtualenv
 import json
 import tarfile
 from utils.train import TrainResult
+
+
+class RSSArticleSave(Exception):
+    pass
 
 class Venv(Exception):
     pass
@@ -50,7 +55,6 @@ def process_entry(post_title,
                   organization_id
                   ):
     """
-
     :param post_title: str
     :param post_description: str
     :param post_id: int
@@ -73,7 +77,21 @@ def process_entry(post_title,
     article.source_id = source_id
     article.organization_id=organization_id
     article.save()
-    return article.__dict__
+
+    # filter ModelVersion by model__source=source and model__active=True
+    # todo(aj) requests.get all the article texts and then run all the saves then run the prediction
+    active_model_versions = models.ModelVersion.objects.filter(organization__id=organization_id,
+                                                               model__sources__id=source_id,
+                                                               model__active=True,
+                                                               active=True)
+    for version in active_model_versions:
+        directory = version.model.script_directory
+        predictions = classify(directory, [[article.text]], version.id)
+        prediction = models.Prediction(article=article,
+                                           organization__id=organization_id,
+                                           mlmodel=version.model,
+                                           target=predictions[0])
+        prediction.save()
 
 
 def process_rss_source(source_url, source_id, organization_id):
@@ -85,7 +103,6 @@ def process_rss_source(source_url, source_id, organization_id):
     """
     data = feedparser.parse(source_url)
     logger.debug("source_url:" + str(source_url))
-    added=[]
     for post in data.entries:
         if "id" not in post.keys():
             if "guid" in post.keys():
@@ -98,27 +115,15 @@ def process_rss_source(source_url, source_id, organization_id):
         exists = models.RSSArticle.objects.filter(guid=post.id,
                                                   organization=organization_id).exists()
         if not exists:
-            article = process_entry.delay(post.title,
+            process_entry.delay(post.title,
                                 post.description,
                                 post.id,
                                 post.link,
                                 source_id,
                                 organization_id
                                 )
-            added.append(article)
 
-    # filter ModelVersion by model__source=source and model__active=True
-    active_model_versions = models.ModelVersion.objects.filter(mlmodel__active=True,
-                                                       mlmodel__source__id=source_id)
-    for model_version in active_model_versions:
-        predictions = classify(model_version.mlmodel.script_directory, added, model_version.id)
-        org = models.Organization.objects.get(id=organization_id)
-        for i,article in enumerate(added):
-            prediction = models.Prediction(article=article,
-                                           organization=org,
-                                           mlmodel=model_version.mlmodel,
-                                           target=predictions[i])
-            prediction.save()
+
 
 
 @shared_task()
@@ -126,7 +131,7 @@ def process_rss_sources():
     sources = models.RSSSource.objects.filter(active=True).all()
     for source in sources:
         logger.debug("source:" + source.name)
-        process_rss_source(source.url,source.id,source.organization_id)
+        process_rss_source(source.url, source.id, source.organization_id)
 
 
 def iterate(instances):

@@ -10,7 +10,7 @@ from pyspark.ml.param.shared import HasInputCol, HasOutputCol, Param, Params, Ty
 from pyspark.ml.util import DefaultParamsReadable, DefaultParamsWritable
 from pyspark.sql.functions import udf
 from selectolax.parser import HTMLParser
-from pyspark.ml import Pipeline
+from pyspark.ml import Pipeline,PipelineModel
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.evaluation import BinaryClassificationEvaluator, MulticlassClassificationEvaluator
 from pyspark.ml.feature import Tokenizer, StopWordsRemover, CountVectorizer, IDF, StringIndexer
@@ -108,9 +108,9 @@ def classify(text, classifier):
     schema = StructType([
         StructField('text', StringType(), True),
     ])
-    rdd = spark.sparkContext.parrallelize(text)
+    rdd = spark.sparkContext.parallelize(text)
     df = spark.createDataFrame(rdd,schema)
-    classifier = Pipeline.load(classifier)
+    classifier = PipelineModel.load(classifier)
     targets = classifier.transform(df)
     targets_list = [row.prediction for row in targets.collect()]
     return targets_list
