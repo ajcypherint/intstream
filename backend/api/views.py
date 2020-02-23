@@ -499,15 +499,32 @@ class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
     pass
 
 
+class PredictionFilter(filters.FilterSet):
+    class Meta:
+        model = models.Prediction
+        fields = ("article", "target", "mlmodel", "organization")
+
+
+class PredictionViewSet(OrgViewSet):
+    permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    serializer_class = serializers.PredictionSerializer
+    filterset_class = PredictionFilter
+
+    def get_queryset(self):
+        return models.Prediction.objects.filter(organization=self.request.user.organization)
+
+
 class ClassificationFilter(filters.FilterSet):
-    article_id_in= NumberInFilter(field_name="article", lookup_expr=("in"))
+    article_id_in = NumberInFilter(field_name="article", lookup_expr=("in"))
+
     class Meta:
         model = models.Classification
-        fields = ('article','target',"mlmodel",)
+        fields = ('article', 'target', "mlmodel",)
 
 
 class ClassificationViewSet(OrgViewSet):
-    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+    permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     serializer_class = serializers.ClassificationSerializer
     filterset_class = ClassificationFilter
@@ -517,7 +534,7 @@ class ClassificationViewSet(OrgViewSet):
 
 
 class SettingsViewSet(OrgViewSet):
-    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+    permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     serializer_class = serializers.SettingSerializer
 

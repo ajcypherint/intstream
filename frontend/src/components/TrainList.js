@@ -284,6 +284,10 @@ export default class extends Component {
            <font>False: {isFinite(false_pct) ? false_pct.toFixed(1): ""}%</font>
          </Col>
          <Col align="left">
+           <font>Count: {counts.total}</font>
+         </Col>
+ 
+         <Col align="left">
            <Button className="button-brand-primary mb-1" size="md">Train</Button>
          </Col>
        </Row>

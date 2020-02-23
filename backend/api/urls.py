@@ -43,6 +43,7 @@ router.register("homefilter",views.HomeFilter, basename="homefilter")
 
 #classifications
 router.register("classifications",views.ClassificationViewSet, basename="classifications")
+router.register("predictions",views.PredictionViewSet, basename="predictions")
 
 router.register("organization",views.OrganizationViewSet, basename="organization")
 

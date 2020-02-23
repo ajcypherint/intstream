@@ -26,8 +26,8 @@ celery_app.conf.beat_schedule = {
     # assign to single worker with concurrency = 1
     "rss_sources":{
         "task":"api.tasks.process_rss_sources",
-        #"schedule": crontab(hour="*/1", minute="2") # every hour at 2 mins
-        "schedule": crontab(hour="*", minute="*/2") # testing
+        "schedule": crontab(hour="*/1", minute="2") # every hour at 2 mins
+        #"schedule": crontab(hour="*", minute="*/1") # testing
     }
 }
 

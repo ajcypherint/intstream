@@ -48,11 +48,10 @@ class Pip(Venv):
 def add(x,y):
     return x + y
 
+
 async def fetch(url):
-    async with aiohttp.ClientSession as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
-            if response.status != 200:
-                return "Failed to retrieve text"
             return await response.text()
 
 
@@ -135,12 +134,12 @@ def process_rss_source(source_url, source_id, organization_id):
 
     htmls = loop.run_until_complete(asyncio.gather(*tasks))
     articles = []
-    for html in htmls:
+    for i, html in enumerate(htmls):
         article = models.RSSArticle(
-            title=post.title,
-            description=post.description,
-            guid=post.id,
-            link=post.link,
+            title=collect[i].title,
+            description=collect[i].description,
+            guid=collect[i].id,
+            link=collect[i].link,
             text=html
             )
 
@@ -156,14 +155,15 @@ def process_rss_source(source_url, source_id, organization_id):
                                                                active=True)
     #todo(aj) implement paging here to prevent overload
     article_texts = [[i.text] for i in articles]
+    org = models.Organization.objects.get(id=organization_id)
     for version in active_model_versions:
         directory = version.model.script_directory
         predictions = classify(directory, article_texts, version.id)
-        for article in articles:
+        for i,article in enumerate(articles):
             prediction = models.Prediction(article=article,
-                                               organization__id=organization_id,
+                                               organization=org,
                                                mlmodel=version.model,
-                                               target=predictions[0])
+                                               target=predictions[i])
             prediction.save()
 
 

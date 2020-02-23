@@ -127,9 +127,6 @@ export default class Edit extends Component {
             checked={this.props.object.active||false}   />
         </FormGroup>
           <FormGroup>
-        <Button className="button-brand-primary" size="lg" onClick={this.handle_train}>Train </Button>
-      </FormGroup>
-          <FormGroup>
           <FormButtons saving={this.props.saving}
                       onSubmit={this.props.onSubmit}
                        goBack={this.props.goBack}/>

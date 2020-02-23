@@ -6,7 +6,7 @@ from .models import (MLModel, JobSource,
                      UploadSource, RSSSource,
                      SourceType, ArticleType,
                      HtmlArticle, RSSArticle,
-                     Setting,
+                     Setting, Prediction,
                      Classification, Organization)
 
 from utils import read
@@ -363,4 +363,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
         )
         model = Organization
 
+
+class PredictionSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=("article", "target", "mlmodel", "organization")
+        model = Prediction
 
