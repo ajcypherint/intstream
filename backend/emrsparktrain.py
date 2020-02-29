@@ -7,8 +7,9 @@ django.setup()
 from api.models import ModelVersion
 from django.core.files import File
 
+
 from utils import train
-from api.models import ModelVersion, MLModel, Organization
+from api.models import ModelVersion, MLModel, Organization, ModelVersion
 MODEL=2
 ORGANIZATION=1
 METRIC="f1"
@@ -35,10 +36,20 @@ trainer = train.DeployPySparkScriptOnAws(model=MODEL,
                                          training_script_folder="uuid-original-default",
                                          ec2_key_name="CypherInt-Master-Key",
                                          metric=METRIC, #possible metric f1,recall,precision
+                                         logger=logger
                                         )
-try:
-    #insert job_id into model version
-    # model, version, organization
+def update_status(job_name, status):
+    """
+    :param job_name: str
+    :param status: str
+    :return:
+    """
+    model_version = ModelVersion.objects.get(version=job_name)
+    model_version.status=status
+    model_version.save()
+
+
+if __name__ == "__main__":
     model = MLModel.objects.get(id=MODEL)
     org = Organization.objects.get(id=ORGANIZATION)
     model_version = ModelVersion(organization=org,
@@ -46,34 +57,37 @@ try:
                                  version=trainer.job_name,
                                  metric_name=METRIC)
     model_version.save()
-    #todo(aj) pass in callback callback(job_name, status)
-    # upserts the database with jobname
-    result = trainer.run(delete=False)
-    temp_dir = tempfile.TemporaryDirectory()
+    try:
+        # insert job_id into model version
+        # model, version, organization
+        # todo(aj) pass in callback callback(job_name, status)
+        # upserts the database with jobname
+        result = trainer.run(delete=False, status_callback=update_status)
+        model_version.status = result.status
+        temp_dir = tempfile.TemporaryDirectory()
 
-    # download model
-    trainer.download_dir(os.path.join(trainer.job_name,trainer.MODEL_NAME),temp_dir.name,trainer.s3_bucket_temp_files)
-    temp_file = tempfile.NamedTemporaryFile(suffix=".tar.gz")
-    trainer.make_tarfile(temp_file.name,os.path.join(temp_dir.name,trainer.job_name,trainer.MODEL_NAME))
-    with open(temp_file.name, "rb") as f:
-        model_version.file=File(f,os.path.basename(f.name))
+        # download model
+        trainer.download_dir(os.path.join(trainer.job_name,trainer.MODEL_NAME),temp_dir.name,trainer.s3_bucket_temp_files)
+        temp_file = tempfile.NamedTemporaryFile(suffix=".tar.gz")
+        trainer.make_tarfile(temp_file.name,os.path.join(temp_dir.name,trainer.job_name,trainer.MODEL_NAME))
+        with open(temp_file.name, "rb") as f:
+            model_version.file=File(f,os.path.basename(f.name))
+            model_version.save()
+
+        # download metric
+        temp_metric_file = tempfile.NamedTemporaryFile()
+        trainer.download_metric(temp_metric_file.name)
+        with open(temp_metric_file.name,encoding="ascii") as f:
+            value = f.read()
+            model_version.metric_value = float(value)
+            model_version.save()
+
+    except Exception as e:
+        model_version.status="FAILED"
         model_version.save()
-
-    # download metric
-    temp_metric_file = tempfile.NamedTemporaryFile()
-    trainer.download_metric(temp_metric_file.name)
-    with open(temp_metric_file.name,encoding="ascii") as f:
-        value = f.read()
-        model_version.metric_value=float(value)
-        model_version.save()
-
-    # just here to see if we throw exception
-    i = 1
-    # temp_file.name = model file tar.gz
-    # temp_metric_file.name = metric file
-    # todo (aj) update model,metric, to db
-finally:
-    #cleanup
-    trainer.remove_temp_files(trainer.sync_s3)
+        raise e
+    finally:
+        # cleanup
+        trainer.remove_temp_files(trainer.sync_s3)
 
 

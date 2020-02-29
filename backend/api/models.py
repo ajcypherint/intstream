@@ -84,15 +84,30 @@ class ModelVersion(models.Model):
             UniqueConstraint(fields=["model"], condition=Q(active=True), name="unique_model_version")
         ]
         # only one model can have active = True
+    # set on train
     model = models.ForeignKey('MLModel', on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     version = models.CharField(max_length=500, unique=True ) #job_name = model-id + time
+    celery_log = models.FileField(upload_to="celery_logs",blank=True, null=True)
     metric_name = models.CharField(max_length=200)
-    virtual_env_loc = models.CharField(max_length=1000, null=True)
+    task = models.CharField(max_length=500)
     status = models.CharField(max_length=100, default="NA")
     file = models.FileField(upload_to='model_versions',blank=True, null=True)
     metric_value = models.FloatField(blank=True, null=True)
+
+    # set once activated for classification
+    # can only be activated once file is not null; todo(aj) set with constraint
     active = models.BooleanField(default=False)
+
+    # set on classify history
+    virtual_env_loc = models.CharField(max_length=1000, null=True, blank=True)
+
+
+class ClassifyHistory(models.Model):
+    start_classify = models.DateTimeField(blank=True, null=True)
+    end_classify = models.DateTimeField(blank=True, null=True)
+    task = models.CharField(max_length=500)
+    version = models.ForeignKey(ModelVersion, on_delete=models.CASCADE)
 
 
 class MLModel(models.Model):

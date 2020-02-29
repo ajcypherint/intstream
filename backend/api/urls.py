@@ -47,6 +47,9 @@ router.register("predictions",views.PredictionViewSet, basename="predictions")
 
 router.register("organization",views.OrganizationViewSet, basename="organization")
 
+router.register("taskresult", views.TaskResultViewSet, basename="taskresult")
+router.register("modelversion", views.ModelVersionViewSet, basename="modelversion")
+
 SETTINGS = "setting"
 router.register(SETTINGS,views.SettingsViewSet, basename="setting")
 

@@ -22,6 +22,10 @@ export default class extends Component {
     this.fetchit = this.fetchit.bind(this)
     this.getArticle = this.getArticle.bind(this)
     this.handleClassifChange = this.handleClassifChange.bind(this)
+    this.redirect = this.redirect.bind(this)
+  }
+  redirect(event){
+    this.props.history.push("/createmlversion/"+event.target.value)
   }
   //todo remove classification
   handleClassifChange(event){
@@ -288,7 +292,8 @@ export default class extends Component {
          </Col>
  
          <Col align="left">
-           <Button className="button-brand-primary mb-1" size="md">Train</Button>
+           <Button className="button-brand-primary mb-1" size="md" value={selections.mlmodelChosen}
+             onClick={this.redirect}>Create </Button>
          </Col>
        </Row>
          <table className={"table table-sm"}>

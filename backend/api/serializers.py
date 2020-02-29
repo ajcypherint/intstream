@@ -2,13 +2,13 @@ from rest_framework import serializers
 from .models import (MLModel, JobSource,
                      TxtArticle,
                      Article, PDFArticle,
-                    Source,
+                    Source, ModelVersion,
                      UploadSource, RSSSource,
                      SourceType, ArticleType,
                      HtmlArticle, RSSArticle,
                      Setting, Prediction,
                      Classification, Organization)
-
+from django_celery_results.models import TaskResult as TaskResultMdl
 from utils import read
 from django.conf import settings
 
@@ -332,6 +332,37 @@ class SettingSerializer(serializers.ModelSerializer):
         return setting
 
 
+class TaskResult(serializers.ModelSerializer):
+    class Meta:
+        fields=(
+           "id",
+            "content_encoding",
+            "content_type",
+            "date_done",
+            "result",
+            "status",
+            "task_args",
+            "task_id",
+            "task_kwargs",
+            "task_name",
+            "traceback"
+        )
+        read_only_fields = (
+           "id",
+            "content_encoding",
+            "content_type",
+            "date_done",
+            "result",
+            "status",
+            "task_args",
+            "task_id",
+            "task_kwargs",
+            "task_name",
+            "trace_back"
+        )
+        model = TaskResultMdl
+
+
 class ClassificationSerializer(serializers.ModelSerializer):
     class Meta:
         fields=(
@@ -369,3 +400,18 @@ class PredictionSerializer(serializers.ModelSerializer):
         fields=("article", "target", "mlmodel", "organization")
         model = Prediction
 
+
+class ModelVersionSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ("model",
+                  "organization",
+                  "version",
+                 "celery_log",
+                 "metric_name",
+                  "status",
+                  "task",
+                  "status",
+                  "file",
+                  "metric_value")
+
+        model = ModelVersion

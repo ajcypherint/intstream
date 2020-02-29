@@ -24,6 +24,7 @@ import Article from "../containers/Article"
 import Train from "../containers/Train"
 import TrainList from "../containers/TrainList"
 import {ADD, EDIT} from "../util/util"
+import CreateMLVersion from "../containers/CreateMLVersion"
 const Main = (props)=>(
   <Switch>
     <Route exact path="/" component={Home} />
@@ -31,6 +32,9 @@ const Main = (props)=>(
     <Route exact path="/article/:id" component={Article} />
     <Route exact path="/train/:id/:model" component={Train} />
     <Route exact path="/train_list" component={TrainList} />
+
+    <Route exact path="/createmlversion/:id" component={CreateMLVersion} />
+
     <Route exact path="/sources_upload" component={SourcesUploadList} />
     <Route exact path="/sources_upload_add" 
       render={()=>

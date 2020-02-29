@@ -24,7 +24,7 @@ import botocore
 from django.conf import settings
 import tempfile
 import asyncio_pool
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 def handle_exception(loop, exception):
     pass
@@ -48,15 +48,9 @@ class TrainResult(object):
         self.job_name = job_name
         self.emr_version = emr_version
 
-def terminate(error_message=None):
-    """
-    Method to exit the Python script. It will log the given message and then exit().
-    :param error_message:
-    """
-    if error_message:
-        logger.error(error_message)
-    logger.critical('The script is now terminating')
-    exit()
+
+class Terminate(Exception):
+    pass
 
 
 class DeployPySparkScriptOnAws(object):
@@ -74,6 +68,7 @@ class DeployPySparkScriptOnAws(object):
                  training_script_folder,
                  ec2_key_name,
                  metric,
+                 logger,
                  task=None,
                  emr_version="emr-5.28.0", #python3.6 spark
                  ):
@@ -86,7 +81,9 @@ class DeployPySparkScriptOnAws(object):
         :param user: str; define user name
         :param profile_name: str; profile name
         :param training_script: str; script to upload to EWS for training
+        :param logger: logger
         """
+        self.logger = logger
         self.metric=metric
         self.METRIC_FILE="metrics.file"
         self.TRAIN_CLASSIFY = "train_classify.py"
@@ -172,7 +169,7 @@ class DeployPySparkScriptOnAws(object):
     def run(self, delete=True, status_callback=None):
         """
         :param delete: bool - clean s3 bucket after run
-        :param status_callback: function(str)
+        :param status_callback: function(job_name:str,status:str)
         :return: TrainResult
         """
         if not self.temp_bucket_exists(self.sync_s3):
@@ -189,7 +186,7 @@ class DeployPySparkScriptOnAws(object):
                     c = self.sync_session.client('emr', region_name=self.region)                           # Open EMR connection
                     self.start_spark_cluster(c)                         # Start Spark EMR cluster
                     self.step_spark_submit(c)                           # Add step 'spark-submit'
-                    res = self.describe_status_until_terminated(c)            # Describe cluster status until terminated
+                    res = self.describe_status_until_terminated(c, status_callback)            # Describe cluster status until terminated
                     if res:
                         return TrainResult(TrainResult.SUCCESS, b"CLASSIFIER", "extra stuff", self.job_name,self.EMR_VERSION)
                     else:
@@ -219,11 +216,11 @@ class DeployPySparkScriptOnAws(object):
             # If it was a 404 error, then the bucket does not exist.
             error_code = int(e.response['Error']['Code'])
             if error_code == 404:
-                logger.error("Bucket for temporary files does not exist")
+                self.logger.error("Bucket for temporary files does not exist")
                 return False
-            logger.error("Error while connecting to Bucket")
+            self.logger.error("Error while connecting to Bucket")
             return False
-        logger.info("S3 bucket for temporary files exists")
+        self.logger.info("S3 bucket for temporary files exists")
         return True
 
     def tar_python_script(self):
@@ -243,7 +240,7 @@ class DeployPySparkScriptOnAws(object):
 
         # List all files in tar.gz
         for f in t_file.getnames():
-            logger.info("Added %s to tar-file" % f)
+            self.logger.info("Added %s to tar-file" % f)
         t_file.close()
 
     async def upload_article(self, article):
@@ -264,7 +261,7 @@ class DeployPySparkScriptOnAws(object):
         # Compressed Python script files (tar.gz)
         res3 = await s3.Object(self.s3_bucket_temp_files, self.job_name + '/script.tar.gz')\
           .put(Body=open(os.path.join(self.script_tar.name), 'rb'), ContentType='application/x-tar')
-        logger.info("Uploaded files to key '{}' in bucket '{}'".format(self.job_name, self.s3_bucket_temp_files))
+        self.logger.info("Uploaded files to key '{}' in bucket '{}'".format(self.job_name, self.s3_bucket_temp_files))
         stat = res["ResponseMetadata"]["HTTPStatusCode"]
         stat2 = res2["ResponseMetadata"]["HTTPStatusCode"]
         stat3 = res3["ResponseMetadata"]["HTTPStatusCode"]
@@ -376,9 +373,9 @@ class DeployPySparkScriptOnAws(object):
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             self.job_flow_id = response['JobFlowId']
         else:
-            terminate("Could not create EMR cluster (status code {})".format(response_code))
+            raise Terminate("Could not create EMR cluster (status code {})".format(response_code))
 
-        logger.info("Created Spark EMR-4.4.0 cluster with JobFlowId {}".format(self.job_flow_id))
+        self.logger.info("Created Spark EMR-4.4.0 cluster with JobFlowId {}".format(self.job_flow_id))
 
     def make_tarfile(self, output_filename, source_dir):
         with tarfile.open(output_filename, "w:gz") as tar:
@@ -411,12 +408,13 @@ class DeployPySparkScriptOnAws(object):
                 kwargs.update({'ContinuationToken': next_token})
             results = s3.list_objects_v2(**kwargs)
             contents = results.get('Contents')
-            for i in contents:
-                k = i.get('Key')
-                if k[-1] != '/':
-                    keys.append(k)
-                else:
-                    dirs.append(k)
+            if contents is not None:
+                for i in contents:
+                    k = i.get('Key')
+                    if k[-1] != '/':
+                        keys.append(k)
+                    else:
+                        dirs.append(k)
             next_token = results.get('NextContinuationToken')
         for d in dirs:
             dest_pathname = os.path.join(local, d)
@@ -439,13 +437,13 @@ class DeployPySparkScriptOnAws(object):
             description = c.describe_cluster(ClusterId=self.job_flow_id)
             state = description['Cluster']['Status']['State']
             if state == 'TERMINATED' or state == 'TERMINATED_WITH_ERRORS':
-                logger.info(state)
+                self.logger.info(state)
                 if state == "TERMINATED":
                     return True
                 else:
                     return False
             #todo(aj) write state to database and link to  database ad link to task id
-            logger.info(state)
+            self.logger.info(state)
             if callback is not None:
                 callback(self.job_name, state)
             time.sleep(30)  # Prevent ThrottlingException by limiting number of requests
@@ -485,7 +483,7 @@ class DeployPySparkScriptOnAws(object):
                 },
             ]
         )
-        logger.info("Added step 'spark-submit' ")
+        self.logger.info("Added step 'spark-submit' ")
         time.sleep(1)  # Prevent ThrottlingException
 
     def step_copy_data_between_s3_and_hdfs(self, c, src, dest):
@@ -510,6 +508,6 @@ class DeployPySparkScriptOnAws(object):
                     }
                 }]
         )
-        logger.info("Added step 'Copy data from {} to {}'".format(src, dest))
+        self.logger.info("Added step 'Copy data from {} to {}'".format(src, dest))
 
 

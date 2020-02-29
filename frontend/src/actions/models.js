@@ -18,6 +18,7 @@ export const MODEL_FORM_UPDATE = '@@models/MODEL_FORM_UPDATE';
 export const CLEAR = '@@models/CLEAR';
 export const GET_TOTAL_MODELS = '@@models/TOTAL';
 
+export const API = '/api/mlmodels/'
 export const clearModels = ()=>{
   return {
     type:CLEAR,

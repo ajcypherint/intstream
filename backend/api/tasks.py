@@ -2,6 +2,9 @@ from celery import shared_task
 import feedparser
 import asyncio
 import aiohttp
+
+from celery.utils.log import get_task_logger
+
 import datetime
 from . import models
 import requests
@@ -24,6 +27,46 @@ import virtualenv
 import json
 import tarfile
 from utils.train import TrainResult
+from celery.app.log import TaskFormatter
+from celery.signals import task_prerun, task_postrun
+import logging
+# to control the tasks that required logging mechanism
+from celery import signals
+TASK_WITH_LOGGING = ['api.tasks.train_model']
+from celery.app.log import TaskFormatter
+
+from api import models
+"""
+@signals.task_prerun.connect(sender=TASK_WITH_LOGGING)
+def prepare_logging(signal=None, sender=None, task_id=None, task=None, args=None, **kwargs):
+    logger = logging.getLogger(task_id)
+    formatter = TaskFormatter('[%(asctime)s][%(levelname)s] %(task_id) %(message)s ')
+    # optionally logging on the Console as well as file
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    stream_handler.setLevel(logging.DEBUG) #todo(aj) hardcoded for now
+    # Adding File Handle with file path. Filename is task_id
+    task_handler = logging.FileHandler(os.path.join('/tmp/', task_id+'.log'))
+    task_handler.setFormatter(formatter)
+    task_handler.setLevel(logging.DEBUG) #todo(aj) hardcoded for now
+    logger.addHandler(stream_handler)
+    logger.addHandler(task_handler)
+
+
+@signals.task_postrun.connect(sender=TASK_WITH_LOGGING)
+def close_logging(signal=None, sender=None, task_id=None, task=None, args=None, retval=None, state=None, **kwargs):
+    # getting the same logger and closing all handles associated with it
+    logger = logging.getLogger(task_id)
+    for handler in logger.handlers:
+        handler.flush()
+        handler.close()
+    logger.handlers = []
+    # save log to database for review
+    version = models.ModelVersion.objects.get(task_id=task_id)
+    with open(os.path.join('/tmp/', task_id + ".log")) as f:
+        version.celery_log.save(task_id + ".log",File(f))
+        version.save()
+"""
 
 
 class RSSArticleSave(Exception):
@@ -362,7 +405,7 @@ def update_status(job_name, status):
     :param status: str
     :return:
     """
-    model_version = models.ModelVersion.objects.get(model_version=job_name)
+    model_version = models.ModelVersion.objects.get(version=job_name)
     model_version.status=status
     model_version.save()
 
@@ -380,6 +423,25 @@ def train_model(self,
                 training_script_folder,
                 ec2_key_name,
                 ):
+    task = self.request.id.__str__()
+    # todo(aj) could be a function
+    logger = get_task_logger(task)
+    logger.setLevel(logging.DEBUG)
+    formatter = TaskFormatter('%(asctime)s - %(task_id)s - %(task_name)s - %(name)s - %(levelname)s - %(message)s')
+
+    # optionally logging on the Console as well as file
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    stream_handler.setLevel(logging.DEBUG) #todo(aj) hardcoded for now
+    # Adding File Handle with file path. Filename is task_id
+    log_name = os.path.join('/tmp/', task+'.log')
+    task_handler = logging.FileHandler(log_name)
+    task_handler.setFormatter(formatter)
+    task_handler.setLevel(logging.DEBUG) #todo(aj) hardcoded for now
+    logger.addHandler(stream_handler)
+    logger.addHandler(task_handler)
+    logger.info("test this is the message")
+    #todo(aj) pass logger into trainer so it can log to this logger instead of default one
     trainer = train.DeployPySparkScriptOnAws(model=model,
                                              s3_bucket_logs=s3_bucket_logs,
                                              s3_bucket_temp_files=s3_bucket_temp_files,
@@ -387,23 +449,25 @@ def train_model(self,
                                              aws_access_key_id=aws_access_key_id,
                                              aws_secret_access_key_id=aws_secret_access_key_id,
                                              training_script_folder=training_script_folder,
-                                             task=self.request.id.__str__(),
+                                             task=task,
                                              ec2_key_name=ec2_key_name,
                                              metric=metric,# possible metric f1,recall,precision
+                                             logger=logger
                                              )
+    model = MLModel.objects.get(id=model)
+    org = Organization.objects.get(id=organization)
+    model_version = ModelVersion(organization=org,
+                                     model=model,
+                                     task=task,
+                                     version=trainer.job_name,
+                                     metric_name=metric)
+    model_version.save()
     try:
         # insert job_id into model version
         # model, version, organization
-        model = MLModel.objects.get(id=model)
-        org = Organization.objects.get(id=organization)
-        model_version = ModelVersion(organization=org,
-                                     model=model,
-                                     version=trainer.job_name,
-                                     metric_name=metric)
-        model_version.save()
-        # todo(aj) pass in callback callback(job_name, org, status)
+        # todo(aj) pass in callback callback(job_name, status)
         result = trainer.run(delete=False)
-        mversion = models.ModelVersion.objects.get(mlmodel=model)
+        mversion = models.ModelVersion.objects.get(version=trainer.job_name)
         mversion.status = result.status
         mversion.save()
         if result.status == TrainResult.SUCCESS:
@@ -427,10 +491,22 @@ def train_model(self,
                 model_version.save()
         else:
             pass
-
+    except Exception as e:
+        model_version.status = "FAILED"
+        model_version.save()
+        raise e
     finally:
         # cleanup
         trainer.remove_temp_files(trainer.sync_s3)
+        for handler in logger.handlers:
+            handler.flush()
+            handler.close()
+        logger.handlers = []
+        # save log to database for review
+        version = models.ModelVersion.objects.get(task=task)
+        with open(log_name) as f:
+            version.celery_log.save(os.path.basename(log_name), File(f))
+            version.save()
 
 
 

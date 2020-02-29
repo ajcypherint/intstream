@@ -13,6 +13,7 @@ from django.utils import timezone
 from . import serializers
 from django.utils import timezone
 from . import models
+from django_celery_results.models import TaskResult as TaskResultMdl
 from rest_framework import filters as rest_filters
 from rest_framework import status, generics, mixins
 from rest_framework.response import Response
@@ -777,3 +778,23 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return models.Organization.objects.all()
+
+
+class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+    serializer_class = serializers.TaskResult
+    filterset_fields = ("id", )
+
+    def get_queryset(self):
+        return TaskResultMdl.objects.all()
+
+
+class ModelVersionViewSet(viewsets.ReadOnlyModelViewSet):
+    permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+    serializer_class = serializers.TaskResult
+    filterset_fields = ("id", "version")
+
+    def get_queryset(self):
+        return TaskResultMdl.objects.all()
+
+

@@ -34,6 +34,7 @@ django = "==2.2"
 pdfminer-six = "*"
 pip = "*"
 virtualenv = "*"
+django-celery-results = "*"
 
 [requires]
 python_version = "3.6"

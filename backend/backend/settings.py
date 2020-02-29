@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'django_generate_secret_key',
     'django_filters',
     'drf_yasg',
-    'django_celery_beat'
+    'django_celery_beat',
+    'django_celery_results'
     #'django_s3_storage'
 ]
 
@@ -248,11 +249,21 @@ AWS_S3_FILE_OVERWRITE = False if os.environ.get("AWS_S3_FILE_OVERWRITE","false")
 
 # celery
 CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+#CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
+# celery setting.
+CELERY_CACHE_BACKEND = 'default'
 
+# django setting.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'celery_cache_table',
+    }
+}
 from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),

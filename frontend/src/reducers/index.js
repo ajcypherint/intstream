@@ -14,6 +14,7 @@ import list, * as fromList from './listSelections.js'
 import selectArticles, * as fromSelect from "./selectArticles.js"
 import classifications, * as fromClassif from "./classifications"
 import settings, * as fromSettings from "./settings"
+import modelVersions, * as fromModelVersions from "./modelversions"
 
 export default combineReducers({
   auth: auth,
@@ -30,7 +31,8 @@ export default combineReducers({
   trainFilter:trainFilter,
   selectArticles:selectArticles,
   classifications:classifications,
-  settings:settings
+  settings:settings,
+  modelVersions:modelVersions
 })
 
 //fromAuth
@@ -124,6 +126,13 @@ export const getSettingsErrors = state => fromSettings.errors(state.settings)
 export const getSettingsLoading = state => fromSettings.loading(state.settings)
 export const getSettingsSaving = state => fromSettings.saving(state.settings)
 
+//from modelVersions
+export const getModelVersions = state => fromModelVersions.versions(state.modelVersions)
+export const getModelVerNextPage = state => fromModelVersions.nextpage(state.modelVersions)
+export const getModelVerPreviousPage = state => fromModelVersions.previouspage(state.modelVersions)
+export const getModelVerPage = state => fromModelVersions.page(state.modelVersions)
+export const getModelVerErrors = state => fromModelVersions.errors(state.modelVersions)
+export const getModelVerTrainUuid = state => fromModelVersions.trainuuid(state.modelVersions)
 export function withAuth(headers={}) {
   return (state) => ({
     ...headers,
