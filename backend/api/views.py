@@ -56,12 +56,19 @@ class SourceFilter(filters.FilterSet):
         model = models.Source
         fields = ('id','name','active',"article","mlmodel")
 
+
 class HomeFilterSetting(filters.FilterSet):
     start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
     end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
     class Meta:
         model = models.Article
-        fields = ("source","source__active","source__mlmodel")
+        fields = ("source","source__active",
+                  "prediction__mlmodel",
+                  "prediction__target",
+                  "prediction__mlmodel__active",
+                  "prediction__mlmodel__modelversion__active",
+                  )
+
 
 class RandomUnclassified(APIView):
 
@@ -103,18 +110,22 @@ class RandomUnclassified(APIView):
 
 class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
     permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
-    serializer_class = serializers.SourceSerializer
+    serializer_class = serializers.HomeSerializer
     filterset_class = HomeFilterSetting
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
 
     def get_queryset(self):
         return models.Article.objects.filter(organization=self.request.user.organization).\
-            order_by("source__name").\
-            distinct("source__name").\
-            values("source__name", "source__id", "source__active", ).\
+            order_by("source__id","prediction__mlmodel__id").\
+            distinct("source__id", "prediction__mlmodel__id").\
+            values("source__name", "source__id", "source__active",
+                   "prediction__mlmodel__name","prediction__mlmodel__id" ).\
             annotate(name=F("source__name"),
                  id=F("source__id"),
-                 active=F("source__active"))
+                 active=F("source__active"),
+                  mlmodel = F("prediction__mlmodel__name"),
+                  mlmodel_id=F("prediction__mlmodel__id")
+                    )
 
 
 def set_query_params(url, page):
@@ -634,7 +645,7 @@ class ArticleFilter(filters.FilterSet):
     )
     class Meta:
         model = models.Article
-        fields = ('id','source','title','upload_date', 'source__name','source__mlmodel')
+        fields = ('id','source','title','upload_date', 'source__name','prediction__mlmodel','prediction__target')
 
 
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
@@ -791,10 +802,10 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ModelVersionViewSet(viewsets.ReadOnlyModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
-    serializer_class = serializers.TaskResult
-    filterset_fields = ("id", "version")
+    serializer_class = serializers.ModelVersionSerializer
+    filterset_fields = ("id", "version","model__active", "model", "active")
 
     def get_queryset(self):
-        return TaskResultMdl.objects.all()
+        return models.ModelVersion.objects.filter(model__organization=self.request.user.organization)
 
 

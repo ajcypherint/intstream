@@ -4,7 +4,7 @@ import * as reducers from '../reducers/'
 import { Main} from '../components/Home'
 import {getArticles, clearArticles, ARTICLE_URL} from '../actions/articles'
 import {getChildArticles,clearParent} from '../actions/childArticles'
-import {setPage, setHomeSelections, getAllSources} from '../actions/filter'
+import {setPage, setHomeSelections, getAllSources, MODEL_VERSIONS, getAllActiveModels} from '../actions/filter'
 import {setChildPage, setChildHomeSelections} from '../actions/childFilter'
 import {getSources, clearSources } from '../actions/sources'
 import * as fromSelect from '../actions/selectArticle'
@@ -43,6 +43,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
+  fetchAllActiveModels: (params = undefined) => dispatch(getAllActiveModels(MODEL_VERSIONS, params)),
   fetchSelect: (id)=>dispatch(fromSelect.getArticle(API_ARTICLE,id)),
   clearSelect: ()=>dispatch(fromSelect.clearArticles()),
   parent_func:{

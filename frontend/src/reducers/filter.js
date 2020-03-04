@@ -5,6 +5,7 @@ import  URL  from  'url-parse'
 import {ASC, DESC} from "../util/util"
 import * as filter from '../actions/filter'
 
+
 let START = new Date();
 START.setHours(0,0,0,0);
 
@@ -20,6 +21,7 @@ const initialState ={
       maxDf:"80",
       threshold:"0",
       loadSources:false,
+      modelChosen:"",
       page:1,
       ordercol:'',
       orderdir:ASC,
@@ -27,6 +29,7 @@ const initialState ={
       previous:null
   },
   sources: [],
+  models:[]
 }
 
 export default (state=initialState, action) => {
@@ -53,6 +56,13 @@ export default (state=initialState, action) => {
             
 
         }
+    case filter.ALL_ACTIVE_MODELS:
+      {
+        return {
+          ...state,
+          models:action.payload,
+        }
+      }
      case filter.ALL_SOURCES:
       {
         return {
@@ -71,7 +81,9 @@ export default (state=initialState, action) => {
 export function getHomeSelections(state){
   return  state.homeSelections
 }
-
 export function sources(state){
   return state.sources
+}
+export function models(state){
+  return state.models
 }

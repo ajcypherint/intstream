@@ -6,7 +6,9 @@ import {setParams, getAll} from './util'
 import {PAGINATION} from '../util/util'
 import {getSources} from './sources'
 
+export const MODEL_VERSIONS="/api/modelversion/"
 export const ALL_SOURCES = '@@filter/TOTAL';
+export const ALL_ACTIVE_MODELS = '@@filter/ALL_ACTIVE_MODELS';
 export const HOME = '@@filter/HOME';
 export const PAGE = '@@filter/PAGE';
 
@@ -34,6 +36,13 @@ export const totalSources = (data) =>{
     payload:data
   }
 }
+export const totalActiveModels= (data) =>{
+
+  return {
+    type:ALL_ACTIVE_MODELS,
+    payload:data
+  }
+}
 export const getfilter= (url, params=undefined)=>{
   // filters - list[string]
   url = setParams(url,params)
@@ -50,4 +59,6 @@ export const getfilter= (url, params=undefined)=>{
   }
 }
 }
+
 export const getAllSources = getAll(getfilter)(totalSources);
+export const getAllActiveModels= getAll(getfilter)(totalActiveModels);

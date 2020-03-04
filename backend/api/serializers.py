@@ -102,6 +102,36 @@ class SourceSerializerNested(serializers.Serializer):
         }
         """
 
+class MLModelOnlySerializer(serializers.ModelSerializer):
+     class Meta:
+        fields=[
+            'id',
+            'name',
+            'created_date',
+            'active',
+            'train_lock',
+            'script_directory',
+            'organization',
+        ]
+
+        model = MLModel
+
+
+
+class HomeSerializer(serializers.ModelSerializer):
+    mlmodel = serializers.CharField()
+    mlmodel_id = serializers.IntegerField()
+    class Meta:
+        fields=[
+            'id',
+            'name',
+            'active',
+            'organization',
+            'mlmodel',
+            "mlmodel_id"
+
+        ]
+        model = Source
 
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -115,10 +145,12 @@ class SourceSerializer(serializers.ModelSerializer):
         model = Source
 
 
-class HomeFilter(serializers.BaseSerializer):
+class HomeFilterSerializer(serializers.BaseSerializer):
     id = serializers.IntegerField()
     name = serializers.CharField(max_length=100)
     active = serializers.BooleanField()
+    mlmodel = serializers.CharField(max_length=1000,)
+
 
 
 class MLModelSerializer(serializers.ModelSerializer):
@@ -402,6 +434,7 @@ class PredictionSerializer(serializers.ModelSerializer):
 
 
 class ModelVersionSerializer(serializers.ModelSerializer):
+    model = MLModelOnlySerializer(read_only=True)
     class Meta:
         fields = ("model",
                   "organization",
@@ -412,6 +445,7 @@ class ModelVersionSerializer(serializers.ModelSerializer):
                   "task",
                   "status",
                   "file",
+                  "active",
                   "metric_value")
 
         model = ModelVersion

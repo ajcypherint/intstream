@@ -7,7 +7,12 @@ export const ASC = ''
 export const DESC = '-'
 
 
- 
+//todo(aj) add model; filter target=True
+//model is parameter
+//&prediction__mlmodel= 
+//hard code prediction true **if model != ""
+//&prediction__target=true
+
 export function dateString(
   orderdir,
   ordercol,

@@ -6,9 +6,7 @@ import Paginate from './Paginate'
 import {NONE} from "../reducers/trainFilter"
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
-import { Link } from 'react-router-dom';
-import TrueFalse from "./TrueFalse"
-
+import { Link } from 'react-router-dom'; import TrueFalse from "./TrueFalse" 
 export default class extends Component {
   constructor(props){
     super(props)
@@ -211,6 +209,8 @@ export default class extends Component {
     const counts = this.props.classifCounts
     const true_pct = (counts.true_count / counts.total) * 100
     const false_pct = (counts.false_count / counts.total) * 100
+    const create_disabled = selections.mlmodelChosen == NONE || 
+             true_pct < 20.0 || false_pct < 20.0 || counts.total < 10
     let i = 1
     return (
 
@@ -251,7 +251,7 @@ export default class extends Component {
          <Col sm="3" >
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
-           <Input type="select" name="Source" value={selections.sourceChosen} disabled={selections.mlmodelChosen===NONE} id="source_id" onChange={this.handleSourceChange}>
+           <Input type="select" name="Source" value={selections.sourceChosen} disabled={create_disabled} id="source_id" onChange={this.handleSourceChange}>
              <option value={""}>---</option>
              {ids.includes(selections.sourceChosen)===false && selections.sourceChosen!==''? 
                <option value={selections.sourceChosen}>{selections.sourceChosen}</option>:''}
@@ -293,7 +293,7 @@ export default class extends Component {
  
          <Col align="left">
            <Button className="button-brand-primary mb-1" size="md" value={selections.mlmodelChosen}
-             onClick={this.redirect}>Create </Button>
+             onClick={this.redirect} disabled={selections.mlmodelChosen===NONE}>Create </Button>
          </Col>
        </Row>
          <table className={"table table-sm"}>

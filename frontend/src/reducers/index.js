@@ -14,9 +14,10 @@ import list, * as fromList from './listSelections.js'
 import selectArticles, * as fromSelect from "./selectArticles.js"
 import classifications, * as fromClassif from "./classifications"
 import settings, * as fromSettings from "./settings"
-import modelVersions, * as fromModelVersions from "./modelversions"
+import modelVersions, * as fromModelVersions from "./modelversions.js"
 
 export default combineReducers({
+  modelVersions:modelVersions,
   auth: auth,
   filter:filter,
   password:password,
@@ -32,9 +33,8 @@ export default combineReducers({
   selectArticles:selectArticles,
   classifications:classifications,
   settings:settings,
-  modelVersions:modelVersions
 })
-
+export const getVerLoading = state =>fromModelVersions.loading(state.modelVersions)
 //fromAuth
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
 export const get_username = state => fromAuth.get_username(state.auth)
@@ -82,6 +82,7 @@ export const getModelPreviousPage = state => fromModels.previousPage(state.model
 //filter
 export const getHomeArticleSelections = state => fromFilter.getHomeSelections(state.filter)
 export const getFilterSources= state => fromFilter.sources(state.filter)
+export const getFilterModels= state => fromFilter.models(state.filter)
 
 //trainFilter
 export const getTrainSelections = state => fromTrainFilter.getSelections(state.trainFilter)
@@ -127,12 +128,6 @@ export const getSettingsLoading = state => fromSettings.loading(state.settings)
 export const getSettingsSaving = state => fromSettings.saving(state.settings)
 
 //from modelVersions
-export const getModelVersions = state => fromModelVersions.versions(state.modelVersions)
-export const getModelVerNextPage = state => fromModelVersions.nextpage(state.modelVersions)
-export const getModelVerPreviousPage = state => fromModelVersions.previouspage(state.modelVersions)
-export const getModelVerPage = state => fromModelVersions.page(state.modelVersions)
-export const getModelVerErrors = state => fromModelVersions.errors(state.modelVersions)
-export const getModelVerTrainUuid = state => fromModelVersions.trainuuid(state.modelVersions)
 export function withAuth(headers={}) {
   return (state) => ({
     ...headers,

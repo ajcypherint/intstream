@@ -17,6 +17,7 @@ export class Main extends React.Component{
     super(props)
     this.dateString = dateString.bind(this)
     this.handleSourceChange = this.handleSourceChange.bind(this) 
+    this.handleModelChange = this.handleModelChange.bind(this) 
     this.handleStartChange = this.handleStartChange.bind(this)
     this.handleEndChange = this.handleEndChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
@@ -80,6 +81,10 @@ export class Main extends React.Component{
     "&end_upload_date="+selections.endDate.toISOString()+
     "&source__active=true"
     )
+    this.props.fetchAllActiveModels(
+    "version=&model__active=true&active=true"
+    )
+    //modelversion
     this.props.parent_func.fetchArticles(this.dateString(
         selections.orderdir,
         selections.ordercol,
@@ -153,6 +158,25 @@ export class Main extends React.Component{
       "&min_df="+this.props.parent.homeSelections.minDf) 
 
  }
+  handleModelChange(event){
+    let selections = this.props.parent.homeSelections
+    this.props.parent_func.setHomeSelections({
+      modelChosen:event.target.value,
+      page:1
+      })
+    this.props.parent_func.fetchArticles(dateString(selections.orderdir,
+      selections.ordercol,
+      selections.sourceChosen,
+      1,
+      selections.startDate,
+      selections.endDate,
+      selections.threshold) 
+      +"&max_df="+selections.maxDf
+      +"&min_df="+selections.minDf) 
+
+   this.props.child_func.clearParent()
+
+  }
   handleSourceChange(event){
     //last filter.  do not need to unset others
     event.preventDefault()
@@ -198,7 +222,10 @@ export class Main extends React.Component{
     const next = this.props.parent.articleNext ;
     const previous = this.props.parent.articlePrevious;
     const errors = this.props.parent.articlesErrors || {}
-    const ids = this.props.sourcesList.map(a=>a.id.toString()) ||[]
+    const uniqueModels= _.uniqBy(this.props.sourcesList,'mlmodel_id')
+    const idsModels = uniqueModels.map(a=>a.mlmodel_id.toString()) ||[]
+    const uniqueSources = _.uniqBy(this.props.sourcesList,'id')
+    const ids = uniqueSources.map(a=>a.id.toString()) ||[]
     const threshold_values = []
     for(let i=100;i>=0;i-=5){
       threshold_values.push(i)
@@ -222,14 +249,14 @@ export class Main extends React.Component{
           </div>
         </Col>
 
-         <Col sm="2" md="2" lg="5">
+         <Col sm="2" md="2" lg="3">
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
            <Input type="select" name="Source" value={selections.sourceChosen} id="source_id" onChange={this.handleSourceChange}>
              <option  value={""}>---</option>
              {ids.includes(selections.sourceChosen)===false && selections.sourceChosen!==''? 
                <option  value={selections.sourceChosen}>{selections.sourceChosen}</option>:''}
-             {this.props.sourcesList.map((source)=>{
+             {uniqueSources.map((source)=>{
                return ( <option  key={source.id} 
                                 value={source.id}>
                                 {source.name}</option>)
@@ -238,6 +265,23 @@ export class Main extends React.Component{
               </Input> 
 
           </div>
+        </Col>
+        <Col sm="2" md="2" lg="2">
+           <label  htmlFor={"model_id"}>{"Model"}</label> 
+           <div>
+           <Input type="select" name="Model" value={selections.modelChosen} id="model_id" onChange={this.handleModelChange}>
+             <option  value={""}>---</option>
+            {idsModels.includes(selections.modelChosen)===false && selections.modelChosen!==''? 
+               <option  value={selections.modelChosen}>{selections.modelChosen}</option>:''}
+             {uniqueModels.map((model)=>{
+               return ( <option  key={model.mlmodel_id} 
+                                value={model.mlmodel_id}>
+                                {model.mlmodel}</option>)
+             })
+             }
+            
+           </Input> 
+         </div>
         </Col>
         <Col sm="2" md="2" lg="1">
            <label  htmlFor={"threshold"}>{"Max Cluster Dif"}</label> 
@@ -249,7 +293,7 @@ export class Main extends React.Component{
              )}
            </Input>
         </Col>
-        <Col sm="2" md="2" lg="1">
+        <Col sm="1" md="1" lg="1">
            <label  htmlFor={"min_df"}>{"Min Doc Freq"}</label> 
            <Input type="select" name="min_df" disabled={selections.threshold==="0"}
              value={selections.minDf} id="min_df" onChange={this.handleMinDfChange}>
@@ -260,7 +304,7 @@ export class Main extends React.Component{
              )}
            </Input>
         </Col>
-        <Col sm="2" md="2" lg="1">
+        <Col sm="1" md="1" lg="1">
            <label  htmlFor={"max_df"}>{"Max Doc Freq"}</label> 
            <Input type="select" name="max_df" disabled={selections.threshold==="0"}
              value={selections.maxDf} id="max_df" onChange={this.handleMaxDfChange}>

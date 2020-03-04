@@ -60,10 +60,6 @@ export default (state=initialState, action) => {
       return state
   }
 }
-
-export function page(state){
-  return state.page
-}
 export function versions(state){
   return state.versions
 }
