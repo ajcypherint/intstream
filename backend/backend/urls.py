@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from django.http import HttpResponseRedirect
+import debug_toolbar
+
 def redirect(request):
     return HttpResponseRedirect("/intstream")
 
@@ -24,5 +26,7 @@ urlpatterns = [
     path("",redirect),
     path('admin/', admin.site.urls),
     path(API,include('api.urls')),
-    path('accounts/',include('django.contrib.auth.urls'))
+    path('accounts/',include('django.contrib.auth.urls')),
+    path('__debug__/', include(debug_toolbar.urls)),
+
 ]

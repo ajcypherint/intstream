@@ -395,13 +395,18 @@ class TaskResult(serializers.ModelSerializer):
         model = TaskResultMdl
 
 
+class ArticleSub(serializers.ModelSerializer):
+    fields=[
+        "id"
+    ]
+    model = Article
+
 class ClassificationSerializer(serializers.ModelSerializer):
     class Meta:
         fields=(
             "id",
             "target",
-            "article",
-            "mlmodel",
+            "article_id",
             "organization"
         )
         model = Classification
