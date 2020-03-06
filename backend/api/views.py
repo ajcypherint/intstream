@@ -51,10 +51,11 @@ class SourceTypeViewSet(viewsets.ReadOnlyModelViewSet):
 class SourceFilter(filters.FilterSet):
     article___upload_date__gte = filters.IsoDateTimeFilter(field_name="article__upload_date",lookup_expr="gte")
     article___upload_date__lte = filters.IsoDateTimeFilter(field_name="article__upload_date", lookup_expr="lte")
+    article = filters.NumberFilter(field_name="article__id")
 
     class Meta:
         model = models.Source
-        fields = ('id','name','active',"article","mlmodel")
+        fields = ('id','name','active',"mlmodel")
 
 
 class HomeFilterSetting(filters.FilterSet):
@@ -512,9 +513,10 @@ class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
 
 
 class PredictionFilter(filters.FilterSet):
+    article_id = filters.NumberFilter(field_name="article_id")
     class Meta:
         model = models.Prediction
-        fields = ("article_id", "target", "mlmodel", "organization")
+        fields = ("target", "mlmodel", "organization")
 
 
 class PredictionViewSet(OrgViewSet):
@@ -529,10 +531,11 @@ class PredictionViewSet(OrgViewSet):
 
 class ClassificationFilter(filters.FilterSet):
     article_id_in = NumberInFilter(field_name="article_id", lookup_expr=("in"))
+    article_id = filters.NumberFilter(field_name="article_id")
 
     class Meta:
         model = models.Classification
-        fields = ('article_id', 'target', "mlmodel_id",)
+        fields = ('target', "mlmodel_id",)
 
 
 class ClassificationViewSet(OrgViewSet):
@@ -541,11 +544,7 @@ class ClassificationViewSet(OrgViewSet):
     filterset_class = ClassificationFilter
     #filterset causing select *
     def get_queryset(self):
-        return models.Classification.objects.only("id",
-                                                   "article_id",
-                                                   "mlmodel_id",
-                                                   "organization",
-                                                    "target").filter(organization=self.request.user.organization)
+        return models.Classification.objects.filter(organization=self.request.user.organization)
 
 
 class SettingsViewSet(OrgViewSet):

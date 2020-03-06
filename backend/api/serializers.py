@@ -410,6 +410,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
 
 class ClassificationSerializer(serializers.ModelSerializer):
+    article_id = serializers.IntegerField()
+    mlmodel_id = serializers.IntegerField()
 
     class Meta:
         fields=(
@@ -424,7 +426,7 @@ class ClassificationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         classification, created = Classification.objects.update_or_create(
             article_id = validated_data.get("article_id", None),
-            mlmodel_id= validated_data.get("mlmodel_id", None),
+            mlmodel_id = validated_data.get("mlmodel_id", None),
             organization = validated_data.get("organization", None),
             defaults={
                 "target":validated_data.get("target", None)
