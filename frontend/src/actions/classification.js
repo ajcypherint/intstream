@@ -85,11 +85,11 @@ export const getClassifications = (url,params=undefined)=>{
 
 export const getCounts = (mlmodel)=>{
  return async (dispatch, getState)=>{
-   let true_resp = await dispatch(getClassifications(BASE_URL, "mlmodel="+mlmodel+"&target=true"))
+   let true_resp = await dispatch(getClassifications(BASE_URL, "mlmodel_id="+mlmodel+"&target=true"))
    if (true_resp.error) {
      throw new Error("Promise flow received action error", true_resp);
    }
-   let false_resp = await dispatch(getClassifications(BASE_URL, "mlmodel="+mlmodel+"&target=false"))
+   let false_resp = await dispatch(getClassifications(BASE_URL, "mlmodel_id="+mlmodel+"&target=false"))
      if (false_resp.error) {
        throw new Error("Promise flow received action error", false_resp);
    }
@@ -132,8 +132,8 @@ export const setClassification= ( mlmodel,
                                  target,
                                  method='POST' )=>{
   let data = {
-    article:article,
-    mlmodel:mlmodel,
+    article_id:article,
+    mlmodel_id:mlmodel,
     target:target
     }
   // filters - list[string]
@@ -184,7 +184,7 @@ export const totalClassificationsRequest = ()=> {
 export const getArticleParams = (articles,mlmodel) =>{
   // articles list[int]
   let total_params = ""
-  total_params="mlmodel="+mlmodel+"&article_id_in="+articles.join(",")
+  total_params="mlmodel_id="+mlmodel+"&article_id_in="+articles.join(",")
   return total_params
 
 }

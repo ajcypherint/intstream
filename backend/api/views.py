@@ -528,11 +528,11 @@ class PredictionViewSet(OrgViewSet):
 
 
 class ClassificationFilter(filters.FilterSet):
-    article_id_in = NumberInFilter(field_name="article__id", lookup_expr=("in"))
+    article_id_in = NumberInFilter(field_name="article_id", lookup_expr=("in"))
 
     class Meta:
         model = models.Classification
-        fields = ('article__id', 'target', "mlmodel__id",)
+        fields = ('article_id', 'target', "mlmodel_id",)
 
 
 class ClassificationViewSet(OrgViewSet):
@@ -540,7 +540,6 @@ class ClassificationViewSet(OrgViewSet):
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     serializer_class = serializers.ClassificationSerializer
     filterset_class = ClassificationFilter
-
     def get_queryset(self):
         return models.Classification.objects.filter(organization=self.request.user.organization)
 

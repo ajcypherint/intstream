@@ -222,8 +222,14 @@ export class Main extends React.Component{
     const next = this.props.parent.articleNext ;
     const previous = this.props.parent.articlePrevious;
     const errors = this.props.parent.articlesErrors || {}
+    
     const uniqueModels= _.uniqBy(this.props.sourcesList,'mlmodel_id')
-    const idsModels = uniqueModels.map(a=>a.mlmodel_id.toString()) ||[]
+    let idsModels = []
+    for (let i=0; i<uniqueModels.length;i++){
+      if(uniqueModels[i].mlmodel_id){
+        idsModels.push(uniqueModels[i].mlmodel.toString())
+      }
+    }
     const uniqueSources = _.uniqBy(this.props.sourcesList,'id')
     const ids = uniqueSources.map(a=>a.id.toString()) ||[]
     const threshold_values = []

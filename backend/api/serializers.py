@@ -232,6 +232,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         ]
         model = Article
 
+
 class PDFSerializer(serializers.ModelSerializer):
     source = SourceSerializer(read_only=True)
     article_set = ArticleSerializer(many=True, read_only=True)
@@ -394,34 +395,10 @@ class TaskResult(serializers.ModelSerializer):
         )
         model = TaskResultMdl
 
-
-class ArticleSub(serializers.ModelSerializer):
-    fields=[
-        "id"
-    ]
-    model = Article
-
-class ClassificationSerializer(serializers.ModelSerializer):
+class ArticleIDSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=(
-            "id",
-            "target",
-            "article_id",
-            "organization"
-        )
-        model = Classification
-
-    def create(self, validated_data):
-        classification, created = Classification.objects.update_or_create(
-            article = validated_data.get("article", None),
-            mlmodel = validated_data.get("mlmodel", None),
-            organization = validated_data.get("organization", None),
-            defaults={
-                "target":validated_data.get("target", None)
-            }
-            )
-        return classification
-
+        fields=("id",)
+        model = Article
 
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -430,6 +407,34 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "name"
         )
         model = Organization
+
+
+class ClassificationSerializer(serializers.ModelSerializer):
+    article_id = serializers.IntegerField()
+    mlmodel_id = serializers.IntegerField()
+
+    class Meta:
+        fields=(
+            "id",
+            "target",
+            "article_id",
+            "mlmodel_id",
+            "organization"
+        )
+        model = Classification
+        depth = 0
+
+    def create(self, validated_data):
+        classification, created = Classification.objects.update_or_create(
+            article_id = validated_data.get("article_id", None),
+            mlmodel_id= validated_data.get("mlmodel_id", None),
+            organization = validated_data.get("organization", None),
+            defaults={
+                "target":validated_data.get("target", None)
+            }
+            )
+        return classification
+
 
 
 class PredictionSerializer(serializers.ModelSerializer):

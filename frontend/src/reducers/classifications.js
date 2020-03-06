@@ -36,7 +36,7 @@ const addResults = (payloadResults, classif)=>{
   let new_classif={...classif}
   for(let i = 0;i<payloadResults.length;i++){
     let entry = {...payloadResults[i]}
-    new_classif= add(payloadResults[i].article,
+    new_classif= add(payloadResults[i].article_id,
                           entry,
                              new_classif)
   }
