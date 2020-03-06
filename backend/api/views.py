@@ -514,7 +514,7 @@ class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
 class PredictionFilter(filters.FilterSet):
     class Meta:
         model = models.Prediction
-        fields = ("article", "target", "mlmodel", "organization")
+        fields = ("article_id", "target", "mlmodel", "organization")
 
 
 class PredictionViewSet(OrgViewSet):
@@ -537,11 +537,15 @@ class ClassificationFilter(filters.FilterSet):
 
 class ClassificationViewSet(OrgViewSet):
     permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     serializer_class = serializers.ClassificationSerializer
     filterset_class = ClassificationFilter
+    #filterset causing select *
     def get_queryset(self):
-        return models.Classification.objects.filter(organization=self.request.user.organization)
+        return models.Classification.objects.only("id",
+                                                   "article_id",
+                                                   "mlmodel_id",
+                                                   "organization",
+                                                    "target").filter(organization=self.request.user.organization)
 
 
 class SettingsViewSet(OrgViewSet):

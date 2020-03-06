@@ -410,8 +410,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
 
 class ClassificationSerializer(serializers.ModelSerializer):
-    article_id = serializers.IntegerField()
-    mlmodel_id = serializers.IntegerField()
 
     class Meta:
         fields=(
@@ -422,7 +420,6 @@ class ClassificationSerializer(serializers.ModelSerializer):
             "organization"
         )
         model = Classification
-        depth = 0
 
     def create(self, validated_data):
         classification, created = Classification.objects.update_or_create(
@@ -439,7 +436,7 @@ class ClassificationSerializer(serializers.ModelSerializer):
 
 class PredictionSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=("article", "target", "mlmodel", "organization")
+        fields=("article_id", "target", "mlmodel", "organization")
         model = Prediction
 
 
