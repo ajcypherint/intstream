@@ -28,76 +28,35 @@ export class Main extends React.Component{
     this.handleMinDfChange = this.handleMinDfChange.bind(this)
   }
   handleMaxDfChange(event){
-    this.props.parent_func.setHomeSelections({
+    //again here we set selections then fetch
+    let selections = {
+      ...this.props.parent.homeSelections,
       maxDf:event.target.value,
-    })
-    this.props.parent_func.fetchArticles(this.dateString(
-      this.props.parent.homeSelections.orderdir,// orderdir
-      this.props.parent.homeSelections.ordercol, // ordercol 
-      this.props.parent.homeSelections.sourceChosen,// sourceChosen
-      1,  // page //probably fewer pages
-      this.props.parent.homeSelections.startDate,
-      this.props.parent.homeSelections.endDate,
-      this.props.parent.homeSelections.threshold,
-    )+"&max_df="+event.target.value+"&min_df="+this.props.parent.homeSelections.minDf) 
+    }
+    this.props.filterChange(selections)
   }
   handleMinDfChange(event){
-    this.props.parent_func.setHomeSelections({
+    //again here we set selections then fetch
+    let selections = {
+      ...this.props.parent.homeSelections,
       minDf:event.target.value,
-    })
-    this.props.parent_func.fetchArticles(this.dateString(
-      this.props.parent.homeSelections.orderdir,// orderdir
-      this.props.parent.homeSelections.ordercol, // ordercol 
-      this.props.parent.homeSelections.sourceChosen,// sourceChosen
-      1,  // page //probably fewer pages
-      this.props.parent.homeSelections.startDate,
-      this.props.parent.homeSelections.endDate,
-      this.props.parent.homeSelections.threshold,
-    )+"&max_df="+this.props.parent.homeSelections.maxDf+"&min_df="+event.target.value) 
+    }
+    this.props.filterChange(selections)
   }
   handleThresholdChange(event){
-    this.props.parent_func.setHomeSelections({
+    //again here we set selections then fetch
+    let selections = {
+      ...this.props.parent.homeSelections,
       page:1,
       threshold:event.target.value
-    })
-    this.props.parent_func.fetchArticles(this.dateString(
-      this.props.parent.homeSelections.orderdir,// orderdir
-      this.props.parent.homeSelections.ordercol, // ordercol 
-      this.props.parent.homeSelections.sourceChosen,// sourceChosen
-      1,  // page //probably fewer pages
-      this.props.parent.homeSelections.startDate,
-      this.props.parent.homeSelections.endDate,
-      event.target.value
-    )+"&max_df="+this.props.parent.homeSelections.maxDf
-      +"&min_df="+this.props.parent.homeSelections.minDf) 
-
+    }
+    this.props.filterChange(selections)
     this.props.child_func.clearParent()
   }
   componentDidMount() {
     let selections = this.props.parent.homeSelections
-    //todo() ordering
-    this.props.fetchAllSources(
-    "start_upload_date="+selections.startDate.toISOString()+
-    "&end_upload_date="+selections.endDate.toISOString()+
-    "&source__active=true"
-    )
-    this.props.fetchAllActiveModels(
-    "version=&model__active=true&active=true"
-    )
-    //modelversion
-    this.props.parent_func.fetchArticles(this.dateString(
-        selections.orderdir,
-        selections.ordercol,
-        selections.sourceChosen,
-        selections.page,
-        selections.startDate,
-      selections.endDate,
-      selections.threshold)
-      +"&max_df="+selections.maxDf
-      +"&min_df="+selections.minDf) 
-
+    this.props.filterChange(selections)
   }
- 
   handleStartChange(date){
     let selections = this.props.parent.homeSelections
     this.updateDate(date,selections.endDate, true)
@@ -131,89 +90,43 @@ export class Main extends React.Component{
     startDate.setHours(0,0,0,0);
     endDate.setHours(23,59,59,999);
         
-    // fetch all cascading filters
-    // todoaj(foreach cascading insert here
-    // refactor filter components in to one large component
-    this.props.fetchAllSources(
-    "start_upload_date="+startDate.toISOString()+
-    "&end_upload_date="+endDate.toISOString()+
-    "&source__active=true"
-    )
-    // update cascading filters
-    this.props.parent_func.setHomeSelections({
+    //Would be simpler to set selections first.
+    //then fetchallsources
+    //then fetchallarticles
+    //using a thunk
+    //
+    //again here we set selections then fetchAllSources, fetchArticles
+    let selections = {
+      ...this.props.parent.homeSelections,
       page:1,
       startDate:startDate,
       endDate:endDate,
-      })
-    //fetch articles 
-    this.props.parent_func.fetchArticles(this.dateString(
-      this.props.parent.homeSelections.orderdir,// orderdir
-      this.props.parent.homeSelections.ordercol, // ordercol 
-      this.props.parent.homeSelections.sourceChosen,// sourceChosen
-      1,  // page
-      startDate,
-      endDate,
-      this.props.parent.homeSelections.threshold
-    )+"&max_df="+this.props.parent.homeSelections.maxDf+
-      "&min_df="+this.props.parent.homeSelections.minDf) 
-
- }
+      }
+    this.props.filterChange(selections)
+  }
   handleModelChange(event){
-    let selections = this.props.parent.homeSelections
-    this.props.parent_func.setHomeSelections({
-      modelChosen:event.target.value,
-      page:1
-      })
-    this.props.parent_func.fetchArticles(dateString(selections.orderdir,
-      selections.ordercol,
-      selections.sourceChosen,
-      1,
-      selections.startDate,
-      selections.endDate,
-      selections.threshold) 
-      +"&max_df="+selections.maxDf
-      +"&min_df="+selections.minDf) 
-
-   this.props.child_func.clearParent()
-
+    let selections ={
+      ...this.props.parent.homeSelections,
+      modelChosen:event.target.value
+    }
+    //again here we set selections then fetch
+    this.props.filterChange(selections)
+    this.props.child_func.clearParent()
   }
   handleSourceChange(event){
-    //last filter.  do not need to unset others
-    event.preventDefault()
-    let selections = this.props.parent.homeSelections
-    this.props.parent_func.setHomeSelections({
+    //again we set selections then fetchArticles
+    let selections = {
+      ...this.props.parent.homeSelections,
       sourceChosen:event.target.value,
       page:1
-      })
-    this.props.parent_func.fetchArticles(dateString(selections.orderdir,
-      selections.ordercol,
-      event.target.value,
-      1,
-      selections.startDate,
-      selections.endDate,
-      selections.threshold) 
-      +"&max_df="+selections.maxDf
-      +"&min_df="+selections.minDf) 
-
-
-   this.props.child_func.clearParent()
+    }
+    this.props.filterChange(selections)
+    this.props.child_func.clearParent()
   }
   onSubmit(event){
     event.preventDefault()
   } 
-  fetch(selections,page){
-    this.props.parent_func.fetchArticles(dateString(
-      selections.orderdir,
-      selections.ordercol,
-      selections.sourceChosen,
-      page,
-      selections.startDate,
-      selections.endDate,
-      selections.threshold)
-      +"&max_df="+selections.maxDf
-      +"&min_df="+selections.minDf) 
 
-  }
   render(){
     let selections = this.props.parent.homeSelections
     const articles = this.props.parent.articlesList || [];
@@ -227,7 +140,7 @@ export class Main extends React.Component{
     let idsModels = []
     for (let i=0; i<uniqueModels.length;i++){
       if(uniqueModels[i].mlmodel_id){
-        idsModels.push(uniqueModels[i].mlmodel.toString())
+        idsModels.push(uniqueModels[i].mlmodel_id.toString())
       }
     }
     const uniqueSources = _.uniqBy(this.props.sourcesList,'id')
@@ -328,6 +241,7 @@ export class Main extends React.Component{
   </FormGroup>
       </Form>
       <Children 
+          filterChange={this.props.filterChange}
           parent_func={this.props.parent_func}
           level={0}
           child={this.props.child}

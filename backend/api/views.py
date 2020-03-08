@@ -58,19 +58,6 @@ class SourceFilter(filters.FilterSet):
         fields = ('id','name','active',"mlmodel")
 
 
-class HomeFilterSetting(filters.FilterSet):
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
-    class Meta:
-        model = models.Article
-        fields = ("source","source__active",
-                  "prediction__mlmodel",
-                  "prediction__target",
-                  "prediction__mlmodel__active",
-                  "prediction__mlmodel__modelversion__active",
-                  )
-
-
 class RandomUnclassified(APIView):
 
     permission_classes = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
@@ -107,6 +94,19 @@ class RandomUnclassified(APIView):
                                                source__mlmodel=int(model_id))[random_index]
         serial = serializers.ArticleSerializer(models.Article.objects.filter(id=object.id),many=True)
         return Response(serial.data)
+
+
+class HomeFilterSetting(filters.FilterSet):
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
+    class Meta:
+        model = models.Article
+        fields = ("source","source__active",
+                  "prediction__mlmodel",
+                  "prediction__target",
+                  "prediction__mlmodel__active",
+                  "prediction__mlmodel__modelversion__active",
+                  )
 
 
 class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -239,6 +239,12 @@ class Train(APIView):
 class HomePage(APIView):
     permission_classes = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
 
+    prediction__mlmodel = openapi.Parameter('prediction__mlmodel',
+                            in_=openapi.IN_QUERY,
+                            required=True,
+                            description="prediction mlmodel",
+                            type=openapi.TYPE_STRING)
+
     start_date = openapi.Parameter('start_date',
                             in_=openapi.IN_QUERY,
                             required=True,
@@ -329,6 +335,7 @@ class HomePage(APIView):
     def get(self, request, format=None):
         # todo(aj) filter by model id
         # either pass in source ids list to filter by or double nested
+        prediction__mlmodel = self.request.query_params.get("prediction__mlmodel")
         max_df = int(self.request.query_params.get("max_df",80)) / 100.0
         min_df = int(self.request.query_params.get("min_df",0)) / 100.0
         source_id = self.request.query_params.get("source","")
@@ -347,6 +354,9 @@ class HomePage(APIView):
         threshold = threshold / 100.0
         filter_kwargs = {}
         filter_kwargs["organization"] = self.request.user.organization
+        if prediction__mlmodel != "":
+            filter_kwargs["prediction__mlmodel"] = prediction__mlmodel
+            filter_kwargs["prediction__target"] = True
         if source_id != "":
             filter_kwargs["source_id"] = source_id
         if start_date != "":
@@ -542,7 +552,7 @@ class ClassificationViewSet(OrgViewSet):
     permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.ClassificationSerializer
     filterset_class = ClassificationFilter
-    #filterset causing select *
+
     def get_queryset(self):
         return models.Classification.objects.filter(organization=self.request.user.organization)
 

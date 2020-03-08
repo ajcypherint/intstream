@@ -79,15 +79,11 @@ export class Children extends React.Component{
 
   }
   fetch(selections,page){
-    this.props.parent_func.fetchArticles(dateString(
-            selections.orderdir,
-            selections.ordercol,
-            selections.sourceChosen,
-            page,
-            selections.startDate,
-            selections.endDate,
-            selections.threshold
-          ))
+    let newSelections = {
+      ...selections,
+      page:page
+    }
+    this.props.filterChange(newSelections)
   }
   render(){
 
