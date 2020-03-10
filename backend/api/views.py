@@ -335,7 +335,7 @@ class HomePage(APIView):
     def get(self, request, format=None):
         # todo(aj) filter by model id
         # either pass in source ids list to filter by or double nested
-        prediction__mlmodel = self.request.query_params.get("prediction__mlmodel")
+        prediction__mlmodel = self.request.query_params.get("prediction__mlmodel","")
         max_df = int(self.request.query_params.get("max_df",80)) / 100.0
         min_df = int(self.request.query_params.get("min_df",0)) / 100.0
         source_id = self.request.query_params.get("source","")
@@ -356,6 +356,7 @@ class HomePage(APIView):
         filter_kwargs["organization"] = self.request.user.organization
         if prediction__mlmodel != "":
             filter_kwargs["prediction__mlmodel"] = prediction__mlmodel
+            filter_kwargs["prediction__mlmodel__active"] = True
             filter_kwargs["prediction__target"] = True
         if source_id != "":
             filter_kwargs["source_id"] = source_id
@@ -655,9 +656,11 @@ class ArticleFilter(filters.FilterSet):
                 ('title','title'),
                 ('upload_date','upload_date')]
     )
+
     class Meta:
         model = models.Article
-        fields = ('id','source','title','upload_date', 'source__name','prediction__mlmodel','prediction__target')
+        fields = ('id','source','title','upload_date', 'source__name',
+                  'prediction__mlmodel','prediction__target')
 
 
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet):

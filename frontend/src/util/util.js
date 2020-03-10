@@ -22,7 +22,6 @@ export function dateString(
   end,
   threshold
 ){
-  threshold = threshold || ""
   // :param orderdir: str
   // :param ordercol: str
   // :param sourceChosen: str
@@ -36,7 +35,7 @@ export function dateString(
         "&page=" + page +
         "&start_upload_date=" + start.toISOString() +
     "&end_upload_date=" + end.toISOString() +
-    "&threshold=" + threshold
+    (threshold ? "&threshold=" + threshold : "")
 
 
 }

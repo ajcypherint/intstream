@@ -12,12 +12,10 @@ import {PAGINATION, childString, dateString} from '../util/util'
 export function  changesort(column_name, 
                             ASC, 
                             DESC, 
-                            fetch,
                             selections,
                             setHomeSelections,
                             level = 0,
                             parent = undefined,
-                            additional = undefined
   ){
   // column_name: str
   // ASC: str
@@ -25,48 +23,38 @@ export function  changesort(column_name,
   // selections: obj { startDate,endDate,sourceChosen}
   // setHomeSelections: func
   //
+  let path = level === 0 ? 'filter' : 'childFilter'
   let fetch_string = ""
    if (selections.ordercol===column_name) {
       // column matches sort column opposite
       if(selections.orderdir===ASC){
-       setHomeSelections({orderdir:DESC,page:1})
-        //call desc sort
-       fetch_string = dateString(DESC,
-                                column_name,
-                                selections.sourceChosen,
-                                1,
-                                selections.startDate,
-                                selections.endDate,
-                                selections.threshold)+(additional || '')
-
+        let newSelections = {
+          ...selections,
+          orderdir:DESC,
+          page:1
+        }
+       setHomeSelections(newSelections,path, parent)
         }
       else{
-       setHomeSelections({orderdir:ASC,page:1})
-        //call asc sort
-        fetch_string =  dateString(ASC,
-                                   column_name,
-                                   selections.sourceChosen,
-                                   1,
-                                   selections.startDate,
-                                   selections.endDate,
-                                   selections.threshold)+(additional || '') 
-                                  
+        let newSelections = {
+          ...selections,
+          orderdir:ASC,
+          page:1
+        }
+       setHomeSelections(newSelections, path, parent)
       }
     }
     else{
       //sort by this column ascending; first time sorting this column
-      setHomeSelections({ordercol:column_name,orderdir:ASC,page:1}) 
-      fetch_string = dateString(ASC,
-                                column_name,
-                                selections.sourceChosen,
-                                1,
-                                selections.startDate,
-                                selections.endDate,
-                                selections.threshold)+(additional || '')
+      let newSelections = {
+        ...selections,
+        ordercol:column_name,
+        orderdir:ASC,
+        page:1
+      }
+      setHomeSelections(newSelections, path, parent) 
 
-      //call asc sort
-         }
-   level === 0 ? fetch(fetch_string) : fetch(parent,fetch_string)
+    }
   }
   
 

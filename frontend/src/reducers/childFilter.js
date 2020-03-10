@@ -16,6 +16,7 @@ const initialState ={
       startDate: START,
       endDate: END,
       sourceChosen:'',
+      modelChosen:'',
       loadSources:false,
       page:1,
       ordercol:'',

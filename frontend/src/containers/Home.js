@@ -43,7 +43,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
-  filterChange: (selections, page ) => dispatch(filterChange(selections, page)),
+  filterChange: (selections, page, parent=undefined ) => dispatch(filterChange(selections, page, parent)),
   //fetchAllActiveModels: (params = undefined) => dispatch(getAllActiveModels(MODEL_VERSIONS, params)),
   fetchSelect: (id)=>dispatch(fromSelect.getArticle(API_ARTICLE,id)),
   clearSelect: ()=>dispatch(fromSelect.clearArticles()),

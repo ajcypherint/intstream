@@ -6,8 +6,11 @@ import {setParams, getAll} from './util'
 import {PAGINATION, dateString} from '../util/util'
 import {getSources} from './sources'
 import {getArticles, clearArticles, ARTICLE_URL} from '../actions/articles'
+import {setChildHomeSelections} from '../actions/childFilter'
+import {getChildArticles} from '../actions/childArticles'
 
 export const API_HOME_ARTICLES = '/api/homearticles/'
+export const API_ARTICLES = '/api/articles/'
 export const API_FILTER = '/api/homefilter/'
 export const MODEL_VERSIONS="/api/modelversion/"
 export const ALL_SOURCES = '@@filter/TOTAL';
@@ -39,13 +42,7 @@ export const totalSources = (data) =>{
     payload:data
   }
 }
-export const totalActiveModels= (data) =>{
 
-  return {
-    type:ALL_ACTIVE_MODELS,
-    payload:data
-  }
-}
 export const getfilter= (url, params=undefined)=>{
   // filters - list[string]
   url = setParams(url,params)
@@ -64,17 +61,22 @@ export const getfilter= (url, params=undefined)=>{
 }
 
 export const getAllSources = getAll(getfilter)(totalSources);
-export const getAllFilters= getAll(getfilter)(totalActiveModels);
 
-
-export const filterChange = (newSelections)=>{
+export const filterChange = (newSelections, path='filter', parent)=>{
   return async (dispatch, getState)=>{
-    let resp = await dispatch(setHomeSelections(newSelections))
-    if (resp.error) {
-       throw new Error("Promise flow received action error" + resp.error);
+    if (!parent){
+      let resp = await dispatch(setHomeSelections(newSelections))
+      if (resp.error) {
+         throw new Error("Promise flow received action error" + resp.error);
+      }
+    } else {
+      let resp = await dispatch(setChildHomeSelections(newSelections))
+      if (resp.error) {
+         throw new Error("Promise flow received action error" + resp.error);
+      }
     }
     let state = getState()
-    let selections = state.filter.homeSelections
+    let selections = state[path].homeSelections
     state = undefined
     let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
       "&end_upload_date="+selections.endDate.toISOString()+
@@ -84,23 +86,41 @@ export const filterChange = (newSelections)=>{
        (selections.modelChosen !== "" ?
       "&prediction__mlmodel__active=true": "")
     
-    //fetch filters and models
-    resp = await dispatch(getAllSources(API_FILTER, sourceStr))
-    if (resp.error) {
-         throw new Error("Promise flow received action error" +  resp.error);
+    //fetch sources and models; * not just sources but all filters not inc dates *
+    // could ignore this for child
+    if(!parent){
+      let resp = await dispatch(getAllSources(API_FILTER, sourceStr))
+      if (resp.error) {
+           throw new Error("Promise flow received action error" +  resp.error);
+      }
     }
+    
     let articleStr = dateString(selections.orderdir,
       selections.ordercol,
       selections.sourceChosen,
       selections.page,
       selections.startDate,
       selections.endDate,
-      selections.threshold) 
-      +"&max_df="+selections.maxDf
-      +"&min_df="+selections.minDf 
-      +"&prediction__mlmodel="+selections.modelChosen
+      selections.threshold) +
+      (selections.maxDf ? "&max_df="+ selections.maxDf :'') +
+      (selections.MinDf ? "&min_df="+ selections.minDf  : '') +
+      "&prediction__mlmodel=" + selections.modelChosen 
+    
+
     state = getState()
-    return await dispatch(getArticles(API_HOME_ARTICLES, articleStr))
+    if (parent){
+      let {id,title,match} = parent
+      for (const x of match){
+        articleStr+="&article_id_multi="+x
+      }
+    }
+ 
+    //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
+    if (parent){
+      return await dispatch(getChildArticles(parent, API_ARTICLES, articleStr))
+    } else {
+      return await dispatch(getArticles(API_HOME_ARTICLES, articleStr))
+    }
 
   }
 }

@@ -29,15 +29,35 @@ export class Children extends React.Component{
     this.props.clearSelect()
     this.props.fetchSelect(id)
   }
+  // when click on  similar articles
   showChildren(event){
     // call fetch for children based on level
-
     let {parent,level}= event.target.dataset
     let parentobj = JSON.parse(parent) //{id,title}
     let level_int = parseInt(level)
+    let newSelections = {
+      ...this.props.child.homeSelections,
+      startDate:this.props.parent.homeSelections.startDate,
+      endDate:this.props.parent.homeSelections.endDate,
+      sourceChosen:this.props.parent.homeSelections.sourceChosen,
+      modelChosen:this.props.parent.homeSelections.modelChosen,
+      page:1,
+      orderCol:"title"
+    }
+    this.props.child_func.clearParent()
+    this.props.filterChange(newSelections, "childFilter", parentobj)
     //parentobj : {id,title}
+    /*
     if( level== 0){
       this.props.child_func.clearParent()
+      this.props.child_func.setHomeSelections({
+        page:1,
+        orderCol:"title",
+        startDate:this.props.parent.homeSelections.startDate,
+        endDate:this.props.parent.homeSelections.endDate,
+        sourceChosen:this.props.parent.homeSelections.sourceChosen
+        })
+
       this.props.child_func.fetchArticles(parentobj, dateString(
       "",//orderdir
       "title", //ordercol
@@ -46,27 +66,27 @@ export class Children extends React.Component{
       this.props.parent.homeSelections.startDate,
       this.props.parent.homeSelections.endDate,
       ))
-      this.props.child_func.setHomeSelections({
-      page:1,
-      orderCol:"title",
-      startDate:this.props.parent.homeSelections.startDate,
-      endDate:this.props.parent.homeSelections.endDate,
-      sourceChosen:this.props.parent.homeSelections.sourceChosen
-      })
     } else {
-     this.props.parent_func.fetchArticles(parentobj, dateString(
-      "",//orderdir
-      "title", //ordercol
-       this.props.source_chosen,
-      1, //page
-      this.props.start_date,
-      this.props.end_date
-      ))
+      this.props.parent_func.fetchArticles(parentobj, dateString(
+        "",//orderdir
+        "title", //ordercol
+         this.props.source_chosen,
+        1, //page
+        this.props.start_date,
+        this.props.end_date
+        ))
 
     }
+    */
   }
-  
+  // child for paginate 
   childFetch( selections, page){
+    let newSelections = {
+      ...selections,
+      page:page
+    }
+    this.props.filterChange(newSelections, "childFilter",this.props.parent_obj)
+    /*
     this.props.parent_func.fetchArticles(this.props.parent_obj, dateString(
       selections.orderdir,
       selections.ordercol,
@@ -75,9 +95,9 @@ export class Children extends React.Component{
       this.props.start_date,
       this.props.end_date//parent
       ))
-
-
+      */
   }
+  //parent for paginate
   fetch(selections,page){
     let newSelections = {
       ...selections,
@@ -130,28 +150,25 @@ export class Children extends React.Component{
            <tr>
              <td className="hover" onClick={(event)=>{this.changesort("title", 
                ASC, 
-               DESC, 
-               this.props.parent_func.fetchArticles,
+                DESC, 
                selections,
-               this.props.parent_func.setHomeSelections,
+               this.props.filterChange,
                level,
                parent_last_obj
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
              DESC, 
-             this.props.parent_func.fetchArticles,
              selections,
-              this.props.parent_func.setHomeSelections,
+              this.props.filterChange,
               level,
              parent_last_obj
               )}}> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
-             this.props.parent_func.fetchArticles,
              selections,
-             this.props.parent_func.setHomeSelections,
+             this.props.filterChange,
              level,
              parent_last_obj
            )}}>Date</td>
@@ -175,7 +192,7 @@ export class Children extends React.Component{
                     <Match level={level} article={article} showChildren={this.showChildren}/>
                   </td>
                </tr>
-                  {//todo selected article
+                  {
                                  article.id in selectArticles ?
                                   <tr>
                                     {selectArticles[article.id].loading===true?
@@ -192,7 +209,6 @@ export class Children extends React.Component{
                                     }
                                   </tr>
                                    : null
-                                 //if article.id in this.props.selectArticles.keys()
                                }
 
 
@@ -208,12 +224,11 @@ export class Children extends React.Component{
                              start_date={selections.startDate}
                              end_date={selections.endDate}
                              source_chosen={selections.sourceChosen}
-
                              selectArticles={this.props.selectArticles}
                              selectErrors={this.props.selectErrors}
                              fetchSelect={this.props.fetchSelect}
                              clearSelect={this.props.clearSelect}
-
+                             filterChange={this.props.filterChange}
                              level={level+1}/>
                          </td>
                       </tr>
