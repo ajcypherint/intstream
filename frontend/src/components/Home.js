@@ -136,7 +136,8 @@ export class Main extends React.Component{
     const previous = this.props.parent.articlePrevious;
     const errors = this.props.parent.articlesErrors || {}
     
-    const uniqueModels= _.uniqBy(this.props.sourcesList,'mlmodel_id')
+    let uniqueModelsPre= _.uniqBy(this.props.sourcesList,'mlmodel_id')
+    let uniqueModels = uniqueModelsPre.filter((object)=>{ return object.mlmodel!==null})
     let idsModels = []
     for (let i=0; i<uniqueModels.length;i++){
       if(uniqueModels[i].mlmodel_id){
