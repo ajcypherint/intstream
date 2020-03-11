@@ -135,7 +135,7 @@ def train(input_bucket,
     targets = spark.read.json(path.join("s3://", input_bucket, job_name, "targets.json"))
     targets = targets.drop("id")
     res = dfWithSchema.select(col("*"), substring_index(col("file"), "/", -1).alias("id"))
-    joined = res.join(targets, res.id == targets.article, "inner")
+    joined = res.join(targets, res.id == targets.article_id, "inner")
     joined.select("target")
     joined = joined.withColumn("target_int", joined["target"].cast(IntegerType()))
 

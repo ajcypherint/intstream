@@ -466,7 +466,7 @@ def train_model(self,
         # insert job_id into model version
         # model, version, organization
         # todo(aj) pass in callback callback(job_name, status)
-        result = trainer.run(delete=False)
+        result = trainer.run(delete=False, status_callback=update_status)
         mversion = models.ModelVersion.objects.get(version=trainer.job_name)
         mversion.status = result.status
         mversion.save()
