@@ -220,7 +220,7 @@ class Train(APIView):
                 return Response({"detail":field + " is required"}, status=status.HTTP_400_BAD_REQUEST)
         org = self.request.user.organization
         aws_settings = models.Setting.objects.filter(organization=org).get()
-        if len(aws_settings) == 0:
+        if not aws_settings:
             return Response({"detail":"no aws settings configured"}, status=status.HTTP_400_BAD_REQUEST)
         result = tasks.train_model.delay(
                               model=self.request.data["mlmodel"],

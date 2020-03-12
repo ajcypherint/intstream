@@ -358,7 +358,7 @@ def create_virtual_env(script_directory):
             env = None
             if proxy is not None:
                 env={"http_proxy":proxy,"https_proxy":proxy}
-            res = subprocess.run(["python",
+            res = subprocess.run(["python3",
                             "-m",
                             "virtualenv",
                             directory],
@@ -369,12 +369,18 @@ def create_virtual_env(script_directory):
             logger.info("create venv stdout: " + str(res.stdout))
             if res.returncode != 0:
                 raise Create
+            # add PYTHON_PATH to virtual env params
+            env={"VIRTUAL_ENV":directory,
+                     "PATH":os.path.join(directory,"bin") + ":" + os.environ["PATH"],
+                     "PYSPARK_PYTHON":os.path.join(directory,"bin")}
+
             respip = subprocess.run([os.path.join(directory,"bin/python"),
                               "-m",
                               "pip",
                               "install",
                               "-r",
                               os.path.join(settings.AWS_TRAIN_FILES,"requirements.txt")],
+                           env=env,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE)
             logger.info("pip stderr: " + str(respip.stderr))
@@ -382,12 +388,14 @@ def create_virtual_env(script_directory):
             if res.returncode != 0:
                 raise Pip
 
+            # add PYTHON_PATH to virtual env params
             respip2 = subprocess.run([os.path.join(directory,"bin/python"),
                               "-m",
                               "pip",
                               "install",
                               "-r",
                               os.path.join(settings.AWS_TRAIN_FILES,script_directory,"requirements.txt")],
+                           env=env,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE)
             logger.info("pip stderr: " + str(respip2.stderr))
