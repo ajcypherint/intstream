@@ -136,7 +136,7 @@ class ArticleType(models.Model):
 
 class Article(PolymorphicModel):
     source = models.ForeignKey(Source,on_delete=models.CASCADE)
-    title = models.TextField(max_length=256)
+    title = models.TextField(max_length=1000)
     text = models.TextField(blank=True)
     upload_date = models.DateTimeField(default=timezone.now, db_index=True)
     encoding = models.CharField(max_length=15, default='utf8')
@@ -195,8 +195,8 @@ class HtmlArticle(Article):
 class RSSArticle(Article):
 
     description = models.TextField(blank=True, null=True)
-    link = models.URLField()
-    guid = models.CharField(max_length=800,)
+    link = models.URLField(max_length=2000)
+    guid = models.CharField(max_length=2000,)
 
 
 class Setting(models.Model):

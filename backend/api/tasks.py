@@ -97,6 +97,15 @@ async def fetch(url):
         async with session.get(url) as response:
             return await response.text()
 
+PLACEHOLDER_TEXT = "placeholder text for classifier"
+
+
+def fix_text(text):
+    if text is None:
+        return PLACEHOLDER_TEXT
+    if text == '':
+        return PLACEHOLDER_TEXT
+    return text
 
 @shared_task
 def process_entry(post_title,
@@ -138,7 +147,7 @@ def process_entry(post_title,
                                                                active=True)
     for version in active_model_versions:
         directory = version.model.script_directory
-        predictions = classify(directory, [[article.text]], version.id)
+        predictions = classify(directory, [[fix_text(article.text)]], version.id)
         prediction = models.Prediction(article=article,
                                            organization__id=organization_id,
                                            mlmodel=version.model,
@@ -159,11 +168,11 @@ def process_rss_source(source_url, source_id, organization_id):
     for post in data.entries:
         if "id" not in post.keys():
             if "guid" in post.keys():
-                post["id"] = post.guid[0:800]
+                post["id"] = post.guid[0:2000]
             else:
-                post["id"] = post.title[0:200] + source_url[0:600]
+                post["id"] = post.title[0:200] + source_url[0:1800]
         else:
-            post["id"]=str(post.id)[0:800]
+            post["id"]=str(post.id)[0:2000]
         logger.debug("post id:" + str(post.id))
         exists = models.RSSArticle.objects.filter(guid=post.id,
                                                   organization=organization_id).exists()
@@ -178,8 +187,9 @@ def process_rss_source(source_url, source_id, organization_id):
     htmls = loop.run_until_complete(asyncio.gather(*tasks))
     articles = []
     for i, html in enumerate(htmls):
+
         article = models.RSSArticle(
-            title=collect[i].title,
+            title=collect[i].title[0:1000],
             description=collect[i].description,
             guid=collect[i].id,
             link=collect[i].link,
