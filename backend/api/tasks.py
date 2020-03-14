@@ -100,12 +100,6 @@ async def fetch(url):
 PLACEHOLDER_TEXT = "placeholder text for classifier"
 
 
-def fix_text(text):
-    if text is None:
-        return PLACEHOLDER_TEXT
-    if text == '':
-        return PLACEHOLDER_TEXT
-    return text
 
 @shared_task
 def process_entry(post_title,
@@ -147,7 +141,7 @@ def process_entry(post_title,
                                                                active=True)
     for version in active_model_versions:
         directory = version.model.script_directory
-        predictions = classify(directory, [[fix_text(article.text)]], version.id)
+        predictions = classify(directory, [[article.text]], version.id)
         prediction = models.Prediction(article=article,
                                            organization__id=organization_id,
                                            mlmodel=version.model,
@@ -206,6 +200,9 @@ def process_rss_source(source_url, source_id, organization_id):
                                                                model__sources__id=source_id,
                                                                model__active=True,
                                                                active=True)
+    if len(articles) == 0:
+        logger.debug("no articles to classify: " + source_url)
+        return
     #todo(aj) implement paging here to prevent overload
     article_texts = [[i.text] for i in articles]
     org = models.Organization.objects.get(id=organization_id)
