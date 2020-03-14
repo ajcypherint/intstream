@@ -1,4 +1,5 @@
 from rest_framework import serializers
+import json
 from .models import (MLModel, JobSource,
                      TxtArticle,
                      Article, PDFArticle,
@@ -145,12 +146,26 @@ class SourceSerializer(serializers.ModelSerializer):
         model = Source
 
 
-class HomeFilterSerializer(serializers.BaseSerializer):
-    id = serializers.IntegerField()
-    name = serializers.CharField(max_length=100)
-    active = serializers.BooleanField()
-    mlmodel = serializers.CharField(max_length=1000,)
+class HomeFilterSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(max_length=100,read_only=True)
+    active = serializers.BooleanField(read_only=True)
+    mlmodel = serializers.CharField(max_length=1000,read_only=True)
+    mlmodel_id = serializers.IntegerField(read_only=True)
+    mlmodel_active= serializers.BooleanField(read_only=True)
+    target = serializers.BooleanField(read_only=True)
 
+    def to_representation(self, instance):
+        return {
+            "id":instance["id"],
+            "name":instance["name"],
+            "active":instance["active"],
+            "mlmodel":instance["mlmodel"],
+            "mlmodel_id":instance["mlmodel_id"],
+            "mlmodel_active":instance["mlmodel_active"],
+            "target":instance["target"]
+
+        }
 
 
 class MLModelSerializer(serializers.ModelSerializer):

@@ -82,8 +82,7 @@ export const filterChange = (newSelections, path='filter', parent)=>{
       "&end_upload_date="+selections.endDate.toISOString()+
       "&source="+selections.sourceChosen+
       "&source__active=true"+
-      "&prediction__mlmodel="+selections.modelChosen+
-      "&prediction__mlmodel__active=true&prediction__target=true"
+      "&prediction__mlmodel="+selections.modelChosen
     
     //fetch sources and models; * not just sources but all filters not inc dates *
     // could ignore this for child

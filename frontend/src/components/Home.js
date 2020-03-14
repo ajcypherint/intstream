@@ -136,8 +136,14 @@ export class Main extends React.Component{
     const previous = this.props.parent.articlePrevious;
     const errors = this.props.parent.articlesErrors || {}
     
-    let uniqueModelsPre= _.uniqBy(this.props.sourcesList,'mlmodel_id')
-    let uniqueModels = uniqueModelsPre.filter((object)=>{ return object.mlmodel!==null})
+    let uniqueModelsPre= _.uniqBy(this.props.sourcesList,v => [v.mlmodel_id, v.mlmodel_active,v.target].join())
+    let uniqueModels = uniqueModelsPre.filter((object)=>{ 
+      if (object.mlmodel!==null && 
+        object.mlmodel_active===true &&
+        object.target===true){
+          return object
+        }
+      }) // need to also filter out target=true, mlmodel_active=true
     let idsModels = []
     for (let i=0; i<uniqueModels.length;i++){
       if(uniqueModels[i].mlmodel_id){

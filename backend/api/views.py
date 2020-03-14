@@ -106,26 +106,43 @@ class HomeFilterSetting(filters.FilterSet):
                   "prediction__target",
                   "prediction__mlmodel__active",
                   "prediction__mlmodel__modelversion__active",
+                  "prediction__target"
                   )
 
 
 class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
     permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
-    serializer_class = serializers.HomeSerializer
+    serializer_class = serializers.HomeFilterSerializer
     filterset_class = HomeFilterSetting
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
 
     def get_queryset(self):
         return models.Article.objects.filter(organization=self.request.user.organization).\
-            order_by("source__id","prediction__mlmodel__id").\
-            distinct("source__id", "prediction__mlmodel__id").\
-            values("source__name", "source__id", "source__active",
-                   "prediction__mlmodel__name","prediction__mlmodel__id" ).\
+            order_by("source__id",
+                     "prediction__mlmodel__id",
+                     "prediction__target",
+                     "prediction__mlmodel__active",
+                     ).\
+            distinct("source__id",
+                    "prediction__mlmodel__id",
+                    "prediction__target",
+                    "prediction__mlmodel__active",
+                     ).\
+            values("source__name",
+                   "source__id",
+                   "source__active",
+                   "prediction__mlmodel__name",
+                   "prediction__mlmodel__id",
+                   "prediction__target",
+                   "prediction__mlmodel__active",
+                   ).\
             annotate(name=F("source__name"),
                  id=F("source__id"),
                  active=F("source__active"),
                   mlmodel = F("prediction__mlmodel__name"),
-                  mlmodel_id=F("prediction__mlmodel__id")
+                  mlmodel_id=F("prediction__mlmodel__id"),
+                  mlmodel_active=F("prediction__mlmodel__active"),
+                  target=F("prediction__target")
                     )
 
 
