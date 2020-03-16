@@ -1,16 +1,16 @@
 import React from 'react'
 import { FormGroup, FormFeedback, Label, Input } from 'reactstrap';
 
-export default ({name, idList, uniqueList, selections, onChange, ...rest}) => {
+export default ({name, idList, uniqueList, value, onChange, ...rest}) => {
   return (
-       <Input type="select" name={name} value={selections.modelChosen} id={name+"_id"} onChange={this.handleModelChange}>
+       <Input type="select" name={name} value={value} id={name+"_id"} onChange={onChange}>
              <option  value={""}>---</option>
-            {idList.includes(selections.modelChosen)===false && selections.modelChosen!==''? 
-               <option  value={selections.modelChosen}>{selections.modelChosen}</option>:''}
-             {uniqueList.map((model)=>{
-               return ( <option  key={model.mlmodel_id} 
-                                value={model.mlmodel_id}>
-                                {model.mlmodel}</option>)
+            {idList.includes(value)===false && value!==''? 
+               <option  value={value}>{value}</option>:''}
+             {uniqueList.map((item)=>{
+               return ( <option  key={item.id} 
+                                value={item.id}>
+                                {item.name}</option>)
              })
              }
             

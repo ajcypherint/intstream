@@ -11,6 +11,8 @@ import {PAGINATION,childString, dateString, addDays} from '../util/util'
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
 import {Children} from "./Children"
+import Choice from "./Choice"
+import {getUniqueModels} from "../util/util"
 
 export class Main extends React.Component{
   constructor(props){
@@ -135,21 +137,19 @@ export class Main extends React.Component{
     const next = this.props.parent.articleNext ;
     const previous = this.props.parent.articlePrevious;
     const errors = this.props.parent.articlesErrors || {}
-    
-    let uniqueModelsPre= _.uniqBy(this.props.sourcesList,v => [v.mlmodel_id, v.mlmodel_active,v.target].join())
-    let uniqueModels = uniqueModelsPre.filter((object)=>{ 
-      if (object.mlmodel!==null && 
-        object.mlmodel_active===true &&
-        object.target===true){
-          return object
-        }
-      }) // need to also filter out target=true, mlmodel_active=true
+
+    ////////// 
+    //todo(aj) should be a method to be used elsewhere
+    //setup model filter
+    let uniqueModels = getUniqueModels(this.props.sourcesList)
     let idsModels = []
     for (let i=0; i<uniqueModels.length;i++){
-      if(uniqueModels[i].mlmodel_id){
-        idsModels.push(uniqueModels[i].mlmodel_id.toString())
+      if(uniqueModels[i].id){
+        idsModels.push(uniqueModels[i].id.toString())
       }
     }
+    ////////// 
+    
     const uniqueSources = _.uniqBy(this.props.sourcesList,'id')
     const ids = uniqueSources.map(a=>a.id.toString()) ||[]
     const threshold_values = []
@@ -178,36 +178,24 @@ export class Main extends React.Component{
          <Col sm="2" md="2" lg="3">
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
-           <Input type="select" name="Source" value={selections.sourceChosen} id="source_id" onChange={this.handleSourceChange}>
-             <option  value={""}>---</option>
-             {ids.includes(selections.sourceChosen)===false && selections.sourceChosen!==''? 
-               <option  value={selections.sourceChosen}>{selections.sourceChosen}</option>:''}
-             {uniqueSources.map((source)=>{
-               return ( <option  key={source.id} 
-                                value={source.id}>
-                                {source.name}</option>)
-             })
-             }
-              </Input> 
-
-          </div>
+            <Choice name={"Source"} 
+              value={selections.sourceChosen}
+              onChange={this.handleSourceChange}
+              idList={ids}
+              uniqueList={uniqueSources}
+            />
+           </div>
         </Col>
         <Col sm="2" md="2" lg="2">
            <label  htmlFor={"model_id"}>{"Model"}</label> 
            <div>
-           <Input type="select" name="Model" value={selections.modelChosen} id="model_id" onChange={this.handleModelChange}>
-             <option  value={""}>---</option>
-            {idsModels.includes(selections.modelChosen)===false && selections.modelChosen!==''? 
-               <option  value={selections.modelChosen}>{selections.modelChosen}</option>:''}
-             {uniqueModels.map((model)=>{
-               return ( <option  key={model.mlmodel_id} 
-                                value={model.mlmodel_id}>
-                                {model.mlmodel}</option>)
-             })
-             }
-            
-           </Input> 
-         </div>
+             <Choice name={"Model"}
+               value={selections.modelChosen}
+               onChange={this.handleModelChange}
+               idList={idsModels}
+               uniqueList={uniqueModels}
+             />
+        </div>
         </Col>
         <Col sm="2" md="2" lg="1">
            <label  htmlFor={"threshold"}>{"Max Cluster Dif"}</label> 
