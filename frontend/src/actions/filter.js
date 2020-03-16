@@ -100,6 +100,7 @@ export const filterChange = (newSelections, path='filter', parent)=>{
       selections.startDate,
       selections.endDate,
       selections.threshold) +
+      "&source__active=true" +
       (selections.maxDf ? "&max_df="+ selections.maxDf :'') +
       (selections.MinDf ? "&min_df="+ selections.minDf  : '') +
       "&prediction__mlmodel=" + selections.modelChosen 

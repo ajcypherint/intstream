@@ -679,6 +679,7 @@ class ArticleFilter(filters.FilterSet):
     class Meta:
         model = models.Article
         fields = ('id','source','title','upload_date', 'source__name',
+                  'source__active',
                   'prediction__mlmodel','prediction__target')
 
 
@@ -686,7 +687,7 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.ArticleSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','source','title','upload_date', 'source__name', "source_mlmodel")
+    filterset_fields = ('id','source','title','upload_date', 'source__name', "source_mlmodel", "source__active")
     filterset_class = ArticleFilter
 
     def get_queryset(self):
