@@ -149,7 +149,7 @@ def train(input_bucket,
     lr = LogisticRegression(maxIter=20, featuresCol='features', labelCol='target_int')
     pipeline = Pipeline(stages=[cleanhtml, tokenizer, stopremove, count_vec, idf, clean_up, lr])
     paramGrid = ParamGridBuilder() \
-        .addGrid(lr.regParam, [0.1, 0.001]) \
+        .addGrid(lr.regParam, [0.1, .01, 0.001]) \
         .build()
     crossval = CrossValidator(estimator=pipeline,
                               estimatorParamMaps=paramGrid,

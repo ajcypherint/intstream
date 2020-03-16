@@ -831,11 +831,13 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
         return TaskResultMdl.objects.all()
 
 
-class ModelVersionViewSet(viewsets.ReadOnlyModelViewSet):
+class ModelVersionViewSet(viewsets.ModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.ModelVersionSerializer
     filterset_fields = ("id", "version","model__active", "model", "active")
-
+    # todo(aj)
+    # change from readonly
+    # add upsert to serializer
     def get_queryset(self):
         return models.ModelVersion.objects.filter(model__organization=self.request.user.organization)
 
