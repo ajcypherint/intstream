@@ -251,7 +251,7 @@ export default class extends Component {
          <Col sm="3" >
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
-           <Input type="select" name="Source" value={selections.sourceChosen} disabled={create_disabled} id="source_id" onChange={this.handleSourceChange}>
+           <Input type="select" name="Source" value={selections.sourceChosen} disabled={selections.mlmodelChosen===NONEVAL} id="source_id" onChange={this.handleSourceChange}>
              <option value={""}>---</option>
              {ids.includes(selections.sourceChosen)===false && selections.sourceChosen!==''? 
                <option value={selections.sourceChosen}>{selections.sourceChosen}</option>:''}
