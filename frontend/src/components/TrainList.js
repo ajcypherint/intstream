@@ -59,6 +59,9 @@ export default class extends Component {
     if(id!==NONEVAL){
       let selections = this.props.selections
       //todo() ordering add model
+      //set selections
+      //updatefilter
+      //fetcharticlesclassif
       this.props.fetchAllSources(
       "start_upload_date="+selections.startDate.toISOString()+
       "&end_upload_date="+selections.endDate.toISOString()+
@@ -74,7 +77,7 @@ export default class extends Component {
         1,
         selections.startDate,
         selections.endDate,
-        )+"&source__mlmodel="+id) 
+        )+"&source__mlmodel="+id+"&source__active=true") 
 
     } else {
       this.props.clear() //selections
@@ -114,7 +117,10 @@ export default class extends Component {
     }
     startDate.setHours(0,0,0,0);
     endDate.setHours(23,59,59,999);
-        
+    //set selections
+    //updatefilter
+    //fetcharticlesclassif
+ 
     this.props.fetchAllSources(
     "start_upload_date="+startDate.toISOString()+
     "&end_upload_date="+endDate.toISOString()+
@@ -136,7 +142,8 @@ export default class extends Component {
       1,  // page
       startDate,
       endDate,
-    )+ "&source__mlmodel="+this.props.selections.mlmodelChosen)
+      )+"&source__mlmodel="+this.props.selections.mlmodelChosen
+         +"source__active=true")
 
  }
  
@@ -144,6 +151,11 @@ export default class extends Component {
     event.preventDefault()
     //last filter.  do not need to unset others
     let selections = this.props.selections
+
+    //todo(aj) refactor like home page
+    //set selections
+    //updatefilter
+    //fetcharticlesclassif
     this.props.setSelections({
       sourceChosen:event.target.value,
       page:1
@@ -155,7 +167,7 @@ export default class extends Component {
       1,
       selections.startDate,
       selections.endDate,
-      )+ "&source__mlmodel="+selections.mlmodelChosen) 
+      )+ "&source__mlmodel="+selections.mlmodelChosen+"&source__active=true") 
 
   }
   getArticle(event){
@@ -164,6 +176,8 @@ export default class extends Component {
     this.props.fetchSelect(id)
   }
   fetchit(selections,page){
+    //set selections
+    //fetcharticlesclassif
     this.props.fetchArticlesAndClassif(selections.mlmodelChosen,dateString(
             selections.orderdir,
             selections.ordercol,
@@ -171,7 +185,7 @@ export default class extends Component {
             page,
             selections.startDate,
             selections.endDate,
-          )+"&source__mlmodel="+selections.mlmodelChosen)
+          )+"&source__mlmodel="+selections.mlmodelChosen+"&source__active=true")
   }
  
   componentDidMount(){
@@ -190,7 +204,7 @@ export default class extends Component {
             selections.page,
             selections.startDate,
             selections.endDate,
-          )+"&source__mlmodel="+selections.mlmodelChosen)
+          )+"&source__mlmodel="+selections.mlmodelChosen+"&source__active=true")
     }
   }
   render(){
