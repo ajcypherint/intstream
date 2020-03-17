@@ -505,8 +505,11 @@ def train_model(self,
                 value = f.read()
                 model_version.metric_value = float(value)
                 model_version.save()
+            model_version.status = "SUCCESS"
+            model_version.save()
         else:
-            pass
+            model_version.status = "FAILED"
+            model_version.save()
     except Exception as e:
         model_version.status = "FAILED"
         model_version.save()
