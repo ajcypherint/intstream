@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import {Alert, Form, Row, Col, Button, FormGroup, Label, Input} from 'reactstrap';
 import DatePicker from 'react-datepicker'
 import {PAGINATION,dateString, addDays} from '../util/util'
 import Paginate from './Paginate'
-import {NONE,NONEVAL} from "../reducers/trainFilter"
+import {NONE, NONEVAL} from "../reducers/trainFilter"
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
 import { Link } from 'react-router-dom'; import TrueFalse from "./TrueFalse" 
+import Choice from "./Choice"
 export default class extends Component {
   constructor(props){
     super(props)
@@ -14,6 +16,7 @@ export default class extends Component {
     this.handleModelChange = this.handleModelChange.bind(this)
     this.handleStartChange = this.handleStartChange.bind(this)
     this.handleEndChange = this.handleEndChange.bind(this)
+    this.handleTFChange = this.handleTFChange.bind(this)
     this.updateDate = this.updateDate.bind(this)
     this.paginate = Paginate.bind(this)
     this.changesort = changesort.bind(this)
@@ -21,6 +24,8 @@ export default class extends Component {
     this.getArticle = this.getArticle.bind(this)
     this.handleClassifChange = this.handleClassifChange.bind(this)
     this.redirect = this.redirect.bind(this)
+  }
+  handleTFChange(event){
   }
   redirect(event){
     this.props.history.push("/createmlversion/"+event.target.value)
@@ -145,7 +150,7 @@ export default class extends Component {
       )+"&source__mlmodel="+this.props.selections.mlmodelChosen
          +"source__active=true")
 
- }
+  }
  
   handleSourceChange(event){
     event.preventDefault()
@@ -213,7 +218,8 @@ export default class extends Component {
     const classifErrors = this.props.classifErrors || {}
     let selections = this.props.selections || {}
     let models = this.props.modelsList || []
-    const ids = this.props.sourcesList.map(a=>a.id.toString()) ||[]
+    const uniqueSources = _.uniqBy(this.props.sourcesList,'id')
+    const ids = uniqueSources.map(a=>a.id.toString()) ||[]
     const totalcount= this.props.articlesTotalCount ||0;
     const next = this.props.articleNext ;
     const previous = this.props.articlePrevious;
@@ -223,12 +229,13 @@ export default class extends Component {
     const counts = this.props.classifCounts
     const true_pct = (counts.true_count / counts.total) * 100
     const false_pct = (counts.false_count / counts.total) * 100
-    const create_disabled = selections.mlmodelChosen == NONEVAL || 
+    const create_disabled = selections.mlmodelChosen === NONEVAL || 
              true_pct < 20.0 || false_pct < 20.0 || counts.total < 10
-    let i = 1
+    const idsTF = ['t','f']
+    const uniqueTF = [{id:"t",name:"T"},{id:"f",name:"F"}]
     return (
 
-      <div className="container mt-2 col-sm-8 offset-sm-2" >
+      <div className="container mt-2 col-sm-12 " >
 
         {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
         {classifErrors.non_field_errors?<Alert color="danger">{JSON.stringify(classifErrors.non_field_errors)}</Alert>:""}
@@ -249,42 +256,59 @@ export default class extends Component {
            </Input>
 
         </Col>
-        <Col sm="3">
+        <Col sm="2">
           <label  htmlFor={"start_id"}>{"Start Date"}</label>
           <div className = "mb-2 ">
-          <DatePicker style={{width:'100%'}} id={"startDate"} disabled={selections.mlmodelChosen===NONEVAL} selected={selections.startDate} onChange={this.handleStartChange} />
+            <DatePicker style={{width:'100%'}} 
+              id={"startDate"} 
+              disabled={selections.mlmodelChosen===NONEVAL} 
+              selected={selections.startDate} 
+              onChange={this.handleStartChange} />
           </div>
         </Col>
-        <Col sm="3">
+        <Col sm="2">
           <label  htmlFor={"end_id"}>{"End Date"}</label>
           <div className = "mb-2 ">
-          <DatePicker  id={"endDate"}  selected={selections.endDate} disabled={selections.mlmodelChosen===NONEVAL}onChange={this.handleEndChange}/>
+            <DatePicker  style={{width:'100%'}}
+              id={"endDate"}  
+              selected={selections.endDate} 
+              disabled={selections.mlmodelChosen===NONEVAL}
+              onChange={this.handleEndChange}/>
           </div>
         </Col>
+        <Col sm="2">
+          <label  htmlFor={"true_false"}>{"Prediction"}</label>
+          <div className = "mb-2 ">
+            <Choice name={"Prediction"}
+              value={selections.trueFalse}
+              onChange={this.handleTFChange}
+              idList={idsTF}
+              uniqueList={uniqueTF}
+              disabled={create_disabled}
+            />
+          </div>
+        </Col>
+
 
          <Col sm="3" >
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
-           <Input type="select" name="Source" value={selections.sourceChosen} disabled={selections.mlmodelChosen===NONEVAL} id="source_id" onChange={this.handleSourceChange}>
-             <option value={""}>---</option>
-             {ids.includes(selections.sourceChosen)===false && selections.sourceChosen!==''? 
-               <option value={selections.sourceChosen}>{selections.sourceChosen}</option>:''}
-             {this.props.sourcesList.map((source)=>{
-               return ( <option key={source.id} 
-                                value={source.id}>
-                                {source.name}</option>)
-             })
-             }
-              </Input> 
-
-          </div>
+            <Choice name={"Source"} 
+              value={selections.sourceChosen}
+              onChange={this.handleSourceChange}
+              idList={ids}
+              uniqueList={uniqueSources}
+              disabled={create_disabled}
+            />
+           </div>
+ 
         </Col>
  
       </Row>
     </FormGroup>
   </Form> {//this MUST be here.  the paginate function will cause page refreshes
   }
-    <Row>
+    <Row className={"col-sm-8 offset-sm-2"}>
           <Col>
          {this.paginate(totalcount,
            next,
@@ -310,7 +334,7 @@ export default class extends Component {
              onClick={this.redirect} disabled={create_disabled}>Create </Button>
          </Col>
        </Row>
-         <table className={"table table-sm"}>
+         <table className={"table table-sm col-sm-8 offset-sm-2"}>
          <thead>
            <tr>
              <td className="hover" onClick={(event)=>{this.changesort("title", 

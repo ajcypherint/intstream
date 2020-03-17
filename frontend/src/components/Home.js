@@ -179,6 +179,7 @@ export class Main extends React.Component{
            <label  htmlFor={"source_id"}>{"Source"}</label> 
           <div >
             <Choice name={"Source"} 
+              disabled={false}
               value={selections.sourceChosen}
               onChange={this.handleSourceChange}
               idList={ids}
@@ -190,6 +191,7 @@ export class Main extends React.Component{
            <label  htmlFor={"model_id"}>{"Model"}</label> 
            <div>
              <Choice name={"Model"}
+               disabled={false}
                value={selections.modelChosen}
                onChange={this.handleModelChange}
                idList={idsModels}

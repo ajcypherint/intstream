@@ -23,7 +23,8 @@ const initialState ={
       ordercol:NONEVAL,
       orderdir:ASC,
       next:null,
-      previous:null
+      previous:null,
+      trueFalse:''
   },
   sources: [],
   mlmodels:[],
