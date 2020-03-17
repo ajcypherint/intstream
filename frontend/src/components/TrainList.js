@@ -286,7 +286,7 @@ export default class extends Component {
               onChange={this.handleTFChange}
               idList={idsTF}
               uniqueList={uniqueTF}
-              disabled={create_disabled}
+              disabled={selections.mlmodelChosen===NONEVAL}
             />
           </div>
         </Col>
@@ -300,7 +300,7 @@ export default class extends Component {
               onChange={this.handleSourceChange}
               idList={ids}
               uniqueList={uniqueSources}
-              disabled={create_disabled}
+              disabled={selections.mlmodelChosen===NONEVAL}
             />
            </div>
  
