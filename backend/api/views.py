@@ -824,7 +824,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     filterset_fields = ("id", "name")
 
     def get_queryset(self):
-        return models.Organization.objects.all()
+        return models.Organization.objects.filter(id=self.request.user.organization.id).all()
 
 
 class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):

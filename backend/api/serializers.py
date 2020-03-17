@@ -461,6 +461,7 @@ class ModelVersionSerializer(serializers.ModelSerializer):
     model = MLModelOnlySerializer(read_only=True)
     class Meta:
         fields = ("model",
+                  "id",
                   "organization",
                   "version",
                  "celery_log",
