@@ -3,7 +3,7 @@ import {Alert, Form, Row, Col, Button, FormGroup, Label, Input} from 'reactstrap
 import DatePicker from 'react-datepicker'
 import {PAGINATION,dateString, addDays} from '../util/util'
 import Paginate from './Paginate'
-import {NONE} from "../reducers/trainFilter"
+import {NONE,NONEVAL} from "../reducers/trainFilter"
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL} from "../util/util"
 import { Link } from 'react-router-dom'; import TrueFalse from "./TrueFalse" 
@@ -56,7 +56,7 @@ export default class extends Component {
     event.preventDefault()
     let id = event.target.value
     this.props.clearClassif()
-    if(id!==NONE){
+    if(id!==NONEVAL){
       let selections = this.props.selections
       //todo() ordering add model
       this.props.fetchAllSources(
@@ -179,7 +179,7 @@ export default class extends Component {
     this.props.clearClassif()
     this.props.fetchAllMLModels("ordering=name&active=true")
     let selections = this.props.selections
-    if (selections.mlmodelChosen===NONE){
+    if (selections.mlmodelChosen===NONEVAL){
       this.props.clearArticles()
     } else {
       this.props.fetchArticlesAndClassif(selections.mlmodelChosen,
@@ -209,7 +209,7 @@ export default class extends Component {
     const counts = this.props.classifCounts
     const true_pct = (counts.true_count / counts.total) * 100
     const false_pct = (counts.false_count / counts.total) * 100
-    const create_disabled = selections.mlmodelChosen == NONE || 
+    const create_disabled = selections.mlmodelChosen == NONEVAL || 
              true_pct < 20.0 || false_pct < 20.0 || counts.total < 10
     let i = 1
     return (
@@ -224,7 +224,7 @@ export default class extends Component {
         <Col sm="3" >
           <label  htmlFor={"model_id"}>{"Model"}</label>
            <Input type="select" name="Model" value={selections.mlmodelChosen} id="model_id" onChange={this.handleModelChange}>
-                <option value={NONE}>{NONE}</option>
+                <option value={NONEVAL}>{NONE}</option>
              {
              models.map((model, index)=>{
               return (
@@ -238,13 +238,13 @@ export default class extends Component {
         <Col sm="3">
           <label  htmlFor={"start_id"}>{"Start Date"}</label>
           <div className = "mb-2 ">
-          <DatePicker style={{width:'100%'}} id={"startDate"} disabled={selections.mlmodelChosen===NONE} selected={selections.startDate} onChange={this.handleStartChange} />
+          <DatePicker style={{width:'100%'}} id={"startDate"} disabled={selections.mlmodelChosen===NONEVAL} selected={selections.startDate} onChange={this.handleStartChange} />
           </div>
         </Col>
         <Col sm="3">
           <label  htmlFor={"end_id"}>{"End Date"}</label>
           <div className = "mb-2 ">
-          <DatePicker  id={"endDate"}  selected={selections.endDate} disabled={selections.mlmodelChosen===NONE}onChange={this.handleEndChange}/>
+          <DatePicker  id={"endDate"}  selected={selections.endDate} disabled={selections.mlmodelChosen===NONEVAL}onChange={this.handleEndChange}/>
           </div>
         </Col>
 
@@ -293,7 +293,7 @@ export default class extends Component {
  
          <Col align="left">
            <Button className="button-brand-primary mb-1" size="md" value={selections.mlmodelChosen}
-             onClick={this.redirect} disabled={selections.mlmodelChosen===NONE}>Create </Button>
+             onClick={this.redirect} disabled={create_disabled}>Create </Button>
          </Col>
        </Row>
          <table className={"table table-sm"}>
