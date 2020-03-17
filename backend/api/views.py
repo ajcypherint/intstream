@@ -289,7 +289,6 @@ class HomePage(APIView):
                             description="source_id",
                             type=openapi.TYPE_INTEGER)
 
-
     response = openapi.Response('articles',
             openapi.Schema( type=openapi.TYPE_ARRAY,
                             items=openapi.Schema(type=openapi.TYPE_OBJECT,
@@ -358,6 +357,7 @@ class HomePage(APIView):
         max_df = int(self.request.query_params.get("max_df",80)) / 100.0
         min_df = int(self.request.query_params.get("min_df",0)) / 100.0
         source_id = self.request.query_params.get("source","")
+        source__active = self.request.query_params.get("source__active",True)
         start_date = self.request.query_params.get("start_upload_date","")
         end_date = self.request.query_params.get("end_upload_date","")
         order_by = self.request.query_params.get("ordering","id")
@@ -373,6 +373,7 @@ class HomePage(APIView):
         threshold = threshold / 100.0
         filter_kwargs = {}
         filter_kwargs["organization"] = self.request.user.organization
+        filter_kwargs["source__active"] = True
         if prediction__mlmodel != "":
             filter_kwargs["prediction__mlmodel"] = prediction__mlmodel
             filter_kwargs["prediction__mlmodel__active"] = True
