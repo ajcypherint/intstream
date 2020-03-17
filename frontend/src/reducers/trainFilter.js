@@ -16,11 +16,11 @@ const initialState ={
   Selections: {
       startDate: START,
       endDate: END,
-      mlmodelChosen:NONE,
-      sourceChosen:'',
+      mlmodelChosen:NONEVAL,
+      sourceChosen:NONEVAL,
       loadSources:false,
       page:1,
-      ordercol:'',
+      ordercol:NONEVAL,
       orderdir:ASC,
       next:null,
       previous:null

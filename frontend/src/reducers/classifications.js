@@ -77,6 +77,7 @@ export default (state=initialState, action) => {
     case classif.GET_CLASSIFICATIONS_FAILURE:
       {
         return {
+          ...state,
           classif:{},
           totalLoading:false,
           errors: action.payload.response || {'non_field_errors': action.payload.statusText},
