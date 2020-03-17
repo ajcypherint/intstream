@@ -7,6 +7,29 @@ export const ALL = "---"
 export const ASC = ''
 export const DESC = '-'
 
+export function getUniqueTrainListTF(filterArray){
+  let uniqueTFPre= _.uniqBy(filterArray,v => [v.target].join())
+  let uniqueTFPre2 = uniqueTFPre.filter((object)=>{ 
+    if (object.target!==null )
+      {
+      return true
+    } else {
+      return false
+    }
+    }) // need to also filter out target=true, mlmodel_active=true
+  let uniqueModels = []
+  for( let i=0; i<uniqueTFPre2.length;i++){
+    let newObj = {
+      id:uniqueTFPre2[i].target,
+      name:uniqueTFPre2[i].target
+    }
+    uniqueModels.push(newObj)
+  }
+
+  return uniqueModels
+
+}
+
 export function getUniqueModels(filterArray){
   let uniqueModelsPre= _.uniqBy(filterArray,v => [v.mlmodel_id, v.mlmodel_active,v.target].join())
   let uniqueModelsPre2 = uniqueModelsPre.filter((object)=>{ 

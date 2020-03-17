@@ -229,8 +229,10 @@ export default class extends Component {
     const counts = this.props.classifCounts
     const true_pct = (counts.true_count / counts.total) * 100
     const false_pct = (counts.false_count / counts.total) * 100
+    // todo; move this to the backend.
     const create_disabled = selections.mlmodelChosen === NONEVAL || 
              true_pct < 20.0 || false_pct < 20.0 || counts.total < 10
+    //todo(aj) code uniqueTF, idsTF, filter out nulls just like  model
     const idsTF = ['t','f']
     const uniqueTF = [{id:"t",name:"T"},{id:"f",name:"F"}]
     return (
