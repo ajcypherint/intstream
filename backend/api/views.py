@@ -5,6 +5,7 @@ import math
 import numpy as np
 from django.contrib.sites.shortcuts import get_current_site
 import urllib.parse as urlparse
+from django.core import exceptions
 from . import tasks
 from urllib.parse import urlencode
 from random import randint
@@ -236,8 +237,10 @@ class Train(APIView):
             if field not in self.request.data.keys():
                 return Response({"detail":field + " is required"}, status=status.HTTP_400_BAD_REQUEST)
         org = self.request.user.organization
-        aws_settings = models.Setting.objects.filter(organization=org).get()
-        if not aws_settings:
+        aws_setings = None
+        try:
+            aws_settings = models.Setting.objects.filter(organization=org).get()
+        except exceptions.ObjectDoesNotExist as e:
             return Response({"detail":"no aws settings configured"}, status=status.HTTP_400_BAD_REQUEST)
         result = tasks.train_model.delay(
                               model=self.request.data["mlmodel"],
