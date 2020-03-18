@@ -96,6 +96,7 @@ async def fetch(url):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             #todo(aj) if 301 get redirect.  use gcaptain.com rss feed to test
+            # todo cdc.gov seems to be giving pdfs...?
             try:
                 return await response.text()
             except UnicodeDecodeError as e:
