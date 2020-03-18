@@ -96,7 +96,10 @@ async def fetch(url):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             #todo(aj) if 301 get redirect.  use gcaptain.com rss feed to test
-            return await response.text()
+            try:
+                return await response.text()
+            except UnicodeDecodeError as e:
+                return str(e)
 
 PLACEHOLDER_TEXT = "placeholder text for classifier"
 
