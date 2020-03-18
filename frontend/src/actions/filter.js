@@ -105,8 +105,6 @@ export const filterChange = (newSelections, path='filter', parent)=>{
       (selections.MinDf ? "&min_df="+ selections.minDf  : '') +
       "&prediction__mlmodel=" + selections.modelChosen 
     
-
-    state = getState()
     if (parent){
       let {id,title,match} = parent
       for (const x of match){

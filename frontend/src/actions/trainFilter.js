@@ -3,8 +3,10 @@ import { withAuth } from '../reducers'
 import _ from 'lodash';
 import  URL  from  'url-parse'
 import {setParams, getAll} from './util'
-import {PAGINATION} from '../util/util'
+import {PAGINATION, dateString} from '../util/util'
 import {getSources} from './sources'
+import {API_FILTER} from './filter'
+import {getArticlesAndClassif} from './classification'
 
 export const ALL_SOURCES = '@@trainfilter/TOTALSOURCES';
 export const ALL_MLMODELS = '@@trainfilter/TOTALMLMODELS';
@@ -67,3 +69,43 @@ export const getfilter= (url, params=undefined)=>{
 export const getAllSources = getAll(getfilter)(totalSources);
 
 export const getAllMLModels = getAll(getfilter)(totalMLModels);
+
+export const filterChange = (newSelections)=>{
+  return async (dispatch, getState)=>{
+    let resp = await dispatch(setSelections(newSelections))
+    if (resp.error) {
+      throw new Error("Promise flow received action error" + resp.error);
+    }
+    let state = getState()
+    let selections = state.trainFilter.Selections
+    state = undefined
+    let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
+      "&end_upload_date="+selections.endDate.toISOString()+
+      "&source="+selections.sourceChosen+
+      "&source__active=true"+
+      "&source__mlmodel="+selections.modelChosen
+    
+    //fetch sources and models; * not just sources but all filters not inc dates *
+    // could ignore this for child
+    resp = await dispatch(getAllSources(API_FILTER, sourceStr))
+    if (resp.error) {
+       throw new Error("Promise flow received action error" +  resp.error);
+    }
+    
+    let articleStr = (dateString(selections.orderdir,
+      selections.ordercol,
+      selections.sourceChosen,
+      selections.page,
+      selections.startDate,
+      selections.endDate,
+      selections.threshold) +
+      "&source__mlmodel="+selections.mlmodelChosen +
+      "source__active=true" )
+
+    //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
+    return await dispatch(getArticlesAndClassif(selections.mlmodelChosen, articleStr))
+
+  }
+}
+
+
