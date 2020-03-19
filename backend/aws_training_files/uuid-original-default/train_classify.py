@@ -142,13 +142,13 @@ def train(input_bucket,
     # build pipeline
     cleanhtml = CleanHtml(inputCol="text", outputCol="clean_text")
     tokenizer = Tokenizer(inputCol="clean_text", outputCol="token_text")
-    stopremove = StopWordsRemover(inputCol='token_text', outputCol='stop_tokens')
+    ngram = NGram(inputCol="token_text", outputCol="ngram") #ngram
+    stopremove = StopWordsRemover(inputCol='ngram', outputCol='stop_tokens')
     count_vec = CountVectorizer(inputCol='stop_tokens', outputCol='c_vec')  # TF
-    ngram = NGram(inputCol="c_vec", outputCol="ngram") #ngram
-    idf = IDF(inputCol="ngram", outputCol="tf_idf")  # IDF Scaler
+    idf = IDF(inputCol="c_vec", outputCol="tf_idf")  # IDF Scaler
     clean_up = VectorAssembler(inputCols=['tf_idf'], outputCol='features')
     lr = LogisticRegression(maxIter=20, featuresCol='features', labelCol='target_int')
-    pipeline = Pipeline(stages=[cleanhtml, tokenizer, stopremove, count_vec, idf, clean_up, lr])
+    pipeline = Pipeline(stages=[cleanhtml, tokenizer, ngram, stopremove, count_vec,  idf, clean_up, lr])
     paramGrid = ParamGridBuilder() \
         .addGrid(lr.regParam, [0.1, .01, 0.001]) \
         .addGrid(ngram.n, [1, 2, 3]) \
