@@ -6,6 +6,7 @@ import django
 django.setup()
 from api.models import ModelVersion
 from django.core.files import File
+from utils.train import TrainResult
 
 
 from utils import train
@@ -64,24 +65,30 @@ if __name__ == "__main__":
         # upserts the database with jobname
         result = trainer.run(delete=False, status_callback=update_status)
         model_version.status = result.status
-        temp_dir = tempfile.TemporaryDirectory()
 
-        # download model
-        trainer.download_dir(os.path.join(trainer.job_name,trainer.MODEL_NAME),temp_dir.name,trainer.s3_bucket_temp_files)
-        temp_file = tempfile.NamedTemporaryFile(suffix=".tar.gz")
-        trainer.make_tarfile(temp_file.name,os.path.join(temp_dir.name,trainer.job_name,trainer.MODEL_NAME))
-        with open(temp_file.name, "rb") as f:
-            model_version.file=File(f,os.path.basename(f.name))
+        if result.status == TrainResult.SUCCESS:
+            temp_dir = tempfile.TemporaryDirectory()
+
+            # download model
+            trainer.download_dir(os.path.join(trainer.job_name,trainer.MODEL_NAME),
+                                 temp_dir.name,
+                                 trainer.s3_bucket_temp_files)
+            temp_file = tempfile.NamedTemporaryFile(suffix=".tar.gz")
+            trainer.make_tarfile(temp_file.name, os.path.join(temp_dir.name, trainer.job_name, trainer.MODEL_NAME))
+            with open(temp_file.name, "rb") as f:
+                model_version.file=File(f,os.path.basename(f.name))
+                model_version.save()
+
+            # download metric
+            temp_metric_file = tempfile.NamedTemporaryFile()
+            trainer.download_metric(temp_metric_file.name)
+            with open(temp_metric_file.name,encoding="ascii") as f:
+                value = f.read()
+                model_version.metric_value = float(value)
+                model_version.save()
+        else:
+            model_version.status = "FAILED"
             model_version.save()
-
-        # download metric
-        temp_metric_file = tempfile.NamedTemporaryFile()
-        trainer.download_metric(temp_metric_file.name)
-        with open(temp_metric_file.name,encoding="ascii") as f:
-            value = f.read()
-            model_version.metric_value = float(value)
-            model_version.save()
-
     except Exception as e:
         model_version.status="FAILED"
         model_version.save()

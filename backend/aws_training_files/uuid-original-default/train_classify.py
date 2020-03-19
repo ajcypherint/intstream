@@ -11,7 +11,7 @@ from pyspark.ml.util import DefaultParamsReadable, DefaultParamsWritable
 from pyspark.sql.functions import udf
 from selectolax.parser import HTMLParser
 from pyspark.ml import Pipeline,PipelineModel
-from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.feature import VectorAssembler, NGram
 from pyspark.ml.evaluation import BinaryClassificationEvaluator, MulticlassClassificationEvaluator
 from pyspark.ml.feature import Tokenizer, StopWordsRemover, CountVectorizer, IDF, StringIndexer
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
@@ -144,12 +144,14 @@ def train(input_bucket,
     tokenizer = Tokenizer(inputCol="clean_text", outputCol="token_text")
     stopremove = StopWordsRemover(inputCol='token_text', outputCol='stop_tokens')
     count_vec = CountVectorizer(inputCol='stop_tokens', outputCol='c_vec')  # TF
-    idf = IDF(inputCol="c_vec", outputCol="tf_idf")  # IDF Scaler
+    ngram = NGram(inputCol="c_vec", outputCol="ngram") #ngram
+    idf = IDF(inputCol="ngram", outputCol="tf_idf")  # IDF Scaler
     clean_up = VectorAssembler(inputCols=['tf_idf'], outputCol='features')
     lr = LogisticRegression(maxIter=20, featuresCol='features', labelCol='target_int')
     pipeline = Pipeline(stages=[cleanhtml, tokenizer, stopremove, count_vec, idf, clean_up, lr])
     paramGrid = ParamGridBuilder() \
         .addGrid(lr.regParam, [0.1, .01, 0.001]) \
+        .addGrid(ngram.n, [1, 2, 3]) \
         .build()
     crossval = CrossValidator(estimator=pipeline,
                               estimatorParamMaps=paramGrid,
