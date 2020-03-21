@@ -32,4 +32,3 @@ backend/media
 *.swp
 celerybeat-schedule
 
-Pipfile.lock

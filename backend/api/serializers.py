@@ -234,7 +234,6 @@ class MLModelSerializer(serializers.ModelSerializer):
 class ClassificationSerializer(serializers.ModelSerializer):
     article_id = serializers.IntegerField()
     mlmodel_id = serializers.IntegerField()
-    targetmlmodel = serializers.CharField()
 
     class Meta:
         fields=(
@@ -243,7 +242,6 @@ class ClassificationSerializer(serializers.ModelSerializer):
             "article_id",
             "mlmodel_id",
             "organization",
-            "targetmlmodel"
         )
         model = Classification
 
@@ -475,14 +473,13 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
 
 class PredictionSerializer(serializers.ModelSerializer):
-    targetmlmodel = serializers.CharField()
 
     class Meta:
         fields=("article_id",
                 "target",
                 "mlmodel",
                 "organization",
-                "targetmlmodel")
+                )
         model = Prediction
 
 

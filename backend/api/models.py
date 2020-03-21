@@ -163,8 +163,6 @@ class Classification(models.Model):
     target = models.BooleanField('target classification')
     mlmodel = models.ForeignKey(MLModel, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    objects = TargetMLModelManager()
-    org_objects = models.Manager()
 
 
 class Prediction(models.Model):
@@ -180,8 +178,6 @@ class Prediction(models.Model):
     target = models.BooleanField('target classification')
     mlmodel = models.ForeignKey(MLModel, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    objects = TargetMLModelManager()
-    org_objects = models.Manager()
 
 # Upload Articles
 class WordDocxArticle(Article):
