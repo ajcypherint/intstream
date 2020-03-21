@@ -20,7 +20,7 @@ from rest_framework import status, generics, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters import rest_framework as filters
-from django_filters.groups import CombinedRequiredGroup
+from django_filters.groups import CombinedGroup
 
 import importlib
 from  utils.document import TXT, PDF, WordDocx
@@ -99,24 +99,27 @@ class RandomUnclassified(APIView):
         return Response(serial.data)
 
 
-class ClassifFilterSetting(filters.FilterSet):
+class ClassifPageFilterSetting(filters.FilterSet):
     start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
     end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
     class Meta:
         model = models.Article
         fields = ("source","source__active",
+                  "classification__mlmodel__modelversion__active",
                   "classification__mlmodel",
                   "classification__target",
-                  "classification__mlmodel__active",
-                  "classification__mlmodel__modelversion__active",
-                  "classification__target"
+                  "classification__mlmodel__active"
                   )
+        groups = [
+                # many to many: must be grouped to work
+                CombinedGroup(["classification__mlmodel", "classification__target","classification__mlmodel__active"])
+        ]
 
 
-class ClassifFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
+class ClassifPageFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
     permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.ClassifFilterSerializer
-    filterset_class = ClassifFilterSetting
+    filterset_class = ClassifPageFilterSetting
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
 
     def get_queryset(self):
@@ -155,12 +158,15 @@ class HomeFilterSetting(filters.FilterSet):
     class Meta:
         model = models.Article
         fields = ("source","source__active",
+                  "prediction__mlmodel__modelversion__active",
                   "prediction__mlmodel",
                   "prediction__target",
-                  "prediction__mlmodel__active",
-                  "prediction__mlmodel__modelversion__active",
-                  "prediction__target"
+                  "prediction__mlmodel__active"
                   )
+        groups = [
+                # many to many: must be grouped to work
+                CombinedGroup(["prediction__mlmodel", "prediction__target","prediction__mlmodel__active"])
+        ]
 
 
 class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -602,7 +608,7 @@ class PredictionFilter(filters.FilterSet):
     article_id = filters.NumberFilter(field_name="article_id")
     class Meta:
         model = models.Prediction
-        fields = ("target", "mlmodel", "organization")
+        fields = ("target", "mlmodel", "organization", "article_id")
 
 
 class PredictionViewSet(OrgViewSet):
@@ -618,11 +624,10 @@ class PredictionViewSet(OrgViewSet):
 class ClassificationFilter(filters.FilterSet):
     article_id_in = NumberInFilter(field_name="article_id", lookup_expr=("in"))
     article_id = filters.NumberFilter(field_name="article_id")
-    targetmlmodel = filters.CharFilter(field_name="targetmlmodel", lookup_expr="exact")
 
     class Meta:
         model = models.Classification
-        fields = ('target', "mlmodel_id", "targetmlmodel")
+        fields = ('target', "mlmodel_id", "article_id", "article_id_in")
 
 
 class ClassificationViewSet(OrgViewSet):
@@ -748,8 +753,8 @@ class ArticleFilter(filters.FilterSet):
                   "classification__target",
                   )
         groups = [
-                CombinedRequiredGroup(["prediction__mlmodel","prediction__target"]),
-                CombinedRequiredGroup(["classification__mlmodel", "classification__target"])
+                CombinedGroup(["prediction__mlmodel","prediction__target"]),
+                CombinedGroup(["classification__mlmodel", "classification__target"])
         ]
 
 

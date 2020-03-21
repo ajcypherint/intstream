@@ -77,13 +77,15 @@ export const filterChange = (newSelections)=>{
     }
     let state = getState()
     let selections = state.trainFilter.Selections
+    let targetStr = selections.trueFalse !== "" ?  
+        ("&classification__target="+selections.trueFalse+
+          "&classification__mlmodel="+selections.mlmodelChosen ) : ""
+ 
     state = undefined
     let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
       "&end_upload_date="+selections.endDate.toISOString()+
       "&source="+selections.sourceChosen+
-      "&source__active=true"+
-      "&classification__target="+selections.trueFalse+
-      "&classification__mlmodel="+selections.mlmodelChosen
+      "&source__active=true"+ targetStr
     
     //fetch sources and models; * not just sources but all filters not inc dates *
     // could ignore this for child
@@ -91,7 +93,7 @@ export const filterChange = (newSelections)=>{
     if (resp.error) {
        throw new Error("Promise flow received action error" +  resp.error);
     }
-    
+
     let articleStr = (dateString(selections.orderdir,
       selections.ordercol,
       selections.sourceChosen,
@@ -99,9 +101,8 @@ export const filterChange = (newSelections)=>{
       selections.startDate,
       selections.endDate,
       selections.threshold) +
-      "&classification__target="+selections.trueFalse+
-      "&classification__mlmodel="+selections.mlmodelChosen +
-      "&source__active=true" )
+      targetStr+ 
+      "&source__active=true")
 
     //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
     return await dispatch(getArticlesAndClassif(selections.mlmodelChosen, articleStr))
