@@ -13,7 +13,6 @@ djangorestframework-simplejwt = "*"
 coreapi = "*"
 pyyaml = "*"
 djangorestframework = "*"
-django-filter = "*"
 drf-yasg = "*"
 packaging = "*"
 sklearn = "*"
@@ -36,6 +35,7 @@ pip = "*"
 virtualenv = "*"
 django-celery-results = "*"
 django-debug-toolbar = "*"
+django-filter = {git = "https://github.com/rpkilby/django-filter.git",ref = "filter-groups"}
 
 [requires]
 python_version = "3.6"

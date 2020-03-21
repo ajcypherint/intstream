@@ -7,6 +7,11 @@ export const ALL = "---"
 export const ASC = ''
 export const DESC = '-'
 
+function ucFirst(string) 
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export function getUniqueTrainListTF(filterArray){
   let uniqueTFPre= _.uniqBy(filterArray,v => [v.target].join())
   let uniqueTFPre2 = uniqueTFPre.filter((object)=>{ 
@@ -21,7 +26,7 @@ export function getUniqueTrainListTF(filterArray){
   for( let i=0; i<uniqueTFPre2.length;i++){
     let newObj = {
       id:uniqueTFPre2[i].target,
-      name:uniqueTFPre2[i].target
+      name:ucFirst(uniqueTFPre2[i].target.toString())
     }
     uniqueModels.push(newObj)
   }

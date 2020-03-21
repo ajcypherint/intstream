@@ -40,6 +40,7 @@ router.register(RSSSOURCE, views.RssSourceViewSet, basename="rsssource")
 router.register(JOBSOURCE, views.JobSourceViewSet, basename="jobsource")
 router.register(SOURCE, views.SourceViewSet,basename="source")
 router.register("homefilter",views.HomeFilter, basename="homefilter")
+router.register("classiffilter",views.HomeFilter, basename="classiffilter")
 
 #classifications
 router.register("classifications",views.ClassificationViewSet, basename="classifications")

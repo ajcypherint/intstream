@@ -14,17 +14,17 @@ END.setHours(23,59,59,999);
 
 const initialState ={
   Selections: {
-      startDate: START,
-      endDate: END,
-      mlmodelChosen:NONEVAL,
-      sourceChosen:NONEVAL,
-      loadSources:false,
-      page:1,
-      ordercol:NONEVAL,
-      orderdir:ASC,
-      next:null,
-      previous:null,
-      trueFalse:''
+    startDate: START,
+    endDate: END,
+    mlmodelChosen:NONEVAL,
+    sourceChosen:NONEVAL,
+    loadSources:false,
+    page:1,
+    ordercol:NONEVAL,
+    orderdir:ASC,
+    next:null,
+    previous:null,
+    trueFalse:NONEVAL,
   },
   sources: [],
   mlmodels:[],

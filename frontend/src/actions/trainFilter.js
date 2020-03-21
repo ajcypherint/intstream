@@ -5,7 +5,6 @@ import  URL  from  'url-parse'
 import {setParams, getAll} from './util'
 import {PAGINATION, dateString} from '../util/util'
 import {getSources} from './sources'
-import {API_FILTER} from './filter'
 import {getArticlesAndClassif} from './classification'
 
 export const ALL_SOURCES = '@@trainfilter/TOTALSOURCES';
@@ -18,7 +17,7 @@ export const PAGE = '@@trainfilter/PAGE';
 export const GET_FILTER_REQUEST = '@@trainfilter/GET_FILTER_REQUEST';
 export const GET_FILTER_SUCCESS = '@@trainfilter/GET_FILTER_SUCCESS';
 export const GET_FILTER_FAILURE = '@@trainfilter/GET_FILTER_FAILURE';
-
+export const CLASSIF_FILTER = "/api/classiffilter"
 export const clear=()=>{
   return {
     type:CLEAR,
@@ -83,11 +82,12 @@ export const filterChange = (newSelections)=>{
       "&end_upload_date="+selections.endDate.toISOString()+
       "&source="+selections.sourceChosen+
       "&source__active=true"+
-      "&source__mlmodel="+selections.modelChosen
+      "&classification__target="+selections.trueFalse+
+      "&classification__mlmodel="+selections.mlmodelChosen
     
     //fetch sources and models; * not just sources but all filters not inc dates *
     // could ignore this for child
-    resp = await dispatch(getAllSources(API_FILTER, sourceStr))
+    resp = await dispatch(getAllSources(CLASSIF_FILTER, sourceStr))
     if (resp.error) {
        throw new Error("Promise flow received action error" +  resp.error);
     }
@@ -99,8 +99,9 @@ export const filterChange = (newSelections)=>{
       selections.startDate,
       selections.endDate,
       selections.threshold) +
-      "&source__mlmodel="+selections.mlmodelChosen +
-      "source__active=true" )
+      "&classification__target="+selections.trueFalse+
+      "&classification__mlmodel="+selections.mlmodelChosen +
+      "&source__active=true" )
 
     //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
     return await dispatch(getArticlesAndClassif(selections.mlmodelChosen, articleStr))

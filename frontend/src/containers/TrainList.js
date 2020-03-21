@@ -7,6 +7,7 @@ import * as fromSelect from '../actions/selectArticle'
 import {getAllSources,getAllMLModels, setPage, setSelections, clear} from '../actions/trainFilter'
 import {getSources, clearSources } from '../actions/sources'
 import * as fromClassif from "../actions/classification"
+import {filterChange} from "../actions/trainFilter"
 
 const API_SOURCES = '/api/homefilter/'
 const API_ARTICLES = ARTICLE_URL
@@ -33,6 +34,7 @@ const mapStateToProps = (state) => ({
 
 
 const mapDispatchToProps = (dispatch) => ({
+  filterChange: (newSelections) => dispatch(filterChange(newSelections)),
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
   fetchAllMLModels: (params = undefined) => dispatch(getAllMLModels(API_MODELS, params)),
   fetchArticlesFullUri: (url,params=undefined) => dispatch(getArticles(url, params)),

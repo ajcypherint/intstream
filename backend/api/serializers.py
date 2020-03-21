@@ -146,6 +146,27 @@ class SourceSerializer(serializers.ModelSerializer):
         model = Source
 
 
+class ClassifFilterSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(max_length=100,read_only=True)
+    active = serializers.BooleanField(read_only=True)
+    mlmodel = serializers.CharField(max_length=1000,read_only=True)
+    mlmodel_id = serializers.IntegerField(read_only=True)
+    mlmodel_active= serializers.BooleanField(read_only=True)
+    target = serializers.BooleanField(read_only=True)
+
+    def to_representation(self, instance):
+        return {
+            "id":instance["id"],
+            "name":instance["name"],
+            "active":instance["active"],
+            "mlmodel":instance["mlmodel"],
+            "mlmodel_id":instance["mlmodel_id"],
+            "mlmodel_active":instance["mlmodel_active"],
+            "target":instance["target"]
+
+        }
+
 class HomeFilterSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=100,read_only=True)
@@ -210,6 +231,33 @@ class MLModelSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class ClassificationSerializer(serializers.ModelSerializer):
+    article_id = serializers.IntegerField()
+    mlmodel_id = serializers.IntegerField()
+    targetmlmodel = serializers.CharField()
+
+    class Meta:
+        fields=(
+            "id",
+            "target",
+            "article_id",
+            "mlmodel_id",
+            "organization",
+            "targetmlmodel"
+        )
+        model = Classification
+
+    def create(self, validated_data):
+        classification, created = Classification.objects.update_or_create(
+            article_id = validated_data.get("article_id", None),
+            mlmodel_id = validated_data.get("mlmodel_id", None),
+            organization = validated_data.get("organization", None),
+            defaults={
+                "target":validated_data.get("target", None)
+            }
+            )
+        return classification
+
 
 class ArticleSerializerSet(serializers.ModelSerializer):
     source = SourceSerializer(read_only=True)
@@ -227,6 +275,7 @@ class ArticleSerializerSet(serializers.ModelSerializer):
 
 class ArticleSerializer(serializers.ModelSerializer):
     source = SourceSerializer(read_only=True)
+    classification_set = ClassificationSerializer(read_only=True, many=True)
     article_set = ArticleSerializerSet(many=True, read_only=True)
     clean_text = serializers.SerializerMethodField()
 
@@ -244,6 +293,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'clean_text',
             'article_set',
             'organization',
+            'classification_set',
         ]
         model = Article
 
@@ -424,36 +474,15 @@ class OrganizationSerializer(serializers.ModelSerializer):
         model = Organization
 
 
-class ClassificationSerializer(serializers.ModelSerializer):
-    article_id = serializers.IntegerField()
-    mlmodel_id = serializers.IntegerField()
-
-    class Meta:
-        fields=(
-            "id",
-            "target",
-            "article_id",
-            "mlmodel_id",
-            "organization"
-        )
-        model = Classification
-
-    def create(self, validated_data):
-        classification, created = Classification.objects.update_or_create(
-            article_id = validated_data.get("article_id", None),
-            mlmodel_id = validated_data.get("mlmodel_id", None),
-            organization = validated_data.get("organization", None),
-            defaults={
-                "target":validated_data.get("target", None)
-            }
-            )
-        return classification
-
-
-
 class PredictionSerializer(serializers.ModelSerializer):
+    targetmlmodel = serializers.CharField()
+
     class Meta:
-        fields=("article_id", "target", "mlmodel", "organization")
+        fields=("article_id",
+                "target",
+                "mlmodel",
+                "organization",
+                "targetmlmodel")
         model = Prediction
 
 

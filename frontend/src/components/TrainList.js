@@ -6,9 +6,10 @@ import {PAGINATION,dateString, addDays} from '../util/util'
 import Paginate from './Paginate'
 import {NONE, NONEVAL} from "../reducers/trainFilter"
 import {changesort} from './ChangeSort'
-import {ASC, DESC, ALL} from "../util/util"
+import {ASC, DESC, ALL, getUniqueTrainListTF} from "../util/util"
 import { Link } from 'react-router-dom'; import TrueFalse from "./TrueFalse" 
 import Choice from "./Choice"
+
 export default class extends Component {
   constructor(props){
     super(props)
@@ -26,6 +27,14 @@ export default class extends Component {
     this.redirect = this.redirect.bind(this)
   }
   handleTFChange(event){
+    let id = event.target.value
+    let newSelections = {
+        ...this.props.selections,
+        trueFalse:id,
+        page:1
+      }
+    this.props.filterChange(newSelections)
+    
   }
   redirect(event){
     this.props.history.push("/createmlversion/"+event.target.value)
@@ -62,28 +71,12 @@ export default class extends Component {
     let id = event.target.value
     this.props.clearClassif()
     if(id!==NONEVAL){
-      let selections = this.props.selections
+      let newSelections = {
+        ...this.props.selections,
+        mlmodelChosen:id,
+      }
+      this.props.filterChange(newSelections)
       //todo() ordering add model
-      //set selections
-      //updatefilter
-      //fetcharticlesclassif
-      this.props.fetchAllSources(
-      "start_upload_date="+selections.startDate.toISOString()+
-      "&end_upload_date="+selections.endDate.toISOString()+
-      "&source__mlmodel="+id+
-      "&source__active=true"
-      )
-      this.props.setSelections(
-        {mlmodelChosen:id}
-      )
-       this.props.fetchArticlesAndClassif(id,dateString(selections.orderdir,
-        selections.ordercol,
-        selections.sourceChosen,
-        1,
-        selections.startDate,
-        selections.endDate,
-        )+"&source__mlmodel="+id+"&source__active=true") 
-
     } else {
       this.props.clear() //selections
       this.props.fetchAllMLModels("ordering=name&active=true")
@@ -122,58 +115,24 @@ export default class extends Component {
     }
     startDate.setHours(0,0,0,0);
     endDate.setHours(23,59,59,999);
-    //set selections
-    //updatefilter
-    //fetcharticlesclassif
- 
-    this.props.fetchAllSources(
-    "start_upload_date="+startDate.toISOString()+
-    "&end_upload_date="+endDate.toISOString()+
-      "&source__mlmodel="+this.props.selections.mlmodelChosen+
-    "&source__active=true"
-    )
-    // update cascading filters
-    this.props.setSelections({
-      page:1,
+    let newSelections = {
+      ...this.props.selections,
       startDate:startDate,
       endDate:endDate,
-      })
-    //fetch articles 
-    this.props.fetchArticlesAndClassif(this.props.selections.mlmodelChosen,
-      dateString(
-      this.props.selections.orderdir,// orderdir
-      this.props.selections.ordercol, // ordercol 
-      this.props.selections.sourceChosen,// sourceChosen
-      1,  // page
-      startDate,
-      endDate,
-      )+"&source__mlmodel="+this.props.selections.mlmodelChosen
-         +"source__active=true")
-
+      page:1
+    }
+    this.props.filterChange(newSelections)
   }
  
   handleSourceChange(event){
     event.preventDefault()
     //last filter.  do not need to unset others
-    let selections = this.props.selections
-
-    //todo(aj) refactor like home page
-    //set selections
-    //updatefilter
-    //fetcharticlesclassif
-    this.props.setSelections({
+    let newSelections = {
+      ...this.props.selections,
       sourceChosen:event.target.value,
       page:1
-      })
-    this.props.fetchArticlesAndClassif(selections.mlmodelChosen,
-      dateString(selections.orderdir,
-      selections.ordercol,
-      event.target.value,
-      1,
-      selections.startDate,
-      selections.endDate,
-      )+ "&source__mlmodel="+selections.mlmodelChosen+"&source__active=true") 
-
+    }
+    this.props.filterChange(newSelections)
   }
   getArticle(event){
     let {id}= event.target.dataset
@@ -181,16 +140,11 @@ export default class extends Component {
     this.props.fetchSelect(id)
   }
   fetchit(selections,page){
-    //set selections
-    //fetcharticlesclassif
-    this.props.fetchArticlesAndClassif(selections.mlmodelChosen,dateString(
-            selections.orderdir,
-            selections.ordercol,
-            selections.sourceChosen,
-            page,
-            selections.startDate,
-            selections.endDate,
-          )+"&source__mlmodel="+selections.mlmodelChosen+"&source__active=true")
+    let newSelections = {
+      ...selections,
+      page:page
+    }
+    this.props.filterChange(newSelections)
   }
  
   componentDidMount(){
@@ -233,8 +187,9 @@ export default class extends Component {
     const create_disabled = selections.mlmodelChosen === NONEVAL || 
              true_pct < 20.0 || false_pct < 20.0 || counts.total < 10
     //todo(aj) code uniqueTF, idsTF, filter out nulls just like  model
-    const idsTF = ['t','f']
-    const uniqueTF = [{id:"t",name:"T"},{id:"f",name:"F"}]
+    const uniqueTF = getUniqueTrainListTF(this.props.sourcesList)
+    const idsTF = uniqueTF.map(a=>a.id.toString()) ||[]
+
     return (
 
       <div className="container mt-2 col-sm-12 " >
@@ -279,9 +234,9 @@ export default class extends Component {
           </div>
         </Col>
         <Col sm="2">
-          <label  htmlFor={"true_false"}>{"Prediction"}</label>
+          <label  htmlFor={"true_false"}>{"Classification"}</label>
           <div className = "mb-2 ">
-            <Choice name={"Prediction"}
+            <Choice name={"Classification"}
               value={selections.trueFalse}
               onChange={this.handleTFChange}
               idList={idsTF}
@@ -342,32 +297,23 @@ export default class extends Component {
              <td className="hover" onClick={(event)=>{this.changesort("title", 
                ASC, 
                DESC, 
-               this.props.fetchArticles,
                selections,
-               this.props.setSelections,
-               0,
-               undefined,
-               "&source__mlmodel="+selections.mlmodelChosen
+               this.props.filterChange,
+               0
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
              DESC, 
-             this.props.fetchArticles,
              selections,
-             this.props.setSelections,
+             this.props.filterChange,
              0,
-             undefined,
-             "&source__mlmodel="+selections.mlmodelChosen
               )}}> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
-             this.props.fetchArticles,
              selections,
-             this.props.setSelections,
+             this.props.filterChange,
              0,
-             undefined,
-             "&source__mlmodel="+selections.mlmodelChosen
            )}}>Date</td>
              <td>True</td> 
              <td>False</td> 

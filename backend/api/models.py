@@ -3,13 +3,13 @@ from django.utils import timezone
 from polymorphic.models import PolymorphicModel
 from django.contrib.auth.models import AbstractUser
 from django.db.models.constraints import UniqueConstraint
-from django.db.models import Q
+from django.db.models import Q, F,Value
 
 import uuid
 import os
 from fernet_fields import EncryptedTextField
 from django.conf import settings
-
+from django.db.models.functions import Concat
 
 #todo(aj) mutitenant - organization table
 # all queries filter by org
@@ -125,7 +125,7 @@ class MLModel(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):
-        return self.name + " (" + str(self.id) + ")"
+        return str(self.id)
 
 
 # name and api_endpoint for frontend  / sdk
@@ -146,16 +146,25 @@ class Article(PolymorphicModel):
         return self.title + " (" + str(self.id) + ")"
 
 
+class TargetMLModelManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().annotate(targetmlmodel=Concat(
+            F('target'),Value("-"),F('mlmodel'),
+            output_field=models.CharField()))
+
+
 class Classification(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(fields=['article', 'mlmodel','organization'], name='unique_classification'),
             ]
-
     article = models.ForeignKey(Article,on_delete=models.CASCADE)
     target = models.BooleanField('target classification')
     mlmodel = models.ForeignKey(MLModel, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    objects = TargetMLModelManager()
+    org_objects = models.Manager()
 
 
 class Prediction(models.Model):
@@ -171,7 +180,8 @@ class Prediction(models.Model):
     target = models.BooleanField('target classification')
     mlmodel = models.ForeignKey(MLModel, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-
+    objects = TargetMLModelManager()
+    org_objects = models.Manager()
 
 # Upload Articles
 class WordDocxArticle(Article):

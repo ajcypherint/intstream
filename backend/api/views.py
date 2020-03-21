@@ -20,6 +20,8 @@ from rest_framework import status, generics, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters import rest_framework as filters
+from django_filters.groups import CombinedRequiredGroup
+
 import importlib
 from  utils.document import TXT, PDF, WordDocx
 from . import permissions
@@ -97,6 +99,56 @@ class RandomUnclassified(APIView):
         return Response(serial.data)
 
 
+class ClassifFilterSetting(filters.FilterSet):
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
+    class Meta:
+        model = models.Article
+        fields = ("source","source__active",
+                  "classification__mlmodel",
+                  "classification__target",
+                  "classification__mlmodel__active",
+                  "classification__mlmodel__modelversion__active",
+                  "classification__target"
+                  )
+
+
+class ClassifFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permissions = (permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
+    serializer_class = serializers.ClassifFilterSerializer
+    filterset_class = ClassifFilterSetting
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+
+    def get_queryset(self):
+        return models.Article.objects.filter(organization=self.request.user.organization).\
+            order_by("source__id",
+                     "classification__mlmodel__id",
+                     "classification__target",
+                     "classification__mlmodel__active",
+                    ).\
+            distinct("source__id",
+                    "classification__mlmodel__id",
+                    "classification__target",
+                    "classification__mlmodel__active",
+                     ).\
+            values("source__name",
+                   "source__id",
+                   "source__active",
+                   "classification__mlmodel__name",
+                   "classification__mlmodel__id",
+                   "classification__target",
+                   "classification__mlmodel__active",
+                   ).\
+            annotate(name=F("source__name"),
+                 id=F("source__id"),
+                 active=F("source__active"),
+                  mlmodel = F("classification__mlmodel__name"),
+                  mlmodel_id=F("classification__mlmodel__id"),
+                  mlmodel_active=F("classification__mlmodel__active"),
+                  target=F("classification__target")
+                    )
+
+
 class HomeFilterSetting(filters.FilterSet):
     start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
     end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
@@ -123,7 +175,7 @@ class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
                      "prediction__mlmodel__id",
                      "prediction__target",
                      "prediction__mlmodel__active",
-                     ).\
+                    ).\
             distinct("source__id",
                     "prediction__mlmodel__id",
                     "prediction__target",
@@ -566,10 +618,11 @@ class PredictionViewSet(OrgViewSet):
 class ClassificationFilter(filters.FilterSet):
     article_id_in = NumberInFilter(field_name="article_id", lookup_expr=("in"))
     article_id = filters.NumberFilter(field_name="article_id")
+    targetmlmodel = filters.CharFilter(field_name="targetmlmodel", lookup_expr="exact")
 
     class Meta:
         model = models.Classification
-        fields = ('target', "mlmodel_id",)
+        fields = ('target', "mlmodel_id", "targetmlmodel")
 
 
 class ClassificationViewSet(OrgViewSet):
@@ -673,6 +726,7 @@ class ArticleFilter(filters.FilterSet):
     start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
     end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
     article_id_multi = filters.AllValuesMultipleFilter(field_name="id", lookup_expr=("exact"))
+    #todo(aj) add combinedfilter https://rpkilby.github.io/django-filter/ref/groups.html
 
     ordering = filters.OrderingFilter(
         fields=[('source__name','source__name'),
@@ -682,16 +736,27 @@ class ArticleFilter(filters.FilterSet):
 
     class Meta:
         model = models.Article
-        fields = ('id','source','title','upload_date', 'source__name',
+        fields = ('id',
+                  'source',
+                  'title',
+                  'upload_date',
+                  'source__name',
                   'source__active',
-                  'prediction__mlmodel','prediction__target')
+                  "prediction__mlmodel",
+                  "prediction__target",
+                  "classification__mlmodel",
+                  "classification__target",
+                  )
+        groups = [
+                CombinedRequiredGroup(["prediction__mlmodel","prediction__target"]),
+                CombinedRequiredGroup(["classification__mlmodel", "classification__target"])
+        ]
 
 
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.ArticleSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','source','title','upload_date', 'source__name', "source_mlmodel", "source__active")
+    filter_backends = (filters.DjangoFilterBackend, rest_filters.OrderingFilter)
     filterset_class = ArticleFilter
 
     def get_queryset(self):
