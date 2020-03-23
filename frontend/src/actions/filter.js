@@ -77,12 +77,15 @@ export const filterChange = (newSelections, path='filter', parent)=>{
     }
     let state = getState()
     let selections = state[path].homeSelections
+    let predictionStr = selections.modelChosen !=="" ? 
+      "&prediction__mlmodel="+selections.modelChosen+ "&prediction__target=true" :
+      "&prediction__mlmodel__active=true&prediction__target=true"
     state = undefined
     let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
       "&end_upload_date="+selections.endDate.toISOString()+
       "&source="+selections.sourceChosen+
-      "&source__active=true"+
-      "&prediction__mlmodel="+selections.modelChosen
+      "&source__active=true" + predictionStr
+
     
     //fetch sources and models; * not just sources but all filters not inc dates *
     // could ignore this for child
@@ -92,7 +95,7 @@ export const filterChange = (newSelections, path='filter', parent)=>{
            throw new Error("Promise flow received action error" +  resp.error);
       }
     }
-    
+     
     let articleStr = dateString(selections.orderdir,
       selections.ordercol,
       selections.sourceChosen,
@@ -102,8 +105,7 @@ export const filterChange = (newSelections, path='filter', parent)=>{
       selections.threshold) +
       "&source__active=true" +
       (selections.maxDf ? "&max_df="+ selections.maxDf :'') +
-      (selections.MinDf ? "&min_df="+ selections.minDf  : '') +
-      "&prediction__mlmodel=" + selections.modelChosen 
+      (selections.MinDf ? "&min_df="+ selections.minDf  : '') + predictionStr
     
     if (parent){
       let {id,title,match} = parent
