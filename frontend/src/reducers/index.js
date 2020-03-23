@@ -34,7 +34,6 @@ export default combineReducers({
   classifications:classifications,
   settings:settings,
 })
-export const getVerLoading = state =>fromModelVersions.loading(state.modelVersions)
 //fromAuth
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
 export const get_username = state => fromAuth.get_username(state.auth)
@@ -121,13 +120,21 @@ export const getClassifErrors = state => fromClassif.errors(state.classification
 export const getClassifCounts = state => fromClassif.counts(state.classifications)
 
 //fromSettings
-//fromModels
 export const getSettings= state => fromSettings.settings(state.settings)
 export const getSettingsErrors = state => fromSettings.errors(state.settings)
 export const getSettingsLoading = state => fromSettings.loading(state.settings)
 export const getSettingsSaving = state => fromSettings.saving(state.settings)
 
 //from modelVersions
+export const getModelVersion= state => fromModelVersions.models(state.models)
+export const getModelVersionErrors = state => fromModelVersions.errors(state.models)
+export const getModelVersionLoading = state => fromModelVersions.loading(state.models)
+export const getModelVersionSaving = state => fromModelVersions.saving(state.models)
+export const getModelVersionTotalCount = state => fromModelVersions.totalcount(state.models)
+export const getModelVersionNextPage = state => fromModelVersions.nextPage(state.models)
+export const getModelVersionPreviousPage = state => fromModelVersions.previousPage(state.models)
+
+
 export function withAuth(headers={}) {
   return (state) => ({
     ...headers,
