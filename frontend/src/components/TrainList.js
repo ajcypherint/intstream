@@ -74,6 +74,7 @@ export default class extends Component {
       let newSelections = {
         ...this.props.selections,
         mlmodelChosen:id,
+        page:1
       }
       this.props.filterChange(newSelections)
       //todo() ordering add model
