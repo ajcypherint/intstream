@@ -109,6 +109,7 @@ export class Main extends React.Component{
   handleModelChange(event){
     let selections ={
       ...this.props.parent.homeSelections,
+      page:1,
       modelChosen:event.target.value
     }
     //again here we set selections then fetch
