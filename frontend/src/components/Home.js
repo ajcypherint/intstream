@@ -34,6 +34,7 @@ export class Main extends React.Component{
     let selections = {
       ...this.props.parent.homeSelections,
       maxDf:event.target.value,
+      page:1
     }
     this.props.filterChange(selections)
   }
@@ -42,6 +43,7 @@ export class Main extends React.Component{
     let selections = {
       ...this.props.parent.homeSelections,
       minDf:event.target.value,
+      page:1
     }
     this.props.filterChange(selections)
   }
@@ -109,7 +111,8 @@ export class Main extends React.Component{
   handleModelChange(event){
     let selections ={
       ...this.props.parent.homeSelections,
-      modelChosen:event.target.value
+      modelChosen:event.target.value,
+      page:1
     }
     //again here we set selections then fetch
     this.props.filterChange(selections)
