@@ -79,7 +79,7 @@ export const filterChange = (newSelections, path='filter', parent)=>{
     let selections = state[path].homeSelections
     let predictionStr = selections.modelChosen !=="" ? 
       "&prediction__mlmodel="+selections.modelChosen+ "&prediction__target=true" :
-      "&prediction__mlmodel__active=true&prediction__target=true"
+      ""
     state = undefined
     let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
       "&end_upload_date="+selections.endDate.toISOString()+
