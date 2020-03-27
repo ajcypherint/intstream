@@ -14,10 +14,12 @@ import list, * as fromList from './listSelections.js'
 import selectArticles, * as fromSelect from "./selectArticles.js"
 import classifications, * as fromClassif from "./classifications"
 import settings, * as fromSettings from "./settings"
-import modelVersions, * as fromModelVersions from "./modelversions.js"
+import modelVersions, * as fromModelVersions from "./modelVersions.js"
+import filterModelVer, * as fromFilterModelVer from "./modelVersionFilter.js"
 
 export default combineReducers({
   modelVersions:modelVersions,
+  filterModelVer:filterModelVer,
   auth: auth,
   filter:filter,
   password:password,
@@ -126,14 +128,16 @@ export const getSettingsLoading = state => fromSettings.loading(state.settings)
 export const getSettingsSaving = state => fromSettings.saving(state.settings)
 
 //from modelVersions
-export const getModelVersion= state => fromModelVersions.models(state.models)
-export const getModelVersionErrors = state => fromModelVersions.errors(state.models)
-export const getModelVersionLoading = state => fromModelVersions.loading(state.models)
-export const getModelVersionSaving = state => fromModelVersions.saving(state.models)
-export const getModelVersionTotalCount = state => fromModelVersions.totalcount(state.models)
-export const getModelVersionNextPage = state => fromModelVersions.nextPage(state.models)
-export const getModelVersionPreviousPage = state => fromModelVersions.previousPage(state.models)
+export const getModelVersion = state => fromModelVersions.versions(state.modelVersions)
+export const getModelVersionErrors = state => fromModelVersions.errors(state.modelVersions)
+export const getModelVersionLoading = state => fromModelVersions.loading(state.modelVersions)
+export const getModelVersionTotalCount = state => fromModelVersions.totalcount(state.modelVersions)
+export const getModelVersionNextPage = state => fromModelVersions.nextpage(state.modelVersions)
+export const getModelVersionPreviousPage = state => fromModelVersions.previouspage(state.modelVersions)
 
+//from modelVersions
+export const getModelVersionFilterMLModels = state => fromFilterModelVer.mlmodels(state.filterModelVer)
+export const getModelVersionSelections = state => fromFilterModelVer.getSelections(state.filterModelVer)
 
 export function withAuth(headers={}) {
   return (state) => ({

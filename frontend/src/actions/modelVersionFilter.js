@@ -16,7 +16,7 @@ export const PAGE = '@@modelversionfilter/PAGE';
 export const GET_FILTER_REQUEST = '@@modelversionfilter/GET_FILTER_REQUEST';
 export const GET_FILTER_SUCCESS = '@@modelversionfilter/GET_FILTER_SUCCESS';
 export const GET_FILTER_FAILURE = '@@modelversionfilter/GET_FILTER_FAILURE';
-export const MODEL_API= "/api/model"
+export const MODEL_API= "/api/mlmodels"
 export const clear=()=>{
   return {
     type:CLEAR,
@@ -68,11 +68,11 @@ export const filterChange = (newSelections)=>{
       throw new Error("Promise flow received action error" + resp.error);
     }
     let state = getState()
-    let selections = state.modelVersionFilter.Selections
+    let selections = state.filterModelVer.Selections
 
     state = undefined
-    let modelStr= "&mlmodel="+selections.modelChosen+
-      "&mlmodel_active=true"
+    let modelStr= "ordering=name&id="+selections.mlmodelChosen+
+      "&active=true&modelversion__isnull=false"
     
     //fetch sources and models; * not just sources but all filters not inc dates *
     // could ignore this for child

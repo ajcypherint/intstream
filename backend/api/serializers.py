@@ -486,17 +486,36 @@ class PredictionSerializer(serializers.ModelSerializer):
 class ModelVersionSerializer(serializers.ModelSerializer):
     model = MLModelOnlySerializer(read_only=True)
     class Meta:
-        fields = ("model",
-                  "id",
+        fields = (
+                 "id",
+                 "model",
                   "organization",
                   "version",
-                 "celery_log",
-                 "metric_name",
+                  "celery_log",
+                  "metric_name",
                   "status",
                   "task",
-                  "status",
                   "file",
                   "active",
                   "metric_value")
 
         model = ModelVersion
+
+    def create(self, validated_data):
+        version, created = ModelVersion.objects.update_or_create(
+            id=validated_data.get("id", None),
+            defaults={
+                "organization":validated_data.get("organization", None),
+                "model":validated_data.get("model", None),
+                "version":validated_data.get("version", None),
+                "celery_log":validated_data.get("celery_log", None),
+                "metric_name":validated_data.get("metric_name", None),
+                "status":validated_data.get("status", None),
+                "task":validated_data.get("task", None),
+                "file":validated_data.get("status", None),
+                "active":validated_data.get("active", None),
+                "metric_value":validated_data.get("metric_value", None)
+            }
+        )
+        return version
+

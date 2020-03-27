@@ -25,7 +25,7 @@ import Train from "../containers/Train"
 import TrainList from "../containers/TrainList"
 import {ADD, EDIT} from "../util/util"
 import CreateMLVersion from "../containers/CreateMLVersion"
-import Ver from "../containers/Versions"
+import Ver from "../containers/ModelVersionList"
 const Main = (props)=>(
   <Switch>
     <Route exact path="/" component={Home} />

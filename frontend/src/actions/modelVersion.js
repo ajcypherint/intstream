@@ -1,6 +1,7 @@
 import { RSAA } from 'redux-api-middleware';
 import { withAuth } from '../reducers'
 import {setParams,getAll} from './util'
+import {filterChange} from './modelVersionFilter'
 
 let TRAIN_ENDPOINT = '/api/train/'
 let ENDPOINT = '/api/modelversion/'
@@ -8,11 +9,21 @@ export const GET_MODELVERSION_REQUEST = '@@modelVersion/GET_MODELVERSION_REQUEST
 export const GET_MODELVERSION_SUCCESS = '@@modelVersion/GET_MODELVERSION_SUCCESS';
 export const GET_MODELVERSION_FAILURE = '@@modelVersion/GET_MODELVERSION_FAILURE';
 
-export const TRAIN_MODELVERSION_REQUEST = '@@modelVersion/TRAIN_MODELVERSION_REQUEST';
-export const TRAIN_MODELVERSION_SUCCESS = '@@modelVersion/TRAIN_MODELVERSION_SUCCESS';
-export const TRAIN_MODELVERSION_FAILURE = '@@modelVersion/TRAIN_MODELVERSION_FAILURE';
+export const UPDATE_MODELVERSION_REQUEST = '@@modelVersion/UPDATE_MODELVERSION_REQUEST';
+export const UPDATE_MODELVERSION_SUCCESS = '@@modelVersion/UPDATE_MODELVERSION_SUCCESS';
+export const UPDATE_MODELVERSION_FAILURE = '@@modelVersion/UPDATE_MODELVERSION_FAILURE';
 
+export const TRAIN_MODELVERSION_REQUEST = '@@modelVersion/MODELVERSION_REQUEST';
+export const TRAIN_MODELVERSION_SUCCESS = '@@modelVersion/MODELVERSION_SUCCESS';
+export const TRAIN_MODELVERSION_FAILURE = '@@modelVersion/MODELVERSION_FAILURE';
+export const PAGE = '@@modelVersion/MODELVERSION_PAGE';
 
+export const setPage= (data)=>{
+  return {
+    type:PAGE,
+    payload:data
+  }
+}
 export const train= (modelId, metric)=>{
   let data = {
               "mlmodel":modelId,
@@ -63,4 +74,31 @@ export const getModelVersion = (params) =>{
 }
 }
 
+export const updateActiveRequest = (id) =>{
+  let url = setParams(ENDPOINT)
+  return {
+  [RSAA]:{
+   endpoint: url,
+      method: 'POST',
+    body: {
+      id:id,
+      active:true
+    },
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+       UPDATE_MODELVERSION_REQUEST, UPDATE_MODELVERSION_SUCCESS, UPDATE_MODELVERSION_FAILURE
+      ]
 
+  }
+  }
+}
+
+export const setActiveVersion = (id, selections) =>{
+ return async (dispatch, getState)=>{
+   let updateResp = await dispatch(updateActiveRequest(id))
+   if(updateResp.error) {
+     throw new Error("Promise flow received action error", updateResp);
+   }
+   await dispatch(filterChange(selections))
+ }
+}

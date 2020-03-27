@@ -69,6 +69,9 @@ export function loading(state){
 export function errors(state){
   return state.errors
 }
+export function totalcount(state){
+  return state.totalcount
+}
 export function nextpage(state){
   return state.nextpage
 }
