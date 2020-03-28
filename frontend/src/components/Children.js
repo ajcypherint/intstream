@@ -46,38 +46,7 @@ export class Children extends React.Component{
     }
     this.props.child_func.clearParent()
     this.props.filterChange(newSelections, "childFilter", parentobj)
-    //parentobj : {id,title}
-    /*
-    if( level== 0){
-      this.props.child_func.clearParent()
-      this.props.child_func.setHomeSelections({
-        page:1,
-        orderCol:"title",
-        startDate:this.props.parent.homeSelections.startDate,
-        endDate:this.props.parent.homeSelections.endDate,
-        sourceChosen:this.props.parent.homeSelections.sourceChosen
-        })
-
-      this.props.child_func.fetchArticles(parentobj, dateString(
-      "",//orderdir
-      "title", //ordercol
-      this.props.parent.homeSelections.sourceChosen,
-      1, //page
-      this.props.parent.homeSelections.startDate,
-      this.props.parent.homeSelections.endDate,
-      ))
-    } else {
-      this.props.parent_func.fetchArticles(parentobj, dateString(
-        "",//orderdir
-        "title", //ordercol
-         this.props.source_chosen,
-        1, //page
-        this.props.start_date,
-        this.props.end_date
-        ))
-
-    }
-    */
+    
   }
   // child for paginate 
   childFetch( selections, page){
@@ -86,16 +55,7 @@ export class Children extends React.Component{
       page:page
     }
     this.props.filterChange(newSelections, "childFilter",this.props.parent_obj)
-    /*
-    this.props.parent_func.fetchArticles(this.props.parent_obj, dateString(
-      selections.orderdir,
-      selections.ordercol,
-      this.props.source_chosen,
-      page,
-      this.props.start_date,
-      this.props.end_date//parent
-      ))
-      */
+   
   }
   //parent for paginate
   fetch(selections,page){

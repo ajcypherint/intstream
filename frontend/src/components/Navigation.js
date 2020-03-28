@@ -104,6 +104,9 @@ export default class Example extends React.Component {
                   <DropdownItem tag={Link} to="/models">
                    Models 
                   </DropdownItem>
+                  <DropdownItem tag={Link} to="/versions">
+                   Model Versions
+                  </DropdownItem>
                   <DropdownItem tag={Link} to="/train_list">
                     History
                   </DropdownItem>

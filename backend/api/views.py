@@ -40,10 +40,12 @@ MAX_CLUSTER = 1000
 # Create your views here.
 
 class MLModelFilter(filters.FilterSet):
-    #source__name = filters.CharFilter(lookup_expr='exact')
+    modelversion__isnull = filters.BooleanFilter(field_name="modelversion",
+                                                 lookup_expr="isnull",
+                                                 distinct=True)
     class Meta:
         model = models.MLModel
-        fields = ('id','name','created_date','train_lock','active')
+        fields = ('id','name','created_date','train_lock','modelversion__isnull','active')
 
 
 class SourceTypeViewSet(viewsets.ReadOnlyModelViewSet):
@@ -909,6 +911,7 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
 class ModelVersionViewSet(viewsets.ModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.ModelVersionSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "version","model__active", "model", "active")
     # todo(aj)
     # change from readonly

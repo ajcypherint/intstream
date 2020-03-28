@@ -30,9 +30,6 @@ export default class Main extends React.Component{
   handleSubmit(model, event){
     event.preventDefault()
     this.props.trainRedirect(this.props.match.params.id, this.props.history, '/mlversionlist/', this.state.metric)
-    // create thunk action
-    //1. post create 
-    //1. if success; redirect to list page
   }
 
   render(){

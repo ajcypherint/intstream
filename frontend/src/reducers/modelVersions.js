@@ -45,6 +45,8 @@ export default (state=initialState, action) => {
           previouspage:action.payload.previous,
         }
       }
+    case modelVersionData.GETNO_MODELVERSION_FAILURE:
+    case modelVersionData.UPDATE_MODELVERSION_FAILURE:
     case modelVersionData.TRAIN_MODELVERSION_FAILURE:
     case modelVersionData.GET_MODELVERSION_FAILURE:
       {
@@ -68,6 +70,9 @@ export function loading(state){
 }
 export function errors(state){
   return state.errors
+}
+export function totalcount(state){
+  return state.totalcount
 }
 export function nextpage(state){
   return state.nextpage

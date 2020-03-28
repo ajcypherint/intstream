@@ -1,18 +1,34 @@
 import { RSAA } from 'redux-api-middleware';
 import { withAuth } from '../reducers'
 import {setParams,getAll} from './util'
+import {filterChange} from './modelVersionFilter'
 
 let TRAIN_ENDPOINT = '/api/train/'
 let ENDPOINT = '/api/modelversion/'
+
+export const GETNO_MODELVERSION_REQUEST = '@@modelVersion/GETNO_MODELVERSION_REQUEST';
+export const GETNO_MODELVERSION_SUCCESS = '@@modelVersion/GETNO_MODELVERSION_SUCCESS';
+export const GETNO_MODELVERSION_FAILURE = '@@modelVersion/GETNO_MODELVERSION_FAILURE';
+
 export const GET_MODELVERSION_REQUEST = '@@modelVersion/GET_MODELVERSION_REQUEST';
 export const GET_MODELVERSION_SUCCESS = '@@modelVersion/GET_MODELVERSION_SUCCESS';
 export const GET_MODELVERSION_FAILURE = '@@modelVersion/GET_MODELVERSION_FAILURE';
 
-export const TRAIN_MODELVERSION_REQUEST = '@@modelVersion/TRAIN_MODELVERSION_REQUEST';
-export const TRAIN_MODELVERSION_SUCCESS = '@@modelVersion/TRAIN_MODELVERSION_SUCCESS';
-export const TRAIN_MODELVERSION_FAILURE = '@@modelVersion/TRAIN_MODELVERSION_FAILURE';
+export const UPDATE_MODELVERSION_REQUEST = '@@modelVersion/UPDATE_MODELVERSION_REQUEST';
+export const UPDATE_MODELVERSION_SUCCESS = '@@modelVersion/UPDATE_MODELVERSION_SUCCESS';
+export const UPDATE_MODELVERSION_FAILURE = '@@modelVersion/UPDATE_MODELVERSION_FAILURE';
 
+export const TRAIN_MODELVERSION_REQUEST = '@@modelVersion/MODELVERSION_REQUEST';
+export const TRAIN_MODELVERSION_SUCCESS = '@@modelVersion/MODELVERSION_SUCCESS';
+export const TRAIN_MODELVERSION_FAILURE = '@@modelVersion/MODELVERSION_FAILURE';
+export const PAGE = '@@modelVersion/MODELVERSION_PAGE';
 
+export const setPage= (data)=>{
+  return {
+    type:PAGE,
+    payload:data
+  }
+}
 export const train= (modelId, metric)=>{
   let data = {
               "mlmodel":modelId,
@@ -45,22 +61,67 @@ export const trainRedirect = (data, history, uri, metric) => {
       
     }
 }
+export const getModelVersionTemplate = (REQUEST)=>(SUCCESS)=>(FAILURE)=>(params)=> {
+    let url = setParams(ENDPOINT,params)
+    return {
+    [RSAA]:{
+     endpoint: url,
+        method: 'GET',
+        body: '',
+        headers: withAuth({ 'Content-Type': 'application/json' }),
+        types: [
+         REQUEST, SUCCESS, FAILURE
+        ]
+    }
+  }
+}
 
-export const getModelVersion = (params) =>{
 
-  let url = setParams(ENDPOINT,params)
+export const getModelVersionNoRedux = getModelVersionTemplate(GETNO_MODELVERSION_REQUEST)(
+                                                              GETNO_MODELVERSION_SUCCESS)(
+                                                              GETNO_MODELVERSION_FAILURE)
+
+export const getModelVersion = getModelVersionTemplate(GET_MODELVERSION_REQUEST)(
+                                                       GET_MODELVERSION_SUCCESS)(
+                                                       GET_MODELVERSION_FAILURE)
+
+
+export const setActiveRequest= (id, trueFalse) =>{
+  let url = ENDPOINT + id + "/"
   return {
   [RSAA]:{
    endpoint: url,
-      method: 'GET',
-      body: '',
+      method: 'PATCH',
+      body: JSON.stringify({
+        active:trueFalse
+      }),
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
-       GET_MODELVERSION_REQUEST, GET_MODELVERSION_SUCCESS, GET_MODELVERSION_FAILURE
+       UPDATE_MODELVERSION_REQUEST, UPDATE_MODELVERSION_SUCCESS, UPDATE_MODELVERSION_FAILURE
       ]
 
   }
-}
+  }
 }
 
-
+export const setActiveVersion = (model, id, selections) =>{
+ return async (dispatch, getState)=>{
+   //get active
+   let getResp = await dispatch(getModelVersionNoRedux("mlmodel="+model+"&active=true"))
+   let len = getResp.payload.results.length
+   if(getResp.error) {
+     throw new Error("Promise flow get version received action error", getResp);
+   }
+   if (len > 0){
+     let updateResp = await dispatch(setActiveRequest(getResp.payload.results[0].id,false))
+      if(updateResp.error) {
+       throw new Error("Promise flow set Active false received action error", updateResp);
+     }
+   }
+   let updateResp = await dispatch(setActiveRequest(id, true))
+   if(updateResp.error) {
+     throw new Error("Promise flow set active true received action error", updateResp);
+   }
+   await dispatch(filterChange(selections))
+ }
+}

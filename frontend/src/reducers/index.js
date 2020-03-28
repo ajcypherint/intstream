@@ -14,10 +14,12 @@ import list, * as fromList from './listSelections.js'
 import selectArticles, * as fromSelect from "./selectArticles.js"
 import classifications, * as fromClassif from "./classifications"
 import settings, * as fromSettings from "./settings"
-import modelVersions, * as fromModelVersions from "./modelversions.js"
+import modelVersions, * as fromModelVersions from "./modelVersions.js"
+import filterModelVer, * as fromFilterModelVer from "./modelVersionFilter.js"
 
 export default combineReducers({
   modelVersions:modelVersions,
+  filterModelVer:filterModelVer,
   auth: auth,
   filter:filter,
   password:password,
@@ -34,7 +36,6 @@ export default combineReducers({
   classifications:classifications,
   settings:settings,
 })
-export const getVerLoading = state =>fromModelVersions.loading(state.modelVersions)
 //fromAuth
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
 export const get_username = state => fromAuth.get_username(state.auth)
@@ -121,13 +122,23 @@ export const getClassifErrors = state => fromClassif.errors(state.classification
 export const getClassifCounts = state => fromClassif.counts(state.classifications)
 
 //fromSettings
-//fromModels
 export const getSettings= state => fromSettings.settings(state.settings)
 export const getSettingsErrors = state => fromSettings.errors(state.settings)
 export const getSettingsLoading = state => fromSettings.loading(state.settings)
 export const getSettingsSaving = state => fromSettings.saving(state.settings)
 
 //from modelVersions
+export const getModelVersion = state => fromModelVersions.versions(state.modelVersions)
+export const getModelVersionErrors = state => fromModelVersions.errors(state.modelVersions)
+export const getModelVersionLoading = state => fromModelVersions.loading(state.modelVersions)
+export const getModelVersionTotalCount = state => fromModelVersions.totalcount(state.modelVersions)
+export const getModelVersionNextPage = state => fromModelVersions.nextpage(state.modelVersions)
+export const getModelVersionPreviousPage = state => fromModelVersions.previouspage(state.modelVersions)
+
+//from modelVersions
+export const getModelVersionFilterMLModels = state => fromFilterModelVer.mlmodels(state.filterModelVer)
+export const getModelVersionSelections = state => fromFilterModelVer.getSelections(state.filterModelVer)
+
 export function withAuth(headers={}) {
   return (state) => ({
     ...headers,

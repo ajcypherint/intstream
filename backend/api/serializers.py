@@ -486,17 +486,18 @@ class PredictionSerializer(serializers.ModelSerializer):
 class ModelVersionSerializer(serializers.ModelSerializer):
     model = MLModelOnlySerializer(read_only=True)
     class Meta:
-        fields = ("model",
-                  "id",
+        fields = (
+                 "id",
+                 "model",
                   "organization",
                   "version",
-                 "celery_log",
-                 "metric_name",
+                  "celery_log",
+                  "metric_name",
                   "status",
                   "task",
-                  "status",
                   "file",
                   "active",
                   "metric_value")
 
         model = ModelVersion
+
