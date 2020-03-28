@@ -81,8 +81,8 @@ export const filterChange = (newSelections)=>{
        throw new Error("Promise flow received action error" +  resp.error);
     }
 
-    let mvStr = "?ordering="+selections.orderdir+selections.ordercol+
-      "&mlmodel="+selections.modelChosen+
+    let mvStr = "ordering="+selections.orderdir+selections.ordercol+
+      "&mlmodel="+selections.mlmodelChosen+
       "&page="+selections.page+
       "&mlmodel__active=true"
 

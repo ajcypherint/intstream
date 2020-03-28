@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import Main from '../components/ModelVersionList'
-import {getModelVersion, setPage} from '../actions/modelVersion'
+import {getModelVersion, setPage, setActiveVersion} from '../actions/modelVersion'
 import {filterChange} from "../actions/modelVersionFilter"
 
 const mapStateToProps = (state) => ({
@@ -21,6 +21,7 @@ const mapDispatchToProps = (dispatch) => ({
   filterChange: (newSelections) => dispatch(filterChange(newSelections)),
   fetchModelVersions: (params = undefined) => dispatch(getModelVersion(params)),
   setPage:(page)=>dispatch(setPage(page)),
+  setActiveVersion: (model, id,selections)=>dispatch(setActiveVersion(model, id, selections)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

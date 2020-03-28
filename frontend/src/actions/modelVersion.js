@@ -5,6 +5,11 @@ import {filterChange} from './modelVersionFilter'
 
 let TRAIN_ENDPOINT = '/api/train/'
 let ENDPOINT = '/api/modelversion/'
+
+export const GETNO_MODELVERSION_REQUEST = '@@modelVersion/GETNO_MODELVERSION_REQUEST';
+export const GETNO_MODELVERSION_SUCCESS = '@@modelVersion/GETNO_MODELVERSION_SUCCESS';
+export const GETNO_MODELVERSION_FAILURE = '@@modelVersion/GETNO_MODELVERSION_FAILURE';
+
 export const GET_MODELVERSION_REQUEST = '@@modelVersion/GET_MODELVERSION_REQUEST';
 export const GET_MODELVERSION_SUCCESS = '@@modelVersion/GET_MODELVERSION_SUCCESS';
 export const GET_MODELVERSION_FAILURE = '@@modelVersion/GET_MODELVERSION_FAILURE';
@@ -56,34 +61,40 @@ export const trainRedirect = (data, history, uri, metric) => {
       
     }
 }
-
-export const getModelVersion = (params) =>{
-
-  let url = setParams(ENDPOINT,params)
-  return {
-  [RSAA]:{
-   endpoint: url,
-      method: 'GET',
-      body: '',
-      headers: withAuth({ 'Content-Type': 'application/json' }),
-      types: [
-       GET_MODELVERSION_REQUEST, GET_MODELVERSION_SUCCESS, GET_MODELVERSION_FAILURE
-      ]
-
+export const getModelVersionTemplate = (REQUEST)=>(SUCCESS)=>(FAILURE)=>(params)=> {
+    let url = setParams(ENDPOINT,params)
+    return {
+    [RSAA]:{
+     endpoint: url,
+        method: 'GET',
+        body: '',
+        headers: withAuth({ 'Content-Type': 'application/json' }),
+        types: [
+         REQUEST, SUCCESS, FAILURE
+        ]
+    }
   }
 }
-}
 
-export const updateActiveRequest = (id) =>{
-  let url = setParams(ENDPOINT)
+
+export const getModelVersionNoRedux = getModelVersionTemplate(GETNO_MODELVERSION_REQUEST)(
+                                                              GETNO_MODELVERSION_SUCCESS)(
+                                                              GETNO_MODELVERSION_FAILURE)
+
+export const getModelVersion = getModelVersionTemplate(GET_MODELVERSION_REQUEST)(
+                                                       GET_MODELVERSION_SUCCESS)(
+                                                       GET_MODELVERSION_FAILURE)
+
+
+export const setActiveRequest= (id, trueFalse) =>{
+  let url = ENDPOINT + "/" + id
   return {
   [RSAA]:{
    endpoint: url,
-      method: 'POST',
-    body: {
-      id:id,
-      active:true
-    },
+      method: 'PUT',
+      body: JSON.stringify({
+        active:trueFalse
+      }),
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
        UPDATE_MODELVERSION_REQUEST, UPDATE_MODELVERSION_SUCCESS, UPDATE_MODELVERSION_FAILURE
@@ -93,9 +104,20 @@ export const updateActiveRequest = (id) =>{
   }
 }
 
-export const setActiveVersion = (id, selections) =>{
+export const setActiveVersion = (model, id, selections) =>{
  return async (dispatch, getState)=>{
-   let updateResp = await dispatch(updateActiveRequest(id))
+   //get active
+   let getResp = await dispatch(getModelVersionNoRedux("mlmodel="+model+"&active=true"))
+   if(getResp.error) {
+     throw new Error("Promise flow received action error", getResp);
+   }
+   if (getResp.payload.length > 0){
+     let updateResp = await dispatch(setActiveRequest(getResp.payload[0].id,false))
+      if(updateResp.error) {
+       throw new Error("Promise flow received action error", updateResp);
+     }
+   }
+   let updateResp = await dispatch(setActiveRequest(id, true))
    if(updateResp.error) {
      throw new Error("Promise flow received action error", updateResp);
    }

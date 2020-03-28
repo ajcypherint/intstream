@@ -32,8 +32,11 @@ export default class extends Component {
     this.props.filterChange(newSelections)
   }
   handleActiveChange(event){
-    // call action to update active model
 
+    let {model, id}= event.target.dataset
+    this.props.setActiveVersion(model,
+                                id, 
+                                this.props.selections) 
   }
   onRefresh(event){
     event.preventDefault()
@@ -115,10 +118,22 @@ export default class extends Component {
                      )}}>
                      Model
                    </td>
-                   <td>
+                   <td className="hover" onClick={(event)=>{this.changesort("version", 
+                       ASC, 
+                       DESC, 
+                       this.props.selections,
+                       this.props.filterChange,
+                       0
+                     )}}>
                      Version Name
                    </td>
-                   <td>
+                   <td className="hover" onClick={(event)=>{this.changesort("status", 
+                       ASC, 
+                       DESC, 
+                       this.props.selections,
+                       this.props.filterChange,
+                       0
+                     )}}>
                      Status
                    </td>
                   <td>
@@ -156,8 +171,8 @@ export default class extends Component {
                           <td>
                             <div className="custom-control custom-checkbox">
                               <Input type="checkbox" 
-                                data-id={undefined}
-                                data-articleid={version.id} 
+                                data-model={version.model.id}
+                                data-id={version.id}
                                 checked={version.active} 
                                 onChange={this.handleActiveChange}/>
                              </div>

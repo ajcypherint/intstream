@@ -911,6 +911,7 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
 class ModelVersionViewSet(viewsets.ModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyOrAdminOrIntegrator,)
     serializer_class = serializers.ModelVersionSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "version","model__active", "model", "active")
     # todo(aj)
     # change from readonly
