@@ -87,11 +87,11 @@ export const getModelVersion = getModelVersionTemplate(GET_MODELVERSION_REQUEST)
 
 
 export const setActiveRequest= (id, trueFalse) =>{
-  let url = ENDPOINT + "/" + id
+  let url = ENDPOINT + id + "/"
   return {
   [RSAA]:{
    endpoint: url,
-      method: 'PUT',
+      method: 'PATCH',
       body: JSON.stringify({
         active:trueFalse
       }),
@@ -108,18 +108,19 @@ export const setActiveVersion = (model, id, selections) =>{
  return async (dispatch, getState)=>{
    //get active
    let getResp = await dispatch(getModelVersionNoRedux("mlmodel="+model+"&active=true"))
+   let len = getResp.payload.results.length
    if(getResp.error) {
-     throw new Error("Promise flow received action error", getResp);
+     throw new Error("Promise flow get version received action error", getResp);
    }
-   if (getResp.payload.length > 0){
-     let updateResp = await dispatch(setActiveRequest(getResp.payload[0].id,false))
+   if (len > 0){
+     let updateResp = await dispatch(setActiveRequest(getResp.payload.results[0].id,false))
       if(updateResp.error) {
-       throw new Error("Promise flow received action error", updateResp);
+       throw new Error("Promise flow set Active false received action error", updateResp);
      }
    }
    let updateResp = await dispatch(setActiveRequest(id, true))
    if(updateResp.error) {
-     throw new Error("Promise flow received action error", updateResp);
+     throw new Error("Promise flow set active true received action error", updateResp);
    }
    await dispatch(filterChange(selections))
  }

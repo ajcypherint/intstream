@@ -45,6 +45,8 @@ export default (state=initialState, action) => {
           previouspage:action.payload.previous,
         }
       }
+    case modelVersionData.GETNO_MODELVERSION_FAILURE:
+    case modelVersionData.UPDATE_MODELVERSION_FAILURE:
     case modelVersionData.TRAIN_MODELVERSION_FAILURE:
     case modelVersionData.GET_MODELVERSION_FAILURE:
       {
