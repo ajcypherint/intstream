@@ -163,6 +163,7 @@ export class Main extends React.Component{
       <div className="container mt-2 col-sm-12" >
         <Form onSubmit={this.onSubmit} >
           {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
+          {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
        <FormGroup>
        <Row>
         <Col sm="2" md="2" lg="2">
