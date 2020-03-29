@@ -7,6 +7,7 @@ import {getModels,clearModels, API} from '../actions/models'
 const mapStateToProps = (state) => {
   return {
     modelList:reducers.getModels(state),
+    trainCreateErrors:reducers.getModelVersionErrors(state),
   };
 }
 const mapDispatchToProps = (dispatch) => {
