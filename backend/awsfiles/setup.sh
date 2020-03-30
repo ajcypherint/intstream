@@ -12,4 +12,5 @@ aws s3 cp $s3_bucket_script /home/hadoop/script.tar.gz
 tar zxvf "/home/hadoop/script.tar.gz" -C /home/hadoop/
 python --version
 # Install requirements for Python script
+sudo /usr/bin/python3 -m pip install cython
 sudo /usr/bin/python3 -m pip install -r /home/hadoop/requirements.txt
