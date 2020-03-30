@@ -27,13 +27,38 @@ def clean_html(raw):
     text = re.sub(r'\n\s*', "\n",text)
     return text.strip().strip("\n")
 
-def clean_hashes(raw):
+
+def clean_md5(raw):
+    text = re.sub(r'\b[a-fA-F0-9]{32}\b', '', raw)
+    return text
+
+
+def clean_sha256(raw):
+    text = re.sub(r'\b[a-fA-F0-9]{64}\b', '', raw)
+    return text
+
+
+def clean_sha1(raw):
+    text = re.sub(r'\b[a-fA-F0-9]{40}\b', '', raw)
+    return text
+
+
+def clean_hashes_old(raw):
     clean_nonwords = re.compile(r'\S*[^a-zA-Z\s\-\"\']\S*')
     cleantext = re.sub(clean_nonwords,'',raw)
     return cleantext
 
+
+def clean_hashes(raw):
+    cleantext = clean_md5(raw)
+    cleantext = clean_sha256(raw)
+    cleantext = clean_sha1(raw)
+    return cleantext
+
+
 def noop(raw):
     return raw
+
 
 class StemmedTfidfVectorizer(TfidfVectorizer):
     def __init__(self, *args, **kwargs):

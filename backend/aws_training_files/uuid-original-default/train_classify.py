@@ -16,7 +16,7 @@ from pyspark.ml.evaluation import BinaryClassificationEvaluator, MulticlassClass
 from pyspark.ml.feature import Tokenizer, StopWordsRemover, CountVectorizer, IDF, StringIndexer
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 from pyspark.sql.types import ArrayType, StructField, StructType, StringType, IntegerType
-
+import Stemmer
 
 from pyspark.ml.classification import LogisticRegression
 import re
@@ -137,6 +137,22 @@ class CleanHtml(
             cleantext = re.sub(clean_nonwords, '', raw)
             return cleantext
 
+        def clean_md5(raw):
+            text = re.sub(r'\b[a-fA-F0-9]{32}\b', '', raw)
+            return text
+
+        def clean_sha256(raw):
+            text = re.sub(r'\b[a-fA-F0-9]{64}\b', '', raw)
+            return text
+
+        def clean_sha1(raw):
+            text = re.sub(r'\b[a-fA-F0-9]{40}\b', '', raw)
+            return text
+
+        def stemmer(raw):
+            stem = Stemmer.Stemmer('english')
+            return " ".join(stem.stemWords(raw.split()))
+
         def f(raw):
             """
             remove html headers and tags
@@ -156,7 +172,10 @@ class CleanHtml(
 
             text = tree.body.text(separator='\n')
             text = re.sub(r'\n\s*', "\n", text)
-            text = clean_hashes(text)
+            text = clean_sha1(text)
+            text = clean_sha256(text)
+            text = clean_md5(text)
+            text = stemmer(text)
             return text.strip().strip("\n")
 
         t = StringType()
