@@ -469,6 +469,7 @@ class HomePage(APIView):
             }
             return Response(response, status=status.HTTP_200_OK)
         vectorizer = vector.StemmedTfidfVectorizer( decode_error="ignore",
+                                                    stemmer="english",
                                                    clean_html=True,
                                                    clean_hashes=True,
                                                     min_df=min_df,

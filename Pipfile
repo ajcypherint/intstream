@@ -16,7 +16,6 @@ djangorestframework = "*"
 drf-yasg = "*"
 packaging = "*"
 sklearn = "*"
-pystemmer = "*"
 selectolax = "*"
 celery = {extras = ["redis"],version = "*"}
 django-celery-beat = "*"
@@ -36,6 +35,8 @@ virtualenv = "*"
 django-celery-results = "*"
 django-debug-toolbar = "*"
 django-filter = {git = "https://github.com/rpkilby/django-filter.git",ref = "filter-groups"}
+pystemmer = "*"
+cython = "*"
 
 [requires]
 python_version = "3.6"

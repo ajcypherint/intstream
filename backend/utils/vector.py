@@ -1,7 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 import Stemmer #Pystemmer
 
-
 import re
 from selectolax.parser import HTMLParser
 
