@@ -384,6 +384,21 @@ def create_virtual_env(script_directory):
                      "PATH":os.path.join(directory,"bin") + ":" + os.environ["PATH"],
                      "PYSPARK_PYTHON":os.path.join(directory,"bin")}
 
+            # special case pystemmer install needs cython installed
+            respip = subprocess.run([os.path.join(directory,"bin/python"),
+                              "-m",
+                              "pip",
+                              "install",
+                              "cython",
+                              ],
+                           env=env,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
+            logger.info("pip stderr: " + str(respip.stderr))
+            logger.info("pip stdout: " + str(respip.stdout))
+            if res.returncode != 0:
+                raise Pip
+
             respip = subprocess.run([os.path.join(directory,"bin/python"),
                               "-m",
                               "pip",
