@@ -455,6 +455,7 @@ def train_model(self,
                 aws_secret_access_key_id,
                 training_script_folder,
                 ec2_key_name,
+                logging_level = logging.DEBUG
                 ):
     task = self.request.id.__str__()
     # todo(aj) could be a function
@@ -465,12 +466,12 @@ def train_model(self,
     # optionally logging on the Console as well as file
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
-    stream_handler.setLevel(logging.DEBUG) #todo(aj) hardcoded for now
+    stream_handler.setLevel(logging_level) #todo(aj) hardcoded for now
     # Adding File Handle with file path. Filename is task_id
     log_name = os.path.join('/tmp/', task+'.log')
     task_handler = logging.FileHandler(log_name)
     task_handler.setFormatter(formatter)
-    task_handler.setLevel(logging.DEBUG) #todo(aj) hardcoded for now
+    task_handler.setLevel(logging_level) #todo(aj) hardcoded for now
     logger.addHandler(stream_handler)
     logger.addHandler(task_handler)
     logger.info("test this is the message")
