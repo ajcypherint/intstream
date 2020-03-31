@@ -55,7 +55,7 @@ export const trainRedirect = (data, history, uri, metric) => {
       let totalresp = await dispatch(train(data, metric))
       if (totalresp.error) {
       //  // the last dispatched action has errored, break out of the promise chain.
-        throw new Error("Promise flow received action error", totalresp);
+        return
        }
       return history.push("/versions")
       
