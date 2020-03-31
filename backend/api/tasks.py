@@ -94,13 +94,14 @@ def add(x,y):
 
 async def fetch(url):
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            try:
-                return await response.text()
-            except UnicodeDecodeError as e:
-                return str(e)
-            except aiohttp.ClientError as e:
-                return str(e)
+        try:
+            async with session.get(url) as response:
+                try:
+                    return await response.text()
+                except UnicodeDecodeError as e:
+                    return str(e)
+        except aiohttp.ClientError as e:
+            return str(e)
 
 PLACEHOLDER_TEXT = "placeholder text for classifier"
 
