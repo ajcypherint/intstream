@@ -99,6 +99,8 @@ async def fetch(url):
                 return await response.text()
             except UnicodeDecodeError as e:
                 return str(e)
+            except aiohttp.ClientError as e:
+                return str(e)
 
 PLACEHOLDER_TEXT = "placeholder text for classifier"
 
