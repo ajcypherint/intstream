@@ -90,7 +90,6 @@ class ModelVersion(models.Model):
     version = models.CharField(max_length=500, unique=True ) #job_name = model-id + time
     celery_log = models.FileField(upload_to="celery_logs",blank=True, null=True)
     metric_name = models.CharField(max_length=200)
-    extra_kwargs = models.CharField(max_length=1000)
     task = models.CharField(max_length=500)
     status = models.CharField(max_length=100, default="NA")
     file = models.FileField(upload_to='model_versions',blank=True, null=True)

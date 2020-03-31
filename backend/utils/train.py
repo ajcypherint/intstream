@@ -71,7 +71,6 @@ class DeployPySparkScriptOnAws(object):
                  logger,
                  task=None,
                  emr_version="emr-5.28.0", #python3.6 spark
-                 extra_kwargs=''
                  ):
         """
         :param model: str
@@ -84,7 +83,6 @@ class DeployPySparkScriptOnAws(object):
         :param training_script: str; script to upload to EWS for training
         :param logger: logger
         """
-        self.extra_kwargs=extra_kwargs
         self.logger = logger
         self.metric=metric
         self.METRIC_FILE="metrics.file"
@@ -312,6 +310,7 @@ class DeployPySparkScriptOnAws(object):
                                            },
                             {"Classification":"spark-defaults",
                               "Properties":{
+                                         "spark.jars.packages":"ml.combust.mleap:mleap-spark_2.11:0.15.0"
                                      }
                             }
 
@@ -337,6 +336,7 @@ class DeployPySparkScriptOnAws(object):
                             },
                             {"Classification":"spark-defaults",
                               "Properties":{
+                                         "spark.jars.packages":"ml.combust.mleap:mleap-spark_2.11:0.15.0"
                                      }
                             }
 
@@ -477,8 +477,7 @@ class DeployPySparkScriptOnAws(object):
                             self.job_name, # subfolder
                             self.MODEL_NAME, # model file
                             self.METRIC_FILE, # metric file
-                            self.metric, # metric
-                            self.extra_kwargs, #extra json kwargs
+                            self.metric
                         ]
                     }
                 },

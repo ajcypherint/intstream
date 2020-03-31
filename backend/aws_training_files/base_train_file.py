@@ -21,7 +21,6 @@ import sys
 from operator import add
 from pyspark import SparkContext
 from train_classify import train
-import json
 
 #todo(aj)  options
 # 2. find and replace the values below when uploading script.
@@ -32,25 +31,14 @@ class MissingArgs(Exception):
     pass
 
 
-class ExtraArgs(Exception):
-    pass
-
+INPUT_BUCKET = sys.argv[1]
+JOB_NAME = sys.argv[2]
+OUTPUT_FILE = sys.argv[3]
+OUTPUT_METRIC_FILE = sys.argv[4]
+METRIC = sys.argv[5]
 
 if __name__ == "__main__":
-    # arg len = 6 or 7 is ok
-    if len(sys.argv) < 6:
+    if len(sys.argv) != 6:
         raise MissingArgs
-    if len(sys.argv) > 7:
-        raise ExtraArgs
-    extra_kwargs = {}
-    if len(sys.argv) == 7:
-        extra_kwargs = json.loads(sys.argv[6])
-
-    INPUT_BUCKET = sys.argv[1]
-    JOB_NAME = sys.argv[2]
-    OUTPUT_FILE = sys.argv[3]
-    OUTPUT_METRIC_FILE = sys.argv[4]
-    METRIC = sys.argv[5]
-
-    train(INPUT_BUCKET, JOB_NAME, OUTPUT_FILE, OUTPUT_METRIC_FILE, METRIC, extra_kwargs)
+    train(INPUT_BUCKET, JOB_NAME, OUTPUT_FILE, OUTPUT_METRIC_FILE, METRIC)
 

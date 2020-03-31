@@ -204,8 +204,7 @@ def train(input_bucket,
           job_name,
           output_model_file_key,
           output_metric_file_key,
-          metric,
-          extra_kwargs):
+          metric):
     """
     :param input_bucket: str
     :param output_file: str
