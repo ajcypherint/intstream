@@ -14,7 +14,7 @@ from pyspark.ml import Pipeline,PipelineModel
 from pyspark.ml.feature import VectorAssembler, NGram
 from pyspark.ml.evaluation import BinaryClassificationEvaluator, MulticlassClassificationEvaluator
 from pyspark.ml.feature import Tokenizer, StopWordsRemover, CountVectorizer, IDF, StringIndexer
-from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
+from pyspark.ml.tuning import ParamGridBuilder
 from pyspark.sql.types import ArrayType, StructField, StructType, StringType, IntegerType
 import Stemmer
 
@@ -175,7 +175,7 @@ class CleanHtml(
             text = clean_sha1(text)
             text = clean_sha256(text)
             text = clean_md5(text)
-            #text = stemmer(text)
+            text = stemmer(text)
             return text.strip().strip("\n")
 
         t = StringType()
@@ -238,7 +238,7 @@ def train(input_bucket,
         .addGrid(lr.regParam, [0.1, .01, 0.001]) \
         .addGrid(ngram.n, [1, 2, 3]) \
         .build()
-    crossval = CrossValidator(estimator=pipeline,
+    crossval = StratifiedCrossValidator(estimator=pipeline,
                               estimatorParamMaps=paramGrid,
                               evaluator=MulticlassClassificationEvaluator(labelCol="target_int", metricName=metric),
                               numFolds=2)
