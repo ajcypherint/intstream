@@ -496,6 +496,7 @@ class ModelVersionSerializer(serializers.ModelSerializer):
                   "status",
                   "task",
                   "file",
+                  "extra_kwargs",
                   "active",
                   "metric_value")
 
