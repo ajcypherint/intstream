@@ -238,7 +238,7 @@ def train(input_bucket,
         .addGrid(lr.regParam, [0.1, .01, 0.001]) \
         .addGrid(ngram.n, [1, 2, 3]) \
         .build()
-    crossval = CrossValidator(estimator=pipeline,
+    crossval = StratifiedCrossValidator(estimator=pipeline,
                               estimatorParamMaps=paramGrid,
                               evaluator=MulticlassClassificationEvaluator(labelCol="target_int", metricName=metric),
                               numFolds=2)
