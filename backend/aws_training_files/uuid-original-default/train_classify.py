@@ -103,6 +103,7 @@ class CleanHtml(
 
     @keyword_only
     def __init__(self, inputCol=None, outputCol=None):
+        # todo(aj) add stemming boolean param
         super(CleanHtml, self).__init__()
         kwargs = self._input_kwargs
         self.setParams(**kwargs)
@@ -213,6 +214,14 @@ def train(input_bucket,
     :param metric: str
     :return:
     """
+    pre_stratified=extra_kwargs.get("stratified", '')
+    stratified = False
+    if pre_stratified.lower() == "true":
+        stratified = True
+    pre_stemming = extra_kwargs.get("stemming", "")
+    stemming = False
+    if pre_stemming.lower() == "true":
+        stemming = True
     spark = SparkSession.builder.appName('train').getOrCreate()
 
     # merge text and targets
@@ -239,7 +248,14 @@ def train(input_bucket,
         .addGrid(lr.regParam, [0.1, .01, 0.001]) \
         .addGrid(ngram.n, [1, 2, 3]) \
         .build()
-    crossval = StratifiedCrossValidator(estimator=pipeline,
+    crossval = None
+    if stratified:
+        crossval = StratifiedCrossValidator(estimator=pipeline,
+                              estimatorParamMaps=paramGrid,
+                              evaluator=MulticlassClassificationEvaluator(labelCol="target_int", metricName=metric),
+                              numFolds=2)
+    else:
+        crossval = CrossValidator(estimator=pipeline,
                               estimatorParamMaps=paramGrid,
                               evaluator=MulticlassClassificationEvaluator(labelCol="target_int", metricName=metric),
                               numFolds=2)

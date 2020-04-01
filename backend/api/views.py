@@ -35,6 +35,7 @@ from django.conf import settings
 import itertools
 from utils import vector, read
 from scipy.cluster import  hierarchy
+import json
 
 MAX_CLUSTER = 1000
 # Create your views here.
@@ -280,6 +281,11 @@ class Train(APIView):
                             required=True,
                             description="f1, precision, recall, etc",
                             type=openapi.TYPE_STRING,)
+    extra_kwargs = openapi.Parameter('extra_kwargs',
+                            in_=openapi.IN_BODY,
+                            required=True,
+                            description="json of extra kwargs",
+                            type=openapi.TYPE_OBJECT,)
 
     error = openapi.Response("error",
                              openapi.Schema(
@@ -292,10 +298,14 @@ class Train(APIView):
 
     @swagger_auto_schema(operation_description="create training job", manual_parameters=[mlmodel], responses={200:response,404:error})
     def post(self, request, format=None):
-        REQ_FIELD = ["mlmodel","metric_name","script_directory"]
+        REQ_FIELD = ["mlmodel","metric_name","script_directory","extra_kwargs"]
         for field in REQ_FIELD:
             if field not in self.request.data.keys():
                 return Response({"detail":field + " is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            json.loads(self.request.data["extra_kwargs"])
+        except json.JSONDecodeError as e:
+            return Response({"detail":str(e)}, status=status.HTTP_400_BAD_REQUEST)
         org = self.request.user.organization
         aws_setings = None
         try:
@@ -312,7 +322,8 @@ class Train(APIView):
                               aws_access_key_id=aws_settings.aws_key,
                               aws_secret_access_key_id=aws_settings.aws_secret,
                               training_script_folder=self.request.data["script_directory"],
-                              ec2_key_name=aws_settings.ec2_key_name
+                              ec2_key_name=aws_settings.ec2_key_name,
+                              extra_kwargs=self.request.data["extra_kwargs"]
                               )
         return Response({"job_id":result.id},status.HTTP_200_OK)
 

@@ -12,7 +12,11 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    trainRedirect: (model, history, uri, metric)=>dispatch(trainRedirect(model, history, uri,  metric)),
+    trainRedirect: (model, 
+      history, 
+      uri, 
+      metric, 
+      extra)=>dispatch(trainRedirect(model, history, uri,  metric, extra)),
     fetchModel: (params=undefined) => dispatch(getModels(API,params)),
   };
 }

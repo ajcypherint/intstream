@@ -15,9 +15,10 @@ import { Input, Table,  Alert, Form, Row, Col, FormGroup, Button, ListGroup, Lis
 export default class Main extends React.Component{
   constructor(props){
     super(props)
-    this.state={metric:"f1"}
+    this.state={metric:"f1",extra:'{}'}
     this.handleMetricChange=this.handleMetricChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleExtra = this.handleExtra.bind(this)
   }
   componentDidMount(){
     //fetch model info
@@ -27,9 +28,16 @@ export default class Main extends React.Component{
     this.setState({metric:event.target.value})
 
   }
+  handleExtra(event){
+    this.setState({extra:event.target.value})
+  }
   handleSubmit(model, event){
     event.preventDefault()
-    this.props.trainRedirect(this.props.match.params.id, this.props.history, '/mlversionlist/', this.state.metric)
+    this.props.trainRedirect(this.props.match.params.id, 
+      this.props.history, 
+      '/mlversionlist/', 
+      this.state.metric, 
+      this.state.extra)
   }
 
   render(){
@@ -55,6 +63,13 @@ export default class Main extends React.Component{
                </Input>
             </Col>
           </Row>
+           <Row>
+            <Col>
+              <label  htmlFor={"extra"}>{"Extra Kwargs"}</label>
+              <Input type="text" name="extra" value={this.state.extra} id="extra_id" onChange={this.handleExtra}/>
+            </Col>
+          </Row>
+ 
           </FormGroup>
           <FormGroup>
             <Row>

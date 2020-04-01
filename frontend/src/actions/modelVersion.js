@@ -29,9 +29,10 @@ export const setPage= (data)=>{
     payload:data
   }
 }
-export const train= (modelId, metric)=>{
+export const train= (modelId, metric, extra_kwargs)=>{
   let data = {
               "mlmodel":modelId,
+              "extra_kwargs":extra_kwargs,
               "metric_name":metric,
               "script_directory":"uuid-original-default" //todo(aj) hardcoded for now
               }
@@ -50,9 +51,9 @@ export const train= (modelId, metric)=>{
   }
 }
 
-export const trainRedirect = (data, history, uri, metric) => {
+export const trainRedirect = (data, history, uri, metric, extra) => {
     return async(dispatch, getState) => {
-      let totalresp = await dispatch(train(data, metric))
+      let totalresp = await dispatch(train(data, metric, extra))
       if (totalresp.error) {
       //  // the last dispatched action has errored, break out of the promise chain.
         return
