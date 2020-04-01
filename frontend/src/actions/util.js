@@ -22,7 +22,7 @@ export const  getAll = (get)=>(putAll)=>(url, params) =>{
       let totalresp = await dispatch(get(url,extra_params))
       if (totalresp.error) {
       //  // the last dispatched action has errored, break out of the promise chain.
-        throw new Error("Promise flow received action error", totalresp);
+          return
        }
       let allModels = []
       let total = totalresp.payload.count
@@ -33,7 +33,7 @@ export const  getAll = (get)=>(putAll)=>(url, params) =>{
       //
        if (actionResponse.error) {
          // the last dispatched action has errored, break out of the promise chain.
-         throw new Error("Promise flow received action error", actionResponse);
+         return
        }
 
        allModels = allModels.concat(actionResponse.payload.results)

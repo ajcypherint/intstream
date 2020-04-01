@@ -56,11 +56,11 @@ export const classifiyNext = (model, article, target)=>{
       let resp = await dispatch(setClassification(model, article, target))
       if (resp.error) {
       //  // the last dispatched action has errored, break out of the promise chain.
-        throw new Error("Promise flow received setClassification action error", resp);
+        return
        }
       let respnext = await dispatch(getArticle(model))
      if (respnext.error) {
-       throw new Error("Promise flow received getArticle action error", respnext)
+       return
      }
   }
 }

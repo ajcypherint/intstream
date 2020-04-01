@@ -87,11 +87,11 @@ export const getCounts = (mlmodel)=>{
  return async (dispatch, getState)=>{
    let true_resp = await dispatch(getClassifications(BASE_URL, "mlmodel_id="+mlmodel+"&target=true"))
    if (true_resp.error) {
-     throw new Error("Promise flow received action error", true_resp);
+     return
    }
    let false_resp = await dispatch(getClassifications(BASE_URL, "mlmodel_id="+mlmodel+"&target=false"))
      if (false_resp.error) {
-       throw new Error("Promise flow received action error", false_resp);
+       return
    }
    let true_count = parseInt(true_resp.payload.count, 10)
    let false_count = parseInt(false_resp.payload.count, 10)
@@ -121,7 +121,7 @@ export const deleteClassificationLoadCounts = (id, article_id, mlmodel)=>{
   return async(dispatch, getState)=>{
     let resp = await dispatch(deleteClassification(id, article_id))
     if(resp.errors){
-      throw new Error("Promise flow received action error", resp);
+      return
     }
     await dispatch(getCounts(mlmodel))
   }
@@ -158,7 +158,7 @@ export const setClassificationLoadCounts = (mlmodel,
     return async(dispatch, getState)=>{
     let resp = await dispatch(setClassification(mlmodel, article, target))
     if(resp.errors){
-      throw new Error("Promise flow received action error", resp);
+        return
       }
     await dispatch(getCounts(mlmodel))
  
@@ -196,7 +196,7 @@ export const getArticlesAndClassif = (model, article_params = '')=>{
     let resp = await dispatch(fromArticle.getArticles(fromArticle.ARTICLE_URL,article_params))
     if (resp.error) {
       // the last dispatched action has errored, break out of the promise chain.
-      throw new Error("Promise flow received action error", resp);
+      return
     }
     return await dispatch(getArticlesClassif(model, article_params))
  
@@ -207,7 +207,7 @@ export const getArticlesClassif = (model, article_params='')=>{
     let resp = await dispatch(getArticles(fromArticle.ARTICLE_URL,article_params))
      if (resp.error) {
       //  // the last dispatched action has errored, break out of the promise chain.
-        throw new Error("Promise flow received action error", resp);
+       return
      }
     let articles = []
     if(resp.payload.results.length > 0){

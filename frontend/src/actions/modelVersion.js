@@ -110,17 +110,17 @@ export const setActiveVersion = (model, id, selections) =>{
    let getResp = await dispatch(getModelVersionNoRedux("mlmodel="+model+"&active=true"))
    let len = getResp.payload.results.length
    if(getResp.error) {
-     throw new Error("Promise flow get version received action error", getResp);
+     return
    }
    if (len > 0){
      let updateResp = await dispatch(setActiveRequest(getResp.payload.results[0].id,false))
       if(updateResp.error) {
-       throw new Error("Promise flow set Active false received action error", updateResp);
+        return
      }
    }
    let updateResp = await dispatch(setActiveRequest(id, true))
    if(updateResp.error) {
-     throw new Error("Promise flow set active true received action error", updateResp);
+     return
    }
    await dispatch(filterChange(selections))
  }

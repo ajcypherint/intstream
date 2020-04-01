@@ -65,7 +65,7 @@ export const filterChange = (newSelections)=>{
   return async (dispatch, getState)=>{
     let resp = await dispatch(setSelections(newSelections))
     if (resp.error) {
-      throw new Error("Promise flow received action error" + resp.error);
+      return
     }
     let state = getState()
     let selections = state.filterModelVer.Selections
@@ -78,7 +78,7 @@ export const filterChange = (newSelections)=>{
     // could ignore this for child
     resp = await dispatch(getAllMLModels(MODEL_API, modelStr))
     if (resp.error) {
-       throw new Error("Promise flow received action error" +  resp.error);
+      return
     }
 
     let mvStr = "ordering="+selections.orderdir+selections.ordercol+

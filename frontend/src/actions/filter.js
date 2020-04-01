@@ -67,12 +67,12 @@ export const filterChange = (newSelections, path='filter', parent)=>{
     if (!parent){
       let resp = await dispatch(setHomeSelections(newSelections))
       if (resp.error) {
-         throw new Error("Promise flow received action error" + resp.error);
+        return
       }
     } else {
       let resp = await dispatch(setChildHomeSelections(newSelections))
       if (resp.error) {
-         throw new Error("Promise flow received action error" + resp.error);
+        return
       }
     }
     let state = getState()
