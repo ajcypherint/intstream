@@ -458,7 +458,8 @@ def train_model(self,
                 aws_secret_access_key_id,
                 training_script_folder,
                 ec2_key_name,
-                logging_level = logging.DEBUG
+                logging_level=logging.DEBUG,
+                extra_kwargs=''
                 ):
     task = self.request.id.__str__()
     # todo(aj) could be a function
@@ -489,7 +490,8 @@ def train_model(self,
                                              task=task,
                                              ec2_key_name=ec2_key_name,
                                              metric=metric,# possible metric f1,recall,precision
-                                             logger=logger
+                                             logger=logger,
+                                             extra_kwargs=extra_kwargs
                                              )
     model = MLModel.objects.get(id=model)
     org = Organization.objects.get(id=organization)
