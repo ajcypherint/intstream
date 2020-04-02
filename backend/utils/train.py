@@ -313,7 +313,6 @@ class DeployPySparkScriptOnAws(object):
                                            },
                             {"Classification":"spark-defaults",
                               "Properties":{
-                                         "spark.jars.packages":"ml.combust.mleap:mleap-spark_2.11:0.15.0"
                                      }
                             }
 
@@ -339,7 +338,6 @@ class DeployPySparkScriptOnAws(object):
                             },
                             {"Classification":"spark-defaults",
                               "Properties":{
-                                         "spark.jars.packages":"ml.combust.mleap:mleap-spark_2.11:0.15.0"
                                      }
                             }
 
@@ -480,8 +478,8 @@ class DeployPySparkScriptOnAws(object):
                             self.job_name, # subfolder
                             self.MODEL_NAME, # model file
                             self.METRIC_FILE, # metric file
-                            self.metric,
-                            self.extra_kwargs,
+                            self.metric, # metric
+                            self.extra_kwargs, #extra json kwargs
                         ]
                     }
                 },
