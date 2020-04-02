@@ -100,16 +100,20 @@ class CleanHtml(
     # https://www.google.com/search?q=spark+udf+transformer&oq=spark+udf+transformer&aqs=chrome..69i57.4514j1j7&sourceid=chrome&ie=UTF-8
     # stopwords = Param(Params._dummy(), "stopwords", "stopwords",
     #                 typeConverter=TypeConverters.toListString)
+    stem = Param(Params._dummy(), "stem", "stem",
+                      typeConverter=TypeConverters.toBoolean)
 
     @keyword_only
-    def __init__(self, inputCol=None, outputCol=None):
+    def __init__(self, inputCol=None, outputCol=None, stem=None ):
         # todo(aj) add stemming boolean param
         super(CleanHtml, self).__init__()
+        self.stem = Param(self, "stem", "")
+        self._setDefault(stem=False)
         kwargs = self._input_kwargs
         self.setParams(**kwargs)
 
     @keyword_only
-    def setParams(self, inputCol=None, outputCol=None):
+    def setParams(self, inputCol=None, outputCol=None, stem=None):
         kwargs = self._input_kwargs
         return self._set(**kwargs)
 
@@ -126,6 +130,12 @@ class CleanHtml(
         Sets the value of :py:attr:`outputCol`.
         """
         return self._set(outputCol=value)
+
+    def setStem(self, value):
+        return self._set(stem=value)
+
+    def getStem(self):
+        return self.getOrDefault(self.stem)
 
     def _transform(self, dataset):
         def clean_hashes(raw):
@@ -156,11 +166,10 @@ class CleanHtml(
 
         def f(raw):
             """
-            remove html headers and tags
+            remove html headers and tags and stem
             :param raw:
             :return:
             """
-
             tree = HTMLParser(raw)
 
             if tree.body is None:
@@ -176,13 +185,18 @@ class CleanHtml(
             text = clean_sha1(text)
             text = clean_sha256(text)
             text = clean_md5(text)
-            text = stemmer(text)
+
             return text.strip().strip("\n")
 
+        stem = self.getStem()
         t = StringType()
         out_col = self.getOutputCol()
         in_col = dataset[self.getInputCol()]
-        return dataset.withColumn(out_col, udf(f, t)(in_col))
+        data =  dataset.withColumn(out_col, udf(f, t)(in_col))
+        if stem:
+            return data.withColumn(out_col, udf(stemmer, t)(out_col))
+        else:
+            return data
 
 
 class MissingArgs(Exception):
@@ -235,7 +249,7 @@ def train(input_bucket,
     joined = joined.withColumn("target_int", joined["target"].cast(IntegerType()))
 
     # build pipeline
-    cleanhtml = CleanHtml(inputCol="text", outputCol="clean_text")
+    cleanhtml = CleanHtml(inputCol="text", outputCol="clean_text", stem=stemming)
     tokenizer = Tokenizer(inputCol="clean_text", outputCol="token_text")
     ngram = NGram(inputCol="token_text", outputCol="ngram") #ngram
     stopremove = StopWordsRemover(inputCol='ngram', outputCol='stop_tokens')
