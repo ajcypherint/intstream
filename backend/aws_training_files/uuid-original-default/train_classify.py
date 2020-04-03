@@ -24,6 +24,7 @@ import boto3
 from os import path
 import itertools
 import numpy as np
+import logging
 
 from pyspark import since, keyword_only
 from pyspark.ml import Estimator, Model
@@ -35,6 +36,8 @@ from pyspark.ml.util import *
 from pyspark.ml.wrapper import JavaParams
 from pyspark.sql.functions import rand
 from functools import reduce
+
+LOG = logging.getLogger(__name__)
 
 
 class StratifiedCrossValidator(CrossValidator):
@@ -215,6 +218,7 @@ def classify(text, classifier):
     targets_list = [row.prediction for row in targets.collect()]
     return targets_list
 
+
 def train(input_bucket,
           job_name,
           output_model_file_key,
@@ -228,15 +232,11 @@ def train(input_bucket,
     :param metric: str
     :return:
     """
-    pre_stratified=extra_kwargs.get("stratified", '')
-    stratified = False
-    if pre_stratified.lower() == "true":
-        stratified = True
-    pre_stemming = extra_kwargs.get("stemming", "")
-    stemming = False
-    if pre_stemming.lower() == "true":
-        stemming = True
+    stratified=extra_kwargs.get("stratified", False)
+    stemming = extra_kwargs.get("stemming",False)
     spark = SparkSession.builder.appName('train').getOrCreate()
+    LOG.info("stemming: " + str(stemming))
+    LOG.info("stratified: " + str(stratified))
 
     # merge text and targets
     rdd = spark.sparkContext.wholeTextFiles(path.join("s3://", input_bucket, job_name, "data/"))

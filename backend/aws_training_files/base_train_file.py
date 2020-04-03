@@ -22,7 +22,7 @@ from operator import add
 from pyspark import SparkContext
 from train_classify import train
 import json
-
+import logging
 #todo(aj)  options
 # 2. find and replace the values below when uploading script.
 # this way is easier for now.
@@ -38,6 +38,8 @@ class ExtraArgs(Exception):
 
 if __name__ == "__main__":
     # arg len = 6 or 7 is ok
+
+    logging.basicConfig(level=logging.INFO, format='%(process)d-%(levelname)s-%(message)s')
     if len(sys.argv) < 6:
         raise MissingArgs
     if len(sys.argv) > 7:
@@ -45,7 +47,7 @@ if __name__ == "__main__":
     extra_kwargs = {}
     if len(sys.argv) == 7:
         extra_kwargs = json.loads(sys.argv[6])
-
+    logging.info("extra_kwargs: " + str(extra_kwargs))
     INPUT_BUCKET = sys.argv[1]
     JOB_NAME = sys.argv[2]
     OUTPUT_FILE = sys.argv[3]
