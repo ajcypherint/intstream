@@ -155,6 +155,7 @@ def process_entry(post_title,
         prediction.save()
 
 
+@shared_task()
 def process_rss_source(source_url, source_id, organization_id):
     #todo(aj) add logging here and save to database for lookup
     """
@@ -229,8 +230,10 @@ def process_rss_source(source_url, source_id, organization_id):
 def process_rss_sources():
     sources = models.RSSSource.objects.filter(active=True).all()
     for source in sources:
-        logger.debug("source:" + source.name)
-        process_rss_source(source.url, source.id, source.organization_id).delay()
+        logger.info("source:" + source.name)
+        process_rss_source.delay(
+            source.url, source.id, source.organization_id
+        )
 
 
 def iterate(instances):
