@@ -164,8 +164,8 @@ def process_rss_source(source_url, source_id, organization_id):
     :param source_id: int
     :return:
     """
-    data = feedparser.parse(source_url)
     logger.info("source_url:" + str(source_url))
+    data = feedparser.parse(source_url)
     collect = []
     for post in data.entries:
         if "id" not in post.keys():
