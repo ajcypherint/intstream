@@ -156,6 +156,7 @@ def process_entry(post_title,
 
 
 def process_rss_source(source_url, source_id, organization_id):
+    #todo(aj) add logging here and save to database for lookup
     """
     will launch them async
     :param source_url: str
@@ -223,23 +224,13 @@ def process_rss_source(source_url, source_id, organization_id):
             prediction.save()
 
 
-        #process_entry.delay(post.title,
-            #                    post.description,
-            #                    post.id,
-            #                    post.link,
-            #                    source_id,
-            #                    organization_id
-            #                    )
-
-
-
 
 @shared_task()
 def process_rss_sources():
     sources = models.RSSSource.objects.filter(active=True).all()
     for source in sources:
         logger.debug("source:" + source.name)
-        process_rss_source(source.url, source.id, source.organization_id)
+        process_rss_source(source.url, source.id, source.organization_id).delay()
 
 
 def iterate(instances):
