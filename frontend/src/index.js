@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import createHistory from 'history/createBrowserHistory'
-import { BrowserRouter ,Route,Switch } from 'react-router-dom'
+import { BrowserRouter , Route, Switch } from 'react-router-dom'
 import { Provider } from 'react-redux'
+import { QueryParamProvider } from 'use-query-params';
+
 
 import 'bootstrap/dist/css/bootstrap.css';
 import './custom.css';
@@ -18,7 +20,9 @@ ReactDOM.render((
   <Provider store={store}>
     <PersistGate loading={null} persistor = {persistor}>
       <BrowserRouter basename="intstream">
-        <App/>
+        <QueryParamProvider ReactRouterRoute={Route}>
+         <App/>
+       </QueryParamProvider>
       </BrowserRouter>
     </PersistGate>
   </Provider>
