@@ -2,7 +2,14 @@ import { connect } from 'react-redux'
 import SourcesList from '../components/SourcesList';
 import {getSources,clearSources} from '../actions/sources'
 import {clear, setPage,setOrderCol,setOrderDir} from '../actions/listSelections'
+import {withQueryParams} from "./utils"
 import * as reducers from '../reducers/'
+import {
+  useQueryParams,
+  StringParam,
+  NumberParam,
+  ArrayParam,
+} from 'use-query-params';
 
 //edit
 const API = '/api/sourcesrss/'
@@ -49,5 +56,16 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-
-export default connect(mapStateToProps, mapDispatchToProps)(SourcesList);
+const mapParamsToProps = (query, setQuery) => {
+  const { ordering } = query;
+  return {
+    ordering,
+    onOrderingChange: () => setQuery({ ordering: ordering }),
+  };
+};
+export default withQueryParams(
+  {
+    ordering: StringParam,
+  },
+  mapParamsToProps,
+) (connect(mapStateToProps, mapDispatchToProps)(SourcesList));
