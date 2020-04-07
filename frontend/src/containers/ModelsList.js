@@ -3,6 +3,14 @@ import SourcesList from '../components/SourcesList';
 import {getModels,clearModels} from '../actions/models'
 import {clear, setPage,setOrderCol,setOrderDir} from '../actions/listSelections'
 import * as reducers from '../reducers/'
+import {
+  withQueryParams,
+  useQueryParams,
+  StringParam,
+  NumberParam,
+  ArrayParam,
+} from 'use-query-params';
+
 
 //edit
 const API = '/api/mlmodels/'
@@ -50,4 +58,11 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(SourcesList);
+export default connect(mapStateToProps, mapDispatchToProps)(
+ withQueryParams( 
+  {
+    ordering: StringParam,
+    page: NumberParam,
+    orderDir:StringParam,
+  },
+  SourcesList));

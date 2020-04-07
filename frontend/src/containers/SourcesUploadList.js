@@ -3,6 +3,14 @@ import SourcesList from '../components/SourcesList';
 import {getSources,clearSources} from '../actions/sources'
 import {clear, setPage,setOrderCol,setOrderDir} from '../actions/listSelections'
 import * as reducers from '../reducers/'
+import {
+  withQueryParams,
+  useQueryParams,
+  StringParam,
+  NumberParam,
+  ArrayParam,
+} from 'use-query-params';
+
 
 // edit
 const API = '/api/sourcesupload/'
@@ -50,4 +58,11 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(SourcesList);
+export default connect(mapStateToProps, mapDispatchToProps)(
+   withQueryParams( 
+  {
+    ordering: StringParam,
+    page: NumberParam,
+    orderDir:StringParam,
+  },
+  SourcesList));

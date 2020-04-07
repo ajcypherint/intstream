@@ -46,21 +46,13 @@ class SourcesEdit extends Component {
 
   onSubmit(event){
     event.preventDefault()
-    //let data = {
-    // id:this.state.id,
-    // name:this.state.name,
-    // active:this.state.active
-    //}
     if (this.state.action === EDIT) {
       this.props.setSources(this.props.sources[0].id+'/',this.props.sources[0]) 
-      // this.props.fetchSources('id='+this.state.object.id) 
     } else {
       this.props.addSources('',
         this.props.sources[0],
         "POST",
         this.props.history.goBack)
-      //this.props.setSources('',this.state.object,'POST') 
-      //redirect to listing
     }
   }
   render(){

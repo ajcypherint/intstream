@@ -125,7 +125,7 @@ class SourcesList extends Component {
            this.fetch,
            this.props.fetchSourcesFullUri,
               {page:this.props.query.page,
-                orderCol:this.props.query.orderCol,
+                orderDir:this.props.query.orderDir,
                 ordering:this.props.query.ordering}, //selections
          this.props.setQuery) 
             : ''}

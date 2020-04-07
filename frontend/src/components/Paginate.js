@@ -26,7 +26,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
       <Pagination aria-label="Page navigation">
       <PaginationItem> 
         <PaginationLink first onClick={(event)=>{
-          setPage(1);
+          setPage({page:1});
           fetchit(selections,1)}} />
         </PaginationItem>
         <PaginationItem>
@@ -39,7 +39,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
           }
         </PaginationItem>
        {list_pages.map((page)=>{
-          if (page === 1 || page=== total_pages || (page>= selections.page - 2 && page<= selections.page + 2)) {
+          if (page === 1 || page === total_pages || (page>= selections.page - 2 && page<= selections.page + 2)) {
             return (
               <div key={page}> 
             <PaginationItem active={page===selections.page} key={page}>
