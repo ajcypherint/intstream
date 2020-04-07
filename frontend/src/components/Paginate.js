@@ -34,7 +34,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
           <PaginationLink previous disabled  />
               :
               <PaginationLink previous  onClick={(event)=>{
-                setPage(selections.page-1);
+                setPage({page:selections.page-1});
                 fetchFullUri(previous)}}/>
           }
         </PaginationItem>
@@ -45,7 +45,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
             <PaginationItem active={page===selections.page} key={page}>
               <PaginationLink  
                 onClick={(event)=>{
-                  setPage(page);
+                  setPage({page:page});
                   fetchit(selections,page)}}>
                 {page }
               </PaginationLink>
@@ -60,13 +60,13 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
             <PaginationLink next disabled  />
               :
               <PaginationLink next onClick={(event)=>{
-                setPage(selections.page+1)
+                setPage({page:selections.page+1})
                 fetchFullUri(next)}} />
           }
         </PaginationItem>
         <PaginationItem>
           <PaginationLink last onClick={(event)=>{
-            setPage(total_pages);
+            setPage({page:total_pages});
             fetchit(selections,total_pages)}}/>
         </PaginationItem>
 

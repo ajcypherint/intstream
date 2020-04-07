@@ -8,7 +8,7 @@ import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import Paginate from './Paginate'
 import { PAGINATION } from '../util/util'
 import { Input } from 'reactstrap';
-const ASC = ''
+const ASC = '+'
 const DESC = '-'
 class SourcesList extends Component {
   constructor(props){
@@ -22,8 +22,13 @@ class SourcesList extends Component {
   }
  
   componentDidMount() {
-    this.props.clearSelections();
-    this.props.fetchSources(this.props.orderStartCol);
+    //set up defaults if not query not set
+    let ordering = this.props.query.ordering || "name"
+    let page = this.props.query.page || 1
+    let orderDir = this.props.query.orderDir || "+"
+    this.props.setQuery({page:page, ordering:ordering, orderDir:orderDir})
+    this.props.fetchSources(
+            "ordering="+orderDir+ordering+"&page="+page)
   }
   
   displaysources(sources, fields, loading){
@@ -58,27 +63,26 @@ class SourcesList extends Component {
   }
   changesort(column_name){
     console.log("clicked")
-   if (this.props.orderCol===column_name) {
+   if (this.props.query.ordering===column_name) {
       // column matches sort column opposite
-      if( this.props.orderDir===ASC){
-       this.props.setOrderDir(DESC)
+      if( this.props.query.orderDir===ASC){
+       this.props.setQuery({orderDir:DESC})
        this.props.fetchSources(
-            "ordering="+DESC+column_name+"&page="+this.props.page)
+            "ordering="+DESC+column_name+"&page="+this.props.query.page)
         //call desc sort
         }
       else{
-       this.props.setOrderDir(ASC)
+       this.props.setQuery({orderDir:ASC})
        this.props.fetchSources(
-            "ordering="+ASC+column_name+"&page="+this.props.page)
+            "ordering="+ASC+column_name+"&page="+this.props.query.page)
         //call asc sort
       }
     }
     else{
       //sort by this column ascending; first time sorting this column
-       this.props.setOrderDir(ASC)
-       this.props.setOrderCol(column_name)
+       this.props.setQuery({orderDir:ASC,ordering:column_name})
        this.props.fetchSources(
-            "ordering="+ASC+column_name+"&page="+this.props.page)
+            "ordering="+ASC+column_name+"&page="+this.props.query.page)
         //call asc sort
       }
   }
@@ -95,7 +99,7 @@ class SourcesList extends Component {
 
   }
   fetch(selections,page){
-    this.props.fetchSources("ordering="+selections.orderdir+selections.ordercol+"&page="+page)
+    this.props.fetchSources("ordering="+selections.orderDir+selections.ordering+"&page="+page)
   }
   render() {
     const heading = this.props.heading;
@@ -106,6 +110,8 @@ class SourcesList extends Component {
     const totalcount= this.props.totalCount;
     const next = this.props.next;
     const previous = this.props.previous;
+    const { ordering:ordering } = this.props.query;
+
 
 
     return (
@@ -118,10 +124,10 @@ class SourcesList extends Component {
            previous,
            this.fetch,
            this.props.fetchSourcesFullUri,
-              {page:this.props.page,
-                ordercol:this.props.orderCol,
-                orderdir:this.props.orderDir}, //selections
-         this.props.setPage) 
+              {page:this.props.query.page,
+                orderCol:this.props.query.orderCol,
+                ordering:this.props.query.ordering}, //selections
+         this.props.setQuery) 
             : ''}
           <FormGroup>
         <Button tag={Link} to={this.props.addUri} className="button-brand-primary" size="md">Add</Button>

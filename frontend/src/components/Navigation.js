@@ -87,7 +87,7 @@ export default class Example extends React.Component {
                    <DropdownItem tag={Link} to="/sources_upload">
                     Upload
                     </DropdownItem>
-                   <DropdownItem tag={Link} to="/sources_rss">
+                   <DropdownItem tag={Link} to="/sources_rss?ordering=name&page=1&orderDir=%2b">
                     RSS
                     </DropdownItem>
                    <DropdownItem tag={Link} to="/sources_job">

@@ -2,9 +2,9 @@ import { connect } from 'react-redux'
 import SourcesList from '../components/SourcesList';
 import {getSources,clearSources} from '../actions/sources'
 import {clear, setPage,setOrderCol,setOrderDir} from '../actions/listSelections'
-import {withQueryParams} from "./utils"
 import * as reducers from '../reducers/'
 import {
+  withQueryParams,
   useQueryParams,
   StringParam,
   NumberParam,
@@ -63,9 +63,12 @@ const mapParamsToProps = (query, setQuery) => {
     onOrderingChange: () => setQuery({ ordering: ordering }),
   };
 };
-export default withQueryParams(
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+ withQueryParams( 
   {
     ordering: StringParam,
+    page: NumberParam,
+    orderDir:StringParam,
   },
-  mapParamsToProps,
-) (connect(mapStateToProps, mapDispatchToProps)(SourcesList));
+  SourcesList));
