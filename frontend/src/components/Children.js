@@ -35,40 +35,52 @@ export class Children extends React.Component{
     let {parent,level}= event.target.dataset
     let parentobj = JSON.parse(parent) //{id,title}
     let level_int = parseInt(level)
-    let newSelections = {
-      ...this.props.child.homeSelections,
-      startDate:this.props.parent.homeSelections.startDate,
-      endDate:this.props.parent.homeSelections.endDate,
-      sourceChosen:this.props.parent.homeSelections.sourceChosen,
-      modelChosen:this.props.parent.homeSelections.modelChosen,
-      page:1,
-      orderCol:"title"
+    let selections = {
+      ...this.props.selections,
+      startDate:this.props.query.startDate,
+      endDate:this.props.query.endDate,
+      sourceChosen:this.props.query.sourceChosen,
+      modelChosen:this.props.query.modelChosen,
+      child:{
+        page:1,
+        ordering:"title",
+        orderDir:"+"
+      }
     }
     this.props.child_func.clearParent()
-    this.props.filterChange(newSelections, "childFilter", parentobj)
+    this.props.setQuery(selections)
+    this.props.filterChange(selections, "childFilter", parentobj)
     
   }
   // child for paginate 
   childFetch( selections, page){
+    let newSel = {child:{
+                  ...selections.child,
+                  page:page}
+                  }
     let newSelections = {
       ...selections,
-      page:page
+      ...newSel
     }
+    this.props.setQuery(newSel)
     this.props.filterChange(newSelections, "childFilter",this.props.parent_obj)
    
   }
   //parent for paginate
   fetch(selections,page){
+    let newSel = {page:page}
     let newSelections = {
       ...selections,
-      page:page
+      ...newSel
     }
+    this.props.setQuery(newSel)
     this.props.filterChange(newSelections)
   }
   render(){
 
     const level = this.props.level || 0
-    let selections = this.props.parent.homeSelections
+    
+    let selections = level === 1 ? this.props.query: this.props.query.child
     const articles = this.props.parent.articlesList || [];
     const loading = typeof this.props.parent.articlesLoading === 'undefined' ? true : this.props.parent.articlesLoading;
     const totalcount= this.props.parent.articlesTotalCount ||0;
@@ -99,8 +111,8 @@ export class Children extends React.Component{
            previous,
            page_fetch,
            this.props.parent_func.fetchArticlesFullUri,
-           this.props.parent.homeSelections,
-           this.props.parent_func.setPage)}
+           selections,
+           this.props.setQuery)}
          </td>
          </tr>
          <tr>
@@ -176,6 +188,9 @@ export class Children extends React.Component{
                       <tr>
                         <td colSpan="4">
                           <Children 
+                            setQuery={this.props.setQuery}
+                            query={this.props.query}
+
                              parent={this.props.child}
                              parent_func={this.props.child_func}
                              parent_obj={createParent(article.id,article.title,article.match)}
@@ -189,7 +204,8 @@ export class Children extends React.Component{
                              fetchSelect={this.props.fetchSelect}
                              clearSelect={this.props.clearSelect}
                              filterChange={this.props.filterChange}
-                             level={level+1}/>
+                             level={level+1}
+                           />
                          </td>
                       </tr>
                              :

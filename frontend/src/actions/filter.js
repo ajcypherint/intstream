@@ -62,25 +62,11 @@ export const getfilter= (url, params=undefined)=>{
 
 export const getAllSources = getAll(getfilter)(totalSources);
 
-export const filterChange = (newSelections, path='filter', parent)=>{
+export const filterChange = (selections,  path='filter', parent)=>{
   return async (dispatch, getState)=>{
-    if (!parent){
-      let resp = await dispatch(setHomeSelections(newSelections))
-      if (resp.error) {
-        return
-      }
-    } else {
-      let resp = await dispatch(setChildHomeSelections(newSelections))
-      if (resp.error) {
-        return
-      }
-    }
-    let state = getState()
-    let selections = state[path].homeSelections
     let predictionStr = selections.modelChosen !=="" ? 
       "&prediction__mlmodel="+selections.modelChosen+ "&prediction__target=true" :
       ""
-    state = undefined
     let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
       "&end_upload_date="+selections.endDate.toISOString()+
       "&source="+selections.sourceChosen+

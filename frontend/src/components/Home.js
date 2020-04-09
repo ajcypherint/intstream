@@ -22,7 +22,6 @@ export class Main extends React.Component{
     this.handleModelChange = this.handleModelChange.bind(this) 
     this.handleStartChange = this.handleStartChange.bind(this)
     this.handleEndChange = this.handleEndChange.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
     this.changesort = changesort.bind(this)
     this.updateDate = this.updateDate.bind(this)
     this.handleThresholdChange = this.handleThresholdChange.bind(this)
@@ -31,44 +30,97 @@ export class Main extends React.Component{
   }
   handleMaxDfChange(event){
     //again here we set selections then fetch
-    let selections = {
-      ...this.props.parent.homeSelections,
+    let newSel = {
       maxDf:event.target.value,
       page:1
     }
+    let selections = {
+      ...this.props.query,
+      ...newSel
+    }
+    this.props.setQuery(newSel)
     this.props.filterChange(selections)
   }
   handleMinDfChange(event){
     //again here we set selections then fetch
-    let selections = {
-      ...this.props.parent.homeSelections,
+    let newSel  = {
       minDf:event.target.value,
       page:1
     }
+    let selections = {
+      ...this.props.query,
+      ...newSel
+    }
+    this.props.setQuery(newSel)
     this.props.filterChange(selections)
   }
   handleThresholdChange(event){
     //again here we set selections then fetch
-    let selections = {
-      ...this.props.parent.homeSelections,
+    let newSel = {
       page:1,
       threshold:event.target.value
+    }
+    let selections = {
+      ...this.props.query,
+      ...newSel
     }
     this.props.filterChange(selections)
     this.props.child_func.clearParent()
   }
   componentDidMount() {
-    let selections = this.props.parent.homeSelections
+    let START = new Date();
+    START.setHours(0,0,0,0);
+
+    let END= new Date();
+    END.setHours(23,59,59,999);
+
+    let ordering = this.props.query.ordering || "name"
+    let page = this.props.query.page || 1
+    let orderdir = this.props.query.orderdir || "+"
+    let sourceChosen =   this.props.query.sourceChosen || ""
+    let modelChosen =   this.props.query.modelChosen || ""
+    let startDate = this.props.query.startDate || START
+    let endDate = this.props.query.endDate || END
+    let threshold = this.props.query.threshold || 0
+    let minDf = this.props.query.minDf || 0
+    let maxDf = this.props.query.maxDf || 80
+    let next = this.props.query.next || ''
+    let previous = this.props.query.previous || ''
+    let child = this.props.query.child || {}
+    let childPage = child.page || 1
+    let childOrderDir = child.orderdir || "+"
+    let childOrdering = child.ordering || "name"
+    let childNew = {page:childPage,
+                 orderdir:childOrderDir,
+                 ordering:childOrdering
+                  }
+
+    let selections = {
+      ordering:ordering, 
+      page:page, 
+      orderdir:orderdir,
+      sourceChosen:sourceChosen,
+      modelChosen:modelChosen,
+      startDate:startDate,
+      endDate:endDate,
+      threshold:threshold,
+      minDf:minDf,
+      maxDf:maxDf,
+      next:next,
+      previous:previous,
+      child:childNew
+    }
+    this.props.setQuery(selections)
     this.props.filterChange(selections)
   }
   handleStartChange(date){
-    let selections = this.props.parent.homeSelections
-    this.updateDate(date,selections.endDate, true)
+    let selections = this.props.query
+    this.updateDate(date, selections.endDate, true)
     this.props.child_func.clearParent()
   }
   handleEndChange(date){
-    let selections = this.props.parent.homeSelections
-    this.updateDate(selections.startDate,date,false)
+    let selections = this.props.query
+    this.updateDate(selections.startDate, date, false)
     this.props.child_func.clearParent()
   }
 
@@ -100,40 +152,48 @@ export class Main extends React.Component{
     //using a thunk
     //
     //again here we set selections then fetchAllSources, fetchArticles
-    let selections = {
-      ...this.props.parent.homeSelections,
+    let newSel = {
       page:1,
       startDate:startDate,
       endDate:endDate,
-      }
+    }
+    let selections = {
+      ...this.props.query,
+      ...newSel
+     }
+    this.props.setQuery(newSel)
     this.props.filterChange(selections)
   }
   handleModelChange(event){
-    let selections ={
-      ...this.props.parent.homeSelections,
+    let newSel = {
       modelChosen:event.target.value,
       page:1
     }
+    let selections ={
+      ...this.props.query,
+      ...newSel
+    }
     //again here we set selections then fetch
+    this.props.setQuery(newSel)
     this.props.filterChange(selections)
     this.props.child_func.clearParent()
   }
   handleSourceChange(event){
     //again we set selections then fetchArticles
-    let selections = {
-      ...this.props.parent.homeSelections,
+    let newSel = {
       sourceChosen:event.target.value,
       page:1
     }
+    let selections = {
+      ...this.props.query,
+      ...newSel
+    }
+    this.props.setQuery(newSel)
     this.props.filterChange(selections)
     this.props.child_func.clearParent()
   }
-  onSubmit(event){
-    event.preventDefault()
-  } 
-
   render(){
-    let selections = this.props.parent.homeSelections
+    let selections = this.props.query
     const articles = this.props.parent.articlesList || [];
     const loading = typeof this.props.parent.articlesLoading === 'undefined' ? true : this.props.parent.articlesLoading;
     const totalcount= this.props.parent.articlesTotalCount ||0;
@@ -235,20 +295,20 @@ export class Main extends React.Component{
              )}
            </Input>
         </Col>
-
-
-
     </Row>
   </FormGroup>
       </Form>
       <Children 
+          setQuery={this.props.setQuery}
+          query={this.props.query}
+
           filterChange={this.props.filterChange}
           parent_func={this.props.parent_func}
           level={0}
           child={this.props.child}
           child_func={this.props.child_func}
           parent_id = {-1}
-          parent_trail={this.props.child.parentTrail}
+          parent_trail={this.props.child.parentTrail} //todo
           show_children={this.showChildren}
 
           selectArticles={this.props.selectArticles}

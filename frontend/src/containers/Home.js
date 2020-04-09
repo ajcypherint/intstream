@@ -8,6 +8,16 @@ import {filterChange, setPage, setHomeSelections, getAllSources, MODEL_VERSIONS,
 import {setChildPage, setChildHomeSelections} from '../actions/childFilter'
 import {getSources, clearSources } from '../actions/sources'
 import * as fromSelect from '../actions/selectArticle'
+import {
+  withQueryParams,
+  useQueryParams,
+  StringParam,
+  NumberParam,
+  ArrayParam,
+  ObjectParam,
+  DateParam
+} from 'use-query-params';
+
 
 const API = '/api/homearticles/'
 const API_SOURCES = '/api/homefilter/'
@@ -18,7 +28,7 @@ const mapStateToProps = (state) => ({
   selectArticles:reducers.getSelectArticles(state),
   selectErrors:reducers.getSelectErrors(state),
   parent:{
-    homeSelections:reducers.getHomeArticleSelections(state),
+    homeSelections:reducers.getHomeArticleSelections(state), //todo this can go away
     articlesList:reducers.getArticles(state),
     articlesLoading:reducers.getArticleLoading(state),
     articlesErrors:reducers.getArticleErrors(state),
@@ -28,8 +38,8 @@ const mapStateToProps = (state) => ({
     articleuri:ARTICLE_URI,
   },
   child:{
-    parentTrail:reducers.getParentTrail(state),
-    homeSelections:reducers.getChildHomeArticleSelections(state),
+    parentTrail:reducers.getParentTrail(state), //todo add this to query params
+    homeSelections:reducers.getChildHomeArticleSelections(state), //this can go away
     articlesList:reducers.getChildArticles(state),
     articlesLoading:reducers.getChildArticleLoading(state),
     articlesErrors:reducers.getChildArticleErrors(state),
@@ -50,18 +60,36 @@ const mapDispatchToProps = (dispatch) => ({
   parent_func:{
     fetchArticlesFullUri: (url,params=undefined) => dispatch(getArticles(url,params)),
     fetchArticles: (params=undefined) => dispatch(getArticles(API,params)),
-    setHomeSelections: (data)=>dispatch(setHomeSelections(data)),
-    setPage:(page)=>dispatch(setPage(page)),
+    setHomeSelections: (data)=>dispatch(setHomeSelections(data)), //this can go away
+    setPage:(page)=>dispatch(setPage(page)), //this can go away
   },
   child_func:{
     fetchArticlesFullUri: (parent, url,params=undefined) => dispatch(getChildArticles(parent, url,params)),
     fetchArticles: (parent,params=undefined) => dispatch(getChildArticles(parent, API_ARTICLE, params)),
-    setHomeSelections: (data)=>dispatch(setChildHomeSelections(data)),
-    setPage:(page)=>dispatch(setChildPage(page)),
+    setHomeSelections: (data)=>dispatch(setChildHomeSelections(data)), // this can go away
+    setPage:(page)=>dispatch(setChildPage(page)), //this can go away
     clearParent:()=>dispatch(clearParent())
  
   }
 
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Main);
+export default connect(mapStateToProps, mapDispatchToProps)(
+ withQueryParams( 
+  {
+    ordering: StringParam,
+    page: NumberParam,
+    orderDir:StringParam,
+    sourceChosen:StringParam,
+    modelChosen:StringParam,
+    startDate:DateParam,
+    endDate:DateParam,
+    threshold:NumberParam,
+    minDf:NumberParam,
+    maxDf:NumberParam,
+    next:StringParam,
+    previous:StringParam,
+    child:ObjectParam,
+  },
+ 
+  Main));
