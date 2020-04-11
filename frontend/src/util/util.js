@@ -79,14 +79,14 @@ export function dateString(
   // :param page: int
   // :param start: date
   // :param end: date
-  
+    
    return "ordering=" + orderdir +
         ordercol +
         "&source=" + sourceChosen +
         "&page=" + page +
         "&start_upload_date=" + start.toISOString() +
     "&end_upload_date=" + end.toISOString() +
-    (threshold ? "&threshold=" + threshold : "")
+    (threshold!=="undefined" ? "&threshold=" + threshold : "")
 
 
 }

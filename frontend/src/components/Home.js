@@ -74,9 +74,9 @@ export class Main extends React.Component{
     let END= new Date();
     END.setHours(23,59,59,999);
 
-    let ordering = this.props.query.ordering || "name"
+    let ordering = this.props.query.ordering || "title"
     let page = this.props.query.page || 1
-    let orderdir = this.props.query.orderdir || "+"
+    let orderdir = this.props.query.orderdir || ""
     let sourceChosen =   this.props.query.sourceChosen || ""
     let modelChosen =   this.props.query.modelChosen || ""
     let startDate = this.props.query.startDate || START
@@ -88,8 +88,8 @@ export class Main extends React.Component{
     let previous = this.props.query.previous || ''
     let child = this.props.query.child || {}
     let childPage = child.page || 1
-    let childOrderDir = child.orderdir || "+"
-    let childOrdering = child.ordering || "name"
+    let childOrderDir = child.orderdir || ""
+    let childOrdering = child.ordering || "title"
     let childNew = {page:childPage,
                  orderdir:childOrderDir,
                  ordering:childOrdering
@@ -275,7 +275,7 @@ export class Main extends React.Component{
         </Col>
         <Col sm="1" md="1" lg="1">
            <label  htmlFor={"min_df"}>{"Min Doc Freq"}</label> 
-           <Input type="select" name="min_df" disabled={selections.threshold==="0"}
+           <Input type="select" name="min_df" disabled={selections.threshold===0}
              value={selections.minDf} id="min_df" onChange={this.handleMinDfChange}>
              {threshold_values.map((value)=>{
                return (<option key={value} value={value}>{value}</option>
@@ -286,7 +286,7 @@ export class Main extends React.Component{
         </Col>
         <Col sm="1" md="1" lg="1">
            <label  htmlFor={"max_df"}>{"Max Doc Freq"}</label> 
-           <Input type="select" name="max_df" disabled={selections.threshold==="0"}
+           <Input type="select" name="max_df" disabled={selections.threshold===0}
              value={selections.maxDf} id="max_df" onChange={this.handleMaxDfChange}>
              {threshold_values.map((value)=>{
                return (<option key={value} value={value}>{value}</option>

@@ -36,7 +36,7 @@ export class Children extends React.Component{
     let parentobj = JSON.parse(parent) //{id,title}
     let level_int = parseInt(level)
     let selections = {
-      ...this.props.selections,
+      ...this.props.query,
       startDate:this.props.query.startDate,
       endDate:this.props.query.endDate,
       sourceChosen:this.props.query.sourceChosen,
@@ -80,7 +80,7 @@ export class Children extends React.Component{
 
     const level = this.props.level || 0
     
-    let selections = level === 1 ? this.props.query: this.props.query.child
+    let selections = this.props.query
     const articles = this.props.parent.articlesList || [];
     const loading = typeof this.props.parent.articlesLoading === 'undefined' ? true : this.props.parent.articlesLoading;
     const totalcount= this.props.parent.articlesTotalCount ||0;
@@ -189,7 +189,7 @@ export class Children extends React.Component{
                         <td colSpan="4">
                           <Children 
                             setQuery={this.props.setQuery}
-                            query={this.props.query}
+                            query={this.props.query.child}
 
                              parent={this.props.child}
                              parent_func={this.props.child_func}

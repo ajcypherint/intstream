@@ -79,7 +79,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
   {
     ordering: StringParam,
     page: NumberParam,
-    orderDir:StringParam,
+    orderdir:StringParam,
     sourceChosen:StringParam,
     modelChosen:StringParam,
     startDate:DateParam,

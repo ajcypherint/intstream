@@ -439,7 +439,7 @@ class HomePage(APIView):
         page = int(self.request.query_params.get("page", 1))
         page = 1 if page == "" else page
         match_id = self.request.query_params.getlist("match")
-        threshold = int(self.request.query_params.get("threshold",100))
+        threshold = int(self.request.query_params.get("threshold",0))
         if not isinstance(threshold,int) :
             return Response({"detail":"threshold must be and integer"}, status=status.HTTP_400_BAD_REQUEST)
         if threshold > 100 or threshold < 0 :

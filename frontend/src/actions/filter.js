@@ -64,12 +64,15 @@ export const getAllSources = getAll(getfilter)(totalSources);
 
 export const filterChange = (selections,  path='filter', parent)=>{
   return async (dispatch, getState)=>{
-    let predictionStr = selections.modelChosen !=="" ? 
-      "&prediction__mlmodel="+selections.modelChosen+ "&prediction__target=true" :
+    let modelChosen = selections.modelChosen || ''
+    let sourceChosen = selections.sourceChosen || ''
+    let orderdir = selections.orderdir || ''
+    let predictionStr = modelChosen !=="" ? 
+      "&prediction__mlmodel="+modelChosen+ "&prediction__target=true" :
       ""
     let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
       "&end_upload_date="+selections.endDate.toISOString()+
-      "&source="+selections.sourceChosen+
+      "&source="+sourceChosen+
       "&source__active=true" + predictionStr
 
     
@@ -82,9 +85,9 @@ export const filterChange = (selections,  path='filter', parent)=>{
       }
     }
      
-    let articleStr = dateString(selections.orderdir,
-      selections.ordercol,
-      selections.sourceChosen,
+    let articleStr = dateString(orderdir,
+      selections.ordering,
+      sourceChosen,
       selections.page,
       selections.startDate,
       selections.endDate,
@@ -99,7 +102,7 @@ export const filterChange = (selections,  path='filter', parent)=>{
         articleStr+="&article_id_multi="+x
       }
     }
- 
+    let test = articleStr 
     //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
     if (parent){
       return await dispatch(getChildArticles(parent, API_ARTICLES, articleStr))

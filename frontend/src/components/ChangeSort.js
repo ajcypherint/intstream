@@ -48,7 +48,7 @@ export function  changesort(column_name,
       //sort by this column ascending; first time sorting this column
       let newSelections = {
         ...selections,
-        ordercol:column_name,
+        ordering:column_name,
         orderdir:ASC,
         page:1
       }

@@ -2,6 +2,7 @@ import React from 'react'
 import { FormGroup, FormFeedback, Label, Input } from 'reactstrap';
 
 export default ({name, idList, uniqueList, value, onChange,disabled, ...rest}) => {
+  value = value || ''
   return (
     <Input type="select" name={name} 
       value={value} 
