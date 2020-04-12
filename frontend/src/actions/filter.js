@@ -90,11 +90,11 @@ export const filterChange = (selections,  setQuery, parent)=>{
         return
       }
     }
-     
+    let pageSel = parent ? parseInt(selections.child.page) : selections.page 
     let articleStr = dateString(orderdir,
       selections.ordering,
       sourceChosen,
-      selections.page,
+      pageSel,
       selections.startDate,
       selections.endDate,
       selections.threshold) +

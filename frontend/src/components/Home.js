@@ -84,6 +84,7 @@ export class Main extends React.Component{
     let maxDf = this.props.query.maxDf || 80
     let next = this.props.query.next || ''
     let previous = this.props.query.previous || ''
+    let parent_id = this.props.query.parent_id || ''
     let child = this.props.query.child || {}
     let childPage = child.page || 1
     let childOrderDir = child.orderdir || ""
@@ -91,10 +92,6 @@ export class Main extends React.Component{
     let childNew = {page:childPage,
                  orderdir:childOrderDir,
                  ordering:childOrdering,
-                 startDate:startDate,
-                 endDate:endDate,
-                 sourceChosen:sourceChosen,
-                 modelChosen:modelChosen,
                  }
 
     let selections = {
@@ -110,6 +107,7 @@ export class Main extends React.Component{
       maxDf:maxDf,
       next:next,
       previous:previous,
+      parent_id:parent_id,
       child:childNew
     }
     this.props.filterChange(selections, this.props.setQuery)

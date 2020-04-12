@@ -50,23 +50,12 @@ export class Children extends React.Component{
   }
   // child for paginate 
   childFetch( selections, page){
-    let newSel = {
-                  ...selections,
-                  child:{
-                  ...selections.child,
-                  page:page}
-                  }
-    this.props.filterChange(newSel, this.props.setQuery, this.props.parent_obj)
+    this.props.filterChange(selections, this.props.setQuery, this.props.parent_obj)
    
   }
   //parent for paginate
   fetch(selections,page){
-    let newSel = {page:page}
-    let newSelections = {
-      ...selections,
-      ...newSel
-    }
-    this.props.filterChange(newSelections, this.props.setQuery)
+    this.props.filterChange(selections, this.props.setQuery)
   }
   render(){
 
@@ -116,7 +105,7 @@ export class Children extends React.Component{
                this.props.filterChange,
                this.props.setQuery,
                level,
-               parent_id.u
+               parent_id
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
