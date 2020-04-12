@@ -38,8 +38,7 @@ export class Main extends React.Component{
       ...this.props.query,
       ...newSel
     }
-    this.props.setQuery(newSel)
-    this.props.filterChange(selections)
+    this.props.filterChange(selections, this.props.setQuery)
   }
   handleMinDfChange(event){
     //again here we set selections then fetch
@@ -51,8 +50,7 @@ export class Main extends React.Component{
       ...this.props.query,
       ...newSel
     }
-    this.props.setQuery(newSel)
-    this.props.filterChange(selections)
+    this.props.filterChange(selections, this.props.setQuery)
   }
   handleThresholdChange(event){
     //again here we set selections then fetch
@@ -64,7 +62,7 @@ export class Main extends React.Component{
       ...this.props.query,
       ...newSel
     }
-    this.props.filterChange(selections)
+    this.props.filterChange(selections, this.props.setQuery)
     this.props.child_func.clearParent()
   }
   componentDidMount() {
@@ -92,8 +90,12 @@ export class Main extends React.Component{
     let childOrdering = child.ordering || "title"
     let childNew = {page:childPage,
                  orderdir:childOrderDir,
-                 ordering:childOrdering
-                  }
+                 ordering:childOrdering,
+                 startDate:startDate,
+                 endDate:endDate,
+                 sourceChosen:sourceChosen,
+                 modelChosen:modelChosen,
+                 }
 
     let selections = {
       ordering:ordering, 
@@ -110,8 +112,7 @@ export class Main extends React.Component{
       previous:previous,
       child:childNew
     }
-    this.props.setQuery(selections)
-    this.props.filterChange(selections)
+    this.props.filterChange(selections, this.props.setQuery)
   }
   handleStartChange(date){
     let selections = this.props.query
@@ -161,8 +162,7 @@ export class Main extends React.Component{
       ...this.props.query,
       ...newSel
      }
-    this.props.setQuery(newSel)
-    this.props.filterChange(selections)
+    this.props.filterChange(selections,this.props.setQuery)
   }
   handleModelChange(event){
     let newSel = {
@@ -174,8 +174,7 @@ export class Main extends React.Component{
       ...newSel
     }
     //again here we set selections then fetch
-    this.props.setQuery(newSel)
-    this.props.filterChange(selections)
+    this.props.filterChange(selections, this.props.setQuery)
     this.props.child_func.clearParent()
   }
   handleSourceChange(event){
@@ -188,8 +187,7 @@ export class Main extends React.Component{
       ...this.props.query,
       ...newSel
     }
-    this.props.setQuery(newSel)
-    this.props.filterChange(selections)
+    this.props.filterChange(selections, this.props.setQuery)
     this.props.child_func.clearParent()
   }
   render(){
@@ -308,7 +306,6 @@ export class Main extends React.Component{
           child={this.props.child}
           child_func={this.props.child_func}
           parent_id = {-1}
-          parent_trail={this.props.child.parentTrail} //todo
           show_children={this.showChildren}
 
           selectArticles={this.props.selectArticles}

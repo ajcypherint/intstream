@@ -81,7 +81,6 @@ export const getModelNextPage = state => fromModels.nextPage(state.models)
 export const getModelPreviousPage = state => fromModels.previousPage(state.models)
 
 //filter
-export const getHomeArticleSelections = state => fromFilter.getHomeSelections(state.filter)
 export const getFilterSources= state => fromFilter.sources(state.filter)
 export const getFilterModels= state => fromFilter.models(state.filter)
 
@@ -107,7 +106,6 @@ export const getChildArticleLoading = state => fromChildArticles.loading(state.c
 export const getChildArticleTotalCount = state => fromChildArticles.totalcount(state.childArticles)
 export const getChildArticleNextPage = state => fromChildArticles.nextPage(state.childArticles)
 export const getChildArticlePreviousPage = state => fromChildArticles.previousPage(state.childArticles)
-export const getParentTrail = state => fromChildArticles.parentTrail(state.childArticles)
 
 //childfilter
 export const getChildHomeArticleSelections = state => fromChildFilter.getHomeSelections(state.childFilter)

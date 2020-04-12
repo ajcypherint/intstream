@@ -13,49 +13,12 @@ let END= new Date();
 END.setHours(23,59,59,999);
 
 const initialState ={
-  homeSelections: {
-      startDate: START,
-      endDate: END,
-      sourceChosen:'',
-      minDf:"0",
-      maxDf:"80",
-      threshold:"0",
-      loadSources:false,
-      modelChosen:"",
-      page:1,
-      ordercol:'',
-      orderdir:ASC,
-      next:null,
-      previous:null
-  },
   sources: [],
   models:[]
 }
 
 export default (state=initialState, action) => {
   switch(action.type) {
-      case filter.PAGE:
-      {
-        return {
-          ...state,
-          homeSelections:{
-            ...state.homeSelections,
-            page:action.payload
-          }
-        }
-      }
-      case filter.HOME:
-        {
-          return {
-            ...state,
-            homeSelections:{
-              ...state.homeSelections,
-              ...action.payload
-            }
-          }
-            
-
-        }
     case filter.ALL_ACTIVE_MODELS:
       {
         return {
@@ -76,10 +39,6 @@ export default (state=initialState, action) => {
       return state
      }
 
-}
-
-export function getHomeSelections(state){
-  return  state.homeSelections
 }
 export function sources(state){
   return state.sources

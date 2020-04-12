@@ -15,7 +15,6 @@ export const createParent = (id,title,match)=>{
 }
 // use articlestmp to load pages and retrieve data
 const initialState ={
-  parentTrail:[],
   articles:[],
   loading:false,
   totalcount:0,
@@ -29,33 +28,10 @@ const initialState ={
 export default (state=initialState, action) => {
   switch(action.type) {
       //used for edit
-    case childArticles.CLEAR:
+      case childArticles.GET_ARTICLES_REQUEST:
       {
         return {
           ...state,
-          parentTrail:[]
-        }
-      }
-
-    case childArticles.GET_ARTICLES_REQUEST:
-      {
-        let new_parent_trail = state.parentTrail.slice()
-        if(new_parent_trail.length === 0){
-          new_parent_trail = state.parentTrail.concat(
-               createParent(action.meta.parent,
-                 action.meta.parent_title,
-                 action.meta.parent_match))
-        } else {
-          if( action.meta.parent != new_parent_trail[new_parent_trail.length -1].id){
-            new_parent_trail = state.parentTrail.concat(
-              createParent(action.meta.parent,
-                action.meta.parent_title,
-                action.meta.parent_match))
-          }
-        }
-        return {
-          ...state,
-          parentTrail:new_parent_trail,
           articles:[],
           loading:true,
           totalcount:0,
@@ -80,10 +56,8 @@ export default (state=initialState, action) => {
       }
     case childArticles.GET_ARTICLES_FAILURE:
       {
-        var new_parent_trail = state.parentTrail.pop() //remove last entry
       return {
         ...state,
-        parentTrail:new_parent_trail,
         articles:[],
         loading:false,
         totalcount:0,
@@ -131,9 +105,6 @@ export function previousPage(state){
     return state.previouspage
   }
 
-}
-export function parentTrail(state) {
-    return  state.parentTrail
 }
 export function loading(state) {
   return  state.loading

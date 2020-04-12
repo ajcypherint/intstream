@@ -2,7 +2,7 @@
 //state:
 //  orderdir: str
 //  sourceChosen: str
-//  ordercol: str
+//  ordering: str
 //  page: int
 //  startDate: date
 //  endDate: date
@@ -14,6 +14,7 @@ export function  changesort(column_name,
                             DESC, 
                             selections,
                             setHomeSelections,
+                            setQuery,
                             level = 0,
                             parent = undefined,
   ){
@@ -25,15 +26,16 @@ export function  changesort(column_name,
   //
   let path = level === 0 ? 'filter' : 'childFilter'
   let fetch_string = ""
-   if (selections.ordercol===column_name) {
+   if (selections.ordering===column_name) {
       // column matches sort column opposite
-      if(selections.orderdir===ASC){
+     let orderdir = selections.orderdir || ''
+      if(orderdir===ASC){
         let newSelections = {
           ...selections,
           orderdir:DESC,
           page:1
         }
-       setHomeSelections(newSelections,path, parent)
+       setHomeSelections(newSelections, setQuery, parent)
         }
       else{
         let newSelections = {
@@ -41,7 +43,7 @@ export function  changesort(column_name,
           orderdir:ASC,
           page:1
         }
-       setHomeSelections(newSelections, path, parent)
+       setHomeSelections(newSelections, setQuery, parent)
       }
     }
     else{
@@ -52,7 +54,7 @@ export function  changesort(column_name,
         orderdir:ASC,
         page:1
       }
-      setHomeSelections(newSelections, path, parent) 
+      setHomeSelections(newSelections, setQuery, parent) 
 
     }
   }

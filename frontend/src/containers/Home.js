@@ -10,6 +10,7 @@ import {getSources, clearSources } from '../actions/sources'
 import * as fromSelect from '../actions/selectArticle'
 import {
   withQueryParams,
+  JsonParam,
   useQueryParams,
   StringParam,
   NumberParam,
@@ -28,7 +29,6 @@ const mapStateToProps = (state) => ({
   selectArticles:reducers.getSelectArticles(state),
   selectErrors:reducers.getSelectErrors(state),
   parent:{
-    homeSelections:reducers.getHomeArticleSelections(state), //todo this can go away
     articlesList:reducers.getArticles(state),
     articlesLoading:reducers.getArticleLoading(state),
     articlesErrors:reducers.getArticleErrors(state),
@@ -38,8 +38,6 @@ const mapStateToProps = (state) => ({
     articleuri:ARTICLE_URI,
   },
   child:{
-    parentTrail:reducers.getParentTrail(state), //todo add this to query params
-    homeSelections:reducers.getChildHomeArticleSelections(state), //this can go away
     articlesList:reducers.getChildArticles(state),
     articlesLoading:reducers.getChildArticleLoading(state),
     articlesErrors:reducers.getChildArticleErrors(state),
@@ -53,7 +51,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
-  filterChange: (selections, page, parent=undefined ) => dispatch(filterChange(selections, page, parent)),
+  filterChange: (selections, setPage, parent=undefined ) => dispatch(filterChange(selections, setPage, parent)),
   //fetchAllActiveModels: (params = undefined) => dispatch(getAllActiveModels(MODEL_VERSIONS, params)),
   fetchSelect: (id)=>dispatch(fromSelect.getArticle(API_ARTICLE,id)),
   clearSelect: ()=>dispatch(fromSelect.clearArticles()),
@@ -89,6 +87,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     maxDf:NumberParam,
     next:StringParam,
     previous:StringParam,
+    parent_id:NumberParam,
     child:ObjectParam,
   },
  

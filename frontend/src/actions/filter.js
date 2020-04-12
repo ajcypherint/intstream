@@ -62,11 +62,18 @@ export const getfilter= (url, params=undefined)=>{
 
 export const getAllSources = getAll(getfilter)(totalSources);
 
-export const filterChange = (selections,  path='filter', parent)=>{
+export const filterChange = (selections,  setQuery, parent)=>{
   return async (dispatch, getState)=>{
     let modelChosen = selections.modelChosen || ''
     let sourceChosen = selections.sourceChosen || ''
     let orderdir = selections.orderdir || ''
+    selections = {
+      ...selections,
+      modelChosen:modelChosen,
+      sourceChosen:sourceChosen,
+      orderdir:orderdir
+    }
+    setQuery(selections)
     let predictionStr = modelChosen !=="" ? 
       "&prediction__mlmodel="+modelChosen+ "&prediction__target=true" :
       ""
@@ -75,13 +82,12 @@ export const filterChange = (selections,  path='filter', parent)=>{
       "&source="+sourceChosen+
       "&source__active=true" + predictionStr
 
-    
     //fetch sources and models; * not just sources but all filters not inc dates *
     // could ignore this for child
     if(!parent){
       let resp = await dispatch(getAllSources(API_FILTER, sourceStr))
       if (resp.error) {
-           throw new Error("Promise flow received action error" +  resp.error);
+        return
       }
     }
      

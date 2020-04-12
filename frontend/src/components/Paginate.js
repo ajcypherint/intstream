@@ -5,7 +5,7 @@ import { PAGINATION } from '../util/util'
 //
 //CANNOT be an arrow function or 'this' will not work... dont ask how long i spent on that.
 //CANNOT be part of a form as the onclick events cause page submissions.  2+ hours.
-export default function  (totalcount,next,previous,fetchit, fetchFullUri, selections, setPage){
+export default function  (totalcount,next,previous,fetchit, fetchFullUri, selections, setPage, child=false){
   //
   // totalcount: int
   // next:str
@@ -19,6 +19,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
   let total_pages = Math.ceil(totalcount / PAGINATION)
   let pre_list_pages = [...Array(total_pages).keys()]
   let list_pages = pre_list_pages.map((i)=>{ return i+1})
+  selections = child ? selections.child : selections
   if (typeof(fetchit) === 'undefined'){
     return <div> Loading</div>
   }
@@ -34,7 +35,10 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, select
           <PaginationLink previous disabled  />
               :
               <PaginationLink previous  onClick={(event)=>{
-                setPage({page:selections.page-1});
+                child ? setPage({...selections,
+                              child:{
+                                ...selections,
+                                page:selections.page-1}}): setPage({page:selections.page-1});
                 fetchFullUri(previous)}}/>
           }
         </PaginationItem>

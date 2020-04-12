@@ -37,33 +37,26 @@ export class Children extends React.Component{
     let level_int = parseInt(level)
     let selections = {
       ...this.props.query,
-      startDate:this.props.query.startDate,
-      endDate:this.props.query.endDate,
-      sourceChosen:this.props.query.sourceChosen,
-      modelChosen:this.props.query.modelChosen,
+      parent_id:parentobj.id,
       child:{
         page:1,
         ordering:"title",
-        orderDir:"+"
+        orderDir:""
       }
     }
     this.props.child_func.clearParent()
-    this.props.setQuery(selections)
-    this.props.filterChange(selections, "childFilter", parentobj)
+    this.props.filterChange(selections, this.props.setQuery, parentobj)
     
   }
   // child for paginate 
   childFetch( selections, page){
-    let newSel = {child:{
+    let newSel = {
+                  ...selections,
+                  child:{
                   ...selections.child,
                   page:page}
                   }
-    let newSelections = {
-      ...selections,
-      ...newSel
-    }
-    this.props.setQuery(newSel)
-    this.props.filterChange(newSelections, "childFilter",this.props.parent_obj)
+    this.props.filterChange(newSel, this.props.setQuery, this.props.parent_obj)
    
   }
   //parent for paginate
@@ -73,8 +66,7 @@ export class Children extends React.Component{
       ...selections,
       ...newSel
     }
-    this.props.setQuery(newSel)
-    this.props.filterChange(newSelections)
+    this.props.filterChange(newSelections, this.props.setQuery)
   }
   render(){
 
@@ -88,16 +80,12 @@ export class Children extends React.Component{
     const previous = this.props.parent.articlePrevious;
     const errors = this.props.parent.articlesErrors || {}
     let child = this.props.child || {}
-    const parent_trail = this.props.parent_trail
-    const parent_first_id = this.props.parent_trail.length > 0 ? parent_trail[0].id : -1
-    const parent_last_obj = this.props.parent_trail.length > 0 ? parent_trail[parent_trail.length-1] : undefined
     const col_num = level===0 ? 8 : 11
     const cols = "col-sm-"+ col_num
     const offset_num = level === 0 ? 2 : 1
     const offset = "offset-sm-"+ offset_num
     const page_fetch = level === 0 ? this.fetch : this.childFetch
-    const parent_obj = this.props.parent_obj || {}
-    const parent_id = parent_obj.id || undefined
+    const parent_id = this.props.query.parent_id || undefined
     const i = 1
     const selectArticles = this.props.selectArticles || {}
     return (
@@ -112,7 +100,8 @@ export class Children extends React.Component{
            page_fetch,
            this.props.parent_func.fetchArticlesFullUri,
            selections,
-           this.props.setQuery)}
+           this.props.setQuery,
+           level===1)}
          </td>
          </tr>
          <tr>
@@ -125,24 +114,27 @@ export class Children extends React.Component{
                 DESC, 
                selections,
                this.props.filterChange,
+               this.props.setQuery,
                level,
-               parent_last_obj
+               parent_id.u
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
              DESC, 
              selections,
               this.props.filterChange,
+               this.props.setQuery,
               level,
-             parent_last_obj
+             parent_id
               )}}> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
              DESC, 
              selections,
              this.props.filterChange,
+               this.props.setQuery,
              level,
-             parent_last_obj
+             parent_id
            )}}>Date</td>
          {level===0 ? 
              <td >Similar Articles</td> : null}
@@ -165,37 +157,35 @@ export class Children extends React.Component{
                   </td>
                </tr>
                   {
-                                 article.id in selectArticles ?
-                                  <tr>
-                                    {selectArticles[article.id].loading===true?
-                                        <td>
-                                          <span className="spinner-border" role="status">
-                                            <span className="sr-only">Loading...</span>
-                                          </span>
-                                        </td>: 
-                                          <td colSpan="5">
-                                            <Input type="textarea" className="bktextarea" 
-                                              name="text" rows="15" id="Article" readOnly 
-                                              value={selectArticles[article.id].data.clean_text}/>
-                                          </td>
-                                    }
-                                  </tr>
-                                   : null
-                               }
+                     article.id in selectArticles ?
+                      <tr>
+                        {selectArticles[article.id].loading===true?
+                            <td>
+                              <span className="spinner-border" role="status">
+                                <span className="sr-only">Loading...</span>
+                              </span>
+                            </td>: 
+                              <td colSpan="5">
+                                <Input type="textarea" className="bktextarea" 
+                                  name="text" rows="15" id="Article" readOnly 
+                                  value={selectArticles[article.id].data.clean_text}/>
+                              </td>
+                        }
+                      </tr>
+                       : null
+                   }
 
-
-                   { level === 0 && article.id === parent_first_id?
+                   { level === 0 && article.id === parent_id?
                       <tr>
                         <td colSpan="4">
                           <Children 
                             setQuery={this.props.setQuery}
-                            query={this.props.query.child}
+                            query={this.props.query}
 
                              parent={this.props.child}
                              parent_func={this.props.child_func}
                              parent_obj={createParent(article.id,article.title,article.match)}
                              parent_title={article.title}
-                             parent_trail={this.props.child.parentTrail}
                              start_date={selections.startDate}
                              end_date={selections.endDate}
                              source_chosen={selections.sourceChosen}
