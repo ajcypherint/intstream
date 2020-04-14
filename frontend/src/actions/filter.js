@@ -71,7 +71,7 @@ export const filterChange = (selections,  setQuery, parent)=>{
       ...selections,
       modelChosen:modelChosen,
       sourceChosen:sourceChosen,
-      orderdir:orderdir
+      orderdir:orderdir,
     }
     setQuery(selections)
     let predictionStr = modelChosen !=="" ? 

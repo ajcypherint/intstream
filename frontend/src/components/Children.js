@@ -24,6 +24,60 @@ export class Children extends React.Component{
     this.showChildren = this.showChildren.bind(this)
     this.getArticle = this.getArticle.bind(this)
   }
+  componentDidMount() {
+    let START = new Date();
+    START.setHours(0,0,0,0);
+
+    let END= new Date();
+    END.setHours(23,59,59,999);
+
+    let ordering = this.props.query.ordering || "title"
+    let page = this.props.query.page || 1
+    let orderdir = this.props.query.orderdir || ""
+    let sourceChosen =   this.props.query.sourceChosen || ""
+    let modelChosen =   this.props.query.modelChosen || ""
+    let startDate = this.props.query.startDate || START
+    let endDate = this.props.query.endDate || END
+    let threshold = this.props.query.threshold || 0
+    let minDf = this.props.query.minDf || 0
+    let maxDf = this.props.query.maxDf || 80
+    let next = this.props.query.next || ''
+    let previous = this.props.query.previous || ''
+    let parent_id = this.props.query.parent_id || ''
+    let parentTitle = this.props.query.parentTitle || ''
+    let parentMatch = this.props.query.parentMatch || []
+    let child = this.props.query.child || {}
+    let childPage = child.page || 1
+    let childOrderDir = child.orderdir || ""
+    let childOrdering = child.ordering || "title"
+    let childNew = {page:childPage,
+                 orderdir:childOrderDir,
+                 ordering:childOrdering,
+                 }
+
+    let selections = {
+      ordering:ordering, 
+      page:page, 
+      orderdir:orderdir,
+      sourceChosen:sourceChosen,
+      modelChosen:modelChosen,
+      startDate:startDate,
+      endDate:endDate,
+      threshold:threshold,
+      minDf:minDf,
+      maxDf:maxDf,
+      next:next,
+      previous:previous,
+      parent_id:parent_id,
+      parentTitle:parentTitle,
+      parentMatch:parentMatch,
+      child:childNew
+    }
+    this.props.parent_obj ? 
+     this.props.filterChange(selections, this.props.setQuery, this.props.parent_obj) :
+      this.props.filterChange(selections, this.props.setQuery) 
+  }
+ 
   getArticle(event){
     let {id}= event.target.dataset
     this.props.clearSelect()
@@ -33,11 +87,13 @@ export class Children extends React.Component{
   showChildren(event){
     // call fetch for children based on level
     let {parent,level}= event.target.dataset
-    let parentobj = JSON.parse(parent) //{id,title}
+    let parentobj = JSON.parse(parent) //{id,title, match}
     let level_int = parseInt(level)
     let selections = {
       ...this.props.query,
       parent_id:parentobj.id,
+      parentTitle:parentobj.title,
+      parentMatch:parentobj.match,
       child:{
         page:1,
         ordering:"title",
@@ -77,6 +133,9 @@ export class Children extends React.Component{
     const parent_id = this.props.query.parent_id || undefined
     const i = 1
     const selectArticles = this.props.selectArticles || {}
+    const parentObj = level === 1 ? createParent(this.props.query.parent_id,
+                                                 this.props.query.parentTitle,
+                                                 this.props.query.parentMatch) : undefined
     return (
       
     <table className={"table table-sm "+cols + " " + offset}>
@@ -105,7 +164,7 @@ export class Children extends React.Component{
                this.props.filterChange,
                this.props.setQuery,
                level,
-               parent_id
+               parentObj 
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
              ASC, 
@@ -114,7 +173,7 @@ export class Children extends React.Component{
               this.props.filterChange,
                this.props.setQuery,
               level,
-             parent_id
+              parentObj
               )}}> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
              ASC, 
@@ -123,7 +182,7 @@ export class Children extends React.Component{
              this.props.filterChange,
                this.props.setQuery,
              level,
-             parent_id
+             parentObj
            )}}>Date</td>
          {level===0 ? 
              <td >Similar Articles</td> : null}

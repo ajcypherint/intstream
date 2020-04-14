@@ -31,6 +31,10 @@ export class Main extends React.Component{
   handleMaxDfChange(event){
     //again here we set selections then fetch
     let newSel = {
+      parent_id:'',
+      parentMatch:[],
+      parentTitle:'',
+      child:{},
       maxDf:event.target.value,
       page:1
     }
@@ -43,6 +47,10 @@ export class Main extends React.Component{
   handleMinDfChange(event){
     //again here we set selections then fetch
     let newSel  = {
+      parent_id:'',
+      parentMatch:[],
+      parentTitle:'',
+      child:{},
       minDf:event.target.value,
       page:1
     }
@@ -55,6 +63,10 @@ export class Main extends React.Component{
   handleThresholdChange(event){
     //again here we set selections then fetch
     let newSel = {
+      parent_id:'',
+      parentMatch:[],
+      parentTitle:'',
+      child:{},
       page:1,
       threshold:event.target.value
     }
@@ -64,53 +76,6 @@ export class Main extends React.Component{
     }
     this.props.filterChange(selections, this.props.setQuery)
     this.props.child_func.clearParent()
-  }
-  componentDidMount() {
-    let START = new Date();
-    START.setHours(0,0,0,0);
-
-    let END= new Date();
-    END.setHours(23,59,59,999);
-
-    let ordering = this.props.query.ordering || "title"
-    let page = this.props.query.page || 1
-    let orderdir = this.props.query.orderdir || ""
-    let sourceChosen =   this.props.query.sourceChosen || ""
-    let modelChosen =   this.props.query.modelChosen || ""
-    let startDate = this.props.query.startDate || START
-    let endDate = this.props.query.endDate || END
-    let threshold = this.props.query.threshold || 0
-    let minDf = this.props.query.minDf || 0
-    let maxDf = this.props.query.maxDf || 80
-    let next = this.props.query.next || ''
-    let previous = this.props.query.previous || ''
-    let parent_id = this.props.query.parent_id || ''
-    let child = this.props.query.child || {}
-    let childPage = child.page || 1
-    let childOrderDir = child.orderdir || ""
-    let childOrdering = child.ordering || "title"
-    let childNew = {page:childPage,
-                 orderdir:childOrderDir,
-                 ordering:childOrdering,
-                 }
-
-    let selections = {
-      ordering:ordering, 
-      page:page, 
-      orderdir:orderdir,
-      sourceChosen:sourceChosen,
-      modelChosen:modelChosen,
-      startDate:startDate,
-      endDate:endDate,
-      threshold:threshold,
-      minDf:minDf,
-      maxDf:maxDf,
-      next:next,
-      previous:previous,
-      parent_id:parent_id,
-      child:childNew
-    }
-    this.props.filterChange(selections, this.props.setQuery)
   }
   handleStartChange(date){
     let selections = this.props.query
@@ -152,6 +117,10 @@ export class Main extends React.Component{
     //
     //again here we set selections then fetchAllSources, fetchArticles
     let newSel = {
+      parent_id:'',
+      parentMatch:[],
+      parentTitle:'',
+      child:{},
       page:1,
       startDate:startDate,
       endDate:endDate,
@@ -164,6 +133,10 @@ export class Main extends React.Component{
   }
   handleModelChange(event){
     let newSel = {
+      parent_id:'',
+      parentMatch:[],
+      parentTitle:'',
+      child:{},
       modelChosen:event.target.value,
       page:1
     }
@@ -178,6 +151,10 @@ export class Main extends React.Component{
   handleSourceChange(event){
     //again we set selections then fetchArticles
     let newSel = {
+      parent_id:'',
+      parentMatch:[],
+      parentTitle:'',
+      child:{},
       sourceChosen:event.target.value,
       page:1
     }

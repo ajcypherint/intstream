@@ -10,6 +10,7 @@ import {getSources, clearSources } from '../actions/sources'
 import * as fromSelect from '../actions/selectArticle'
 import {
   withQueryParams,
+  DelimitedNumericArrayParam,
   JsonParam,
   useQueryParams,
   StringParam,
@@ -88,6 +89,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     next:StringParam,
     previous:StringParam,
     parent_id:NumberParam,
+    parentTitle:StringParam,
+    parentMatch:DelimitedNumericArrayParam,
     child:ObjectParam,
   },
  
