@@ -5,7 +5,14 @@ import { PAGINATION } from '../util/util'
 //
 //CANNOT be an arrow function or 'this' will not work... dont ask how long i spent on that.
 //CANNOT be part of a form as the onclick events cause page submissions.  2+ hours.
-export default function  (totalcount,next,previous,fetchit, fetchFullUri, allSelections, setPage, child=false){
+export default function  (totalcount,
+  next,
+  previous,
+  fetchit, 
+  fetchFullUri, 
+  allSelections, 
+  setPage, 
+  child=false){
   //
   // totalcount: int
   // next:str
@@ -32,7 +39,7 @@ export default function  (totalcount,next,previous,fetchit, fetchFullUri, allSel
                                 ...selections,
                                 page:1}}:{...allSelections, page:1};
  
-          fetchit(selections,1)}} />
+          fetchit(newSel,1)}} />
         </PaginationItem>
         <PaginationItem>
           {previous===null?
