@@ -64,9 +64,9 @@ export const filterChange = (newSelections, setQuery)=>{
     }
 
     let mvStr = "ordering="+orderDir+newSelections.ordering+
-      "&mlmodel="+mlmodelChosen+
+      "&model="+mlmodelChosen+
       "&page="+newSelections.page+
-      "&mlmodel__active=true"
+      "&model__active=true"
 
     //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
     return await dispatch(getModelVersion(mvStr))

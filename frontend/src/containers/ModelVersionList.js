@@ -36,6 +36,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     ordering: StringParam,
     page: NumberParam,
     orderDir:StringParam,
-    mlmodelChosen:StringParam
+    mlmodelChosen:StringParam,
   },
   Main));
