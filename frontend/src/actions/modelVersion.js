@@ -105,7 +105,7 @@ export const setActiveRequest= (id, trueFalse) =>{
   }
 }
 
-export const setActiveVersion = (model, id, selections) =>{
+export const setActiveVersion = (model, id, selections, setQuery) =>{
  return async (dispatch, getState)=>{
    //get active
    let getResp = await dispatch(getModelVersionNoRedux("mlmodel="+model+"&active=true"))
@@ -123,6 +123,6 @@ export const setActiveVersion = (model, id, selections) =>{
    if(updateResp.error) {
      return
    }
-   await dispatch(filterChange(selections))
+   await dispatch(filterChange(selections,setQuery))
  }
 }

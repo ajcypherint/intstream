@@ -1,7 +1,6 @@
 import React from 'react'
 import { Route,Redirect,Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import Navigation from '../components/Navigation'
 import * as reducers from '../reducers'
 
 const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (

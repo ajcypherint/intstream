@@ -10,7 +10,6 @@ import randomArticle, * as fromRandomArticle from  './randomArticle.js'
 import filter, * as fromFilter from  './filter.js'
 import trainFilter, * as fromTrainFilter from  './trainFilter.js'
 import childFilter, * as fromChildFilter from  './childFilter.js'
-import list, * as fromList from './listSelections.js'
 import selectArticles, * as fromSelect from "./selectArticles.js"
 import classifications, * as fromClassif from "./classifications"
 import settings, * as fromSettings from "./settings"
@@ -27,7 +26,6 @@ export default combineReducers({
   sources:sources,
   articles:articles,
   models:models,
-  list:list,
   randomArticle:randomArticle,
   childArticles:childArticles,
   childFilter:childFilter,
@@ -89,11 +87,6 @@ export const getTrainSelections = state => fromTrainFilter.getSelections(state.t
 export const getTrainFilterSources= state => fromTrainFilter.sources(state.trainFilter)
 export const getTrainFilterMLModels= state => fromTrainFilter.mlmodels(state.trainFilter)
 
-//listSelections
-export const getListPage = state => fromList.getPage(state.list)
-export const getListOrderCol = state => fromList.getOrderCol(state.list)
-export const getListOrderDir = state => fromList.getOrderDir(state.list)
-
 //random article
 export const getRandomArticle = state => fromRandomArticle.articles(state.randomArticle)
 export const getRandomErrors= state => fromRandomArticle.errors(state.randomArticle)
@@ -135,7 +128,6 @@ export const getModelVersionPreviousPage = state => fromModelVersions.previouspa
 
 //from modelVersions
 export const getModelVersionFilterMLModels = state => fromFilterModelVer.mlmodels(state.filterModelVer)
-export const getModelVersionSelections = state => fromFilterModelVer.getSelections(state.filterModelVer)
 
 export function withAuth(headers={}) {
   return (state) => ({

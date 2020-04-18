@@ -18,36 +18,48 @@ export default class extends Component {
     this.handleChange = this.handleChange.bind(this)
   }
   componentDidMount(){
-    let selections = this.props.selections
+    let selections = this.props.query
+    let ordering = this.props.query.ordering || "name"
+    let page = this.props.query.page || 1
+    let orderDir = this.props.query.orderDir || ""
+    let mlmodelChosen = this.props.query.mlmodelChosen || ""
+    let newSel = {
+      ...selections,
+      ordering:ordering,
+      page:page,
+      orderDir:orderDir,
+      mlmodelChosen:mlmodelChosen
+    }
+ 
     this.props.filterChange(
-      selections
+      newSel,this.props.setQuery
     )
   }  
   handleChange(event){
     let newSelections = {
-      ...this.props.selections,
+      ...this.props.query,
       mlmodelChosen:event.target.value,
       page:1
     }
-    this.props.filterChange(newSelections)
+    this.props.filterChange(newSelections,this.props.setQuery)
   }
   handleActiveChange(event){
 
     let {model, id}= event.target.dataset
     this.props.setActiveVersion(model,
                                 id, 
-                                this.props.selections) 
+                                this.props.query) 
   }
   onRefresh(event){
     event.preventDefault()
-    this.props.filterChange(this.props.selections)
+    this.props.filterChange(this.props.query, this.props.setQuery)
   }
   fetch(selections,page){
     let newSelections = {
       ...selections,
       page:page
     }
-    this.props.filterChange(newSelections)
+    this.props.filterChange(newSelections, this.props.setQuery)
   }
  
   render(){
@@ -68,7 +80,7 @@ export default class extends Component {
               <Row className={"col-sm-8 offset-sm-2"}>
                 <Col  >
                    <Choice name={"Model"}
-                    value={this.props.selections.mlmodelChosen}
+                    value={this.props.query.mlmodelChosen || ''}
                     onChange={this.handleChange}
                     idList={idsModels}
                     uniqueList={uniqueModels}
@@ -100,8 +112,8 @@ export default class extends Component {
                previous,
                this.fetch,
                this.props.fetchModelVersions,
-               this.props.selections,
-               this.props.setPage)}
+               this.props.query,
+               this.props.setQuery)}
              </td>
            </tr>
            <tr>
@@ -112,8 +124,9 @@ export default class extends Component {
                    <td className="hover" onClick={(event)=>{this.changesort("title", 
                        ASC, 
                        DESC, 
-                       this.props.selections,
+                       this.props.query,
                        this.props.filterChange,
+                       this.props.setQuery,
                        0
                      )}}>
                      Model
@@ -121,8 +134,9 @@ export default class extends Component {
                    <td className="hover" onClick={(event)=>{this.changesort("version", 
                        ASC, 
                        DESC, 
-                       this.props.selections,
+                       this.props.query,
                        this.props.filterChange,
+                       this.props.setQuery,
                        0
                      )}}>
                      Version Name
@@ -130,8 +144,9 @@ export default class extends Component {
                    <td className="hover" onClick={(event)=>{this.changesort("status", 
                        ASC, 
                        DESC, 
-                       this.props.selections,
+                       this.props.query,
                        this.props.filterChange,
+                       this.props.setQuery,
                        0
                      )}}>
                      Status

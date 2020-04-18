@@ -23,8 +23,9 @@ export class Children extends React.Component{
     this.changesort = changesort.bind(this)
     this.showChildren = this.showChildren.bind(this)
     this.getArticle = this.getArticle.bind(this)
+    this.updateComponent = this.updateComponent.bind(this)
   }
-  componentDidMount() {
+  updateComponent(){
     let START = new Date();
     START.setHours(0,0,0,0);
 
@@ -76,8 +77,17 @@ export class Children extends React.Component{
     this.props.parent_obj ? 
      this.props.filterChange(selections, this.props.setQuery, this.props.parent_obj) :
       this.props.filterChange(selections, this.props.setQuery) 
-  }
  
+  }
+  componentDidMount() {
+    this.updateComponent()
+  }
+  componentDidUpdate(prevProps) {
+    // Typical usage (don't forget to compare props):
+    if (typeof this.props.query.page === 'undefined' && typeof prevProps.query.page !== 'undefined') {
+      this.updateComponent();
+    }
+  }
   getArticle(event){
     let {id}= event.target.dataset
     this.props.clearSelect()

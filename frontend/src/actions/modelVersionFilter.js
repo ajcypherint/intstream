@@ -22,19 +22,6 @@ export const clear=()=>{
     type:CLEAR,
   }
 }
-export const setPage= (data)=>{
-  return {
-    type:PAGE,
-    payload:data
-  }
-}
-export const setSelections = (data)=>{
-  return {
-    type:HOME,
-    payload:data
-  }
-}
-
 export const totalMLModels= (data) =>{
 
   return {
@@ -61,29 +48,24 @@ export const getfilter= (url, params=undefined)=>{
 
 export const getAllMLModels = getAll(getfilter)(totalMLModels);
 
-export const filterChange = (newSelections)=>{
+export const filterChange = (newSelections, setQuery)=>{
   return async (dispatch, getState)=>{
-    let resp = await dispatch(setSelections(newSelections))
-    if (resp.error) {
-      return
-    }
-    let state = getState()
-    let selections = state.filterModelVer.Selections
-
-    state = undefined
-    let modelStr= "ordering=name&id="+selections.mlmodelChosen+
+    let orderDir = newSelections.orderDir || ""
+    let mlmodelChosen = newSelections.mlmodelChosen || ""
+    setQuery(newSelections)
+    let modelStr= "ordering=name&id="+mlmodelChosen+
       "&active=true&modelversion__isnull=false"
     
     //fetch sources and models; * not just sources but all filters not inc dates *
     // could ignore this for child
-    resp = await dispatch(getAllMLModels(MODEL_API, modelStr))
+    let resp = await dispatch(getAllMLModels(MODEL_API, modelStr))
     if (resp.error) {
       return
     }
 
-    let mvStr = "ordering="+selections.orderdir+selections.ordercol+
-      "&mlmodel="+selections.mlmodelChosen+
-      "&page="+selections.page+
+    let mvStr = "ordering="+orderDir+newSelections.ordering+
+      "&mlmodel="+mlmodelChosen+
+      "&page="+newSelections.page+
       "&mlmodel__active=true"
 
     //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
