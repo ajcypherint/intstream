@@ -83,7 +83,6 @@ export const getFilterSources= state => fromFilter.sources(state.filter)
 export const getFilterModels= state => fromFilter.models(state.filter)
 
 //trainFilter
-export const getTrainSelections = state => fromTrainFilter.getSelections(state.trainFilter)
 export const getTrainFilterSources= state => fromTrainFilter.sources(state.trainFilter)
 export const getTrainFilterMLModels= state => fromTrainFilter.mlmodels(state.trainFilter)
 

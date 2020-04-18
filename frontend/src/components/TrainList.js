@@ -29,11 +29,11 @@ export default class extends Component {
   handleTFChange(event){
     let id = event.target.value
     let newSelections = {
-        ...this.props.selections,
+        ...this.props.query,
         trueFalse:id,
         page:1
       }
-    this.props.filterChange(newSelections)
+    this.props.filterChange(newSelections, this.props.setQuery)
     
   }
   redirect(event){
@@ -72,11 +72,11 @@ export default class extends Component {
     this.props.clearClassif()
     if(id!==NONEVAL){
       let newSelections = {
-        ...this.props.selections,
+        ...this.props.query,
         mlmodelChosen:id,
         page:1
       }
-      this.props.filterChange(newSelections)
+      this.props.filterChange(newSelections, this.props.setQuery)
       //todo() ordering add model
     } else {
       this.props.clear() //selections
@@ -87,11 +87,11 @@ export default class extends Component {
 
   }
   handleStartChange(date){
-    let selections = this.props.selections
+    let selections = this.props.query
     this.updateDate(date,selections.endDate, true)
   }
   handleEndChange(date){
-    let selections = this.props.selections
+    let selections = this.props.query
     this.updateDate(selections.startDate,date,false)
   }
 
@@ -117,23 +117,23 @@ export default class extends Component {
     startDate.setHours(0,0,0,0);
     endDate.setHours(23,59,59,999);
     let newSelections = {
-      ...this.props.selections,
+      ...this.props.query,
       startDate:startDate,
       endDate:endDate,
       page:1
     }
-    this.props.filterChange(newSelections)
+    this.props.filterChange(newSelections, this.props.setQuery)
   }
  
   handleSourceChange(event){
     event.preventDefault()
     //last filter.  do not need to unset others
     let newSelections = {
-      ...this.props.selections,
+      ...this.props.query,
       sourceChosen:event.target.value,
       page:1
     }
-    this.props.filterChange(newSelections)
+    this.props.filterChange(newSelections, this.props.setQuery)
   }
   getArticle(event){
     let {id}= event.target.dataset
@@ -145,21 +145,48 @@ export default class extends Component {
       ...selections,
       page:page
     }
-    this.props.filterChange(newSelections)
+    this.props.filterChange(newSelections, this.props.setQuery)
   }
  
   componentDidMount(){
     //action
+    let START = new Date();
+    START.setHours(0,0,0,0);
+
+    let END= new Date();
+    END.setHours(23,59,59,999);
+
+    let trueFalse = this.props.query.trueFalse || ''
+    let ordering = this.props.query.ordering || "title"
+    let page = this.props.query.page || 1
+    let orderdir = this.props.query.orderdir || ""
+    let sourceChosen =   this.props.query.sourceChosen || ""
+    let mlmodelChosen =   this.props.query.mlmodelChosen || ""
+    let startDate = this.props.query.startDate || START
+    let endDate = this.props.query.endDate || END
+    let parent_id = this.props.query.parent_id || ''
+    let selections = {
+      ...this.props.query,
+      ordering:ordering,
+      page:page,
+      orderdir:orderdir,
+      sourceChosen:sourceChosen,
+      mlmodelChosen:mlmodelChosen,
+      startDate:startDate,
+      endDate:endDate,
+      parent_id:parent_id,
+      trueFalse:trueFalse
+      }
+    this.props.setQuery(selections)
     this.props.clearClassif()
     this.props.fetchAllMLModels("ordering=name&active=true")
-    let selections = this.props.selections
     if (selections.mlmodelChosen===NONEVAL){
       this.props.clearArticles()
     } else {
       this.props.fetchArticlesAndClassif(selections.mlmodelChosen,
         dateString(
             selections.orderdir,
-            selections.ordercol,
+            selections.ordering,
             selections.sourceChosen,
             selections.page,
             selections.startDate,
@@ -171,7 +198,7 @@ export default class extends Component {
     let articles = this.props.articlesList || [];
     const errors = this.props.articlesErrors || {}
     const classifErrors = this.props.classifErrors || {}
-    let selections = this.props.selections || {}
+    let selections = this.props.query|| {}
     let models = this.props.modelsList || []
     const uniqueSources = _.uniqBy(this.props.sourcesList,'id')
     const ids = uniqueSources.map(a=>a.id.toString()) ||[]
@@ -273,8 +300,9 @@ export default class extends Component {
            previous,
            this.fetchit,
            this.props.fetchArticlesFullUri,
-           this.props.selections,
-           this.props.setPage)}
+           this.props.query,
+           this.props.setQuery
+           )}
          </Col>
          <Col align="left">
            <font>True: {isFinite(true_pct) ? true_pct.toFixed(1): ""}%</font>
@@ -300,6 +328,7 @@ export default class extends Component {
                DESC, 
                selections,
                this.props.filterChange,
+               this.props.setQuery,
                0
              )}}>Title</td>
            <td className="hover" onClick={(event)=>{this.changesort("source__name", 
@@ -307,6 +336,7 @@ export default class extends Component {
              DESC, 
              selections,
              this.props.filterChange,
+             this.props.setQuery,
              0,
               )}}> Source </td>
            <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
@@ -314,6 +344,7 @@ export default class extends Component {
              DESC, 
              selections,
              this.props.filterChange,
+             this.props.setQuery,
              0,
            )}}>Date</td>
              <td>True</td> 

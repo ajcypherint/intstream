@@ -13,55 +13,20 @@ let END= new Date();
 END.setHours(23,59,59,999);
 
 const initialState ={
-  Selections: {
-    startDate: START,
-    endDate: END,
-    mlmodelChosen:NONEVAL,
-    sourceChosen:NONEVAL,
-    loadSources:false,
-    page:1,
-    ordercol:NONEVAL,
-    orderdir:ASC,
-    next:null,
-    previous:null,
-    trueFalse:NONEVAL,
-  },
   sources: [],
   mlmodels:[],
 }
 
 export default (state=initialState, action) => {
   switch(action.type) {
-      case filter.CLEAR:
+    case filter.CLEAR:
       {
         return {
           ...initialState
           }
 
       }
-      case filter.PAGE:
-      {
-        return {
-          ...state,
-          Selections:{
-            ...state.Selections,
-            page:action.payload
-          }
-        }
-      }
-      case filter.HOME:
-        {
-          return {
-            ...state,
-            Selections:{
-              ...state.Selections,
-              ...action.payload
-            }
-          }
-            
-
-        }
-     case filter.ALL_SOURCES:
+    case filter.ALL_SOURCES:
       {
         return {
           ...state,
@@ -69,7 +34,7 @@ export default (state=initialState, action) => {
         }
 
       }
-     case filter.ALL_MLMODELS:
+    case filter.ALL_MLMODELS:
       {
         return {
           ...state,
@@ -78,9 +43,9 @@ export default (state=initialState, action) => {
 
       }
  
-     default:
+    default:
       return state
-     }
+    }
 
 }
 

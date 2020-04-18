@@ -4,10 +4,19 @@ import * as reducers from '../reducers/'
 import Main from '../components/TrainList'
 import {getArticles, clearArticles, ARTICLE_URL} from '../actions/articles'
 import * as fromSelect from '../actions/selectArticle'
-import {getAllSources,getAllMLModels, setPage, setSelections, clear} from '../actions/trainFilter'
+import {getAllSources,getAllMLModels,  clear} from '../actions/trainFilter'
 import {getSources, clearSources } from '../actions/sources'
 import * as fromClassif from "../actions/classification"
 import {filterChange} from "../actions/trainFilter"
+import {
+  withQueryParams,
+  useQueryParams,
+  StringParam,
+  DateParam,
+  NumberParam,
+  ArrayParam,
+} from 'use-query-params';
+
 
 const API_SOURCES = '/api/homefilter/'
 const API_ARTICLES = ARTICLE_URL
@@ -17,7 +26,6 @@ const mapStateToProps = (state) => ({
   test:"test",
   sourcesList:reducers.getTrainFilterSources(state),
   modelsList:reducers.getTrainFilterMLModels(state),
-  selections:reducers.getTrainSelections(state),
   articlesList:reducers.getArticles(state),
   articlesLoading:reducers.getArticleLoading(state),
   articlesErrors:reducers.getArticleErrors(state),
@@ -34,14 +42,12 @@ const mapStateToProps = (state) => ({
 
 
 const mapDispatchToProps = (dispatch) => ({
-  filterChange: (newSelections) => dispatch(filterChange(newSelections)),
+  filterChange: (newSelections, setQuery) => dispatch(filterChange(newSelections, setQuery)),
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
   fetchAllMLModels: (params = undefined) => dispatch(getAllMLModels(API_MODELS, params)),
   fetchArticlesFullUri: (url,params=undefined) => dispatch(getArticles(url, params)),
   fetchArticles: (params=undefined) => dispatch(getArticles(API_ARTICLES, params)),
   clearArticles:()=>dispatch(clearArticles()),
-  setSelections: (data)=>dispatch(setSelections(data)),
-  setPage:(page)=>dispatch(setPage(page)),
   clear: ()=>dispatch(clear()),
   fetchSelect: (id)=>dispatch(fromSelect.getArticle(API_ARTICLES,id)),
   clearSelect: ()=>dispatch(fromSelect.clearArticles()),
@@ -55,4 +61,17 @@ const mapDispatchToProps = (dispatch) => ({
   clearClassif: ()=>dispatch(fromClassif.clear())
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Main);
+export default connect(mapStateToProps, mapDispatchToProps)(
+     withQueryParams( 
+  {
+    trueFalse: StringParam,
+    ordering: StringParam,
+    page: NumberParam,
+    orderdir:StringParam,
+    mlmodelChosen:StringParam,
+    sourceChosen:StringParam,
+    startDate:DateParam,
+    endDate:DateParam,
+    parent_id:NumberParam
+  },
+  Main));

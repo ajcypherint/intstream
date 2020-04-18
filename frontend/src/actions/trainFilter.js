@@ -23,18 +23,7 @@ export const clear=()=>{
     type:CLEAR,
   }
 }
-export const setPage= (data)=>{
-  return {
-    type:PAGE,
-    payload:data
-  }
-}
-export const setSelections = (data)=>{
-  return {
-    type:HOME,
-    payload:data
-  }
-}
+
 export const totalSources = (data) =>{
 
   return {
@@ -61,51 +50,49 @@ export const getfilter= (url, params=undefined)=>{
       types: [
        GET_FILTER_REQUEST, GET_FILTER_SUCCESS, GET_FILTER_FAILURE
       ]
-
-  }
+}
 }
 }
 export const getAllSources = getAll(getfilter)(totalSources);
 
 export const getAllMLModels = getAll(getfilter)(totalMLModels);
 
-export const filterChange = (newSelections)=>{
+export const filterChange = (newSelections, setQuery)=>{
   return async (dispatch, getState)=>{
-    let resp = await dispatch(setSelections(newSelections))
-    if (resp.error) {
-      return
-    }
-    let state = getState()
-    let selections = state.trainFilter.Selections
-    let targetStr = selections.trueFalse !== "" ?  
-        ("&classification__target="+selections.trueFalse+
-          "&classification__mlmodel="+selections.mlmodelChosen ) : ""
+    let orderdir = newSelections.orderdir || ""
+    let ordering = newSelections.ordering || ""
+    let trueFalse = newSelections.trueFalse || ""
+    let sourceChosen = newSelections.sourceChosen || ""
+    let mlmodelChosen =   newSelections.mlmodelChosen || ""
+    let page = newSelections.page || 1
  
-    state = undefined
-    let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
-      "&end_upload_date="+selections.endDate.toISOString()+
-      "&source="+selections.sourceChosen+
+    setQuery(newSelections)
+    let targetStr = trueFalse !== "" ?  
+        ("&classification__target="+trueFalse+
+          "&classification__mlmodel="+mlmodelChosen ) : ""
+ 
+    let sourceStr = "start_upload_date="+newSelections.startDate.toISOString()+
+      "&end_upload_date="+newSelections.endDate.toISOString()+
+      "&source="+sourceChosen+
       "&source__active=true"+ targetStr
     
-    //fetch sources and models; * not just sources but all filters not inc dates *
-    // could ignore this for child
-    resp = await dispatch(getAllSources(CLASSIF_FILTER, sourceStr))
+    let resp = await dispatch(getAllSources(CLASSIF_FILTER, sourceStr))
     if (resp.error) {
       return
     }
 
-    let articleStr = (dateString(selections.orderdir,
-      selections.ordercol,
-      selections.sourceChosen,
-      selections.page,
-      selections.startDate,
-      selections.endDate,
-      selections.threshold) +
+    let articleStr = (dateString(orderdir,
+      ordering,
+      sourceChosen,
+      page,
+      newSelections.startDate,
+      newSelections.endDate,
+      newSelections.threshold) +
       targetStr+ 
       "&source__active=true")
 
     //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
-    return await dispatch(getArticlesAndClassif(selections.mlmodelChosen, articleStr))
+    return await dispatch(getArticlesAndClassif(mlmodelChosen, articleStr))
 
   }
 }
