@@ -38,6 +38,10 @@ export default combineReducers({
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
 export const get_username = state => fromAuth.get_username(state.auth)
 export const accessToken = state => fromAuth.accessToken(state.auth)
+export const isIntegrator = state => fromAuth.isIntegrator(state.auth)
+export const isStaff = state => fromAuth.isStaff(state.auth)
+export const isSuperuser= state => fromAuth.isSuperuser(state.auth)
+
 export const isAccessTokenExpired = state => fromAuth.isAccessTokenExpired(state.auth)
 export const refreshToken = state => fromAuth.refreshToken(state.auth)
 export const isRefreshTokenExpired = state => fromAuth.isRefreshTokenExpired(state.auth)

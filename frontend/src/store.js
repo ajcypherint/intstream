@@ -9,7 +9,7 @@ import rootReducer from './reducers'
 
 export default (history) => {
   const persistedFilter = createFilter(
-    'auth', ['access', 'refresh','username']
+    'auth', ['access', 'refresh','username','isIntegrator', 'isStaff', 'isSuperuser']
   );
   
   const reducer = persistReducer(

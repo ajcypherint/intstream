@@ -4,6 +4,9 @@ import * as auth from '../actions/auth'
 
 const initialState = {
   username:undefined,
+  isStaff:false,
+  isIntegrator:false,
+  isSuperuser:false,
   access: undefined,
   refresh: undefined,
   errors: {},
@@ -11,6 +14,17 @@ const initialState = {
 
 export default (state=initialState, action) => {
   switch(action.type) {
+    case auth.USERINFO_SUCCESS:
+      {
+        return {
+          ...state,
+          isStaff:action.payload.results[0].is_staff,
+          isIntegrator:action.payload.results[0].is_integrator,
+          isSuperuser:action.payload.results[0].is_superuser,
+          errors:{}
+        }
+
+      }
     case auth.SET_USER:
       return {
         ...state,
@@ -42,6 +56,7 @@ export default (state=initialState, action) => {
           ...jwtDecode(action.payload.access)
         }
       }
+    case auth.USERINFO_FAILURE:
     case auth.LOGIN_FAILURE:
     case auth.TOKEN_FAILURE:
       return {
@@ -82,6 +97,16 @@ export function isRefreshTokenExpired(state) {
 }
 export function get_username(state){
   return state.username;
+}
+export function isIntegrator(state){
+  return state.isIntegrator
+}
+export function isStaff(state){
+  return state.isStaff
+}
+export function isSuperuser(state){
+  return state.isSuperuser
+
 }
 export function isAuthenticated(state) {
   return !isRefreshTokenExpired(state)

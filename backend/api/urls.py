@@ -42,6 +42,7 @@ router.register(SOURCE, views.SourceViewSet,basename="source")
 router.register("homefilter",views.HomeFilter, basename="homefilter")
 router.register("classiffilter",views.ClassifPageFilter, basename="classiffilter")
 
+router.register("userinfo",views.UserViewSet, basename="userinfo")
 #classifications
 router.register("classifications",views.ClassificationViewSet, basename="classifications")
 router.register("predictions",views.PredictionViewSet, basename="predictions")

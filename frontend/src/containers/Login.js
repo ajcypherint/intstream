@@ -4,7 +4,7 @@ import { Redirect,Link } from 'react-router-dom'
 import intstream from './IntStreamwhite.png'
 
 import LoginForm from '../components/LoginForm'
-import {login} from  '../actions/auth'
+import {login, loginGroup} from  '../actions/auth'
 import {setUser} from  '../actions/auth'
 import {authErrors, isAuthenticated,get_username} from '../reducers'
 
@@ -41,7 +41,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(setUser(username))
   },
   onSubmit: (username, password) => {
-    dispatch(login(username, password))
+    dispatch(loginGroup(username, password))
   }
 })
 

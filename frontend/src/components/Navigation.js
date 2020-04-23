@@ -47,20 +47,22 @@ export default class Example extends React.Component {
               </NavItem>
               */}
 
+             { this.props.isSuperUser ?
              <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
                  Site Admin 
                 </DropdownToggle>
                 <DropdownMenu right  >
-                   <DropdownItem tag={Link} to="/about">
+                   <DropdownItem tag={Link} to="/organization">
                     Organizations
                     </DropdownItem>
-                   <DropdownItem tag={Link} to="/about">
+                   <DropdownItem tag={Link} to="/users">
                      Users
                     </DropdownItem>
                  </DropdownMenu>
-             </UncontrolledDropdown>
+             </UncontrolledDropdown>: null}
 
+             { this.props.isStaff?
              <UncontrolledDropdown nav inNavbar >
                <DropdownToggle nav caret>
                  Org Admin 
@@ -77,8 +79,9 @@ export default class Example extends React.Component {
                      Users
                     </DropdownItem>
                  </DropdownMenu>
-              </UncontrolledDropdown>
+              </UncontrolledDropdown>: null}
 
+             { this.props.isIntegrator?
              <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
                   Sources
@@ -94,8 +97,9 @@ export default class Example extends React.Component {
                     Job 
                     </DropdownItem>
                  </DropdownMenu>
-              </UncontrolledDropdown>
+              </UncontrolledDropdown>:null}
 
+             { this.props.isIntegrator?
              <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
                   Training 
@@ -111,7 +115,7 @@ export default class Example extends React.Component {
                     History
                   </DropdownItem>
                   </DropdownMenu>
-              </UncontrolledDropdown>
+              </UncontrolledDropdown>:null}
  
              <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>

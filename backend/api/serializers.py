@@ -1,7 +1,7 @@
 from rest_framework import serializers
 import json
 from .models import (MLModel, JobSource,
-                     TxtArticle,
+                     TxtArticle, UserIntStream,
                      Article, PDFArticle,
                     Source, ModelVersion,
                      UploadSource, RSSSource,
@@ -33,13 +33,16 @@ class ArticleTypeSerializer(serializers.ModelSerializer):
         ]
         model = ArticleType
 
-#class UserSerializer(serializers.ModelSerializer):
-#    class Meta:
-#        fields=[
-#            "password",
-#            "is_staff",
-#            "is_admin"
-#        ]
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=[
+            "is_integrator",
+            "is_staff",
+            "is_superuser"
+        ]
+        model = UserIntStream
+
 
 class JobSourceSerializer(serializers.ModelSerializer):
     class Meta:
