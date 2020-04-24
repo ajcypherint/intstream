@@ -47,7 +47,7 @@ export default class Example extends React.Component {
               </NavItem>
               */}
 
-             { this.props.isSuperUser ?
+             { this.props.isSuperuser ?
              <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
                  Site Admin 
