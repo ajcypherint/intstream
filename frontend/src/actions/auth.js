@@ -1,4 +1,5 @@
 import { RSAA } from 'redux-api-middleware';
+import { withAuth } from '../reducers'
 
 export const LOGIN_REQUEST = '@@jwt/LOGIN_REQUEST';
 export const LOGIN_SUCCESS = '@@jwt/LOGIN_SUCCESS';
@@ -32,7 +33,7 @@ export const userInfo = () => {
         endpoint: '/api/userinfo/',
         method: 'GET',
         body:'',
-        headers: { 'Content-Type': 'application/json' },
+        headers: withAuth({ 'Content-Type': 'application/json' }),
         types: [
             USERINFO_REQUEST, USERINFO_SUCCESS, USERINFO_FAILURE
         ]

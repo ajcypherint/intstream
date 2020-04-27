@@ -11,20 +11,13 @@ import {
   ArrayParam,
 } from 'use-query-params';
 
-
-// edit
-const API = '/api/sourcesjob/'
-const FIELDS = ["id",
-  "name",
-  "script_path",
-  "working_dir",
-  "last_run",
-  "last_run_status",
-  "active"]
-const HEADING = "Job Sources"
-const EDITURI = "/sources_job/"
-const ADDURI = "/sources_job_add"
-const ORDERSTARTCOL = "name"
+//edit
+const API = '/api/orguserinfo/'
+const FIELDS = ["username","email","is_staff","is_integrator"]
+const HEADING = "Users"
+const EDITURI = /orguserinfo/
+const ADDURI = "/orguserinfo_add"
+const ORDERSTARTCOL = "username"
 
 const mapStateToProps = mapStateToPropsFunc(ORDERSTARTCOL)(FIELDS)(HEADING)(EDITURI)(ADDURI)
 const mapDispatchToProps = mapDispatchToPropsFunc(API) 

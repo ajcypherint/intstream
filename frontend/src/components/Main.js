@@ -7,7 +7,11 @@ import SourcesUploadList from "../containers/SourcesUploadList"
 import SourcesUploadEdit from "../containers/SourcesUploadEdit"
 import SourcesRssList from "../containers/SourcesRSSList"
 import SourcesRSSEdit from "../containers/SourcesRSSEdit"
-
+import OrgUserList from "../containers/OrgUserList"
+import OrgUserEdit from "../containers/OrgUserEdit"
+import EditOrgUserForm from "./OrgUserEditFormComp.js"
+import OrgList from "../containers/OrgList"
+import OrgEdit from "../containers/OrgEdit"
 import SettingsEdit from "../containers/SettingsEdit"
 
 import ModelsList from "../containers/ModelsList"
@@ -16,6 +20,7 @@ import ModelsEdit from "../containers/ModelsEdit"
 import About from "./About"
 import Logout from "./Logout"
 import Password from "../containers/Password"
+import EditOrgForm from './OrgEditFormComp'
 import Edit from './SourceEditFormComp'
 import EditRSS from './SourceEditRSSFormComp'
 import EditModels from './ModelsEditFormComp'
@@ -48,8 +53,6 @@ const Main = (props)=>(
         }}
         match={undefined}/>} 
       />
-
-
     <Route exact path="/sources_upload/:id" 
       render={({match})=>
       <SourcesUploadEdit 
@@ -59,6 +62,48 @@ const Main = (props)=>(
         }}
         match={match}/>} 
       />
+
+    <Route exact path="/orguserinfo" component={OrgUserList} />
+    <Route exact path="/orguserinfo_add" 
+          render={()=>
+          <OrgUserEdit 
+            form={<EditOrgUserForm/>}
+            state={ {
+              action:ADD,
+            }}
+            match={undefined}/>} 
+    />
+    <Route exact path="/orguserinfo/:id"       
+          render={({match})=>
+          <OrgUserEdit 
+            form={<EditOrgUserForm/>}
+            state={ {
+              action:EDIT,
+            }}
+            match={match}/>} 
+    />
+
+
+    <Route exact path="/organization" component={OrgList} />
+    <Route exact path="/organization_add" 
+          render={()=>
+          <OrgEdit 
+            form={<EditOrgForm/>}
+            state={ {
+              action:ADD,
+            }}
+            match={undefined}/>} 
+    />
+    <Route exact path="/organization/:id"       
+          render={({match})=>
+          <OrgEdit 
+            form={<EditOrgForm/>}
+            state={ {
+              action:EDIT,
+            }}
+            match={match}/>} 
+    />
+
     <Route exact path="/models" component={ModelsList} />
     <Route exact path="/models_add" 
       render={()=>

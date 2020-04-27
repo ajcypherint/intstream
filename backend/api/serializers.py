@@ -36,13 +36,40 @@ class ArticleTypeSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
+
         fields=[
+            "id",
             "is_integrator",
             "is_staff",
             "is_superuser"
         ]
+        read_only_fields=[
+            "is_integrator",
+            "is_staff",
+            "is_superuser"
+        ]
+
         model = UserIntStream
 
+class SuperUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=[
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "username",
+            "is_integrator",
+            "is_staff",
+            "is_superuser",
+            "organization",
+        ]
+        read_only_fields=[
+            "email",
+            "username",
+        ]
+
+        model = UserIntStream
 
 class JobSourceSerializer(serializers.ModelSerializer):
     class Meta:

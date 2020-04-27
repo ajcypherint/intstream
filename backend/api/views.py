@@ -900,14 +900,58 @@ class ArticleTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.ArticleType.objects.all()
     serializer_class = serializers.ArticleTypeSerializer
 
+
 class UserViewSet(viewsets.ModelViewSet):
-    permissions=(permissions.IsAuthandReadOnlyStaff,)
+    # userinfo on login
+    permissions=(permissions.IsAuthandReadOnly,)
     serializer_class = serializers.UserSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ("id", "is_staff")
+    filterset_fields = ("id", "is_staff","is_integrator")
 
     def get_queryset(self):
         return models.UserIntStream.objects.filter(username=self.request.user.username).all()
+
+
+class AllUserViewSet(viewsets.ModelViewSet):
+    """
+    All user view for super users
+    """
+    permissions=(permissions.IsAuthandSuperUser,)
+    serializer_class = serializers.SuperUserSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ("id",
+                        "username",
+                        "first_name",
+                        "last_name",
+                        "email",
+                        "is_staff",
+                        "is_integrator",
+                        "is_superuser",
+                        "organization")
+
+    def get_queryset(self):
+        return models.UserIntStream.objects.all()
+
+
+class OrgUserViewSet(viewsets.ModelViewSet):
+    # org user view for staff members
+    permissions=(permissions.IsAuthandReadOnlyStaff)
+    serializer_class = serializers.SuperUserSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ("id",
+                        "username",
+                        "first_name",
+                        "last_name",
+                        "email",
+                        "is_staff",
+                        "is_integrator",
+                        "is_superuser",
+                        "organization")
+
+
+    def get_queryset(self):
+        return models.UserIntStream.objects.filter(organization=self.request.user.organization).all()
+
 
 class OrganizationViewSet(viewsets.ModelViewSet):
     permissions=(permissions.IsAuthandReadOnlyStaff,)

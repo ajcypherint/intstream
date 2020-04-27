@@ -129,7 +129,7 @@ class SourcesList extends Component {
                 ordering:this.props.query.ordering}, //selections
          this.props.setQuery) 
             : ''}
-          <FormGroup>
+      <FormGroup className="mt-1">
         <Button tag={Link} to={this.props.addUri} className="button-brand-primary" size="md">Add</Button>
       </FormGroup>
  
