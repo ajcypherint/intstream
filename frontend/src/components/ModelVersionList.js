@@ -21,13 +21,13 @@ export default class extends Component {
     let selections = this.props.query
     let ordering = this.props.query.ordering || "name"
     let page = this.props.query.page || 1
-    let orderDir = this.props.query.orderDir || ""
+    let orderdir = this.props.query.orderdir || ""
     let mlmodelChosen = this.props.query.mlmodelChosen || ""
     let newSel = {
       ...selections,
       ordering:ordering,
       page:page,
-      orderDir:orderDir,
+      orderdir:orderdir,
       mlmodelChosen:mlmodelChosen
     }
  

@@ -50,7 +50,7 @@ export const getAllMLModels = getAll(getfilter)(totalMLModels);
 
 export const filterChange = (newSelections, setQuery)=>{
   return async (dispatch, getState)=>{
-    let orderDir = newSelections.orderDir || ""
+    let orderdir = newSelections.orderdir || ""
     let mlmodelChosen = newSelections.mlmodelChosen || ""
     setQuery(newSelections)
     let modelStr= "ordering=name&id="+mlmodelChosen+
@@ -63,7 +63,7 @@ export const filterChange = (newSelections, setQuery)=>{
       return
     }
 
-    let mvStr = "ordering="+orderDir+newSelections.ordering+
+    let mvStr = "ordering="+orderdir+newSelections.ordering+
       "&model="+mlmodelChosen+
       "&page="+newSelections.page+
       "&model__active=true"
