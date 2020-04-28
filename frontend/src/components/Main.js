@@ -7,6 +7,9 @@ import SourcesUploadList from "../containers/SourcesUploadList"
 import SourcesUploadEdit from "../containers/SourcesUploadEdit"
 import SourcesRssList from "../containers/SourcesRSSList"
 import SourcesRSSEdit from "../containers/SourcesRSSEdit"
+import AllUserList from "../containers/AllUserList"
+import AllUserEdit from "../containers/AllUserEdit"
+import EditAllUserForm from "./AllUserEditFormComp.js"
 import OrgUserList from "../containers/OrgUserList"
 import OrgUserEdit from "../containers/OrgUserEdit"
 import EditOrgUserForm from "./OrgUserEditFormComp.js"
@@ -62,6 +65,27 @@ const Main = (props)=>(
         }}
         match={match}/>} 
       />
+
+    <Route exact path="/alluserinfo" component={AllUserList} />
+    <Route exact path="/alluserinfo_add" 
+          render={()=>
+          <AllUserEdit 
+            form={<EditAllUserForm/>}
+            state={ {
+              action:ADD,
+            }}
+            match={undefined}/>} 
+    />
+    <Route exact path="/alluserinfo/:id"       
+          render={({match})=>
+          <OrgUserEdit 
+            form={<EditAllUserForm/>}
+            state={ {
+              action:EDIT,
+            }}
+            match={match}/>} 
+    />
+
 
     <Route exact path="/orguserinfo" component={OrgUserList} />
     <Route exact path="/orguserinfo_add" 
