@@ -13,6 +13,6 @@ const EMPTY= {id:"", name:"", url:"", active:""}
 
 // do not edit
 const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
-const mapDispatchToProps = mapDispatchToPropsFunc(API) 
+const mapDispatchToProps = mapDispatchToPropsFunc(API)
 
 export default connect(mapStateToProps, mapDispatchToProps)(SourceEdit);

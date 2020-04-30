@@ -7,7 +7,6 @@ import * as reducers from '../reducers/'
 
 // do not edit
 export const mapStateToPropsFunc = (EMPTY)=>(FIELDS)=>(HEADING)=>(state) => {
-  
   return { 
     sources:reducers.getSources(state),
     loading:reducers.getLoading(state),

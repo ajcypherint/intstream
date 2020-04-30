@@ -27,7 +27,7 @@ const FIELDS = ["name",
   "task",
   "active"]
 const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
-const mapDispatchToProps = mapDispatchToPropsFunc(API) 
+const mapDispatchToProps = mapDispatchToPropsFunc(API)
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(SourceEdit);

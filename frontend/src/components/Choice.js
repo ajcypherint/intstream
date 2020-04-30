@@ -1,7 +1,7 @@
 import React from 'react'
 import { FormGroup, FormFeedback, Label, Input } from 'reactstrap';
 
-export default ({name, idList, uniqueList, value, onChange,disabled, ...rest}) => {
+export default ({name, idList, uniqueList, value, onChange,disabled, noAllValues, ...rest}) => {
   value = value || ''
   return (
     <Input type="select" name={name} 
@@ -9,7 +9,7 @@ export default ({name, idList, uniqueList, value, onChange,disabled, ...rest}) =
       id={name+"_id"} 
       disabled={disabled}
       onChange={onChange}>
-      <option  value={""}>---</option>
+      {noAllValues ? null: <option  value={""}>---</option>}
             {idList.includes(value)===false && value!==''? 
                <option  value={value}>{value}</option>:''}
              {uniqueList.map((item)=>{

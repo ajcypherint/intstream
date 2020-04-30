@@ -18,7 +18,7 @@ const EMPTY = {
   is_staff:false
 }
 const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
-const mapDispatchToProps = mapDispatchToPropsFunc(API) 
+const mapDispatchToProps = mapDispatchToPropsFunc(API)
 
 
 

@@ -78,7 +78,7 @@ const Main = (props)=>(
     />
     <Route exact path="/alluserinfo/:id"       
           render={({match})=>
-          <OrgUserEdit 
+          <AllUserEdit 
             form={<EditAllUserForm/>}
             state={ {
               action:EDIT,

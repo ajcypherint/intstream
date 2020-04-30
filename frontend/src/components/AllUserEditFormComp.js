@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import {FormGroup, Alert, Button, Jumbotron,  Form } from 'reactstrap';
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
 import FormButtons from './compFormButtons'
+import Choice from "./Choice"
 
 export default class Edit extends Component {
   constructor(props){
@@ -14,10 +16,19 @@ export default class Edit extends Component {
     const err_email = errors.email|| {}
  }
  componentDidMount(){
-   this.props.fetchAllSources()
+   this.props.fetchOrgs("ordering=name")
  }
  render(){
-      return (
+   // set idsList, uniqueIds
+   const uniqueOrgs = _.uniqBy(this.props.orgs,'id') || []
+   let ids = []
+   for (let i=0; i<uniqueOrgs.length;i++){
+      if(uniqueOrgs[i].id){
+        ids.push(uniqueOrgs[i].id)
+      }
+    }
+  
+   return (
         <Form onSubmit={this.props.onSubmit} >
           <TextInput   
             disabled={true}
@@ -43,7 +54,14 @@ export default class Edit extends Component {
             label={'Last Name'}  
             value={this.props.object.last_name}  
             error={this.err_email} />
- 
+            <Choice name={"Organization"} 
+              disabled={false}
+              value={this.props.object.organization}
+              onChange={this.handleSourceChange}
+              noAllValues={true}
+              idList={ids}
+              uniqueList={uniqueOrgs}
+            />
           <CheckBoxInput    
             onChange={this.props.handleChange}
             type={'checkbox'} 

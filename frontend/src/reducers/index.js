@@ -5,6 +5,7 @@ import categories, * as fromCategories from './categories.js'
 import sources, * as fromSources from  './sources.js'
 import models, * as fromModels from  './models.js'
 import articles, * as fromArticles from  './articles.js'
+import orgs, * as fromOrgs from  './organizations.js'
 import childArticles, * as fromChildArticles from  './children.js'
 import randomArticle, * as fromRandomArticle from  './randomArticle.js'
 import filter, * as fromFilter from  './filter.js'
@@ -33,6 +34,7 @@ export default combineReducers({
   selectArticles:selectArticles,
   classifications:classifications,
   settings:settings,
+  orgs:orgs,
 })
 //fromAuth
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
@@ -72,6 +74,16 @@ export const getArticleSaving = state => fromArticles.saving(state.articles)
 export const getArticleTotalCount = state => fromArticles.totalcount(state.articles)
 export const getArticleNextPage = state => fromArticles.nextPage(state.articles)
 export const getArticlePreviousPage = state => fromArticles.previousPage(state.articles)
+
+//fromOrgs
+export const getOrgs= state => fromOrgs.orgs(state.orgs)
+export const getOrgErrors = state => fromOrgs.errors(state.orgs)
+export const getOrgLoading = state => fromOrgs.loading(state.orgs)
+export const getOrgSaving = state => fromOrgs.saving(state.orgs)
+export const getOrgTotalCount = state => fromOrgs.totalcount(state.orgs)
+export const getOrgNextPage = state => fromOrgs.nextPage(state.orgs)
+export const getOrgPreviousPage = state => fromOrgs.previousPage(state.orgs)
+
 
 //fromModels
 export const getModels= state => fromModels.models(state.models)
