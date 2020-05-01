@@ -8,6 +8,7 @@ import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import Paginate from './Paginate'
 import { PAGINATION } from '../util/util'
 import { Input } from 'reactstrap';
+import SourceItemField from "./sourceItemField"
 const ASC = '+'
 const DESC = '-'
 class SourcesList extends Component {
@@ -29,11 +30,17 @@ class SourcesList extends Component {
     this.props.setQuery({page:page, ordering:ordering, orderDir:orderDir})
     this.props.fetchSources(
             "ordering="+orderDir+ordering+"&page="+page)
+    // if AlUserList then fetch orgs
+    if (typeof this.props.fetchOrgs !== "undefined") {
+      this.props.fetchOrgs()
+    }
   }
   
   displaysources(sources, fields, loading){
     //rows
     //todo(aj) onChange for checkbox
+    const lookup = this.props.lookup || []
+    //field = this.props[field][source[field]]
     if (loading) {
       return <tr>
               <td>
@@ -50,10 +57,14 @@ class SourcesList extends Component {
                   return (
                       <td key={index} >
                       <Link key={index} style={{color:'black'}} to={this.props.edituri + source.id}>
-                        {typeof source[field] ==='boolean'?
-                                <Input key={index} className='hover' type='checkbox' readOnly name={field} checked={source[field]} />
-                             : source[field]}
-                      </Link>
+                        <SourceItemField 
+                          source={source} 
+                          lookup={lookup}
+                          field={field}
+                          orgprops={this.props}
+                          index={index} 
+                          />
+                     </Link>
                     </td>
                   )})}
             </tr>

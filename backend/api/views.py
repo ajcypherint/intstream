@@ -962,6 +962,14 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return models.Organization.objects.filter(id=self.request.user.organization.id).all()
 
+class AllOrganizationViewSet(viewsets.ModelViewSet):
+    permissions=(permissions.IsAuthandSuperUser,)
+    serializer_class = serializers.OrganizationSerializer
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ("id", "name")
+    def get_queryset(self):
+        return models.Organization.objects.all()
+
 
 class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
     permissions=(permissions.IsAuthandReadOnly,)

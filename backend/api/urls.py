@@ -50,6 +50,7 @@ router.register("classifications",views.ClassificationViewSet, basename="classif
 router.register("predictions",views.PredictionViewSet, basename="predictions")
 
 router.register("organization",views.OrganizationViewSet, basename="organization")
+router.register("allorganization",views.AllOrganizationViewSet, basename="allorganization")
 
 router.register("taskresult", views.TaskResultViewSet, basename="taskresult")
 router.register("modelversion", views.ModelVersionViewSet, basename="modelversion")

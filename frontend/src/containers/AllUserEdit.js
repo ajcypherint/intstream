@@ -7,7 +7,7 @@ import * as reducers from '../reducers/'
 import {ADD, EDIT} from "../util/util"
 // edit
 const API = '/api/alluserinfo/'
-const ORGAPI = '/api/organization/'
+const ORGAPI = '/api/allorganization/'
 const FIELDS = ["username","email","first_name","last_name","is_integrator","is_staff"]
 const HEADING = " User "
 const EMPTY = {
