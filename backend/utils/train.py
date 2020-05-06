@@ -206,14 +206,14 @@ class DeployPySparkScriptOnAws(object):
         return "intstream-{}.{}".format(app_name,
                                           datetime.now().strftime("%Y%m%d.%H%M%S.%f"))
 
-    async def temp_bucket_exists(self, s3):
+    def temp_bucket_exists(self, s3):
         """
         Check if the bucket we are going to use for temporary files exists.
         :param s3:
         :return:
         """
         try:
-            await s3.meta.client.head_bucket(Bucket=self.s3_bucket_temp_files)
+            s3.meta.client.head_bucket(Bucket=self.s3_bucket_temp_files)
         except botocore.exceptions.ClientError as e:
             # If a client error is thrown, then check that it was a 404 error.
             # If it was a 404 error, then the bucket does not exist.
