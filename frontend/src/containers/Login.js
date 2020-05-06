@@ -19,7 +19,7 @@ const Login = (props) => {
          <div className="col-sm-4 " >
          </div>
          <div className="col-sm-4" align="center">
-           <img src={intstream} width="300" hieght="200" alt="instream"/>
+           <img src={intstream} class="img-fluid" width="300" hieght="200" alt="instream"/>
           <LoginForm {...props}/>
         </div>
          <div className="col-sm-4">

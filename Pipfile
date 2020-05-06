@@ -37,6 +37,7 @@ django-debug-toolbar = "*"
 django-filter = {git = "https://github.com/rpkilby/django-filter.git",ref = "filter-groups"}
 pystemmer = "*"
 cython = "*"
+django-rest-passwordreset = "*"
 
 [requires]
 python_version = "3.6"

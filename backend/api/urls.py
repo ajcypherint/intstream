@@ -5,6 +5,7 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView,TokenVerifyView
 from . import views
+from django_rest_passwordreset import urls as pass_urls
 
 HTMLARTICLES = 'htmlarticles'
 PDFARTICLES = "pdfarticles"
@@ -45,6 +46,7 @@ router.register("classiffilter",views.ClassifPageFilter, basename="classiffilter
 router.register("userinfo",views.UserViewSet, basename="userinfo")
 router.register("alluserinfo",views.AllUserViewSet, basename="alluserinfo")
 router.register("orguserinfo",views.OrgUserViewSet, basename="orguserinfo")
+router.register("usersingle",views.UserSingleViewSet, basename="usersingle")
 #classifications
 router.register("classifications",views.ClassificationViewSet, basename="classifications")
 router.register("predictions",views.PredictionViewSet, basename="predictions")
@@ -78,6 +80,7 @@ schema_view = get_schema_view(
 
 # Create your views here.
 urlpatterns=[
+    path("password-reset/",include(pass_urls, namespace='password_reset')),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('',include(router.urls)),
     path('token-auth/', TokenObtainPairView.as_view()),
@@ -88,5 +91,5 @@ urlpatterns=[
     path("homearticles/",views.HomePage.as_view()),
     path("train/",views.Train.as_view()),
     path("upload-docs/",views.Upload.as_view()),
-    path('schema/', g_schema(title="IntStream API"))
+    path('schema/', g_schema(title="IntStream API")),
 ]

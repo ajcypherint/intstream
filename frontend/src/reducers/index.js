@@ -16,6 +16,7 @@ import classifications, * as fromClassif from "./classifications"
 import settings, * as fromSettings from "./settings"
 import modelVersions, * as fromModelVersions from "./modelVersions.js"
 import filterModelVer, * as fromFilterModelVer from "./modelVersionFilter.js"
+import forgotPassword, * as fromForgotPassword from "./forgotPassword.js"
 
 export default combineReducers({
   modelVersions:modelVersions,
@@ -35,6 +36,7 @@ export default combineReducers({
   classifications:classifications,
   settings:settings,
   orgs:orgs,
+  forgotPassword:forgotPassword,
 })
 //fromAuth
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
@@ -143,6 +145,10 @@ export const getModelVersionPreviousPage = state => fromModelVersions.previouspa
 
 //from modelVersions
 export const getModelVersionFilterMLModels = state => fromFilterModelVer.mlmodels(state.filterModelVer)
+
+//forgotPassword
+export const getFPassErrors = state => fromForgotPassword.errors(state.forgotPassword)
+export const getMessage = state => fromForgotPassword.getMessage(state.forgotPassword)
 
 export function withAuth(headers={}) {
   return (state) => ({

@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
+import { Link } from 'react-router-dom';
 import {Container} from 'reactstrap'
-import { Alert, Button, Jumbotron,  Form } from 'reactstrap';
+import { Alert, Button, Jumbotron,  Form, FormGroup , Row} from 'reactstrap';
 
 import TextInput from './TextInput'
 
@@ -35,14 +36,23 @@ export default class LoginForm extends Component {
 
     return (
       <Container>
-            <Form onSubmit={this.onSubmit} >
+            <Form onSubmit={this.onSubmit} Align="center">
+            <FormGroup>
             {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
             <TextInput name="username" label="Username" error={errors.username}  onChange={this.handleInputChange}/>
             <TextInput name="password" label="Password" error={errors.password} type="password" onChange={this.handleInputChange}/>
+          </FormGroup>
+          <FormGroup>
             <Button type="submit" className="button-brand-primary" size="lg">Log In</Button>
+          </FormGroup>
+          <FormGroup>
+            <Link to={"/forgot_password"}>
+               Forgot Password
+             </Link>
+          </FormGroup>
           </Form>
- 
         </Container>
+ 
     )
   }
 }

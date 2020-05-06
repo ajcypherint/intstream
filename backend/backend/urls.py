@@ -26,7 +26,6 @@ urlpatterns = [
     path("",redirect),
     path('admin/', admin.site.urls),
     path(API,include('api.urls')),
-    path('accounts/',include('django.contrib.auth.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('__debug__/', include(debug_toolbar.urls)),
-
 ]

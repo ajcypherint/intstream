@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux'
-import { set_password,setPasswordChanged } from '../actions/password'
+import { useHistory } from "react-router-dom";
+import { set_password,setPasswordChanged, setPassRedirect} from '../actions/password'
 import {get_username,getPasswordChanged} from '../reducers/'
 import TextInput from '../components/TextInput'
 import {errors} from '../reducers/password'
@@ -13,8 +14,7 @@ class Main extends React.Component{
     super(props)
     this.state={
       password1:'',
-      password2:'',
-    }
+      password2:'', }
     this.handleClick = this.handleClick.bind(this)
     this.handleChange = this.handleChange.bind(this)
 
@@ -35,37 +35,31 @@ class Main extends React.Component{
     }
     else{
 
-      this.props.onSubmit(this.props.username,this.state.password1)
+      this.props.onSubmit(this.props.username,this.state.password1,this.props.history)
     }
   }
 
   render(){
    let  i = 1
-   if (this.props.passwordChanged){
-     this.props.setPasswordChanged(false)  
-      return <Redirect to="/"/>
-     //redirecthere:
-   }
-   else{
-
-      return(
+   const fieldErrors = this.props.errors ||{}
+   return(
         //check if password was sucessfully set, if so then alert password set
        <div className="col-sm-8 offset-sm-2">
 
           <Form onSubmit={this.handleClick}>
             <h1>Change Password</h1>
-              {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+              {fieldErrors.non_field_errors?<Alert color="danger">{fieldErrors.non_field_errors}</Alert>:""}
               
               <TextInput className="form-control"  
                 type="password"
                 label="Password"
-                error={errors.password}
+                error={fieldErrors.password}
                 name="password1"  
                 value = {this.state.password1} onChange={this.handleChange}/>
               <TextInput className="form-control"  
                 type="password"
                 label="Password"
-                error={errors.password}
+                error={fieldErrors.password}
                 name="password2"  
                 value = {this.state.password2} onChange={this.handleChange}/>
    
@@ -81,12 +75,11 @@ class Main extends React.Component{
       )
    
    }
-  }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onSubmit: (username,password) => {
-    dispatch(set_password(username,password))
+  onSubmit: (username, password, history) => {
+    dispatch(setPassRedirect(username, password, history))
   },
   setPasswordChanged:(bool) =>{
     dispatch(setPasswordChanged(bool))

@@ -18,19 +18,16 @@ from django_celery_results.models import TaskResult as TaskResultMdl
 from rest_framework import filters as rest_filters
 from rest_framework import status, generics, mixins
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework.views import APIView
 from django_filters import rest_framework as filters
 from django_filters.groups import CombinedGroup
-
-import importlib
 from  utils.document import TXT, PDF, WordDocx
 from . import permissions
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework import viewsets
-from rest_framework.schemas import AutoSchema
 from django.db.models import F, Func, Window, Q, Case, When
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.conf import settings
 import itertools
 from utils import vector, read
@@ -855,6 +852,23 @@ class WordDocxArticleFilter(filters.FilterSet):
         fields = ARTICLE_SORT_FIELDS
 
 
+class UserSingleViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.UserSerializer
+    filterset_fields = ('username', 'first_name', 'last_name', 'email', 'is_active', 'date_joined')
+
+    @action(detail=True,methods=['post'], permission_classes=[permissions.IsAuthorStaff])
+    def set_password(self, request, pk=None):
+        user = request.user
+        serializer=serializers.UserSerializerUpdate(user,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status':'password set'},status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        return models.UserIntStream.objects.filter(id=self.request.user.id)
+
 class WordDocxArticleViewSet(viewsets.ModelViewSet):
     permissions = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.WordDocxArticle.objects.all()
@@ -909,7 +923,7 @@ class UserViewSet(viewsets.ModelViewSet):
     filterset_fields = ("id", "is_staff","is_integrator")
 
     def get_queryset(self):
-        return models.UserIntStream.objects.filter(username=self.request.user.username).all()
+        return models.UserIntStream.objects.filter(id=self.request.user.id).all()
 
 
 class AllUserViewSet(viewsets.ModelViewSet):
@@ -961,6 +975,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return models.Organization.objects.filter(id=self.request.user.organization.id).all()
+
 
 class AllOrganizationViewSet(viewsets.ModelViewSet):
     permissions=(permissions.IsAuthandSuperUser,)

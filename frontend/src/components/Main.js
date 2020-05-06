@@ -30,14 +30,16 @@ import EditModels from './ModelsEditFormComp'
 import EditJob from './SourceEditJobFormComp'
 import Article from "../containers/Article"
 import Train from "../containers/Train"
+import ForgotPassword from "../containers/forgotPassword"
 import TrainList from "../containers/TrainList"
 import {ADD, EDIT} from "../util/util"
 import CreateMLVersion from "../containers/CreateMLVersion"
 import Ver from "../containers/ModelVersionList"
+export const FORGOT_LINK = "/forgot_password"
 const Main = (props)=>(
   <Switch>
     <Route exact path="/" component={Home} />
-
+  
     <Route exact path="/article/:id" component={Article} />
     <Route exact path="/train/:id/:model" component={Train} />
     <Route exact path="/train_list" component={TrainList} />

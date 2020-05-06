@@ -17,3 +17,9 @@ export const withQueryParams = (paramConfigMap, mapParamsToProps) => (WrappedCom
     'Component'})`;
   return Component;
 };
+
+export const validateEmail = (email) =>
+    {
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    }

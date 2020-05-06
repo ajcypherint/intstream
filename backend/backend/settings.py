@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_celery_beat',
     'django_celery_results',
-    'debug_toolbar'
+    'debug_toolbar',
+    'django_rest_passwordreset',
     #'django_s3_storage'
 ]
 
@@ -275,3 +276,13 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(minutes=120)
 }
+
+# Email settings
+# Production
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND",'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.environ.get("EMAIL_HOST","")
+EMAIL_PORT = os.environ.get("EMAIL_PORT",25)
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER","")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD","")
+# Dev set an environ variable to
+# 'django.core.mail.backends.console.EmailBackend'
