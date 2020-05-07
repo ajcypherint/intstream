@@ -47,8 +47,9 @@ export default class extends Component {
 
     let {model, id}= event.target.dataset
     this.props.setActiveVersion(model,
-                                id, 
-                                this.props.query) 
+      id, 
+      this.props.query,
+      this.props.setQuery) 
   }
   onRefresh(event){
     event.preventDefault()
