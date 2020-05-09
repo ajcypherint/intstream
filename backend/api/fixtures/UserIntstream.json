@@ -1,0 +1,82 @@
+[
+{
+    "model": "api.userintstream",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$oJKw6uGe7dGQ$myhrKxtKV47p/w2e8rN/buc/vSFVb3yrCAEwlIIqrhs=",
+        "last_login": "2020-05-09T16:22:29.092Z",
+        "is_superuser": true,
+        "username": "ubuntu",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2019-05-09T00:56:28.679Z",
+        "is_integrator": true,
+        "organization": 1,
+        "email": "ubuntu@ubuntu.com",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "api.userintstream",
+    "pk": 3,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$3Fe3bidHcZdJ$HzpnYr/PyNncpWuy8HJmgAWaO0+dxYaFfypAyM84tF0=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "test",
+        "first_name": "test",
+        "last_name": "test",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2019-05-13T01:39:59Z",
+        "is_integrator": true,
+        "organization": 1,
+        "email": "test@test.com",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "api.userintstream",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$PDdKMJTVeBNZ$DOttUh0PgqfSjpXeL5aqIbp1Ff3ey/rRnj0ZOl1wn90=",
+        "last_login": null,
+        "is_superuser": true,
+        "username": "ajo",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2019-05-14T02:13:20.245Z",
+        "is_integrator": false,
+        "organization": 1,
+        "email": "aj@aj.com",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "api.userintstream",
+    "pk": 9,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$zFOiK1i7iQ5E$wSy7ut7apyPWLXvV6NZk7fda80QHCgtyo/2auU+t4X8=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "analyst",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2020-05-09T22:39:02Z",
+        "is_integrator": false,
+        "organization": 1,
+        "email": "analyst@analyst.com",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]

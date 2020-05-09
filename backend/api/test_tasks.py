@@ -8,10 +8,16 @@ class PostResp(object):
         self.text = "sample"
 
 def post_get(url):
-    return PostResp
+    return PostResp()
 
 class TestPerms(TestCase):
-    fixtures = ['initial.json']
+    fixtures = ['UserIntstream.json',
+                'Organization.json',
+                "RSSSource.json",
+                "Source.json",
+                "JobSource.json",
+                "UploadSource.json"
+                ]
 
     def setUp(self):
         username = "ubuntu"
@@ -19,8 +25,6 @@ class TestPerms(TestCase):
         self.c = Client()
         headers={"Content-Type":"application/json"}
         self.c.login(username=username,password=password)
-        data = {"name":"test"}
-        r = self.c.post("/api/sourcesupload/",data=data,headers=headers)
 
     @patch("api.tasks.requests.get")
     def test_process_entry(self,get):
@@ -31,6 +35,6 @@ class TestPerms(TestCase):
                             post_link="http://testcom",
                             source_id=1,
                             organization_id=1)
-        self.assertIsInstance(res.result, int)
+        self.assertIsNone(res)
 
 

@@ -5,8 +5,11 @@ from . import forms
 from . import models
 
 UserAdmin.fieldsets += (('organization',{"fields":("organization",)}),)
+UserAdmin.fieldsets += (('Security',{"fields":("is_integrator",)}),)
 UserAdmin.add_fieldsets += (('organization',{"fields":("organization",)}),)
 UserAdmin.add_fieldsets += (('Security',{"fields":("is_integrator",)}),)
+
+UserAdmin.add_fieldsets += ((None,{"fields":("email",)}),)
 class CustomUserAdmin(UserAdmin):
     #add_form = forms.CustomUserCreationForm
     #form = forms.CustomUserChangeForm

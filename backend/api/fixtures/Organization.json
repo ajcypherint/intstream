@@ -1,0 +1,23 @@
+[
+{
+    "model": "api.organization",
+    "pk": 1,
+    "fields": {
+        "name": "default"
+    }
+},
+{
+    "model": "api.organization",
+    "pk": 2,
+    "fields": {
+        "name": "military"
+    }
+},
+{
+    "model": "api.organization",
+    "pk": 3,
+    "fields": {
+        "name": "nosettings"
+    }
+}
+]

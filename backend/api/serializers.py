@@ -327,7 +327,6 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class PDFSerializer(serializers.ModelSerializer):
-    source = SourceSerializer(read_only=True)
     article_set = ArticleSerializer(many=True, read_only=True)
     class Meta:
         fields= [
@@ -346,7 +345,6 @@ class PDFSerializer(serializers.ModelSerializer):
 
 
 class HtmlSerializer(serializers.ModelSerializer):
-    source = SourceSerializer(read_only=True)
     article_set = ArticleSerializer(many=True, read_only=True)
     clean_text = serializers.SerializerMethodField()
 
@@ -356,7 +354,7 @@ class HtmlSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields= [
-            'id',
+           'id',
            'source',
            'title',
            'upload_date',
@@ -388,7 +386,6 @@ class UserSerializerUpdate(serializers.ModelSerializer):
         return user
 
 class WordDocxSerializer(serializers.ModelSerializer):
-    source = SourceSerializer(read_only=True)
     article_set = ArticleSerializer(many=True, read_only=True)
     class Meta:
         fields= [
@@ -405,7 +402,6 @@ class WordDocxSerializer(serializers.ModelSerializer):
 
 
 class TxtSerializer(serializers.ModelSerializer):
-    source = SourceSerializer(read_only=True)
     article_set = ArticleSerializer(many=True, read_only=True)
     class Meta:
         fields= [
@@ -421,7 +417,6 @@ class TxtSerializer(serializers.ModelSerializer):
         model = TxtArticle
 
 class RSSSerializer(serializers.ModelSerializer):
-    source = SourceSerializer(read_only=True)
     article_set = ArticleSerializer(many=True, read_only=True)
     clean_text = serializers.SerializerMethodField()
 

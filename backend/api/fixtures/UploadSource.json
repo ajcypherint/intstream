@@ -1,0 +1,322 @@
+[
+{
+    "model": "api.uploadsource",
+    "pk": 1,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 2,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 3,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 4,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 5,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 6,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 7,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 8,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 9,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 10,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 11,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 12,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 13,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 14,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 15,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 16,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 17,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 18,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 21,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 22,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 23,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 24,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 25,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 26,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 27,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 28,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 29,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 30,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 31,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 32,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 33,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 34,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 35,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 36,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 37,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 38,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 39,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 40,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 41,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 42,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 43,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 46,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 47,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 48,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 49,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 50,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 51,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 52,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 53,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 54,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 55,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 56,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 57,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 58,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 59,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 60,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 62,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 63,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 64,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 65,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 66,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 67,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 68,
+    "fields": {}
+},
+{
+    "model": "api.uploadsource",
+    "pk": 69,
+    "fields": {}
+}
+]

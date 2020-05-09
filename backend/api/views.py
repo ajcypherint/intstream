@@ -818,7 +818,8 @@ class HtmlArticleViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = TXT(self.request.FILES['file'],self.request.data.encoding)
         text = instance.read()
-        serializer.save(text=text,organization=self.request.user.organization)
+        source = models.Source.objects.get(id=self.request.data["source"])
+        serializer.save(source=source, text=text,organization=self.request.user.organization)
 
     def get_queryset(self):
         return models.HtmlArticle.objects.filter(organization=self.request.user.organization)
@@ -840,7 +841,9 @@ class TxtArticleViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = TXT(self.request.FILES['file'],self.request.data.encoding)
         text = instance.read()
-        serializer.save(text=text, organization=self.request.user.organization)
+        #todo(add source field)
+        source = models.Source.objects.get(id=self.request.data["source"])
+        serializer.save(source=source, text=text, organization=self.request.user.organization)
 
     def get_queryset(self):
         return models.TxtArticle.objects.filter(organization=self.request.user.organization)
@@ -880,7 +883,8 @@ class WordDocxArticleViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = WordDocx(self.request.FILES['file'])
         text = instance.read()
-        serializer.save(text=text, organization=self.request.user.organization)
+        source = models.Source.objects.get(id=self.request.data["source"])
+        serializer.save(source=source, text=text, organization=self.request.user.organization)
 
     def get_queryset(self):
         return models.WordDocxArticle.objects.filter(organization=self.request.user.organization)
@@ -903,7 +907,9 @@ class PDFArticleViewSet(viewsets.ModelViewSet):
         password = self.request.data.password if 'password' in self.request.data else ''
         instance = PDF(self.request.FILES['file'],password=password)
         text = instance.read()
-        serializer.save(text=text, organization=self.request.user.organization)
+        source = models.Source.objects.get(id=self.request.data["source"])
+        serializer.save(source=source, text=text, organization=self.request.user.organization)
+
 
     def get_queryset(self):
         return models.PDFArticle.objects.filter(organization=self.request.user.organization)

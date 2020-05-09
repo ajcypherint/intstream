@@ -5,7 +5,7 @@ from rest_framework import status
 
 
 class TestPerms(TestCase):
-    fixtures = ['initial.json']
+    fixtures = ['UserIntstream.json','Organization.json']
 
 
     def testIsAdmin(self):

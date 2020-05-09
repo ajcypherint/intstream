@@ -1,0 +1,30 @@
+[
+{
+    "model": "api.rsssource",
+    "pk": 45,
+    "fields": {
+        "url": "http://feeds.bbci.co.uk/news/technology/rss.xml"
+    }
+},
+{
+    "model": "api.rsssource",
+    "pk": 61,
+    "fields": {
+        "url": "https://krebsonsecurity.com/feed/"
+    }
+},
+{
+    "model": "api.rsssource",
+    "pk": 70,
+    "fields": {
+        "url": "http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rsssource",
+    "pk": 71,
+    "fields": {
+        "url": "http://xx.com"
+    }
+}
+]
