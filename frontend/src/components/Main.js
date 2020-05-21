@@ -21,7 +21,7 @@ import ModelsList from "../containers/ModelsList"
 import ModelsEdit from "../containers/ModelsEdit"
 
 import About from "./About"
-import Logout from "./Logout"
+import Logout from "../containers/Logout"
 import Password from "../containers/Password"
 import EditOrgForm from './OrgEditFormComp'
 import Edit from './SourceEditFormComp'

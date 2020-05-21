@@ -15,7 +15,6 @@ describe("create Choice", () => {
         noAllValues={false}
     
       />);
-    expect(wrapper.exists()).toBe(true)
     expect(wrapper.children().length).toBe(4)
 
   })

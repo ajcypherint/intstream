@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { Input, Table,  Alert, Form, Row, Col, FormGroup, Button, ListGroup, ListGroupItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
@@ -277,4 +278,45 @@ export class Children extends React.Component{
     )
   }
 }
- 
+Children.propTypes = {
+  setQuery:PropTypes.func,
+  query:PropTypes.object,
+  filterChange:PropTypes.func,
+  parent_func:PropTypes.shape({
+    fetchArticlesFullUri: PropTypes.func,
+    fetchArticles:PropTypes.func,
+    setHomeSelections:PropTypes.func,
+    setPage:PropTypes.func,
+  }),
+  level:PropTypes.number,
+  child:PropTypes.shape({
+    articlesList:PropTypes.arrayOf(PropTypes.object),
+    articlesLoading:PropTypes.boolean,
+    articleNext:PropTypes.string,
+    articlePrevious:PropTypes.string,
+    articlesTotalCount:PropTypes.number,
+    articleuri:PropTypes.string,
+  }),
+  child_func:PropTypes.shape({
+    fetchArticlesFullUri:PropTypes.func,
+    fetchArticles:PropTypes.func, 
+    setHomeSelections:PropTypes.func,
+    setPage:PropTypes.func,
+    clearParent:PropTypes.func
+  }),
+  parent_id : PropTypes.number,
+  show_children:PropTypes.func,
+  selectArticles:PropTypes.arrayOf(PropTypes.object),
+  selectErrors:PropTypes.func,
+  fetchSelect:PropTypes.func,
+  clearSelect:propTypes.func,
+  parent:PropTypes.shape({
+    articlesList:PropTypes.arrayOf(PropTypes.object),
+    articlesLoading:PropTypes.boolean,
+    articleNext:PropTypes.string,
+    articlePrevious:PropTypes.string,
+    articlesTotalCount:PropTypes.number,
+    articleuri:PropTypes.string,
+  }),
+
+}

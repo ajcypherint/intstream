@@ -2,14 +2,15 @@ import React, { Component } from 'react';
 import {Container} from 'reactstrap'
 import _ from 'lodash';
 import { Alert, Button, Jumbotron,  Form } from 'reactstrap';
+import PropTypes from 'prop-types';
 import propTypes from 'prop-types'
 import Edit from './SourceEditFormComp'
 import {SourceLoading} from './sourceLoading'
 import {withRouter} from 'react-router-dom'
 import {ADD,EDIT} from '../util/util'
-import API from "../containers/SettingsEdit"
 import TextInput from "./TextInput"
 import FormButtons from "./compFormButtons"
+
 export default class SettingEdit extends Component {
   constructor(props){
     super(props)
@@ -112,4 +113,17 @@ render(){
   }
 };
  
+SettingEdit.propTypes = {
+  saving:PropTypes.boolean,
+  errors:PropTypes.object,
+  settings:PropTypes.arrayOf(
+  PropTypes.shape({
+      aws_key:PropTypes.string,
+      aws_secret:PropTypes.string,
+      aws_region:PropTypes.string,
+      aws_s3_log_base:PropTypes.string,
+      aws_s3_upload_base:PropTypes.string,
+    })),
+  fetchSettings:PropTypes.func,
 
+}

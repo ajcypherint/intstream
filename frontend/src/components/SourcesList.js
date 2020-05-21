@@ -73,7 +73,6 @@ class SourcesList extends Component {
     }
   }
   changesort(column_name){
-    console.log("clicked")
    if (this.props.query.ordering===column_name) {
       // column matches sort column opposite
       if( this.props.query.orderDir===ASC){
@@ -100,7 +99,7 @@ class SourcesList extends Component {
   
   columnheader(name){
       return (
-             <th key={name} className="tableheader" onClick={(event)=>{console.log("click1");this.changesort(name)}}>
+             <th key={name} className="tableheader" onClick={(event)=>{this.changesort(name)}}>
                   {name.charAt(0).toUpperCase() + name.slice(1)}
              </th>
       )

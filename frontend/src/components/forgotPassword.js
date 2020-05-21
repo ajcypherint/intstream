@@ -37,7 +37,7 @@ export default class Main extends React.Component{
          </div>
          <div className="col-sm-4" align="center">
  
-           <img src={intstream} class="img-fluid" width="300" hieght="200" alt="instream"/>
+           <img src={intstream} className="img-fluid" width="300" hieght="200" alt="instream"/>
           <Form onSubmit={this.handleClick}>
               {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
               

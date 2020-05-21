@@ -36,7 +36,7 @@ export default class LoginForm extends Component {
 
     return (
       <Container>
-            <Form onSubmit={this.onSubmit} Align="center">
+            <Form onSubmit={this.onSubmit} align="center">
             <FormGroup>
             {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
             <TextInput name="username" label="Username" error={errors.username}  onChange={this.handleInputChange}/>

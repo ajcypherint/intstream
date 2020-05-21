@@ -6,8 +6,9 @@ import Choice from "./Choice"
 import Paginate from './Paginate'
 import {ASC, DESC, ALL } from "../util/util"
 import {changesort} from './ChangeSort'
+import propTypes from 'prop-types'
 
-export default class extends Component {
+class ModelVersionList extends Component {
   constructor(props){
     super(props)
     this.fetch = this.fetch.bind(this)
@@ -214,3 +215,23 @@ export default class extends Component {
   }
 
 }
+
+ModelVersionList.propTypes = {
+  modelsList:propTypes.arrayOf(propTypes.shape(
+
+  )),
+  modelVersionList:propTypes.arrayOf(propTypes.object),
+  modelVersionLoading:propTypes.bool,
+  modelVersionErrors:propTypes.object,
+  modelVersionTotalCount:propTypes.number,
+  modelVersionNext:propTypes.string,
+  modelVersionPrevious:propTypes.string,
+
+  filterChange:propTypes.func,
+  fetchModelVersions:propTypes.func,
+  setPage:propTypes.func,
+  setActiveVersion:propTypes.func
+
+};
+
+export default ModelVersionList;

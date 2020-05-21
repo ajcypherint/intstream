@@ -17,7 +17,7 @@ describe("create Choice", () => {
       setPage,
       false
     ))
-    expect(wrapper.exists()).toBe(true)
+    expect(wrapper.find('PaginationLink').length).toBe(6)
   })
   it("render child", () => {
     let fetchitHandler = jest.fn()
@@ -33,8 +33,6 @@ describe("create Choice", () => {
       setPage,
       true
     ))
-    expect(wrapper.exists()).toBe(true)
-    debugger;
     let nextPage = wrapper.find('PaginationLink').at(1)
     nextPage.simulate("click");
     expect(setPage.mock.calls.length).toBe(1)

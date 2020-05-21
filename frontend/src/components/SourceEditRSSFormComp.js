@@ -51,6 +51,7 @@ Edit.propTypes = {
   object:propTypes.shape({
     id:propTypes.number,
     name:propTypes.string,
+    url:propTypes.string,
     active:propTypes.bool,
   }
 

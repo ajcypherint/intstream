@@ -6,7 +6,6 @@ import sources, * as fromSources from  './sources.js'
 import models, * as fromModels from  './models.js'
 import articles, * as fromArticles from  './articles.js'
 import orgs, * as fromOrgs from  './organizations.js'
-import childArticles, * as fromChildArticles from  './children.js'
 import randomArticle, * as fromRandomArticle from  './randomArticle.js'
 import filter, * as fromFilter from  './filter.js'
 import trainFilter, * as fromTrainFilter from  './trainFilter.js'
@@ -29,7 +28,6 @@ export default combineReducers({
   articles:articles,
   models:models,
   randomArticle:randomArticle,
-  childArticles:childArticles,
   childFilter:childFilter,
   trainFilter:trainFilter,
   selectArticles:selectArticles,
@@ -108,14 +106,6 @@ export const getTrainFilterMLModels= state => fromTrainFilter.mlmodels(state.tra
 export const getRandomArticle = state => fromRandomArticle.articles(state.randomArticle)
 export const getRandomErrors= state => fromRandomArticle.errors(state.randomArticle)
 export const getRandomLoading = state => fromRandomArticle.loading(state.randomArticle)
-
-//children articles
-export const getChildArticles= state => fromChildArticles.articles(state.childArticles)
-export const getChildArticleErrors = state => fromChildArticles.errors(state.childArticles)
-export const getChildArticleLoading = state => fromChildArticles.loading(state.childArticles)
-export const getChildArticleTotalCount = state => fromChildArticles.totalcount(state.childArticles)
-export const getChildArticleNextPage = state => fromChildArticles.nextPage(state.childArticles)
-export const getChildArticlePreviousPage = state => fromChildArticles.previousPage(state.childArticles)
 
 //childfilter
 export const getChildHomeArticleSelections = state => fromChildFilter.getHomeSelections(state.childFilter)

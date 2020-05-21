@@ -4,7 +4,7 @@ import { Route,Switch } from 'react-router-dom'
 import Login from './containers/Login';
 import forgotPassword from "./components/forgotPassword"
 import PrivateRoute from './containers/PrivateRoute';
-import Contents from './components/Contents'
+import Contents from './containers/Contents'
 export const FORGOT_LINK = "/forgot_password"
 
 

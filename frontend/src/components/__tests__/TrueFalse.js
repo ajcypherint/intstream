@@ -12,7 +12,6 @@ describe("create TrueFalse", () => {
       mlModel={"test"}
       handleChange={handler}
       />);
-    expect(wrapper.exists()).toBe(true)
     const firstLink = wrapper.find('input').first()
     firstLink.simulate("change", {target:{checked:true}});
     expect(handler.mock.calls.length).toBe(1)
@@ -30,7 +29,6 @@ describe("create TrueFalse", () => {
       mlModel={"test"}
       handleChange={handlerF}
       />);
-    expect(wrapper.exists()).toBe(true)
     const firstLink = wrapper.find('input').first()
     firstLink.simulate("change", {target:{checked:true}});
     expect(handlerF.mock.calls.length).toBe(1)

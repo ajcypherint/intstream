@@ -167,6 +167,7 @@ export class Main extends React.Component{
   }
   render(){
     let selections = this.props.query
+    let threshold = selections.threshold || 0
     const articles = this.props.parent.articlesList || [];
     const loading = typeof this.props.parent.articlesLoading === 'undefined' ? true : this.props.parent.articlesLoading;
     const totalcount= this.props.parent.articlesTotalCount ||0;
@@ -238,7 +239,7 @@ export class Main extends React.Component{
         </Col>
         <Col sm="2" md="2" lg="1">
            <label  htmlFor={"threshold"}>{"Max Cluster Dif"}</label> 
-           <Input type="select" name="threshold" value={selections.threshold} id="threshold_id" onChange={this.handleThresholdChange}>
+           <Input type="select" name="threshold" value={threshold} id="threshold_id" onChange={this.handleThresholdChange}>
              {threshold_values.map((value)=>{
                return (<option key={value} value={value}>{value}</option>
                )
@@ -248,7 +249,7 @@ export class Main extends React.Component{
         </Col>
         <Col sm="1" md="1" lg="1">
            <label  htmlFor={"min_df"}>{"Min Doc Freq"}</label> 
-           <Input type="select" name="min_df" disabled={selections.threshold===0}
+           <Input type="select" name="min_df" disabled={threshold===0}
              value={selections.minDf} id="min_df" onChange={this.handleMinDfChange}>
              {threshold_values.map((value)=>{
                return (<option key={value} value={value}>{value}</option>
@@ -259,7 +260,7 @@ export class Main extends React.Component{
         </Col>
         <Col sm="1" md="1" lg="1">
            <label  htmlFor={"max_df"}>{"Max Doc Freq"}</label> 
-           <Input type="select" name="max_df" disabled={selections.threshold===0}
+           <Input type="select" name="max_df" disabled={threshold===0}
              value={selections.maxDf} id="max_df" onChange={this.handleMaxDfChange}>
              {threshold_values.map((value)=>{
                return (<option key={value} value={value}>{value}</option>
