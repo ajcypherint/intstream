@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {Alert, Form, Row, Col, Button, FormGroup, Label, Input} from 'reactstrap';
 
-export default class extends Component {
+export default class Train extends Component {
   constructor(props){
     super(props)
   }
@@ -56,4 +57,16 @@ export default class extends Component {
 
     )
   }
+}
+Train.propTypes = {
+  articlesList:PropTypes.arrayOf(PropTypes.shape({
+    id:PropTypes.number,
+    title:PropTypes.string,
+    clean_text:PropTypes.string
+  })),
+  match:PropTypes.shape(
+   PropTypes.shape({params:PropTypes.shape({id:PropTypes.number})})) ,
+  history:PropTypes.object,
+  fetchArticles:PropTypes.func
+
 }

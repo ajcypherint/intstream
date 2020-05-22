@@ -4,8 +4,7 @@ import _ from 'lodash';
 import  URL  from  'url-parse'
 import {ASC, DESC} from "../util/util"
 import * as filter from '../actions/trainFilter'
-export const NONE = "-Select-"
-export const NONEVAL = ""
+import {NONE, NONEVAL} from "../util/util"
 let START = new Date();
 START.setHours(0,0,0,0);
 

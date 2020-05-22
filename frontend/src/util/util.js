@@ -1,4 +1,8 @@
 import _ from 'lodash';
+
+export const NONE = "-Select-"
+export const NONEVAL = ""
+
 export const PAGINATION=10
 export const EDIT ="Edit"
 export const ADD = "Add"

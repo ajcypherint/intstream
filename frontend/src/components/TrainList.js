@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types'
 import {Alert, Form, Row, Col, Button, FormGroup, Label, Input} from 'reactstrap';
 import DatePicker from 'react-datepicker'
 import {PAGINATION,dateString, addDays} from '../util/util'
 import Paginate from './Paginate'
-import {NONE, NONEVAL} from "../reducers/trainFilter"
+import {NONE, NONEVAL} from "../util/util"
 import {changesort} from './ChangeSort'
 import {ASC, DESC, ALL, getUniqueTrainListTF} from "../util/util"
 import { Link } from 'react-router-dom'; import TrueFalse from "./TrueFalse" 
 import Choice from "./Choice"
 
-export default class extends Component {
+export default class Train extends Component {
   constructor(props){
     super(props)
     this.handleSourceChange = this.handleSourceChange.bind(this)
@@ -409,4 +410,64 @@ export default class extends Component {
 
     )
   }
+}
+
+Train.propTypes = {
+  query:PropTypes.object,
+  setQuery:PropTypes.func,
+
+  sourcesList:PropTypes.arrayOf(
+    PropTypes.shape({
+      id:PropTypes.number,
+      name:PropTypes.string,
+      target:PropTypes.boolean
+    })
+  ),
+  modelsList:PropTypes.arrayOf(
+    PropTypes.shape({
+      id:PropTypes.number,
+      name:PropTypes.string,
+    })
+  ),
+  articlesList:PropTypes.arrayOf(
+    PropTypes.shape({
+      id:PropTypes.number,
+      text:PropTypes.string,
+      clean_text:PropTypes.string,
+      title:PropTypes.string,
+      source:PropTypes.shape({
+        name:PropTypes.string
+      })
+
+    })
+  ),
+  articlesLoading:PropTypes.bool,
+  articlesErrors:PropTypes.object,
+  articlesTotalCount:PropTypes.number,
+  articleNext:PropTypes.string,
+  articlePrevious:PropTypes.string,
+  articleuri:PropTypes.string,
+  selectArticles:PropTypes.array,
+  selectErrors:PropTypes.object,
+  classif:PropTypes.shape(
+    {
+      id:PropTypes.bool,
+    }),
+  classifErrors:PropTypes.object,
+  classifCounts:PropTypes.number,
+  filterChange:PropTypes.func,
+  fetchAllSources:PropTypes.func,
+  fetchAllMLModels:PropTypes.func,
+  fetchArticlesFullUri:PropTypes.func,
+  fetchArticles:PropTypes.func,
+  clearArticles:PropTypes.func,
+  clear:PropTypes.func,
+  fetchSelect:PropTypes.func,
+  clearSelect:PropTypes.func,
+  fetchArticlesAndClassif:PropTypes.func,
+  deleteClassification: PropTypes.func,
+  setClassif:PropTypes.func,
+  fetchClassifCounts:PropTypes.func,
+  clearClassif:PropTypes.func,
+
 }
