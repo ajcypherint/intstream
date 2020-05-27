@@ -5,7 +5,7 @@ import  URL  from  'url-parse'
 import {setParams, getAll} from './util'
 import {PAGINATION, dateString} from '../util/util'
 import {getSources} from './sources'
-import {getArticlesAndClassif} from './classification'
+import {getArticlesClassif} from './classification'
 
 export const ALL_SOURCES = '@@trainfilter/TOTALSOURCES';
 export const ALL_MLMODELS = '@@trainfilter/TOTALMLMODELS';
@@ -92,7 +92,7 @@ export const filterChange = (newSelections, setQuery)=>{
       "&source__active=true")
 
     //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
-    return await dispatch(getArticlesAndClassif(mlmodelChosen, articleStr))
+    return await dispatch(getArticlesClassif(mlmodelChosen, articleStr))
 
   }
 }

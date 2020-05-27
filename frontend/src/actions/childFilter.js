@@ -32,7 +32,8 @@ export const getChildFilter= (url, params=undefined)=>{
   url = setParams(url,params)
   return {
   [RSAA]:{
-   endpoint: url,
+    endpoint: url,
+    fetch:fetch,
       method: 'GET',
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),

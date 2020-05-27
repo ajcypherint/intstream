@@ -34,6 +34,7 @@ export const getChildArticles= ({id,title,match}, url, params=undefined)=>{
   [RSAA]:{
    endpoint: url,
       method: 'GET',
+      fetch:fetch,
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [

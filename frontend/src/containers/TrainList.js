@@ -52,7 +52,7 @@ const mapDispatchToProps = (dispatch) => ({
   fetchSelect: (id)=>dispatch(fromSelect.getArticle(API_ARTICLES,id)),
   clearSelect: ()=>dispatch(fromSelect.clearArticles()),
   fetchArticlesAndClassif: (model,article_params)=>dispatch(
-                            fromClassif.getArticlesAndClassif(model, article_params)),
+                            fromClassif.getArticlesClassif(model, article_params)),
   deleteClassification: (id, article_id, mlmodel)=>dispatch(
                           fromClassif.deleteClassificationLoadCounts(id, article_id, mlmodel)),
   setClassif: (mlmodel, articleId, target)=>

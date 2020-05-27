@@ -17,24 +17,26 @@ export const LOGOUT = "LOGOUT"
 export const SET_USER= "SET_USER"
 
 export const login = (username, password) => ({
-    [RSAA]: {
-        endpoint: '/api/token-auth/',
-        method: 'POST',
-        body: JSON.stringify({username, password}),
-        headers: { 'Content-Type': 'application/json' },
-        types: [
-            LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE
-        ]
-      }
+  [RSAA]: {
+    endpoint: '/api/token-auth/',
+    method: 'POST',
+    fetch:fetch,
+    body: JSON.stringify({username, password}),
+    headers: { 'Content-Type': 'application/json' },
+    types: [
+          LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE
+      ]
+    }
 })
 export const userInfo = () => {
   return {
-  [RSAA]: {
-        endpoint: '/api/userinfo/',
-        method: 'GET',
-        body:'',
-        headers: withAuth({ 'Content-Type': 'application/json' }),
-        types: [
+    [RSAA]: {
+      endpoint: '/api/userinfo/',
+      method: 'GET',
+      fetch:fetch,
+      body:'',
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
             USERINFO_REQUEST, USERINFO_SUCCESS, USERINFO_FAILURE
         ]
       }
@@ -51,15 +53,16 @@ export const loginGroup = (username, password) => {
   }
 }
 export const refreshAccessToken = (token) => ({
-    [RSAA]: {
-        endpoint: '/api/token-refresh/',
-        method: 'POST',
-        body: JSON.stringify({refresh: token}),
-        headers: { 'Content-Type': 'application/json' },
-        types: [
-          TOKEN_REQUEST, TOKEN_RECEIVED, TOKEN_FAILURE
-        ]
-    }
+  [RSAA]: {
+    endpoint: '/api/token-refresh/',
+    method: 'POST',
+    body: JSON.stringify({refresh: token}),
+    headers: { 'Content-Type': 'application/json' },
+    fetch:fetch,
+    types: [
+        TOKEN_REQUEST, TOKEN_RECEIVED, TOKEN_FAILURE
+      ]
+  }
 })
 
 export const setUser = (username) =>(

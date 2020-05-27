@@ -14,6 +14,7 @@ export const CATEGORIES_CHANGED = "CATEGORIES_CHANGED"
 export const add_category = (category) => ({
   [RSAA]: {
     endpoint: '/api/categories/',
+    fetch:fetch,
       method: 'POST',
       body: JSON.stringify({category:category}),
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -26,6 +27,7 @@ export const add_category = (category) => ({
 export const get_categories= () =>({
   [RSAA]:{
    endpoint: '/api/categories/',
+    fetch:fetch,
       method: 'GET',
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -36,8 +38,4 @@ export const get_categories= () =>({
   }
 })
 
-export const setCategoriesChanged= (bool) =>({
-  type:CATEGORIES_CHANGED,
-  bool
- }
-)
+

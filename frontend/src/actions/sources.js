@@ -45,6 +45,7 @@ export const getSources = (url, params=undefined) =>{
   return {
   [RSAA]:{
    endpoint: url,
+    fetch:fetch,
       method: 'GET',
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -61,6 +62,7 @@ export const setSources= (url,data,method='PUT' )=>{
   return {
   [RSAA]:{
    endpoint: url,
+    fetch:fetch,
       method: method,
       body: JSON.stringify(data),
       headers: withAuth({ 'Content-Type': 'application/json' }),

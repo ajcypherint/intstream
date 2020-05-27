@@ -35,7 +35,8 @@ export const getArticles= (url, params=undefined)=>{
   url = setParams(url,params)
   return {
   [RSAA]:{
-   endpoint: url,
+    endpoint: url,
+    fetch:fetch,
       method: 'GET',
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -66,12 +67,13 @@ export const setCounts = (total, true_count, false_count) =>{
 }
 
 
-export const getClassifications = (url,params=undefined)=>{
+export const getClassifications = (url, params=undefined)=>{
   // filters - list[string]
   url = setParams(url,params)
   return {
   [RSAA]:{
     endpoint: url,
+    fetch:fetch,
       method: 'GET',
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -105,6 +107,7 @@ export const deleteClassification= ( id, article_id )=>{
   return {
   [RSAA]:{
     endpoint: BASE_URL +  id + "/",
+    fetch:fetch,
       method: "DELETE",
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -140,6 +143,7 @@ export const setClassification= ( mlmodel,
   return {
   [RSAA]:{
    endpoint: BASE_URL,
+    fetch:fetch,
       method: method,
       body: JSON.stringify(data),
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -191,17 +195,6 @@ export const getArticleParams = (articles,mlmodel) =>{
 
 export const getAllClassifications = getAll(getClassifications)(totalClassifications);
 
-export const getArticlesAndClassif = (model, article_params = '')=>{
-  return async(dispatch, getState)=>{
-    let resp = await dispatch(fromArticle.getArticles(fromArticle.ARTICLE_URL,article_params))
-    if (resp.error) {
-      // the last dispatched action has errored, break out of the promise chain.
-      return
-    }
-    return await dispatch(getArticlesClassif(model, article_params))
- 
-  }
-}
 export const getArticlesClassif = (model, article_params='')=>{
   return async(dispatch,getState)=>{
     let resp = await dispatch(getArticles(fromArticle.ARTICLE_URL,article_params))

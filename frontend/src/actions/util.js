@@ -1,5 +1,4 @@
 import {PAGINATION} from "../util/util"
-import {getArticles, ARTICLE_URL} from "../actions/articles"
 
 export const setParamsParent = function(url, params, parent){
   url+="?article_match_id="+parent

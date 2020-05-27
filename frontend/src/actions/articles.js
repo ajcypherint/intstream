@@ -27,14 +27,15 @@ export const getArticles= (url, params=undefined)=>{
   // filters - list[string]
   url = setParams(url,params)
   return {
-  [RSAA]:{
-   endpoint: url,
+    [RSAA]:{
+      endpoint: url,
       method: 'GET',
+      fetch:fetch,
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
-       GET_ARTICLES_REQUEST, GET_ARTICLES_SUCCESS, GET_ARTICLES_FAILURE
-      ]
+         GET_ARTICLES_REQUEST, GET_ARTICLES_SUCCESS, GET_ARTICLES_FAILURE
+        ]
 
   }
 }
@@ -43,14 +44,15 @@ export const getArticles= (url, params=undefined)=>{
 export const setArticles= (url,data,method='PUT' )=>{
   // filters - list[string]
   return {
-  [RSAA]:{
-   endpoint: url,
+    [RSAA]:{
+      endpoint: url,
       method: method,
+      fetch:fetch,
       body: JSON.stringify(data),
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
-       SET_ARTICLES_REQUEST, SET_ARTICLES_SUCCESS, SET_ARTICLES_FAILURE
-      ]
+        SET_ARTICLES_REQUEST, SET_ARTICLES_SUCCESS, SET_ARTICLES_FAILURE
+        ]
 
   }
 }
