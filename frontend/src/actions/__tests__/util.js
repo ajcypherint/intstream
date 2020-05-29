@@ -36,7 +36,6 @@ describe('util', () => {
         }
 
     ]
-    debugger;
     const getAllArticles = util.getAll(actions.getSources)(actions.totalSources)
     return store.dispatch(getAllArticles("/api")).then(() => {
       // return of async actions

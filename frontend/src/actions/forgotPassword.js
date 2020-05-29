@@ -16,6 +16,7 @@ export const sendEmail = (email, history)=>{
   return {
   [RSAA]:{
    endpoint: ENDPOINT,
+    fetch:fetch,
       method: 'POST',
       body: JSON.stringify(data),
       headers: withAuth({ 'Content-Type': 'application/json' }),

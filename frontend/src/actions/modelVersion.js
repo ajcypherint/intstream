@@ -67,6 +67,7 @@ export const getModelVersionTemplate = (REQUEST)=>(SUCCESS)=>(FAILURE)=>(params)
     return {
     [RSAA]:{
      endpoint: url,
+      fetch:fetch,
         method: 'GET',
         body: '',
         headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -92,6 +93,7 @@ export const setActiveRequest= (id, trueFalse) =>{
   return {
   [RSAA]:{
    endpoint: url,
+    fetch:fetch,
       method: 'PATCH',
       body: JSON.stringify({
         active:trueFalse
@@ -108,7 +110,7 @@ export const setActiveRequest= (id, trueFalse) =>{
 export const setActiveVersion = (model, id, selections, setQuery) =>{
  return async (dispatch, getState)=>{
    //get active
-   let getResp = await dispatch(getModelVersionNoRedux("mlmodel="+model+"&active=true"))
+   let getResp = await dispatch(getModelVersionNoRedux("model="+model+"&active=true"))
    let len = getResp.payload.results.length
    if(getResp.error) {
      return
