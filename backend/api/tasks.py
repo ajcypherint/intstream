@@ -14,6 +14,7 @@ from celery.utils.log import get_task_logger
 import numpy as np
 logger = get_task_logger(__name__)
 from utils import vector, read, train
+import shutil
 import venv
 from api.models import ModelVersion, MLModel, Organization
 from django.core.files import File
@@ -362,9 +363,10 @@ def create_virtual_env(script_directory):
     directory = os.path.join(settings.VENV_DIR, VENV + script_directory)
     if not os.path.exists(directory):
         try:
-            env = None
+            # todo causes error isADirectory when running virtualenv
+            env = {**os.environ,"test":"test"}
             if proxy is not None:
-                env={"http_proxy":proxy,"https_proxy":proxy}
+                env={**env, "http_proxy":proxy,"https_proxy":proxy}
             res = subprocess.run(["python3",
                             "-m",
                             "virtualenv",
@@ -425,7 +427,7 @@ def create_virtual_env(script_directory):
             if res.returncode != 0:
                 raise Pip
         except Exception as e:
-            os.rmdir(directory)
+            shutil.rmtree(directory)
             raise e
 
 

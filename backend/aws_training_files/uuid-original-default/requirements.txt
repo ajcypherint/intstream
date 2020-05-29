@@ -1,4 +1,3 @@
-boto3
 selectolax
-Cython
 pystemmer
+boto3

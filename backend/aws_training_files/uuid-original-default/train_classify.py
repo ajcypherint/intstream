@@ -27,15 +27,13 @@ import numpy as np
 import logging
 
 from pyspark import since, keyword_only
-from pyspark.ml import Estimator, Model
-from pyspark.ml.common import _py2java
-from pyspark.ml.param import Params, Param, TypeConverters
-from pyspark.ml.param.shared import HasSeed
 from pyspark.ml.tuning import CrossValidator, CrossValidatorModel
 from pyspark.ml.util import *
 from pyspark.ml.wrapper import JavaParams
 from pyspark.sql.functions import rand
 from functools import reduce
+#selectolax
+#pystemmer
 
 LOG = logging.getLogger(__name__)
 
@@ -98,25 +96,22 @@ class CleanHtml(
     # Credits https://stackoverflow.com/a/52467470
     # by https://stackoverflow.com/users/234944/benjamin-manns
     DefaultParamsReadable, DefaultParamsWritable):
-
+    # https://stackoverflow.com/questions/41399399/serialize-a-custom-transformer-using-python-to-be-used-within-a-pyspark-ml-pipel
     # https://stackoverflow.com/questions/32331848/create-a-custom-transformer-in-pyspark-ml
     # https://www.google.com/search?q=spark+udf+transformer&oq=spark+udf+transformer&aqs=chrome..69i57.4514j1j7&sourceid=chrome&ie=UTF-8
-    # stopwords = Param(Params._dummy(), "stopwords", "stopwords",
-    #                 typeConverter=TypeConverters.toListString)
     stem = Param(Params._dummy(), "stem", "stem",
                       typeConverter=TypeConverters.toBoolean)
 
     @keyword_only
-    def __init__(self, inputCol=None, outputCol=None, stem=None ):
-        # todo(aj) add stemming boolean param
+    def __init__(self, inputCol=None, outputCol=None, stem=False):
         super(CleanHtml, self).__init__()
-        self.stem = Param(self, "stem", "")
+        self.stem = Param(parent=self, name="stem", doc="", typeConverter=TypeConverters.toBoolean)
         self._setDefault(stem=False)
         kwargs = self._input_kwargs
         self.setParams(**kwargs)
 
     @keyword_only
-    def setParams(self, inputCol=None, outputCol=None, stem=None):
+    def setParams(self, inputCol=None, outputCol=None, stem=False):
         kwargs = self._input_kwargs
         return self._set(**kwargs)
 
