@@ -65,6 +65,9 @@ export const filterChange = (newSelections, setQuery)=>{
     let sourceChosen = newSelections.sourceChosen || ""
     let mlmodelChosen =   newSelections.mlmodelChosen || ""
     let page = newSelections.page || 1
+    newSelections.startDate.setHours(0,0,0,0);
+    newSelections.endDate.setHours(23,59,59,999);
+ 
  
     setQuery(newSelections)
     let targetStr = trueFalse !== "" ?  

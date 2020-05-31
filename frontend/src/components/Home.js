@@ -1,15 +1,12 @@
 import React from 'react'
 import _ from 'lodash';
-import { Input, Table,  Alert, Form, Row, Col, FormGroup, Button, ListGroup, ListGroupItem } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Input,  Alert, Form, Row, Col, FormGroup,  } from 'reactstrap';
 import propTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import '../custom.css';
-import Paginate from './Paginate'
-import {PAGINATION,childString, dateString, addDays} from '../util/util'
+import { dateString } from '../util/util'
 import {changesort} from './ChangeSort'
-import {ASC, DESC, ALL} from "../util/util"
 import {Children} from "./Children"
 import Choice from "./Choice"
 import {getUniqueModels} from "../util/util"
@@ -107,8 +104,6 @@ export class Main extends React.Component{
 
       }
     }
-    startDate.setHours(0,0,0,0);
-    endDate.setHours(23,59,59,999);
         
     //Would be simpler to set selections first.
     //then fetchallsources

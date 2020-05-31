@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types'
-import {Alert, Form, Row, Col, Button, FormGroup, Label, Input} from 'reactstrap';
+import {Alert, Form, Row, Col, Button, FormGroup, Input} from 'reactstrap';
 import DatePicker from 'react-datepicker'
-import {PAGINATION,dateString, addDays} from '../util/util'
+import {dateString, } from '../util/util'
 import Paginate from './Paginate'
 import {NONE, NONEVAL} from "../util/util"
 import {changesort} from './ChangeSort'
-import {ASC, DESC, ALL, getUniqueTrainListTF} from "../util/util"
-import { Link } from 'react-router-dom'; import TrueFalse from "./TrueFalse" 
+import {ASC, DESC, getUniqueTrainListTF} from "../util/util"
+import TrueFalse from "./TrueFalse" 
 import Choice from "./Choice"
 
 export default class Train extends Component {
@@ -120,8 +120,6 @@ export default class Train extends Component {
 
       }
     }
-    startDate.setHours(0,0,0,0);
-    endDate.setHours(23,59,59,999);
     let newSelections = {
       ...this.props.query,
       startDate:startDate,
