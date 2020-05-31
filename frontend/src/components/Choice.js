@@ -2,6 +2,7 @@ import React from 'react'
 import { FormGroup, FormFeedback, Label, Input } from 'reactstrap';
 
 export default ({name, idList, uniqueList, value, onChange,disabled, noAllValues, ...rest}) => {
+  let uniqueListSorted = uniqueList.sort((a,b)=>a.name > b.name ? 1 : -1)
   value = value || ''
   return (
     <Input type="select" name={name} 
