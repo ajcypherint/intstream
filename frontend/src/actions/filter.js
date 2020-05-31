@@ -67,6 +67,9 @@ export const filterChange = (selections,  setQuery, parent)=>{
     let modelChosen = selections.modelChosen || ''
     let sourceChosen = selections.sourceChosen || ''
     let orderdir = selections.orderdir || ''
+    selections.startDate.setHours(0,0,0,0);
+    selections.endDate.setHours(23,59,59,999);
+ 
     selections = {
       ...selections,
       modelChosen:modelChosen,
