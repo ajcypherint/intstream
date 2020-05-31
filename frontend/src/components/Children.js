@@ -306,8 +306,8 @@ Children.propTypes = {
   }),
   parent_id : PropTypes.number,
   show_children:PropTypes.func,
-  selectArticles:PropTypes.arrayOf(PropTypes.object),
-  selectErrors:PropTypes.func,
+  selectArticles:PropTypes.object,
+  selectErrors:PropTypes.object,
   fetchSelect:PropTypes.func,
   clearSelect:propTypes.func,
   parent:PropTypes.shape({

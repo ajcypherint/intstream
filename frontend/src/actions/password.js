@@ -18,6 +18,7 @@ export const PASSWORD_CHANGED = "PASSWORD_CHANGED"
 export const set_password = (user,password) => ({
   [RSAA]: {
     endpoint: '/api/usersingle/'+user+'/set_password/',
+    fetch:fetch,
       method: 'POST',
       body: JSON.stringify({username:user,password: password}),
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -29,6 +30,7 @@ export const set_password = (user,password) => ({
 
 export const get_user = () =>({
   [RSAA]:{
+    fetch:fetch,
    endpoint: '/api/usersingle/',
       method: 'GET',
       body: '',

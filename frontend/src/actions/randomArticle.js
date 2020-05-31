@@ -23,6 +23,7 @@ export const getArticle= (model)=>{
   return {
   [RSAA]:{
     endpoint: "/api/unclass/?model=" + model,
+    fetch:fetch,
       method: 'GET',
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -39,6 +40,7 @@ export const setClassification= (model,article,target)=>{
   return {
   [RSAA]:{
     endpoint: "/api/unclass/" + model,
+    fetch:fetch,
       method: 'POST',
       body: {model:model,article:article,target:target},
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -51,7 +53,7 @@ export const setClassification= (model,article,target)=>{
 }
 
 // save and get next
-export const classifiyNext = (model, article, target)=>{
+export const classifyNext = (model, article, target)=>{
   return async(dispatch, getState) => {
       let resp = await dispatch(setClassification(model, article, target))
       if (resp.error) {

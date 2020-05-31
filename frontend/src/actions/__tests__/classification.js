@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import * as actions from '../classification'
+import * as articlesactions from '../articles'
 import {getAllClassifications} from '../classification'
 import fetchMock from 'fetch-mock'
 
@@ -13,24 +14,6 @@ describe('classification actions', () => {
     fetchMock.reset()
     fetchMock.restore()
   })
-  it('getarticles', () => {
-    const store = mockStore({auth:{access:"xxx"}})
-    fetchMock.get('/api', {
-      body: { articles: 1 },
-      headers: { 'content-type': 'application/json' }
-    })
-
-    const expectedActions = [
-      { type: actions.GET_ARTICLES_REQUEST},
-      { type: actions.GET_ARTICLES_SUCCESS, payload: { articles: 1 } }
-    ]
-
-    return store.dispatch(actions.getArticles("/api")).then(() => {
-      // return of async actions
-      expect(store.getActions()).toEqual(expectedActions)
-    })
-  })
-
   it('clear', () => {
     let RET =  {
         type:actions.CLEAR,
@@ -306,8 +289,8 @@ describe('classification actions', () => {
 
 
     const expectedActions = [
-      { type: actions.GET_ARTICLES_REQUEST},
-      { type: actions.GET_ARTICLES_SUCCESS, payload: { count:1,results:[{id:1}] } },
+      { type: articlesactions.GET_ARTICLES_REQUEST},
+      { type: articlesactions.GET_ARTICLES_SUCCESS, payload: { count:1,results:[{id:1}] } },
       { type: actions.GET_CLASSIFICATIONS_REQUEST},
       { type: actions.GET_CLASSIFICATIONS_SUCCESS, payload:{count:1,results:[{id:1}]} },
       { type: actions.GET_CLASSIFICATIONS_REQUEST},

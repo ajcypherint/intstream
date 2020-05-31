@@ -83,7 +83,12 @@ export default class Train extends Component {
       this.props.clear() //selections
       this.props.fetchAllMLModels("ordering=name&active=true")
       this.props.clearArticles()
-
+      let selections = {
+        ...this.props.query,
+        mlmodelChosen:NONEVAL,
+       }
+    this.props.setQuery(selections)
+ 
     }
 
   }
@@ -447,14 +452,14 @@ Train.propTypes = {
   articleNext:PropTypes.string,
   articlePrevious:PropTypes.string,
   articleuri:PropTypes.string,
-  selectArticles:PropTypes.array,
+  selectArticles:PropTypes.object,
   selectErrors:PropTypes.object,
   classif:PropTypes.shape(
     {
       id:PropTypes.bool,
     }),
   classifErrors:PropTypes.object,
-  classifCounts:PropTypes.number,
+  classifCounts:PropTypes.object,
   filterChange:PropTypes.func,
   fetchAllSources:PropTypes.func,
   fetchAllMLModels:PropTypes.func,

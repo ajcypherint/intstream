@@ -17,7 +17,7 @@ export const PAGE = '@@trainfilter/PAGE';
 export const GET_FILTER_REQUEST = '@@trainfilter/GET_FILTER_REQUEST';
 export const GET_FILTER_SUCCESS = '@@trainfilter/GET_FILTER_SUCCESS';
 export const GET_FILTER_FAILURE = '@@trainfilter/GET_FILTER_FAILURE';
-export const CLASSIF_FILTER = "/api/classiffilter"
+export const CLASSIF_FILTER = "/api/classiffilter/"
 export const clear=()=>{
   return {
     type:CLEAR,

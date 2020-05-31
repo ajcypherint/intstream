@@ -1,14 +1,11 @@
 import { RSAA } from 'redux-api-middleware';
 import {setParams,getAll} from './util'
 import { withAuth } from '../reducers'
+import {GET_ARTICLES_REQUEST, GET_ARTICLES_SUCCESS, GET_ARTICLES_FAILURE, getArticles} from "./articles"
 import  URL  from  'url-parse'
 import * as fromArticle from "./articles"
 
 const BASE_URL = "/api/classifications/"
-export const GET_ARTICLES_REQUEST = "@@classification/GET_ARTICLES_REQUEST"
-export const GET_ARTICLES_SUCCESS = "@@classification/GET_ARTICLES_SUCCESS"
-export const GET_ARTICLES_FAILURE = "@@classification/GET_ARTICLES_FAILURE"
-
 
 export const GET_CLASSIFICATIONS_REQUEST = "@@classification/GET_CLASSIFICATIONS_REQUEST"
 export const GET_CLASSIFICATIONS_SUCCESS = "@@classification/GET_CLASSIFICATIONS_SUCCESS"
@@ -29,24 +26,6 @@ export const DEL_CLASSIFICATION_FAILURE = "@@classification/DEL_CLASSIFICATION_F
 export const SET_COUNTS = "@@classification/COUNTS"
 
 export const CLEAR = "@@classification/CLEAR"
-
-export const getArticles= (url, params=undefined)=>{
-  // filters - list[string]
-  url = setParams(url,params)
-  return {
-  [RSAA]:{
-    endpoint: url,
-    fetch:fetch,
-      method: 'GET',
-      body: '',
-      headers: withAuth({ 'Content-Type': 'application/json' }),
-      types: [
-       GET_ARTICLES_REQUEST, GET_ARTICLES_SUCCESS, GET_ARTICLES_FAILURE
-      ]
-
-  }
-}
-}
 
 
 export const clear = ( ) => {
