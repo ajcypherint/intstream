@@ -44,6 +44,7 @@ export const getfilter= (url, params=undefined)=>{
   return {
   [RSAA]:{
    endpoint: url,
+    fetch:fetch,
       method: 'GET',
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
