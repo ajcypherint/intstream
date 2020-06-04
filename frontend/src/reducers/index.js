@@ -10,7 +10,6 @@ import childArticles, * as fromChildArticles from  './children.js'
 import randomArticle, * as fromRandomArticle from  './randomArticle.js'
 import filter, * as fromFilter from  './filter.js'
 import trainFilter, * as fromTrainFilter from  './trainFilter.js'
-import childFilter, * as fromChildFilter from  './childFilter.js'
 import selectArticles, * as fromSelect from "./selectArticles.js"
 import classifications, * as fromClassif from "./classifications"
 import settings, * as fromSettings from "./settings"
@@ -30,7 +29,6 @@ export default combineReducers({
   models:models,
   randomArticle:randomArticle,
   childArticles:childArticles,
-  childFilter:childFilter,
   trainFilter:trainFilter,
   selectArticles:selectArticles,
   classifications:classifications,
@@ -117,8 +115,6 @@ export const getChildArticleTotalCount = state => fromChildArticles.totalcount(s
 export const getChildArticleNextPage = state => fromChildArticles.nextPage(state.childArticles)
 export const getChildArticlePreviousPage = state => fromChildArticles.previousPage(state.childArticles)
 
-//childfilter
-export const getChildHomeArticleSelections = state => fromChildFilter.getHomeSelections(state.childFilter)
 
 //fromSelect
 export const getSelectArticles = state => fromSelect.articles(state.selectArticles)

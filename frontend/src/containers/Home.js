@@ -5,7 +5,6 @@ import { Main} from '../components/Home'
 import {getArticles, clearArticles, ARTICLE_URL} from '../actions/articles'
 import {getChildArticles,clearParent} from '../actions/childArticles'
 import {filterChange, setPage, setHomeSelections, getAllSources, MODEL_VERSIONS, getAllActiveModels} from '../actions/filter'
-import {setChildPage, setChildHomeSelections} from '../actions/childFilter'
 import {getSources, clearSources } from '../actions/sources'
 import * as fromSelect from '../actions/selectArticle'
 import {
@@ -59,14 +58,10 @@ const mapDispatchToProps = (dispatch) => ({
   parent_func:{
     fetchArticlesFullUri: (url,params=undefined) => dispatch(getArticles(url,params)),
     fetchArticles: (params=undefined) => dispatch(getArticles(API,params)),
-    setHomeSelections: (data)=>dispatch(setHomeSelections(data)), //this can go away
-    setPage:(page)=>dispatch(setPage(page)), //this can go away
   },
   child_func:{
     fetchArticlesFullUri: (parent, url,params=undefined) => dispatch(getChildArticles(parent, url,params)),
     fetchArticles: (parent,params=undefined) => dispatch(getChildArticles(parent, API_ARTICLE, params)),
-    setHomeSelections: (data)=>dispatch(setChildHomeSelections(data)), // this can go away
-    setPage:(page)=>dispatch(setChildPage(page)), //this can go away
     clearParent:()=>dispatch(clearParent())
  
   }
