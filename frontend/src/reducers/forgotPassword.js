@@ -1,5 +1,5 @@
 import * as forgot from '../actions/forgotPassword' 
-const initialState = {
+export const initialState = {
   message:"",
   errors: {},
 }

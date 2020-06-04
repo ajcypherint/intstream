@@ -4,7 +4,7 @@ import _ from 'lodash';
 import * as sourcesData from '../actions/sources';
 import  URL  from  'url-parse'
 
-const initialState ={
+export const initialState ={
   sources:[],
   loading:false,
   allloaded:false,

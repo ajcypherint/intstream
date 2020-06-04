@@ -2,7 +2,7 @@ import jwtDecode from 'jwt-decode'
 import * as auth from '../actions/auth'
 
 
-const initialState = {
+export const initialState = {
   username:undefined,
   isStaff:false,
   isIntegrator:false,
@@ -32,8 +32,7 @@ export default (state=initialState, action) => {
       }
     case auth.LOGOUT:
       return {
-        access: undefined,
-        refresh: undefined
+        ...initialState
       }
     case auth.LOGIN_SUCCESS:
       return {

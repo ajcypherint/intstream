@@ -1,7 +1,7 @@
 
 import * as settingsData from '../actions/settings';
 
-const initialState = {
+export const initialState = {
   settings:[],
   loading:false,
   errors: {},

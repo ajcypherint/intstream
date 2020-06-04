@@ -4,7 +4,7 @@ import _ from 'lodash';
 import * as random from '../actions/randomArticle';
 
 
-const initialState ={
+export const initialState ={
   articles:[],
   loading:false,
   errors: {},

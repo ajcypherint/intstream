@@ -14,7 +14,7 @@ export const createParent = (id,title,match)=>{
 
 }
 // use articlestmp to load pages and retrieve data
-const initialState ={
+export const initialState ={
   articles:[],
   loading:false,
   totalcount:0,

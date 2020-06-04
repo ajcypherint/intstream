@@ -4,7 +4,7 @@ import _ from 'lodash';
 import * as modelsData from '../actions/models';
 import  URL  from  'url-parse'
 
-const initialState ={
+export const initialState ={
   models:[],
   loading:false,
   allloaded:false,

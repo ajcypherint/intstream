@@ -12,7 +12,7 @@ START.setHours(0,0,0,0);
 let END= new Date();
 END.setHours(23,59,59,999);
 
-const initialState ={
+export const initialState ={
   sources: [],
   models:[]
 }

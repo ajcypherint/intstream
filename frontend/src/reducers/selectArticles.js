@@ -32,7 +32,7 @@ const removeArticle = (id, mapping) => {
 
 }
 // use articlestmp to load pages and retrieve data
-const initialState ={
+export const initialState ={
   articles:{},
   errors: {},
 }

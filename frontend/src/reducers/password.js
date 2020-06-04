@@ -2,7 +2,7 @@ import jwtDecode from 'jwt-decode'
 import * as pass from '../actions/password'
 
 
-const initialState = {
+export const initialState = {
   isPasswordChanged:false,
   errors: {},
 }

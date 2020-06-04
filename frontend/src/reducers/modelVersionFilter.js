@@ -5,7 +5,7 @@ import  URL  from  'url-parse'
 import {ASC, DESC} from "../util/util"
 import * as filter from '../actions/modelVersionFilter'
 export const NONEVAL = ""
-const initialState ={
+export const initialState ={
   mlmodels:[],
 }
 

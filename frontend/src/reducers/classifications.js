@@ -43,7 +43,7 @@ const addResults = (payloadResults, classif)=>{
   return new_classif
 
 }
-const initialState = {
+export const initialState = {
 
   classif:{},
   counts:{total:0,true_count:0,false_count:0},

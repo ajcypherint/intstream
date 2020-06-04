@@ -9,7 +9,7 @@ import * as cat from '../actions/categories'
 //    "base64_encoded_model": null,
 //    "enabled": true
 //},
-const initialState ={
+export const initialState ={
   categories:[] ,
   errors: {},
 }

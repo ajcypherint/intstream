@@ -1,6 +1,6 @@
 import * as modelVersionData from "../actions/modelVersion"
 
-const initialState = {
+export const initialState = {
   versions:[],
   loading:false,
   totalcount:0,
