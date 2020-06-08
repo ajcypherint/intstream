@@ -31,6 +31,7 @@ export default (state=initialState, action) => {
     case sourcesData.GET_TOTAL_SOURCES:
       {
         return {
+        ...state,
         sources:action.payload.sources,
         totalcount:action.payload.totalCount,
         allloaded:true,
@@ -69,13 +70,8 @@ export default (state=initialState, action) => {
     case sourcesData.CLEAR:
       {
       return {
-        sources:[],
-        totalcount:0,
-        loading:false,
-        allloaded:false,
-        nextpage:null,
-        previouspage:null,
-        errors:{}
+        ...initialState
+
       }
       }
 
@@ -94,6 +90,7 @@ export default (state=initialState, action) => {
         //let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
         //#let newsourcesourcesData= {...result}
       return {
+        ...state,
         sources:action.payload.results,
         totalcount:action.payload.count,
         loading:false,
@@ -106,6 +103,7 @@ export default (state=initialState, action) => {
     case sourcesData.GET_SOURCES_FAILURE:
       {
       return {
+        ...state,
         sources:[],
         totalcount:0,
         loading:false,

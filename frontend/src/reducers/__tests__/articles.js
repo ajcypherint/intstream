@@ -11,7 +11,7 @@ describe('articles reducer', () => {
   
   it('get articles request/success', () => {
     expect(
-      reducer(actions.initialState, {
+      reducer(initialState, {
         type: actions.SET_ARTICLES_REQUEST,
       })
     ).toEqual(
@@ -45,7 +45,7 @@ describe('articles reducer', () => {
   })
   it('set articles fail', () => {
     expect(
-      reducer(actions.initialState, {
+      reducer(initialState, {
         type: actions.SET_ARTICLES_REQUEST,
       })
     ).toEqual(
@@ -93,7 +93,7 @@ describe('articles reducer', () => {
    
     //request
     expect(
-      reducer(actions.initialState, {
+      reducer(initialState, {
         type: actions.GET_ARTICLES_REQUEST,
       })
     ).toEqual(

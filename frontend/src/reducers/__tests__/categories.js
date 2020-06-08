@@ -11,7 +11,7 @@ describe('categories reducer', () => {
   it("add categories", () => {
     let newCat = "test"
     expect(
-      reducer(actions.initialState, {
+      reducer(initialState, {
         type:actions.ADD_CATEGORIES_SUCCESS,
         category:newCat
       }
@@ -27,7 +27,7 @@ describe('categories reducer', () => {
       results:["test"]
     }
     expect(
-      reducer(actions.initialState, {
+      reducer(initialState, {
         type:actions.CATEGORIES_SUCCESS,
         payload:res
       }

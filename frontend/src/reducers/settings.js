@@ -4,8 +4,8 @@ import * as settingsData from '../actions/settings';
 export const initialState = {
   settings:[],
   loading:false,
-  errors: {},
-  saving: false 
+  errors:{},
+  saving:false 
 }
 
 export default (state=initialState, action) => {
@@ -67,6 +67,7 @@ export default (state=initialState, action) => {
         //let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
         //#let newmodelsettingsData= {...result}
       return {
+        ...state,
         settings:action.payload.results,
         loading:false,
         errors: {},
@@ -75,6 +76,7 @@ export default (state=initialState, action) => {
     case settingsData.GET_SETTINGS_FAILURE:
       {
       return {
+        ...state,
         settings:[],
         loading:false,
         saving:false,
