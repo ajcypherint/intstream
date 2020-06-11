@@ -5,7 +5,7 @@ from api import models
 # Create your tests here.
 
 
-class TestPerms(TestCase):
+class TestUpload(TestCase):
 
     fixtures = ['UserIntstream.json',
                 'Organization.json',
@@ -21,7 +21,7 @@ class TestPerms(TestCase):
         headers={"Content-Type":"application/json"}
         self.c.login(username=username,password=password)
 
-    def disable_test_upload_html(self):
+    def test_upload_html(self):
         file = open('./sample_files/report_html.html','rb')
         data = {'source':1,'title':'test','file':file}
         r = self.c.post("/api/htmlarticles/",data=data)

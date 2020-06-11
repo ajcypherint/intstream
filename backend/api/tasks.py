@@ -276,6 +276,7 @@ def classify(directory, text_list, model_version_id):
     :return:
     """
     model = ModelVersion.objects.get(id=model_version_id)
+    #todo add org to model directory
     model_directory = os.path.join(settings.VENV_DIR, MODEL+str(model.id))
     full_model_dir = os.path.join(model_directory,settings.MODEL_FOLDER)
     # create model dir
