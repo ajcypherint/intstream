@@ -226,9 +226,31 @@ def process_rss_source(source_url, source_id, organization_id):
             prediction.save()
 
 
+def model_dir(id):
+    model_directory = os.path.join(settings.VENV_DIR, MODEL+str(id))
+    return model_directory
 
 @shared_task()
 def process_rss_sources():
+    #generate
+    # 1. model_version dir
+    # 2. script dir
+    # 3. venv dir
+    active_model_versions = models.ModelVersion.objects.filter(model__active=True,
+                                                               active=True)
+    for version in active_model_versions:
+        model_directory = model_dir(version.id)
+        # create model dir
+        if not os.path.exists(model_directory):
+            model_tar = tarfile.open(mode="r:gz", fileobj=version.file)
+            try:
+                model_tar.extractall(path=model_directory)
+            except Exception as e:
+                if os.path.exists(model_directory):
+                    os.rmdir(model_directory)
+                raise e
+        #create venv and program folders
+        create_dirs(version.model.script_directory)
     sources = models.RSSSource.objects.filter(active=True).all()
     for source in sources:
         logger.info("source:" + source.name)
@@ -276,19 +298,9 @@ def classify(directory, text_list, model_version_id):
     :return:
     """
     model = ModelVersion.objects.get(id=model_version_id)
-    model_directory = os.path.join(settings.VENV_DIR, MODEL+str(model.id))
+    model_directory = model_dir(model.id)
     full_model_dir = os.path.join(model_directory,settings.MODEL_FOLDER)
-    # create model dir
-    if not os.path.exists(model_directory):
-        model_tar = tarfile.open(mode="r:gz", fileobj=model.file)
-        try:
-            model_tar.extractall(path=model_directory)
-        except Exception as e:
-            if os.path.exists(model_directory):
-                os.rmdir(model_directory)
-            raise e
-    #create venv and program folders
-    create_dirs(directory)
+
     script_directory = os.path.join(settings.VENV_DIR, SCRIPT + directory)
     venv_directory = os.path.join(settings.VENV_DIR, VENV + directory)
     json_data = {"classifier":full_model_dir, "text":text_list}
