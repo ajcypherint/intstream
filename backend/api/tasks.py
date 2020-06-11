@@ -96,7 +96,7 @@ def add(x,y):
 async def fetch(url):
     async with aiohttp.ClientSession() as session:
         try:
-            async with session.get(url) as response:
+            async with session.get(url, timeout=25) as response:
                 try:
                     return await response.text()
                 except UnicodeDecodeError as e:
