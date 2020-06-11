@@ -108,54 +108,6 @@ PLACEHOLDER_TEXT = "placeholder text for classifier"
 
 
 
-@shared_task
-def process_entry(post_title,
-                  post_description,
-                  post_id,
-                  post_link,
-                  source_id,
-                  organization_id
-                  ):
-    """
-    :param post_title: str
-    :param post_description: str
-    :param post_id: int
-    :param post_link: str
-    :param source_id: int
-    :param articles_id: list[int]
-    :param articles_text: list[string]
-    :return:
-    """
-
-    response = requests.get(post_link)
-    article = models.RSSArticle(
-        title=post_title,
-        description=post_description,
-        guid=post_id,
-        link=post_link,
-        text=response.text
-        )
-
-    article.source_id = source_id
-    article.organization_id=organization_id
-    article.save()
-
-    # filter ModelVersion by model__source=source and model__active=True
-    # todo(aj) requests.get all the article texts and then run all the saves then run the prediction
-    active_model_versions = models.ModelVersion.objects.filter(organization__id=organization_id,
-                                                               model__sources__id=source_id,
-                                                               model__active=True,
-                                                               active=True)
-    for version in active_model_versions:
-        directory = version.model.script_directory
-        predictions = classify(directory, [[article.text]], version.id)
-        prediction = models.Prediction(article=article,
-                                           organization__id=organization_id,
-                                           mlmodel=version.model,
-                                           target=predictions[0])
-        prediction.save()
-
-
 @shared_task()
 def process_rss_source(source_url, source_id, organization_id):
     #todo(aj) add logging here and save to database for lookup
