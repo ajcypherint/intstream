@@ -1,0 +1,1244 @@
+[
+{
+    "model": "api.modelversion",
+    "pk": 1,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200207.212759.362672",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "good2",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 2,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.094234.437343",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 3,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.101225.248210",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 4,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.103037.250541",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 5,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.104650.919860",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "model_versions/tmpni_9wsjy.tar.gz",
+        "metric_value": 0.498819163292847,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 6,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.110315.552830",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "model_versions/tmp2zpehg0i.tar.gz",
+        "metric_value": 0.498819163292847,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 7,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.133531.742817",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 8,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.133714.625470",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "model_versions/tmppyepikwo.tar.gz",
+        "metric_value": 0.498819163292847,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 9,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.181524.451751",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 10,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.181912.138748",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 11,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.182214.794725",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 12,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.183841.908306",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 13,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.184459.819016",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 14,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.185632.996062",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 15,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.191439.887198",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 16,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200208.192819.792546",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "model_versions/tmp5pc3c_ec.tar.gz",
+        "metric_value": 0.498819163292847,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 17,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200220.183027.284502",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "xxxx",
+        "status": "NA",
+        "file": "model_versions/tmpmfj039t7.tar.gz",
+        "metric_value": 0.498819163292847,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 18,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200226.192317.880635",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 19,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200226.192503.031275",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "STARTING",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 20,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200226.193655.994198",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "STARTING",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 21,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200226.194008.013478",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 22,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200226.201644.762791",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "NA",
+        "file": "model_versions/tmp1x0pv45k.tar.gz",
+        "metric_value": 0.291666666666667,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 23,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200226.214645.331651",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "63e08ec7-d99e-4b87-91e5-7eb7e004cfb1",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 24,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200226.215808.733977",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "2b8e5209-f1cf-4b48-893c-e2afeb3d67aa",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 25,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200226.223113.448629",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "b08f6550-15d5-4de7-b332-54efb65cd08f",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 26,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200227.211646.235945",
+        "celery_log": "celery_logs/352917af-19bb-4145-b788-9aef4013a29d.log",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "352917af-19bb-4145-b788-9aef4013a29d",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 27,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200227.213240.926306",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "f0d3063e-15f1-4b4f-888c-0fe8bf85610f",
+        "status": "NA",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 28,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200227.213434.748137",
+        "celery_log": "celery_logs/fa07cf4f-7008-498c-b5c6-d608a8300332.log",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "fa07cf4f-7008-498c-b5c6-d608a8300332",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 29,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200227.214507.777409",
+        "celery_log": "celery_logs/66189a81-0b8c-4269-9bcf-889c76e78851.log",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "66189a81-0b8c-4269-9bcf-889c76e78851",
+        "status": "NA",
+        "file": "model_versions/tmpd8fmsfiy.tar.gz",
+        "metric_value": 0.291666666666667,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 30,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200302.195242.493849",
+        "celery_log": "celery_logs/55c3a1ee-aa5a-4fd2-884c-3999c0156bb7.log",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "55c3a1ee-aa5a-4fd2-884c-3999c0156bb7",
+        "status": "NA",
+        "file": "model_versions/tmpt9xd6ltv.tar.gz",
+        "metric_value": 0.114285714285714,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 31,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200318.192034.293386",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 32,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200318.201757.492003",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 33,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200318.204110.533837",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "BOOTSTRAPPING",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 34,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200318.204957.779560",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "STARTING",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 35,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200318.205214.421222",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 36,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200318.210146.091926",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 37,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200318.211800.783593",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 38,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200318.213717.800182",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmp08bspx7b.tar.gz",
+        "metric_value": 0.492997198879552,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 39,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200327.161716.728229",
+        "celery_log": "celery_logs/41e1ed1c-92d6-471d-a45b-32cf48a3a7b9.log",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "41e1ed1c-92d6-471d-a45b-32cf48a3a7b9",
+        "status": "SUCCESS",
+        "file": "model_versions/tmpxzqghxjt.tar.gz",
+        "metric_value": 0.492997198879552,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 40,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200329.191628.084498",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 41,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200329.193701.174807",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "BOOTSTRAPPING",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 42,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200329.194047.403739",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 43,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200329.195318.529926",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmphr899d9x.tar.gz",
+        "metric_value": 0.492997198879552,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 44,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200329.201338.541076",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 45,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200329.202425.576023",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmp86w09z8e.tar.gz",
+        "metric_value": 0.567032967032967,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 46,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200330.115526.286466",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "TERMINATING",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 47,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200330.120055.606791",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 48,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200330.121517.038350",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmpgulc83ga.tar.gz",
+        "metric_value": 0.485714285714286,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 49,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200331.213611.393393",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "STARTING",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 50,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200331.223217.913386",
+        "celery_log": "celery_logs/4008801a-0bf4-48f4-8703-64903c4e883b.log",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "4008801a-0bf4-48f4-8703-64903c4e883b",
+        "status": "SUCCESS",
+        "file": "model_versions/tmpr8mtfs_1.tar.gz",
+        "metric_value": 0.514141414141414,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 51,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.194120.883242",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 52,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.195812.903648",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 53,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.201703.795343",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 54,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.203212.711479",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmp25jsbg1v.tar.gz",
+        "metric_value": 0.515873015873016,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 55,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.205233.067220",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 56,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.211313.418264",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 57,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.220004.144786",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmp26j8ygmw.tar.gz",
+        "metric_value": 0.515873015873016,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 58,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.221817.916671",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 59,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.222801.675056",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 60,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.224313.683082",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmpoa_3hpfy.tar.gz",
+        "metric_value": 0.515873015873016,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 61,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.231102.170609",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmp_u7pzw98.tar.gz",
+        "metric_value": 0.515873015873016,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 62,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200401.235103.652712",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmp0klodzw5.tar.gz",
+        "metric_value": 0.515873015873016,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 63,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200402.000924.206271",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmpptuh2nm4.tar.gz",
+        "metric_value": 0.515873015873016,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 64,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200402.184532.668437",
+        "celery_log": "celery_logs/a98db433-75bf-480b-a5c6-55ae9ee49a75.log",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "a98db433-75bf-480b-a5c6-55ae9ee49a75",
+        "status": "SUCCESS",
+        "file": "model_versions/tmp6xep9juh.tar.gz",
+        "metric_value": 0.525,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 65,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200402.193455.315443",
+        "celery_log": "celery_logs/70849234-d061-4419-af65-647055ff81af.log",
+        "metric_name": "f1",
+        "extra_kwargs": "{}",
+        "task": "70849234-d061-4419-af65-647055ff81af",
+        "status": "FAILED",
+        "file": "",
+        "metric_value": null,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 66,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200402.200549.087051",
+        "celery_log": "celery_logs/638c75c9-6626-4c6d-8b02-3aefba898e1b.log",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "638c75c9-6626-4c6d-8b02-3aefba898e1b",
+        "status": "SUCCESS",
+        "file": "model_versions/tmpdt5q72eu.tar.gz",
+        "metric_value": 0.515873015873016,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 67,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200402.223051.346093",
+        "celery_log": "celery_logs/e123c7dc-07cf-49ac-a59b-aab445efe432.log",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "e123c7dc-07cf-49ac-a59b-aab445efe432",
+        "status": "SUCCESS",
+        "file": "model_versions/tmpxbctvq9a.tar.gz",
+        "metric_value": 0.50014985014985,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 68,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200506.195203.656530",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmpktb5wk47.tar.gz",
+        "metric_value": 0.50989010989011,
+        "active": false,
+        "virtual_env_loc": null
+    }
+},
+{
+    "model": "api.modelversion",
+    "pk": 69,
+    "fields": {
+        "model": 2,
+        "organization": 1,
+        "version": "intstream-2.20200529.105032.539996",
+        "celery_log": "",
+        "metric_name": "f1",
+        "extra_kwargs": "",
+        "task": "",
+        "status": "SUCCESS",
+        "file": "model_versions/tmpoxsib25z.tar.gz",
+        "metric_value": 0.50989010989011,
+        "active": true,
+        "virtual_env_loc": null
+    }
+}
+]
