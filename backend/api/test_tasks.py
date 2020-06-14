@@ -10,7 +10,7 @@ class PostResp(object):
 def post_get(url):
     return PostResp()
 
-class TestPerms(TestCase):
+class TestTasks(TestCase):
     fixtures = ['UserIntstream.json',
                 'Organization.json',
                 "RSSSource.json",

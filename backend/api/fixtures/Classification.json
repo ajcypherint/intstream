@@ -1,0 +1,262 @@
+[
+{
+    "model": "api.classification",
+    "pk": 104,
+    "fields": {
+        "article": 1267,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 105,
+    "fields": {
+        "article": 1268,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 106,
+    "fields": {
+        "article": 1269,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 107,
+    "fields": {
+        "article": 1270,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 108,
+    "fields": {
+        "article": 1271,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 109,
+    "fields": {
+        "article": 1272,
+        "target": true,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 110,
+    "fields": {
+        "article": 1273,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 111,
+    "fields": {
+        "article": 1274,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 112,
+    "fields": {
+        "article": 1275,
+        "target": true,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 113,
+    "fields": {
+        "article": 1276,
+        "target": true,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 114,
+    "fields": {
+        "article": 1277,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 115,
+    "fields": {
+        "article": 1278,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 116,
+    "fields": {
+        "article": 1279,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 117,
+    "fields": {
+        "article": 1282,
+        "target": true,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 118,
+    "fields": {
+        "article": 1283,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 119,
+    "fields": {
+        "article": 1348,
+        "target": true,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 142,
+    "fields": {
+        "article": 1330,
+        "target": true,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 143,
+    "fields": {
+        "article": 1331,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 144,
+    "fields": {
+        "article": 1332,
+        "target": false,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 154,
+    "fields": {
+        "article": 1328,
+        "target": true,
+        "mlmodel": 1,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 158,
+    "fields": {
+        "article": 1328,
+        "target": true,
+        "mlmodel": 2,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 159,
+    "fields": {
+        "article": 1328,
+        "target": false,
+        "mlmodel": 8,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 160,
+    "fields": {
+        "article": 1329,
+        "target": true,
+        "mlmodel": 8,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 161,
+    "fields": {
+        "article": 1330,
+        "target": true,
+        "mlmodel": 8,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 162,
+    "fields": {
+        "article": 1331,
+        "target": false,
+        "mlmodel": 8,
+        "organization": 1
+    }
+},
+{
+    "model": "api.classification",
+    "pk": 164,
+    "fields": {
+        "article": 1388,
+        "target": true,
+        "mlmodel": 2,
+        "organization": 1
+    }
+}
+]

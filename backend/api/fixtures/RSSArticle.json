@@ -1,0 +1,1667 @@
+[
+{
+    "model": "api.rssarticle",
+    "pk": 1267,
+    "fields": {
+        "description": "Researchers at Brown University found bots were far more likely to post tweets denying climate change.",
+        "link": "https://www.bbc.co.uk/news/technology-51595285",
+        "guid": "https://www.bbc.co.uk/news/technology-51595285"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1268,
+    "fields": {
+        "description": "Ofcom is asking why broadband firms charge people to keep old email addresses after switching providers.",
+        "link": "https://www.bbc.co.uk/news/business-51571275",
+        "guid": "https://www.bbc.co.uk/news/business-51571275"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1269,
+    "fields": {
+        "description": "Nintendo confirms its new Animal Crossing game will not let players save progress to the cloud.",
+        "link": "https://www.bbc.co.uk/news/technology-51589920",
+        "guid": "https://www.bbc.co.uk/news/technology-51589920"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1270,
+    "fields": {
+        "description": "Researchers claim it could be used to kill some of the world's deadliest bacteria.",
+        "link": "https://www.bbc.co.uk/news/health-51586010",
+        "guid": "https://www.bbc.co.uk/news/health-51586010"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1271,
+    "fields": {
+        "description": "Pupils in New Mexico allegedly have had their online data tracked, says the state's attorney general.",
+        "link": "https://www.bbc.co.uk/news/world-us-canada-51591420",
+        "guid": "https://www.bbc.co.uk/news/world-us-canada-51591420"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1272,
+    "fields": {
+        "description": "The personal data of about 200,000 people is exposed in a cyber-attack.",
+        "link": "https://www.bbc.co.uk/news/technology-51580925",
+        "guid": "https://www.bbc.co.uk/news/technology-51580925"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1273,
+    "fields": {
+        "description": "The company says it sent the strange \"1\" alert to Samsung devices by mistake.",
+        "link": "https://www.bbc.co.uk/news/technology-51572775",
+        "guid": "https://www.bbc.co.uk/news/technology-51572775"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1274,
+    "fields": {
+        "description": "At least 2,004 government mobiles were lost or stolen in a year, more than a third from the MoD.",
+        "link": "https://www.bbc.co.uk/news/technology-51572578",
+        "guid": "https://www.bbc.co.uk/news/technology-51572578"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1275,
+    "fields": {
+        "description": "ISS World, a major facilities provider, has been hit by an apparent ransomware attack.",
+        "link": "https://www.bbc.co.uk/news/technology-51572575",
+        "guid": "https://www.bbc.co.uk/news/technology-51572575"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1276,
+    "fields": {
+        "description": "Celebrities including Justin Bieber were among those whose data was stolen, one report said.",
+        "link": "https://www.bbc.co.uk/news/technology-51568885",
+        "guid": "https://www.bbc.co.uk/news/technology-51568885"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1277,
+    "fields": {
+        "description": "Larry Tesler was responsible for many of the innovations that made personal computing accessible.",
+        "link": "https://www.bbc.co.uk/news/world-us-canada-51567695",
+        "guid": "https://www.bbc.co.uk/news/world-us-canada-51567695"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1278,
+    "fields": {
+        "description": "BBC Click\u2019s Paul Carter looks at some of the best technology news stories of the week.",
+        "link": "https://www.bbc.co.uk/news/technology-51574909",
+        "guid": "https://www.bbc.co.uk/news/technology-51574909"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1279,
+    "fields": {
+        "description": "Academic and electronic musician Bertolt Meyer has hacked into his prosthetic arm and connected it to his synth.",
+        "link": "https://www.bbc.co.uk/news/technology-51577965",
+        "guid": "https://www.bbc.co.uk/news/technology-51577965"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1280,
+    "fields": {
+        "description": "TrinamiX has developed a facial recognition software that they say could provide better security.",
+        "link": "https://www.bbc.co.uk/news/technology-51555126",
+        "guid": "https://www.bbc.co.uk/news/technology-51555126"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1281,
+    "fields": {
+        "description": "The BBC meets the medics and lawyers across America who are using the app to help educate the public.",
+        "link": "https://www.bbc.co.uk/news/world-us-canada-51507802",
+        "guid": "https://www.bbc.co.uk/news/world-us-canada-51507802"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1282,
+    "fields": {
+        "description": "Kitchen hacks and baking videos are hugely popular on YouTube - but do all the tips actually work?",
+        "link": "https://www.bbc.co.uk/news/technology-51504484",
+        "guid": "https://www.bbc.co.uk/news/technology-51504484"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1283,
+    "fields": {
+        "description": "Developers say you can now converse effortlessly using translation tech, but others are not so sure.",
+        "link": "https://www.bbc.co.uk/news/business-50850239",
+        "guid": "https://www.bbc.co.uk/news/business-50850239"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1284,
+    "fields": {
+        "description": "An Instagram influencer has faked a holiday to Bali to show followers not to believe everything they see on social media. But how does it compare to these other epic social media pranks?",
+        "link": "https://www.bbc.co.uk/newsround/51559925",
+        "guid": "https://www.bbc.co.uk/newsround/51559925"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1285,
+    "fields": {
+        "description": "Firms are encouraging staff to make sharing which personal pronouns they use an everyday practice.",
+        "link": "https://www.bbc.co.uk/news/business-51331571",
+        "guid": "https://www.bbc.co.uk/news/business-51331571"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1286,
+    "fields": {
+        "description": "Better sight, better hands and more intelligence are allowing robots to take on more and more jobs.",
+        "link": "https://www.bbc.co.uk/news/business-51442445",
+        "guid": "https://www.bbc.co.uk/news/business-51442445"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1287,
+    "fields": {
+        "description": "Levels of electrical and electronic waste are expected to more than double by 2050, according to the UN.",
+        "link": "https://www.bbc.co.uk/news/business-51385344",
+        "guid": "https://www.bbc.co.uk/news/business-51385344"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1288,
+    "fields": {
+        "description": "Networking software giant Citrix Systems says malicious hackers were inside its networks for five months between 2018 and 2019, making off with personal and financial data on company employees, contractors, interns, job candidates and their dependents. The disclosure comes almost a year after Citrix acknowledged that digital intruders had broken in by probing its employee accounts for weak passwords.",
+        "link": "https://krebsonsecurity.com/2020/02/hackers-were-inside-citrix-for-five-months/",
+        "guid": "https://krebsonsecurity.com/?p=50556"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1289,
+    "fields": {
+        "description": "Crooks are constantly dreaming up new ways to use and conceal stolen credit card data. According to the U.S. Secret Service, the latest scheme involves stolen card information embedded in barcodes affixed to phony money network rewards cards. The scammers then pay for merchandise by instructing a cashier to scan the barcode and enter the expiration date and card security code.",
+        "link": "https://krebsonsecurity.com/2020/02/encoding-stolen-credit-card-data-on-barcodes/",
+        "guid": "https://krebsonsecurity.com/?p=50515"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1290,
+    "fields": {
+        "description": "A new email-based extortion scheme apparently is making the rounds, targeting Web site owners serving banner ads through Google's AdSense program. In this scam, the fraudsters demand bitcoin in exchange for a promise not to flood the publisher's ads with so much bot and junk traffic that Google's automated anti-fraud systems suspend the user's AdSense account for suspicious traffic.",
+        "link": "https://krebsonsecurity.com/2020/02/pay-up-or-well-make-google-ban-your-ads/",
+        "guid": "https://krebsonsecurity.com/?p=50522"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1291,
+    "fields": {
+        "description": "In May 2013, the U.S. Justice Department seized Liberty Reserve, alleging the virtual currency service acted as a $6 billion financial hub for the cybercrime world. Prompted by assurances that the government would one day afford Liberty Reserve users a chance to reclaim any funds seized as part of the takedown, KrebsOnSecurity filed a claim shortly thereafter to see if and when this process might take place. This week, an investigator with the U.S. Internal Revenue service finally got in touch to discuss my claim.",
+        "link": "https://krebsonsecurity.com/2020/02/a-light-at-the-end-of-liberty-reserves-demise/",
+        "guid": "https://krebsonsecurity.com/?p=50518"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1292,
+    "fields": {
+        "description": "Microsoft today released updates to plug nearly 100 security holes in various versions of its Windows operating system and related software, including a zero-day vulnerability in Internet Explorer\u00a0(IE) that is actively being exploited. Also, Adobe has issued a bevy of security updates for its various products, including Flash Player and Adobe Reader/Acrobat.",
+        "link": "https://krebsonsecurity.com/2020/02/microsoft-patch-tuesday-february-2020-edition/",
+        "guid": "https://krebsonsecurity.com/?p=50414"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1293,
+    "fields": {
+        "description": "The U.S. Justice Department today unsealed indictments against four Chinese officers of the People's Liberation Army (PLA) accused of perpetrating the 2017 hack against consumer credit bureau Equifax that led to the theft of personal data on nearly 150 million Americans. DOJ officials said the four men were responsible for carrying out the largest theft of sensitive personal information by state-sponsored hackers ever recorded.",
+        "link": "https://krebsonsecurity.com/2020/02/u-s-charges-4-chinese-military-officers-in-2017-equifax-hack/",
+        "guid": "https://krebsonsecurity.com/?p=50492"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1294,
+    "fields": {
+        "description": "As an\u00a0early domain name investor, Mike O'Connor had by 1994 snatched up several choice online destinations, including bar.com, cafes.com, grill.com, place.com, pub.com and television.com. Some he sold over the years, but for the past 26 years O'Connor refused to auction perhaps the most sensitive domain in his stable -- corp.com. It is\u00a0sensitive because years of testing shows whoever wields it would have access to an unending stream of passwords, email and other proprietary data belonging to hundreds of thousands of systems at major companies around the globe.",
+        "link": "https://krebsonsecurity.com/2020/02/dangerous-domain-corp-com-goes-up-for-sale/",
+        "guid": "https://krebsonsecurity.com/?p=50407"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1295,
+    "fields": {
+        "description": "Many modern vehicles let owners use the Internet or a mobile device to control the car's locks, track location and performance data,\u00a0and start the engine. But who exactly owns that control is not always clear when these smart cars are sold or leased anew. Here's the story of one former electric vehicle owner who discovered he could still gain remote, online access to his old automobile years after his lease ended.",
+        "link": "https://krebsonsecurity.com/2020/02/when-your-used-car-is-a-little-too-mobile/",
+        "guid": "https://krebsonsecurity.com/?p=50373"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1296,
+    "fields": {
+        "description": "A Pennsylvania man who operated one of the Internet's longest-running online attack-for-hire or \"booter\" services was sentenced to five years probation today. While the young man's punishment was heavily tempered by his current poor health, the defendant's dietary choices may have contributed to both his capture and the lenient sentencing: Investigators say the onetime booter boss's identity became clear after he ordered a bacon and chicken pizza delivered to his home using the same email address he originally used to register his criminal attack service.",
+        "link": "https://krebsonsecurity.com/2020/02/booter-boss-busted-by-bacon-pizza-buy/",
+        "guid": "https://krebsonsecurity.com/?p=50383"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1297,
+    "fields": {
+        "description": "On Sept. 11, 2019, two security experts at a company that had been hired by the state of Iowa to test the physical and network security of its judicial system were arrested while probing the security of an Iowa county courthouse, jailed in orange jumpsuits, charged with burglary, and held on $100,000 bail. On Thursday Jan. 30,\u00a0prosecutors in Iowa announced they had dropped the criminal charges. The news came while KrebsOnSecurity was conducting a video interview with the two accused (featured below).",
+        "link": "https://krebsonsecurity.com/2020/01/iowa-prosecutors-drop-charges-against-men-hired-to-test-their-security/",
+        "guid": "https://krebsonsecurity.com/?p=50334"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1298,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>The cloud is everywhere and organizations are using the cloud in one way or another. The majority of organizations have a <a href=\"https://www.fortinet.com/solutions/enterprise-midsize-business/cloud-security.html?utm_source=blog&amp;utm_campaign=2019-q3-cloud-security\" rel=\"nofollow\">dynamic cloud environment</a>, with workloads spread across public cloud, private cloud, hybrid cloud and multi-cloud. As organizations develop their cloud and digital innovation strategy, the primary goals typically are to accelerate revenue, improve agility and time to market and reduce costs. But that\u2019s not all. The cloud also improves organizations\u2019 ability to deliver critical services to customers, enhances the productivity and user experience and enables organizations to compete more effectively in today\u2019s global digital marketplace.</p><p class=\"jumpTag\"><a href=\"/article/3528361/addressing-the-security-demands-of-today-s-dynamic-cloud-environments.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528361/addressing-the-security-demands-of-today-s-dynamic-cloud-environments.html#tk.rss_all",
+        "guid": "BrandPost: Addressing the Security Demands of Today\u2019s Dynamic Cloud Environmentshttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1299,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>As countries around the world begin deploying 5G technology, the promises of faster speeds and better service sometime obscure a host of security issues affecting the next-generation cellular technology. These security concerns exist despite improvements in data encryption, authentication and privacy embodied in recent releases of the Third Generation Partnership Project (3GPP), the technical standards organization for cellular communications.</p><aside class=\"fakesidebar\">\n<p>[ Learn how<a href=\"https://www.csoonline.com/article/3206186/mobile-security/review-sandblast-mobile-simplifies-mobile-security.html\"> SandBlast Mobile simplifies mobile security</a>. | Get the latest from CSO by <a href=\"http://www.csoonline.com/newsletters/signup.html\">signing up for our newsletters</a>. ]</p><p class=\"jumpTag\"><a href=\"/article/3528273/will-digital-certificates-solve-some-of-5g-s-security-problems.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528273/will-digital-certificates-solve-some-of-5g-s-security-problems.html#tk.rss_all",
+        "guid": "5G security is a mess. Could digital certificates help?http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1300,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<h2>What is penetration testing?</h2>\n<p>Penetration testing is a simulated cyber attack where professional ethical hackers break into corporate networks to find weaknesses ... before attackers do.</p><p>It's like in the movie <a href=\"https://www.csoonline.com/article/3385036/9-top-hacker-movies-and-tv-shows-of-all-time.html\" rel=\"noopener\" target=\"_blank\">Sneakers</a>, where hacker-consultants break into your corporate networks to find weaknesses before attackers do. It\u2019s a simulated cyber attack where the pentester or ethical hacker uses the tools and techniques available to malicious hackers.</p><p>Back in ye olde days of yore, hacking was hard and required a lot of manual bit fiddling. Today, though, a full suite of automated testing tools turn hackers into cyborgs, computer-enhanced humans who can test far more than ever before.</p><p class=\"jumpTag\"><a href=\"/article/2943524/11-penetration-testing-tools-the-pros-use.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/2943524/11-penetration-testing-tools-the-pros-use.html#tk.rss_all",
+        "guid": "11 penetration testing tools the pros usehttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1301,
+    "fields": {
+        "description": "<p>The big data grab drove companies to stockpile data, with little thought of how to use it, and even less thought about how to properly secure it. People everywhere are growing more conscious of the data they share, who collects it, and how it is handled. This rising awareness has sparked legislation designed to safeguard sensitive data, but these new laws aren\u2019t just boxes to tick off, they represent an important trend that businesses need to get on board with.<p class=\"jumpTag\"><a href=\"/article/3526495/the-ccpa-is-an-opportunity-to-get-your-data-security-house-in-order.html#jump\">To read this article in full, please click here</a></p></section></article>(Insider Story)",
+        "link": "https://www.csoonline.com/article/3526495/the-ccpa-is-an-opportunity-to-get-your-data-security-house-in-order.html#tk.rss_all",
+        "guid": "The CCPA is an opportunity to get your data security house in orderhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1302,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<h2>History of ransomware</h2>\n<p>Ransomware, a type of <a href=\"https://www.csoonline.com/article/3295877/what-is-malware-viruses-worms-trojans-and-beyond.html\">malware</a>\u00a0that holds data for ransom, has been around for years. In 1991, a biologist spread PC Cyborg, the first ransomware, by sending floppy disks via surface mail to other AIDS researchers, for instance. In the mid '00s Archiveus was the first ransomware to use encryption, though it's long ago been defeated and you can\u00a0<a href=\"https://en.wikipedia.org/wiki/Archiveus\" rel=\"nofollow\">find its password on its Wikipedia page</a>. In the early 2010s, a series of \"police\" ransomware packages appeared, so called because they purported to be warnings from law enforcement about the victims' illicit activities and demanded payment of \"fines\"; they began to\u00a0<a href=\"http://blog.emsisoft.com/2011/08/01/tec110801/\" rel=\"nofollow\">exploit the new generation of anonymous payment</a>\u00a0services to better harvest payments without getting caught.</p><p class=\"jumpTag\"><a href=\"/article/3212260/recent-ransomware-attacks-define-the-malwares-new-age.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3212260/recent-ransomware-attacks-define-the-malwares-new-age.html#tk.rss_all",
+        "guid": "Recent ransomware attacks define the malware's new agehttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1303,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Far too often security is being overlooked in the rush to embrace digital innovation. As a result, as businesses rapidly adopt new technologies and computing platforms, they are also opening the door for cybercriminals who are looking to gain access to valuable data. With this in mind, cybersecurity needs to play a central role in all digital transformation efforts \u2013 a strategy known as security-driven networking. However, many of these same businesses are also facing the challenges of the growing cybersecurity skills shortage, which can lead to unfilled roles with traditional areas of responsibility, such as identifying, patching, and updating vulnerable systems. While there is a clear need for individuals who can effectively manage these threats, security talent is <a href=\"https://www.fortinet.com/content/dam/maindam/PUBLIC/02_MARKETING/02_Collateral/WhitePaper/wp-cybersecurity-skills-shortage.pdf\" rel=\"nofollow\">difficult to find</a>.</p><p class=\"jumpTag\"><a href=\"/article/3528294/understanding-the-impact-of-the-cybersecurity-skills-shortage-on-business.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528294/understanding-the-impact-of-the-cybersecurity-skills-shortage-on-business.html#tk.rss_all",
+        "guid": "BrandPost: Understanding the Impact of the Cybersecurity Skills Shortage on Businesshttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1304,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Enterprises that apply a security strategy to their cloud workloads often rely on security checks pre-runtime. In most cases, they scan for vulnerabilities within their code or containers before deploying their cloud workloads into production. However, in runtime \u2014 when actual cyber attacks can occur \u2014 organizations are left completely blind. <strong><u><br/><br/></u></strong>In my discussions with CISOs during the last year I was surprised to hear that, despite having hundreds or even thousands of cloud servers, security teams lack visibility into what code is actually running inside their production environment. These teams believe that what\u2019s running is the software they intentionally deployed during the CI/CD process. However, they aren\u2019t certain.<strong><u><br/><br/></u></strong>Having no visibility in runtime is problematic. If an attacker wants to steal your credentials or exploit a vulnerability \u2014 in any kind of attack vector \u2014 a cyber attack is almost always the result of malicious code or commands running in your servers.<br/><strong><u><br/></u></strong>While pre-runtime security vulnerability checks are effective to some extent, they are not sufficient enough to cope with modern cyber threats, which don\u2019t necessarily rely on a known vulnerability. It\u2019s time for organizations to gain visibility and control over the code that is running in their cloud workloads. By identifying and terminating the malicious code running in memory, they will be able to detect the vast majority of cyber attacks on their cloud infrastructure.<br/><br/></p><p class=\"jumpTag\"><a href=\"/article/3527960/securing-your-cloud-workloads-in-runtime-why-pre-runtime-scans-aren-t-enough.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3527960/securing-your-cloud-workloads-in-runtime-why-pre-runtime-scans-aren-t-enough.html#tk.rss_all",
+        "guid": "BrandPost: Securing your Cloud Workloads in Runtime: Why Pre-Runtime Scans Aren\u2019t Enoughhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1305,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>New data from security and content delivery company Akamai shows that one in every five attempts to gain unauthorized access to user accounts is now done through application programming interfaces (APIs) instead of user-facing login pages. This trend is even more pronounced in the financial services industry where the use of APIs is widespread and in part fueled by regulatory requirements.</p><aside class=\"fakesidebar\">\n<aside class=\"fakesidebar\">[ Learn why <a href=\"https://www.csoonline.com/article/3244651/for-strong-api-security-you-need-a-program-not-a-piecemeal-approach.html\">you need an API security program, not a piecemeal approach</a>. | Get the latest from CSO by <a href=\"http://www.csoonline.com/newsletters/signup.html\">signing up for our newsletters</a>. ]</aside>\n</aside>\n<p>According to <a href=\"https://www.akamai.com/us/en/multimedia/documents/state-of-the-internet/soti-security-financial-services-hostile-takeover-attempts-report-2020.pdf\" rel=\"noopener nofollow\" target=\"_blank\">a report</a> released today, between December 2017 and November 2019, Akamai observed 85.4 billion credential abuse attacks against companies worldwide that use its services. Of those attacks, around 16.5 billion, or nearly 20%, targeted hostnames that were clearly identified as API endpoints. However, in the financial industry, the percentage of attacks that targeted APIs rose sharply between May and September 2019, at times reaching 75%.</p><p class=\"jumpTag\"><a href=\"/article/3527858/apis-are-becoming-a-major-target-for-credential-stuffing-attacks.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3527858/apis-are-becoming-a-major-target-for-credential-stuffing-attacks.html#tk.rss_all",
+        "guid": "APIs are becoming a major target for credential stuffing attackshttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1306,
+    "fields": {
+        "description": "<p>Data. Your business and computers are full of it. While much of that data is useless to anyone else, every firm has key assets that any attacker or other competitor would love to access.<p class=\"jumpTag\"><a href=\"/article/3527270/how-to-set-up-your-network-to-prevent-data-loss.html#jump\">To read this article in full, please click here</a></p></section></article>(Insider Story)",
+        "link": "https://www.csoonline.com/article/3527270/how-to-set-up-your-network-to-prevent-data-loss.html#tk.rss_all",
+        "guid": "How to set up your network to prevent data losshttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1307,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Security manufacturers increasingly refer to their solutions as a platform, with the vague implication that this gives their technology a distinct advantage. The challenge, of course, is that the term platform is rather ambiguous. It simply refers to the environment in which a piece of software is executed. It can refer to the hardware it is installed on, the operating system (OS) that runs it, or even a web browser loaded with specific APIs to execute the program code. As a result, the term often isn\u2019t really all that useful when you are shopping for a security solution.</p><p>However, a carefully crafted platform <em>can\u00a0</em>provide distinct advantages for deploying, managing, and running security solutions. So, like other terms that are often overused by marketing teams \u2013 such as \u201ccloud-ready\u201d or even \u201cartificial intelligence\u201d \u2013 we need to get specific about what we mean by the term platform if it is to be of any value. The trick is to establish a uniform definition against which you can judge the merits of any solution claiming to be a platform.</p><p class=\"jumpTag\"><a href=\"/article/3527843/defining-the-security-platform.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3527843/defining-the-security-platform.html#tk.rss_all",
+        "guid": "BrandPost: Defining the Security Platformhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1308,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Security researchers have warned for many years that failure to digitally sign and validate the low-level firmware found in computers can lead to damaging compromises that are very hard to detect and fix. While the computer industry has made some progress in this area, especially when it comes to the Unified Extensible Firmware Interface (UEFI) in modern computers, new research shows that many peripheral manufacturers have not adopted modern firmware validation principles.</p><aside class=\"fakesidebar\">[ Keep up with <a href=\"https://www.csoonline.com/article/3262972/ransomware/8-hot-cyber-security-trends-and-4-going-cold.html\">8 hot cyber security trends (and 4 going cold)</a>. Give your career a boost with <a href=\"https://www.csoonline.com/article/3116884/security/top-security-certifications-who-theyre-for-what-they-cost-and-which-you-need.html\">top security certifications: Who they're for, what they cost, and which you need</a>. | <a href=\"http://www.csoonline.com/newsletters/signup.html\">Sign up for CSO newsletters</a>. ]</aside>\n<p>Researchers from security firm Eclypsium <a href=\"https://eclypsium.com/2020/2/18/unsigned-peripheral-firmware/\" rel=\"noopener nofollow\" target=\"_blank\">have found</a> computer components with unsigned firmware or improper signature validation in laptops from major manufacturers, as well as in servers. The identified devices included a network interface chipset widely used in servers, a common laptop WiFi adapter, a trackpad, a full HD camera and an internal USB hub.</p><p class=\"jumpTag\"><a href=\"/article/3527278/lack-of-firmware-validation-for-computer-peripherals-enables-highly-persistent-attacks.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3527278/lack-of-firmware-validation-for-computer-peripherals-enables-highly-persistent-attacks.html#tk.rss_all",
+        "guid": "Lack of firmware validation for computer peripherals enables highly persistent attackshttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1309,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Starting on February 24, the <a href=\"https://www.rsaconference.com/\" rel=\"noopener nofollow\" target=\"_blank\">RSA Conference (RSAC)</a> 2020 gives security vendors old and new a chance to demonstrate their capabilities. The event has become an attractive venue for startups to make their debut. This year\u2019s crop will be demonstrating tools for <a href=\"https://www.csoonline.com/article/3245748/what-is-devsecops-developing-more-secure-applications.html\">DevSecOps</a>, <a href=\"https://www.csoonline.com/article/3247848/what-is-zero-trust-a-model-for-more-effective-security.html\">zero-trust</a> networks, risk intelligence, access control, and more.</p><aside class=\"fakesidebar\">[ Keep up with <a href=\"https://www.csoonline.com/article/3262972/ransomware/8-hot-cyber-security-trends-and-4-going-cold.html\">8 hot cyber security trends (and 4 going cold)</a>. Give your career a boost with <a href=\"https://www.csoonline.com/article/3116884/security/top-security-certifications-who-theyre-for-what-they-cost-and-which-you-need.html\">top security certifications: Who they're for, what they cost, and which you need</a>. | <a href=\"http://www.csoonline.com/newsletters/signup.html\">Sign up for CSO newsletters</a>. ]</aside>\n<p>The <a href=\"https://www.rsaconference.com/industry-topics/blog/are-you-ready-for-early-stage-expo-part-1\" rel=\"noopener nofollow\" target=\"_blank\">RSAC Early Stage Expo</a> gathers over 50 promising startups from all over the world, many of which have so far been in stealth mode. These are 12 of the most interesting, in alphabetical order:</p><p class=\"jumpTag\"><a href=\"/article/3527436/12-hottest-new-cybersecurity-startups-at-rsa-2020.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3527436/12-hottest-new-cybersecurity-startups-at-rsa-2020.html#tk.rss_all",
+        "guid": "12  hottest new cybersecurity startups at RSA 2020http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1310,
+    "fields": {
+        "description": "Insider Pro reveals the current salaries for dozens of tech titles,  details about IT workers'  top concerns, the state of the tech hiring and the tech specialties raking in the biggest compensation.",
+        "link": "https://www.idginsiderpro.com/article/3526496/it-salary-survey-2020-the-results-are-in.html#tk.rss_all",
+        "guid": "IT Salary Survey 2020: The results are inhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1311,
+    "fields": {
+        "description": "<p>You leave kerosene-soaked rags all around your house. You chain smoke. One day, while relaxing in front of an episode of CSI:Cyber, your hand slips and a lit cigarette sets your sofa on fire. Your house burns down. The insurance company pays out your fire insurance.<p class=\"jumpTag\"><a href=\"/article/3526974/5-things-you-should-know-about-cybersecurity-insurance.html#jump\">To read this article in full, please click here</a></p></section></article>(Insider Story)",
+        "link": "https://www.csoonline.com/article/3526974/5-things-you-should-know-about-cybersecurity-insurance.html#tk.rss_all",
+        "guid": "5 things you should know about cybersecurity insurancehttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1312,
+    "fields": {
+        "description": "<p>Selim Aissi, CISO at software company Ellie Mae, saw it as confirmation of his role as trusted adviser when one of his company\u2019s board members texted him late one night a few years ago.<p class=\"jumpTag\"><a href=\"/article/3519550/the-csos-playbook-for-forging-board-relationships.html#jump\">To read this article in full, please click here</a></p></section></article>(Insider Story)",
+        "link": "https://www.csoonline.com/article/3519550/the-csos-playbook-for-forging-board-relationships.html#tk.rss_all",
+        "guid": "The CSO's playbook for forging board relationshipshttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1313,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>There is nothing like attending a face-to-face event for career networking and knowledge gathering, and we don\u2019t have to tell you how helpful it can be to get a hands-on demo of a new tool or to have your questions answered by experts.</p><p>Fortunately, plenty of great conferences are coming up in the months ahead.</p><p>If keeping abreast of security trends and evolving threats is critical to your job \u2014 and we know it is \u2014 then attending some top-notch security conferences is on your must-do list for 2020.</p><p>From major events to those that are more narrowly focused, this list from the editors of CSO, will help you find the security conferences that matter the most to you.</p><p class=\"jumpTag\"><a href=\"/article/3155500/the-cso-guide-to-top-security-conferences.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3155500/the-cso-guide-to-top-security-conferences.html#tk.rss_all",
+        "guid": "The CSO guide to top security conferences, 2020http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1314,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<h2>Phishing definition</h2>\n<p>Phishing is a cyber attack that uses disguised email as a weapon. The goal is to trick the email recipient into believing that the message is something they want or need \u2014 a request from their bank, for instance, or a note from someone in their company \u2014 and to click a link or download an attachment.</p><p>What really distinguishes phishing is the form the message takes: the attackers masquerade as a trusted entity of some kind, often a real or plausibly real person, or a company the victim might do business with. It's one of the oldest types of cyberattacks, dating back to the 1990s, and it's still one of the most widespread and pernicious, with phishing messages and techniques becoming increasingly sophisticated.</p><p class=\"jumpTag\"><a href=\"/article/2117843/what-is-phishing-how-this-cyber-attack-works-and-how-to-prevent-it.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/2117843/what-is-phishing-how-this-cyber-attack-works-and-how-to-prevent-it.html#tk.rss_all",
+        "guid": "What is phishing? How this cyber attack works and how to prevent ithttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1315,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>The popularity of Amazon\u2019s cloud computing platform continues to grow. That means that opportunities for IT professionals in this sector are likely to be plentiful, but only those with the proper skills will be considered for jobs. So, if you're trying to climb above the competition, you'd be remiss to look over the <a href=\"https://shop.computerworld.com/sales/aws-solutions-architect-certification-bundle?utm_source=computerworld.com&amp;utm_medium=referral&amp;utm_campaign=aws-solutions-architect-certification-bundle&amp;utm_term=scsf-369730&amp;utm_content=a0x1P000004NFF0&amp;scsonar=1\" rel=\"noopener nofollow\" target=\"_blank\">AWS Solutions Architect Certification Bundle</a>, currently discounted by over 90% today.</p><p class=\"jumpTag\"><a href=\"/article/3521177/train-to-become-a-skilled-aws-expert-for-less-than-50.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3521177/train-to-become-a-skilled-aws-expert-for-less-than-50.html#tk.rss_all",
+        "guid": "Train to become a skilled AWS expert for less than $50http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1316,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Pop quiz: What has been the most popular \u2014 and therefore least secure \u2014 password every year since 2013? If you answered \u201cpassword,\u201d you\u2019d be close. \u201cQwerty\u201d is another contender for the dubious distinction, but the champion is the most basic, obvious password imaginable: \u201c123456.\u201d</p><aside class=\"fakesidebar\">\n<p>[ Find out <a href=\"https://www.csoonline.com/article/3205924/data-breach/is-your-data-being-sold-on-the-dark-web.html\">if your data and passwords are being sold on the dark web.</a>. | Get the latest from CSO by <a href=\"http://www.csoonline.com/newsletters/signup.html\">signing up for our newsletters</a>. ]</p></aside>\n<p>Yes, tons of people still use \u201c123456\u201d as a password, according to <a href=\"https://www.teamsid.com/1-50-worst-passwords-2019/\" rel=\"noopener nofollow\" target=\"_blank\">SplashData\u2019s top 25 most common passwords</a>. It ranked second place in 2011 and 2012 and has been number one every year right through 2019. SplashData\u2019s list is based on the company\u2019s analysis of millions of passwords leaked on the internet.</p><p class=\"jumpTag\"><a href=\"/article/3526408/the-25-worst-passwords-of-2019-and-8-tips-for-improving-password-security.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3526408/the-25-worst-passwords-of-2019-and-8-tips-for-improving-password-security.html#tk.rss_all",
+        "guid": "The 25 worst passwords of 2019, and 8 tips for improving password securityhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1317,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<h2>What is a DDoS attack?</h2>\n<p>A distributed denial of service (DDoS) attack is when an attacker, or attackers, attempt to make it impossible for a service to be delivered. This can be achieved by thwarting access to virtually anything: servers, devices, services, networks, applications, and even specific transactions within applications. In a DoS attack, it\u2019s one system that is sending the malicious data or requests; a DDoS attack comes from multiple systems.</p><p>Generally, these attacks work by drowning a system with requests for data. This could be sending a web server so many requests to serve a page that it crashes under the demand, or it could be a database being hit with a high volume of queries. The result is available internet bandwidth, CPU and RAM capacity becomes overwhelmed.</p><p class=\"jumpTag\"><a href=\"/article/3222095/ddos-explained-how-denial-of-service-attacks-are-evolving.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3222095/ddos-explained-how-denial-of-service-attacks-are-evolving.html#tk.rss_all",
+        "guid": "DDoS explained: How distributed denial of service attacks are evolvinghttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1318,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>In April of 2015, IT staffers within the United States Office of Personnel Management (OPM), the agency that manages the government's civilian workforce, discovered that some of its personnel files had been hacked. Among the sensitive data that was exfiltrated were millions of SF-86 forms, which contain <a href=\"https://www.lawfareblog.com/why-opm-hack-far-worse-you-imagine\" rel=\"nofollow\">extremely personal information</a> gathered in background checks for people seeking government security clearances, along with records of <a href=\"https://www.nytimes.com/2015/09/24/world/asia/hackers-took-fingerprints-of-5-6-million-us-workers-government-says.html\" rel=\"nofollow\">millions of people's fingerprints</a>. The OPM breach led to a Congressional investigation and the resignation of top OPM executives, and its full implications\u2014for national security, and for the privacy of those whose records were stolen\u2014are still not entirely clear.</p><p class=\"jumpTag\"><a href=\"/article/3318238/the-opm-hack-explained-bad-security-practices-meet-chinas-captain-america.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3318238/the-opm-hack-explained-bad-security-practices-meet-chinas-captain-america.html#tk.rss_all",
+        "guid": "The OPM hack explained: Bad security practices meet China's Captain Americahttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1319,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>In late 2018, the Marriott hotel chain announced that <a href=\"https://www.pcworld.com/article/3324609/marriott-starwood-hotel-data-breach-faq.html\">one of its reservation systems had been compromised</a>, with hundreds of millions of customer records, including credit card and passport numbers, being exfiltrated by the attackers. While Marriott has not disclosed the full timeline or technical details of the assault, what we do know tells us quite a bit about the current threat landscape \u2014 and offers lessons for other enterprises on how to protect themselves.</p><p>We answer 10 frequently asked questions.</p><h2 class=\"toc\">When was the Marriott breach?</h2>\n<p>On September 8, 2018, an internal security tool flagged as suspicious an attempt to access the internal guest reservation database for Marriott's Starwood brands, which include the Westin, Sheraton, St. Regis, and W hotels. This prompted an internal investigation that determined, through a <a href=\"https://www.csoonline.com/article/3334396/what-is-digital-forensics-and-how-to-land-a-job-in-this-hot-field.html\">forensics</a> process that Marriott has not discussed in detail, that the Starwood network had been compromised sometime in 2014 \u2014 back when Starwood had been a separate company. Marriott purchased Starwood in 2016, but nearly two years later, the former Starwood hotels hadn't been migrated to Marriott's own reservation system and were still using IT infrastructure inherited from Starwood, an important factor that we'll revisit in more detail later.</p><p class=\"jumpTag\"><a href=\"/article/3441220/marriott-data-breach-faq-how-did-it-happen-and-what-was-the-impact.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3441220/marriott-data-breach-faq-how-did-it-happen-and-what-was-the-impact.html#tk.rss_all",
+        "guid": "Marriott data breach FAQ: How did it happen and what was the impact?http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1320,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>In March 2017, personally identifying data of hundreds of millions of people was stolen from Equifax, one of the credit reporting agencies that assess the financial health of nearly everyone in the United States.</p><p>As we'll see, the breach spawned a number of scandals and controversies: Equifax was criticized for everything ranging from their lax security posture to their bumbling response to the breach, and top executives were accused of corruption in the aftermath. And the question of who was behind the breach has serious implications for the global political landscape.</p><h2 class=\"toc\">How did the Equifax breach happen?</h2>\n<p>Like plane crashes, major infosec disasters are typically the result of multiple failures. The Equifax breach investigation highlighted a number of security lapses that allowed attackers to enter supposedly secure systems and exfiltrate terabytes of data.</p><p class=\"jumpTag\"><a href=\"/article/3444488/equifax-data-breach-faq-what-happened-who-was-affected-what-was-the-impact.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3444488/equifax-data-breach-faq-what-happened-who-was-affected-what-was-the-impact.html#tk.rss_all",
+        "guid": "Equifax data breach FAQ: What happened, who was affected, what was the impact?http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1321,
+    "fields": {
+        "description": "<p>It\u2019s still early in the year so it\u2019s worth posing some important questions: Will organizations increase their cybersecurity budgets in 2020?\u00a0 If so, what are their requirements and investment priorities?<p class=\"jumpTag\"><a href=\"/article/3520988/cybersecurity-spending-trends-2020.html#jump\">To read this article in full, please click here</a></p></section></article>(Insider Story)",
+        "link": "https://www.csoonline.com/article/3520988/cybersecurity-spending-trends-2020.html#tk.rss_all",
+        "guid": "Cybersecurity spending trends, 2020http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1322,
+    "fields": {
+        "description": "<p>If I listed the names of services on your Windows systems, would you be able to determine which ones were real and which ones were fake? Attackers often use fake services designed to act and look like real Windows services but contain malicious files. Is Windows Updates a true Windows service, or is it called \u201cWindows Update\u201d on your computer? Have you taken the time to become aware of what services and processes are normal on the computers in your network?<p class=\"jumpTag\"><a href=\"/article/3520771/how-to-fight-hidden-malware-on-windows-networks.html#jump\">To read this article in full, please click here</a></p></section></article>(Insider Story)",
+        "link": "https://www.csoonline.com/article/3520771/how-to-fight-hidden-malware-on-windows-networks.html#tk.rss_all",
+        "guid": "How to fight hidden malware on Windows networkshttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1323,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>As more organizations move to the cloud and to continuous deployment, security needs to \u201cfollow the \u2018as code\u2019 model,\u201d says Marnie Wilking, global head of security &amp; technology risk management at Wayfair. Where historically security engineers and analysts needed to be familiar with tools and implementations for an on-prem environment, the shift to the cloud requires a new set of skills. \u201cIf we really want to be able to succeed as security as code, then we need to hire people who can write code,\u201d says Wilking. Her aha moment came when a colleague commented about building a team based on DevOps principles: \u201cit made their team really successful within their business because that was the business model they were following.\u201d</p><p class=\"jumpTag\"><a href=\"/article/3516163/episode-3-succeeding-with-security-as-code.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3516163/episode-3-succeeding-with-security-as-code.html#tk.rss_all",
+        "guid": "BrandPost: Episode 3: Succeeding with security as codehttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1324,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>People skilled in the use of cloud based platforms are in demand. If you want to transition your career path into this specialized field, then The <a href=\"https://shop.computerworld.com/sales/the-complete-2020-microsoft-azure-certification-prep-bundle?utm_source=computerworld.com&amp;utm_medium=referral&amp;utm_campaign=the-complete-2020-microsoft-azure-certification-prep-bundle&amp;utm_term=scsf-369731&amp;utm_content=a0x1P000004NFF5&amp;scsonar=1\" rel=\"noopener nofollow\" target=\"_blank\">Complete 2020 Microsoft Azure Certification Prep Bundle</a>, discounted by over 90 percent, may be the most convenient route.</p><p>This package is ideal for anyone who wants to work in the growing cloud computing sector. It includes eleven beginner-friendly courses that introduce students to the popular Microsoft Azure platform as well as advanced topics in data analysis, security, and integration. And, since it\u2019s all delivered via the web, it\u2019s far more affordable when compared with other forms of education.</p><p class=\"jumpTag\"><a href=\"/article/3526329/get-microsoft-azure-savvy-and-supercharge-your-resume-with-this-training.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3526329/get-microsoft-azure-savvy-and-supercharge-your-resume-with-this-training.html#tk.rss_all",
+        "guid": "Get Microsoft Azure-savvy & supercharge your resume with this training.http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1325,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Anonymity and privacy are not about closing the door when you go to the bathroom. For the individual, they might be about personal autonomy, political liberty or just protecting yourself in the digital world.</p><p>For the enterprise, employee privacy mitigates the risk of <a href=\"https://www.csoonline.com/article/2124681/what-is-social-engineering.html\" rel=\"noopener\" target=\"_blank\">social engineering</a> attacks, even blackmail. The more an attacker can learn about key people within an organization, the more targeted and effective they can make their attacks. Educating employees about how to protect their privacy, therefore, should be a core part of any <a href=\"https://www.csoonline.com/article/2133408/network-security-the-7-elements-of-a-successful-security-awareness-program.html\" rel=\"noopener\" target=\"_blank\">security awareness program</a>.</p><p class=\"jumpTag\"><a href=\"/article/2975193/9-steps-completely-anonymous-online.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/2975193/9-steps-completely-anonymous-online.html#tk.rss_all",
+        "guid": "8 steps to being (almost) completely anonymous onlinehttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1326,
+    "fields": {
+        "description": "This free, open source penetration testing tool uses real attacks and real techniques to try and exploit its way into a network.",
+        "link": "https://www.idginsiderpro.com/article/3519490/release-the-monkey-how-infection-monkey-tests-network-security.html#tk.rss_all",
+        "guid": "Release the monkey! How Infection Monkey tests network securityhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1327,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>The 2020 election season got off to what could be a record-setting rocky start with delays in the reporting of the Iowa caucus results due to a poorly developed app. The failure of the mobile IowaReporterApp developed for the Democratic party by a company called Shadow, Inc., followed by revelations that the app was riddled with security errors, fueled further the flames of anxiety about the security of 2020 voting and election systems. (To be clear, the IowaReporterApp was not a mobile voting app but merely a means of collecting and reporting the results of the individual caucuses.)</p><aside class=\"fakesidebar\">[ Learn <a href=\"https://www.csoonline.com/article/3260624/critical-infrastructure/insecure-by-design-what-you-need-to-know-about-defending-critical-infrastructure.html\">what you need to know about defending critical infrastructure </a>. | Get the latest from CSO by <a href=\"http://www.csoonline.com/newsletters/signup.html\">signing up for our newsletters</a>. ]</aside>\n<p>Against the spectacular failure of the Iowa caucus and as the Democrats head into tomorrow's New Hampshire primary having ditched the Shadow app, there are some signs that election-related security is otherwise headed in the right direction. For the first time, the 2020 U.S. presidential election hit a milestone because more than half of the candidates for president have domains that are protected from spoofing, according to a <a href=\"https://www.valimail.com/blog/campaign-security-milestone/\" rel=\"noopener nofollow\" target=\"_blank\">just-released study</a> by identity-based anti-phishing company Valimail.</p><p class=\"jumpTag\"><a href=\"/article/3521237/presidential-campaigns-taking-email-security-more-seriously-not-so-much-at-the-local-level.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3521237/presidential-campaigns-taking-email-security-more-seriously-not-so-much-at-the-local-level.html#tk.rss_all",
+        "guid": "Presidential campaigns taking email security more seriously--not so much at the local levelhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1328,
+    "fields": {
+        "description": "The iPhone maker lags behind competitors in the world's second largest mobile phone market.",
+        "link": "https://www.bbc.co.uk/news/technology-51654274",
+        "guid": "https://www.bbc.co.uk/news/technology-51654274"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1329,
+    "fields": {
+        "description": "An Apple employee died after his semi-autonomous Tesla hit a concrete barrier.",
+        "link": "https://www.bbc.co.uk/news/technology-51645566",
+        "guid": "https://www.bbc.co.uk/news/technology-51645566"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1330,
+    "fields": {
+        "description": "Redcar council's IT systems have been down for 19 days but \"significant progress\" is being made.",
+        "link": "https://www.bbc.co.uk/news/uk-england-tees-51651405",
+        "guid": "https://www.bbc.co.uk/news/uk-england-tees-51651405"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1331,
+    "fields": {
+        "description": "The device, designed to schedule pets' food and control portions, appears to have been offline for seven days",
+        "link": "https://www.bbc.co.uk/news/technology-51628795",
+        "guid": "https://www.bbc.co.uk/news/technology-51628795"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1332,
+    "fields": {
+        "description": "During a troublesome protest or tricky election, some countries just cut the online cord.",
+        "link": "https://www.bbc.co.uk/news/technology-51620158",
+        "guid": "https://www.bbc.co.uk/news/technology-51620158"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1333,
+    "fields": {
+        "description": "London's police chief says privacy risks are much smaller than \"a knife through the chest\".",
+        "link": "https://www.bbc.co.uk/news/technology-51628833",
+        "guid": "https://www.bbc.co.uk/news/technology-51628833"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1334,
+    "fields": {
+        "description": "Carrot uses phone data to measure braking and acceleration - but some say it often fails to work.",
+        "link": "https://www.bbc.co.uk/news/business-51612880",
+        "guid": "https://www.bbc.co.uk/news/business-51612880"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1335,
+    "fields": {
+        "description": "BBC Click's Chris Fox tries out the folding Huawei Mate XS for the first time.",
+        "link": "https://www.bbc.co.uk/news/technology-51589921",
+        "guid": "https://www.bbc.co.uk/news/technology-51589921"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1336,
+    "fields": {
+        "description": "3D printing is meeting some of the ambitions touted when the technology emerged 20 years ago.",
+        "link": "https://www.bbc.co.uk/news/business-51263266",
+        "guid": "https://www.bbc.co.uk/news/business-51263266"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1337,
+    "fields": {
+        "description": "Ofcom testing of the UK's 5G network finds radiation is at a \"tiny fraction\" of safe levels.",
+        "link": "https://www.bbc.co.uk/news/technology-51613580",
+        "guid": "https://www.bbc.co.uk/news/technology-51613580"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1338,
+    "fields": {
+        "description": "The Android owner says circumventing the Huawei ban is a major security risk.",
+        "link": "https://www.bbc.co.uk/news/technology-51613577",
+        "guid": "https://www.bbc.co.uk/news/technology-51613577"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1339,
+    "fields": {
+        "description": "The 24-year-old was fired from a film inspired by Black Lives Matter in 2018 after a video resurfaced of him using racial language.",
+        "link": "https://www.bbc.co.uk/news/newsbeat-51608189",
+        "guid": "https://www.bbc.co.uk/news/newsbeat-51608189"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1340,
+    "fields": {
+        "description": "A New York City mural to deceased YouTuber Etika becomes a point of interest in video game Pokemon Go.",
+        "link": "https://www.bbc.co.uk/news/world-us-canada-51635241",
+        "guid": "https://www.bbc.co.uk/news/world-us-canada-51635241"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1341,
+    "fields": {
+        "description": "On Monday, networking hardware maker Zyxel released security updates to plug a critical security hole in its network attached storage (NAS) devices that is being actively exploited by crooks who specialize in deploying ransomware. Today, Zyxel acknowledged the same flaw is present in many of its firewall products.",
+        "link": "https://krebsonsecurity.com/2020/02/zyxel-0day-affects-its-firewall-products-too/",
+        "guid": "https://krebsonsecurity.com/?p=50612"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1342,
+    "fields": {
+        "description": "Networking hardware vendor Zyxel\u00a0today released an update to fix a critical flaw in many of its network attached storage (NAS) devices that can be used to remotely commandeer them. The patch comes 12 days after KrebsOnSecurity alerted the company that precise instructions for exploiting the vulnerability were being sold for $20,000 in the cybercrime underground.\n\nBased in Taiwan, Zyxel Communications Corp.\u00a0(a.k.a \"ZyXEL\") is a maker of networking devices, including Wi-Fi routers, NAS products and hardware firewalls. The company has roughly 1,500 employees and boasts some 100 million devices deployed worldwide. While in many respects the class of vulnerability addressed in this story is depressingly common among Internet of Things (IoT) devices, the flaw is notable because it has attracted the interest of groups specializing in deploying ransomware at scale.",
+        "link": "https://krebsonsecurity.com/2020/02/zyxel-fixes-0day-in-network-storage-devices/",
+        "guid": "https://krebsonsecurity.com/?p=50574"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1343,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>As the attack landscape expands, CISOs must become more strategic and proactive.</p><p>\u201cThey\u2019re already dealing with very porous infrastructures that result from the business building products and services quickly without input from security teams,\u201d says Wolfgang Goerlich, CISO Advisor with Cisco.</p><p>Also, the pace of business hasn\u2019t slowed. Cloud, digital transformation, and mobile services have all contributed to what he calls \u201clegacy debt,\u201d with CISOs working hard to gain control.</p><p>Combined with the growing sophistication of cyber-attacks, these challenges make it imperative for organizations to have an overarching security strategy.</p><p>\u201cCompanies need an adaptive, flexible perimeter with realistic security controls,\u201d Goerlich advises.</p><p class=\"jumpTag\"><a href=\"/article/3529518/benchmarks-for-2020-three-goals-for-cisos-in-the-coming-year.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3529518/benchmarks-for-2020-three-goals-for-cisos-in-the-coming-year.html#tk.rss_all",
+        "guid": "BrandPost: Benchmarks for 2020: Three Goals for CISOs in the Coming Yearhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1344,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>IT security may, at times, seem an elusive goal.</p><p>CISOs are facing multiple challenges. Digital transformation efforts, cloud and mobile implementations, and DevOps adoption have led to increasingly complex IT environments. These same trends have also expanded the attack surface.</p><p>At the same time, security leaders are grappling with obstacles often outside their control \u2014 including sophisticated threats arising from well-funded attackers and the ongoing skills gap.</p><p>With the release of Cisco SecureX, CISOs gain a solution that addresses these challenges <em>and</em> offers the visibility and confidence that arise from an improved security posture.</p><p class=\"jumpTag\"><a href=\"/article/3528860/2020-security-securing-your-business-with-an-integrated-security-platform.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528860/2020-security-securing-your-business-with-an-integrated-security-platform.html#tk.rss_all",
+        "guid": "BrandPost: 2020 Security: Securing Your Business with an Integrated Security Platformhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1345,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>\"We're [CSOs] all focused on this balance of being able to reduce risk while enabling the business,\" says Lionbridge CSO &amp; CPO Doug Graham. But, he adds, \"There's no real hard-and-fast rules about how much risk and what that recipe is.\" For Graham, the most concerning part about the CSO role isn't that there aren't any hard-and-fast rules about the right recipe for risk; instead, it's \"making sure you've presented all the options and you haven't missed something\u2026. Am I presenting the balance right to the rest of the leadership team so we that can make sensible decisions that are right for the company?\" As for how Graham makes sure he's getting the most out of his security technology investment, \"it's a case of defining our controls, measuring their coverage, and measuring their effectiveness,\" he says. \"And I think that gives you two very simple metrics. What's my coverage? And what's the effectiveness of my controls?\"</p><p class=\"jumpTag\"><a href=\"/article/3516288/episode-4-reducing-risk-vs-enabling-the-business-finding-the-balance.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3516288/episode-4-reducing-risk-vs-enabling-the-business-finding-the-balance.html#tk.rss_all",
+        "guid": "Episode 4: Reducing risk vs. enabling the business: finding the balancehttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1346,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>If you have looked at your inbox lately, you\u2019ll not be surprised when I say that phishing attacks increased 400% in the <a href=\"https://www.helpnetsecurity.com/2019/10/09/phishing-increase-2019/\" rel=\"noopener nofollow\" target=\"_blank\">first seven months</a> of 2019. Those phishing attacks attempted to either tricking a user to go to a website or open an Office document. Phishing attack that try to get you to open an Office document often call a <a href=\"https://attack.mitre.org/techniques/T1064/\" rel=\"noopener nofollow\" target=\"_blank\">script</a> to take additional action. Scripts are most often used in malicious macros to call actions.</p><aside class=\"fakesidebar\">\n<p>[ Check out these <a href=\"https://www.csoonline.com/article/2132618/social-engineering-11-tips-to-stop-spear-phishing\">11 phishing prevention tips</a> for best technology practices, employee education and social media smarts. | Get the latest from CSO by <a href=\"http://www.csoonline.com/newsletters/signup.html\">signing up for our newsletters</a>. ]</p><p class=\"jumpTag\"><a href=\"/article/3528749/how-to-prevent-scripting-attacks-in-microsoft-office.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528749/how-to-prevent-scripting-attacks-in-microsoft-office.html#tk.rss_all",
+        "guid": "How to prevent scripting attacks in Microsoft Officehttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1347,
+    "fields": {
+        "description": "<article class=\"slideshow\"><figure class=\"slide\"><figcaption>RSAC 2020</figcaption><img data-imageid=\"100832659\" src=\"https://images.idgesg.net/images/article/2020/02/rsa_2020_hottest_products_abstract_technology_flames_by_allvisionn_gettyimages-1160680900_ring_of_flames_by_donfiore_gettyimages-660238328_2400x1600-100832659-large.jpg\" data-thumb-src=\"https://images.idgesg.net/images/article/2020/02/rsa_2020_hottest_products_abstract_technology_flames_by_allvisionn_gettyimages-1160680900_ring_of_flames_by_donfiore_gettyimages-660238328_2400x1600-100832659-small.jpg\" alt=\"RSA 2020's hottest products\" data-license=\"Getty Images\"/><p class=\"slideCredit\">Image by <span class=\"slideCreditText\">ALLVISIONN / DonFiore / Getty Images</span></p><p class=\"jumpTag\"><a href=\"/article/3527306/hottest-new-cybersecurity-products-at-rsa-conference-2020.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3527306/hottest-new-cybersecurity-products-at-rsa-conference-2020.html#tk.rss_all",
+        "guid": "Hottest new cybersecurity products at RSA Conference 2020http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1348,
+    "fields": {
+        "description": "While segmentation is a powerful defensive tool, it\u2019s also difficult to manage and can easily break applications that need to communicate with other services or the outside world. The Illumio platform solves many of these headaches.",
+        "link": "https://www.idginsiderpro.com/article/3527207/review-achieving-enlightened-segmentation-with-illumio.html#tk.rss_all",
+        "guid": "Review: Achieving enlightened segmentation with Illumiohttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1349,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Mobile security is at the top of every company's worry list these days \u2014 and for good reason: Nearly all workers now routinely access corporate data from smartphones, and that means keeping sensitive info out of the wrong hands is an increasingly intricate puzzle. The stakes, suffice it to say, are higher than ever: The average cost of a corporate data breach is a whopping $3.86 million, according to a <u><a href=\"https://www.ibm.com/security/data-breach\" rel=\"noopener nofollow\" target=\"_blank\">2018 report</a></u> by the Ponemon Institute. That's 6.4 percent more than the estimated cost just one year earlier.\u00a0</p><aside class=\"fakesidebar\">\n<p>[ Learn how<a href=\"https://www.csoonline.com/article/3206186/mobile-security/review-sandblast-mobile-simplifies-mobile-security.html\"> SandBlast Mobile simplifies mobile security</a>. | Get the latest from CSO by <a href=\"http://www.csoonline.com/newsletters/signup.html#tk.cio_fsb\">signing up for our newsletters</a>. ]</p><p class=\"jumpTag\"><a href=\"/article/3241727/8-mobile-security-threats-you-should-take-seriously-in-2020.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3241727/8-mobile-security-threats-you-should-take-seriously-in-2020.html#tk.rss_all",
+        "guid": "8 mobile security threats you should take seriously in 2020http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1350,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Python is one of the most widely used coding languages in the world. And, good news, it isn\u2019t very difficult to learn \u2014 especially for those experienced using other platforms. If you want an introduction to the language, but would rather avoid a traditional college education, then give <a href=\"https://shop.computerworld.com/sales/the-complete-2020-python-programming-certification-bundle?utm_source=computerworld.com&amp;utm_medium=referral&amp;utm_campaign=the-complete-2020-python-programming-certification-bundle&amp;utm_term=scsf-372257&amp;utm_content=a0x1P000004NIwm&amp;scsonar=1\" rel=\"noopener nofollow\" target=\"_blank\">The Complete 2020 Python Programming Certification Bundle</a> a try.</p><p class=\"jumpTag\"><a href=\"/article/3528270/train-to-become-a-skilled-python-coder-for-just-50.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528270/train-to-become-a-skilled-python-coder-for-just-50.html#tk.rss_all",
+        "guid": "Train to become a skilled Python coder for just $50http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1351,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Today\u2019s businesses run on applications, services, and workflows that need to travel laterally across the extended network without interruption. To keep up with these demands, organizations are having to radically redesign their networks, including the addition of dynamic multi-cloud environments, hyperscale data centers, and next-gen branch offices, along with the retooling of the core network itself.</p><p>To meet the demands of speed and agility that digital innovation requires, businesses are creating flatter and more open networks, allowing data to flow across and between the data center and the <a href=\"https://www.fortinet.com/solutions/enterprise-midsize-business/cloud-security.html?utm_source=pr&amp;utm_campaign=2019-q3-cloud-security\" rel=\"nofollow\">multi-cloud</a> and out to core network, branch, and mobile devices and users. Driving this change even further is the explosive adoption of IoT, with each device producing growing volumes of data and consuming applications.</p><p class=\"jumpTag\"><a href=\"/article/3528767/modern-networks-require-high-performance-internal-segmentation.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528767/modern-networks-require-high-performance-internal-segmentation.html#tk.rss_all",
+        "guid": "BrandPost: Modern Networks Require High-Performance Internal Segmentationhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1352,
+    "fields": {
+        "description": "<h2>Kali Linux definition</h2><p class=\"jumpTag\"><a href=\"/article/3528191/kali-linux-explained-a-pentester-s-toolkit.html#jump\">To read this article in full, please click here</a></p></section></article>(Insider Story)",
+        "link": "https://www.csoonline.com/article/3528191/kali-linux-explained-a-pentester-s-toolkit.html#tk.rss_all",
+        "guid": "Kali Linux explained: A pentester\u2019s toolkithttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1353,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>There's no denying that skilled people will always be an integral part of cybersecurity operations. After all, every cybersecurity threat requires a conversation around it, intelligent intervention, and thorough analysis to combat future issues.</p><p>Yet without the right resources at their fingertips, even the most knowledgeable cybersecurity workforce is set up to fail. Consider this in the context of a misconfiguration in the cloud\u2014one of the top cloud security threats. If this issue is buried beneath a pile of other threats and alerts or SecOps need days or maybe even weeks to identify the root of the problem, cyber attackers have more room to make their way in the perimeter and exfiltrate sensitive data. (This year's Capital One data breach is a prime example.)</p><p class=\"jumpTag\"><a href=\"/article/3528290/how-to-maximize-resources-in-your-cybersecurity-workforce.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528290/how-to-maximize-resources-in-your-cybersecurity-workforce.html#tk.rss_all",
+        "guid": "BrandPost: How to Maximize Resources in Your Cybersecurity Workforcehttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1354,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>When it comes to cybersecurity, IT teams typically rely on log files, endpoint data, and wire data. Unfortunately, log files can be altered or turned off, and endpoints can be bypassed.</p><p>With wire data, however, you get the purest form of truth, as every conversation on the network is shown in real time. Network detection and response (NDR) solutions use wire data to shine a light on where attackers have gone, the data they've taken, and whether they're still in your environment.</p><p>In this blog post, we'll showcase the benefits of seeing data in motion and discuss why visibility into wire data through network detection and response is crucial for your cloud security operations.</p><p class=\"jumpTag\"><a href=\"/article/3528329/why-wire-data-is-the-purest-form-of-truth-in-cloud-security.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528329/why-wire-data-is-the-purest-form-of-truth-in-cloud-security.html#tk.rss_all",
+        "guid": "BrandPost: Why Wire Data Is the Purest Form of Truth in Cloud Securityhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1355,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Among enterprise C-level leaders, \"cloud-native\" is becoming a strategic imperative for several reasons. Cloud-native applications are purposefully designed and deployed using agile methods to support flexibility and scalability in the cloud. The implementation of cloud-native applications is thus more efficient and lends itself to automation.</p><p>While this defines cloud-native in the simplest of terms, there are several implications for security operations, from the migration process to collaborative efforts in securing the hybrid attack surface.</p><h2>The Relationship Between Cloud-Native and Security</h2>\n<p>The recent <a href=\"http://www.451research.com/\" rel=\"nofollow\">451 Research</a> report, \"The Impact and Evolution of Cloud Native,\" suggests that cloud-native architectures are more economical because they are driven by multiple microservices. Businesses can easily scale when they need to, making software deployment and development a much simpler and more cost-effective process.</p><p class=\"jumpTag\"><a href=\"/article/3528253/what-does-cloud-native-mean-for-security.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528253/what-does-cloud-native-mean-for-security.html#tk.rss_all",
+        "guid": "BrandPost: What Does Cloud-Native Mean for Security?http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1356,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>When an organization runs its own on-premise data centers, control over security is pretty straightforward: it falls solely on the shoulders of internal teams. They are the ones responsible for keeping servers secure, as well as the data stored within them.</p><p>In a hybrid or cloud environment, the conversation around security inevitably shifts as a cloud service provider (CSP) enters the picture. While the CSP is responsible for some aspects of security, there is a tendency for customers to \"over trust\" cloud providers when it comes to securing their data.</p><p>Per a <a href=\"https://www.mcafee.com/enterprise/en-us/assets/skyhigh/white-papers/cloud-adoption-risk-report-2019.pdf\" rel=\"nofollow\">recent McAfee report</a>, 69% of CISOs trust their cloud providers to keep their data secure, and 12% believe cloud service providers are solely responsible for securing data.</p><p class=\"jumpTag\"><a href=\"/article/3528288/understanding-the-cloud-shared-responsibility-model.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528288/understanding-the-cloud-shared-responsibility-model.html#tk.rss_all",
+        "guid": "BrandPost: Understanding the Cloud Shared Responsibility Modelhttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1357,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>We hear the terms \"deep web\" and \"dark web\" thrown around a lot... but what do they actually mean? And what's the difference between the two? CSO Online writer J.M. Porup joins Juliet to dispel rumors and discuss what sets the deep web and dark web apart from the rest of the web.</p></section>\n</article><p class=\"jumpTag\"><a href=\"/article/3528879/whats-the-difference-between-the-deep-web-and-the-dark-web.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528879/whats-the-difference-between-the-deep-web-and-the-dark-web.html#tk.rss_all",
+        "guid": "What's the difference between the deep web and the dark web?http://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1358,
+    "fields": {
+        "description": "<article>\n\t<section class=\"page\">\n<p>Enforcement of the California Consumer Privacy Act begins this summer, but lawsuits are already being filed. To help you comply and avoid being sued, CSO contributor Maria Korolov joins IDG TECH(talk) host Juliet Beauchamp to discuss critical components of the CCPA and answer viewers\u2019 questions.</p></section>\n</article><p class=\"jumpTag\"><a href=\"/article/3528858/complying-with-ccpa-answers-to-common-questions.html#jump\">To read this article in full, please click here</a></p></section></article>",
+        "link": "https://www.csoonline.com/article/3528858/complying-with-ccpa-answers-to-common-questions.html#tk.rss_all",
+        "guid": "Complying with CCPA: Answers to common questionshttp://csoonline.com/index.rss"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1359,
+    "fields": {
+        "description": "The firm's lawyer says his comments were personal, spoken out of emotional frustration.",
+        "link": "https://www.bbc.co.uk/news/technology-52151161",
+        "guid": "https://www.bbc.co.uk/news/technology-52151161"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1360,
+    "fields": {
+        "description": "The meeting app used by Cabinet has odd encryption and sends data through China, researchers say.",
+        "link": "https://www.bbc.co.uk/news/technology-52152025",
+        "guid": "https://www.bbc.co.uk/news/technology-52152025"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1361,
+    "fields": {
+        "description": "Plants are being sold via livestreams, emails and social media as lockdown forces traders to close.",
+        "link": "https://www.bbc.co.uk/news/technology-52153475",
+        "guid": "https://www.bbc.co.uk/news/technology-52153475"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1362,
+    "fields": {
+        "description": "It will regularly provide updates as to what types of places people are going to during the outbreak.",
+        "link": "https://www.bbc.co.uk/news/technology-52138076",
+        "guid": "https://www.bbc.co.uk/news/technology-52138076"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1363,
+    "fields": {
+        "description": "The latest smartphones might be delayed due to disrupted supply chains and shoppers staying at home.",
+        "link": "https://www.bbc.co.uk/news/business-52088327",
+        "guid": "https://www.bbc.co.uk/news/business-52088327"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1364,
+    "fields": {
+        "description": "Outer Wilds and Disco Elysium both win three golden masks at this year's Bafta Games Awards.",
+        "link": "https://www.bbc.co.uk/news/newsbeat-52137938",
+        "guid": "https://www.bbc.co.uk/news/newsbeat-52137938"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1365,
+    "fields": {
+        "description": "The firm will freeze all new feature development to concentrate on fixing security and privacy issues.",
+        "link": "https://www.bbc.co.uk/news/technology-52133349",
+        "guid": "https://www.bbc.co.uk/news/technology-52133349"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1366,
+    "fields": {
+        "description": "The new system realistically fills short gaps in conversations where drops previously occurred.",
+        "link": "https://www.bbc.co.uk/news/technology-52138100",
+        "guid": "https://www.bbc.co.uk/news/technology-52138100"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1367,
+    "fields": {
+        "description": "European Court judges that Amazon is not responsible for a Marketplace seller's trademark infringement.",
+        "link": "https://www.bbc.co.uk/news/technology-52135941",
+        "guid": "https://www.bbc.co.uk/news/technology-52135941"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1368,
+    "fields": {
+        "description": "China is using its high tech system to tackle the outbreak, but is the state interference justified?",
+        "link": "https://www.bbc.co.uk/news/world-asia-52104798",
+        "guid": "https://www.bbc.co.uk/news/world-asia-52104798"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1369,
+    "fields": {
+        "description": "BBC Click's Omar Mehtab looks at the best of the week's technology stories.",
+        "link": "https://www.bbc.co.uk/news/technology-52139171",
+        "guid": "https://www.bbc.co.uk/news/technology-52139171"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1370,
+    "fields": {
+        "description": "The Hastings Contemporary is offering virtual tours during the coronavirus lockdown.",
+        "link": "https://www.bbc.co.uk/news/uk-england-sussex-52136258",
+        "guid": "https://www.bbc.co.uk/news/uk-england-sussex-52136258"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1371,
+    "fields": {
+        "description": "From taking temperatures remotely to helping with hand washing, robots are helping with healthcare.",
+        "link": "https://www.bbc.co.uk/news/technology-52105478",
+        "guid": "https://www.bbc.co.uk/news/technology-52105478"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1372,
+    "fields": {
+        "description": "BBC Click's Paul Carter looks at some of the best tech stories of the week.",
+        "link": "https://www.bbc.co.uk/news/technology-52051835",
+        "guid": "https://www.bbc.co.uk/news/technology-52051835"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1373,
+    "fields": {
+        "description": "With the coronavirus lockdown bringing normal nightlife to an end, some enterprising DJs are going online.",
+        "link": "https://www.bbc.co.uk/news/business-52055789",
+        "guid": "https://www.bbc.co.uk/news/business-52055789"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1374,
+    "fields": {
+        "description": "Security experts back owner's assertion that chat app is not hacking other products.",
+        "link": "https://www.bbc.co.uk/news/technology-52112172",
+        "guid": "https://www.bbc.co.uk/news/technology-52112172"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1375,
+    "fields": {
+        "description": "How to avoid some of the pitfalls of teleconferencing and how it is changing the way we meet and do business.",
+        "link": "https://www.bbc.co.uk/news/business-52032849",
+        "guid": "https://www.bbc.co.uk/news/business-52032849"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1376,
+    "fields": {
+        "description": "From boxing to Formula 1, sports are reinventing the way they are played during coronavirus pandemic.",
+        "link": "https://www.bbc.co.uk/news/technology-52049893",
+        "guid": "https://www.bbc.co.uk/news/technology-52049893"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1377,
+    "fields": {
+        "description": "Experts are calling on the public to practise \u2018information hygiene\u2019 to help stop the spread of falsehoods online.",
+        "link": "https://www.bbc.co.uk/news/blogs-trending-51967889",
+        "guid": "https://www.bbc.co.uk/news/blogs-trending-51967889"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1378,
+    "fields": {
+        "description": "The lives of some Covid-19 patients may depend upon medical ventilators - here are the basics of how they work.",
+        "link": "https://www.bbc.co.uk/news/health-52036948",
+        "guid": "https://www.bbc.co.uk/news/health-52036948"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1379,
+    "fields": {
+        "description": "This guide will show you how to make and receive video calls on a variety of devices.",
+        "link": "https://www.bbc.co.uk/news/technology-51968122",
+        "guid": "https://www.bbc.co.uk/news/technology-51968122"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1380,
+    "fields": {
+        "description": "As the Coronavirus pandemic continues to force people to work from home, countless companies are now holding daily meetings using videoconferencing services from Zoom. But without the protection of a password, there's a decent chance your next Zoom meeting could be \"Zoom bombed\" -- attended or disrupted by someone who doesn't belong. And according to data gathered by a new automated Zoom meeting discovery tool dubbed \"zWarDial,\" a crazy number major corporations are setting up meetings without passwords enabled.",
+        "link": "https://krebsonsecurity.com/2020/04/war-dialing-tool-exposes-zooms-password-problems/",
+        "guid": "https://krebsonsecurity.com/?p=51159"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1381,
+    "fields": {
+        "description": "A spear-phishing attack this week hooked a customer service employee at GoDaddy.com,\u00a0the world's largest domain name registrar, KrebsOnSecurity has learned. The incident gave the phisher the ability to view and modify key customer records, access that was used to briefly hijack domains for a half-dozen GoDaddy customers, including transaction brokering site escrow.com.",
+        "link": "https://krebsonsecurity.com/2020/03/phish-of-godaddy-employee-jeopardized-escrow-com-among-others/",
+        "guid": "https://krebsonsecurity.com/?p=51125"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1382,
+    "fields": {
+        "description": "In 2018, KrebsOnSecurity unmasked the creators of Coinhive -- a now-defunct cryptocurrency mining service that was being massively abused by cybercriminals -- as the administrators of a popular German language image-hosting forum. In protest of that story, forum members donated hundreds of thousands of euros to nonprofits that combat cancer (Krebs means \"cancer\" in German). This week, the forum is celebrating its third annual observance of that protest to \"fight Krebs,\" albeit with a Coronavirus twist.",
+        "link": "https://krebsonsecurity.com/2020/03/annual-protest-to-fight-krebs-raises-e150k/",
+        "guid": "https://krebsonsecurity.com/?p=51101"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1383,
+    "fields": {
+        "description": "Federal investigators in Russia have charged at least 25 people accused of operating a sprawling international credit card theft ring. Cybersecurity experts say the raid included the charging of a major carding kingpin thought to be tied to dozens of carding shops and to some of the bigger data breaches targeting western retailers over the past decade.\n\nIn a statement released this week, the Russian Federal Security Service (FSB) said 25 individuals were charged with circulating illegal means of payment in connection with some 90 websites that sold stolen credit card data.",
+        "link": "https://krebsonsecurity.com/2020/03/russians-shut-down-huge-card-fraud-ring/",
+        "guid": "https://krebsonsecurity.com/?p=51069"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1384,
+    "fields": {
+        "description": "Many U.S. government Web sites now carry a message prominently at the top of their home pages meant to help visitors better distinguish between official U.S. government properties and phishing pages. Unfortunately, part of that message is misleading and may help perpetuate a popular misunderstanding about Web site security and trust that phishers have been exploiting for years now.",
+        "link": "https://krebsonsecurity.com/2020/03/us-government-sites-give-bad-security-advice/",
+        "guid": "https://krebsonsecurity.com/?p=51035"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1385,
+    "fields": {
+        "description": "In December 2018, KrebsOnSecurity looked at how dozens of U.S. political campaigns, cities and towns had paid a shady company called Web Listings Inc. after receiving what looked like a bill for search engine optimization (SEO) services rendered on behalf of their domain names. The story concluded that this dubious service had been scamming people and companies for more than a decade, and promised a Part II to explore who was behind Web Listings. What follows are some clues that point to a very convincing answer to that question.",
+        "link": "https://krebsonsecurity.com/2020/03/whos-behind-the-web-listings-mail-scam/",
+        "guid": "https://krebsonsecurity.com/?p=50984"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1386,
+    "fields": {
+        "description": "Finastra, a company that provides a range of technology solutions to banks worldwide, said it was shutting down key systems in response to a security breach discovered Friday morning. The company's public statement and notice to customers does not mention the cause of the outage, but their response so far is straight out of the playbook for dealing with ransomware attacks.",
+        "link": "https://krebsonsecurity.com/2020/03/security-breach-disrupts-fintech-firm-finastra/",
+        "guid": "https://krebsonsecurity.com/?p=50960"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1387,
+    "fields": {
+        "description": "In February, hardware maker Zyxel fixed a zero-day vulnerability in its routers and VPN firewall products after KrebsOnSecurity told the company the flaw was being abused by attackers to break into devices. This week, security researchers said they spotted that same vulnerability being exploited by a new variant of Mirai, a malware strain that targets vulnerable Internet of Things (IoT) devices for use in large-scale attacks and as proxies for other cybercrime activity.",
+        "link": "https://krebsonsecurity.com/2020/03/zxyel-flaw-powers-new-mirai-iot-botnet-strain/",
+        "guid": "https://krebsonsecurity.com/?p=50948"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1388,
+    "fields": {
+        "description": "With many people being laid off or working from home thanks to the Coronavirus pandemic, cybercrooks are almost certain to have more than their usual share of recruitable \"money mules\" -- people who get roped into money laundering schemes under the pretense of a work-at-home job offer. Here's the story of one upstart mule factory that spoofs a major nonprofit and tells new employees they'll be collecting and transmitting donations for an international \"Coronavirus Relief Fund.\"",
+        "link": "https://krebsonsecurity.com/2020/03/coronavirus-widens-the-money-mule-pool/",
+        "guid": "https://krebsonsecurity.com/?p=50869"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1389,
+    "fields": {
+        "description": "Anyone who's seen the 1984 hit movie Ghostbusters likely recalls the pivotal scene where a government bureaucrat orders the shutdown of the ghost containment unit, effectively unleashing a pent-up phantom menace on New York City. Now, something similar is in danger of happening in cyberspace: Shadowserver.org, an all-volunteer nonprofit organization that works to help Internet service providers (ISPs) identify and quarantine malware infections and botnets, has lost its longtime primary source of funding.",
+        "link": "https://krebsonsecurity.com/2020/03/the-webs-bot-containment-unit-needs-your-help/",
+        "guid": "https://krebsonsecurity.com/?p=50870"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1390,
+    "fields": {
+        "description": "The United Kingdom's anti-cybercrime agency is running online ads aimed at young people who search the Web for services that enable computer crimes, specifically trojan horse programs and DDoS-for-hire services. The ad campaign follows a similar initiative launched in late 2017 that academics say measurably dampened demand for such services by explaining that their use to harm others is illegal and can land potential customers in jail.",
+        "link": "https://krebsonsecurity.com/2020/05/uk-ad-campaign-seeks-to-deter-cybercrime/",
+        "guid": "https://krebsonsecurity.com/?p=51745"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1391,
+    "fields": {
+        "description": "A group of Romanians operating an ATM company in Mexico and suspected of bribing technicians to install sophisticated Bluetooth-based skimmers in cash machines throughout several top Mexican tourist destinations have enjoyed legal protection from a top anti-corruption official in the Mexican attorney general's office, according to a new complaint filed with the government's internal affairs division.",
+        "link": "https://krebsonsecurity.com/2020/05/report-atm-skimmer-gang-had-protection-from-mexican-attorney-generals-office/",
+        "guid": "https://krebsonsecurity.com/?p=51777"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1392,
+    "fields": {
+        "description": "When a reliable method of scamming money out of people, companies or governments becomes widely known, underground forums and chat networks tend to light up with activity as more fraudsters pile on to claim their share. And that's exactly what appears to be going on right now as multiple U.S. states struggle to combat a tsunami of phony Pandemic Unemployment Assistance (PUA) claims. Meanwhile, a number of U.S. states are possibly making it easier for crooks by leaking their citizens' personal data from the very websites the unemployment scammers are using to file bogus claims.",
+        "link": "https://krebsonsecurity.com/2020/05/riding-the-state-unemployment-fraud-wave/",
+        "guid": "https://krebsonsecurity.com/?p=51743"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1393,
+    "fields": {
+        "description": "In January 2019, dozens of media outlets raised the alarm about a new \u201cmegabreach\u201d involving the release of some 773 million stolen usernames and passwords that was breathlessly labeled \u201cthe largest collection of stolen data in history.\u201d A subsequent review by KrebsOnSecurity quickly determined the data was years old and merely a compilation of credentials pilfered from mostly public data breaches. Earlier today, authorities in Ukraine said they\u2019d apprehended a suspect in the case.",
+        "link": "https://krebsonsecurity.com/2020/05/ukraine-nabs-suspect-in-773m-password-megabreach/",
+        "guid": "https://krebsonsecurity.com/?p=51727"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1394,
+    "fields": {
+        "description": "Almost daily now there is news about flaws in commercial software that lead to computers getting hacked and seeded with malware. But the reality is most malicious software also has its share of security holes that open the door for security researchers or ne\u2019er-do-wells to liberate or else seize control over already-hacked systems. Here\u2019s a look at one long-lived malware vulnerability testing service that is used and run by some of the Dark Web\u2019s top cybercriminals.",
+        "link": "https://krebsonsecurity.com/2020/05/this-service-helps-malware-authors-fix-flaws-in-their-code/",
+        "guid": "https://krebsonsecurity.com/?p=51656"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1395,
+    "fields": {
+        "description": "A well-organized Nigerian crime ring is exploiting the COVID-19 crisis by committing large-scale fraud against multiple state unemployment insurance programs, with potential losses in the hundreds of millions of dollars, according to a new alert issued by the U.S. Secret Service.\n\nA memo seen by KrebsOnSecurity that the Secret Service sent to field offices around the United States this week says the ring has been filing unemployment claims in different states using Social Security numbers and other personally identifiable information (PII) belonging to identity theft victims, and that \"a substantial amount of the fraudulent benefits submitted have used PII from first responders, government personnel and school employees.\"",
+        "link": "https://krebsonsecurity.com/2020/05/u-s-secret-service-massive-fraud-against-state-unemployment-insurance-programs/",
+        "guid": "https://krebsonsecurity.com/?p=51629"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1396,
+    "fields": {
+        "description": "Microsoft today issued software updates to plug at least 111 security holes in Windows and Windows-based programs. None of the vulnerabilities were labeled as being publicly exploited or detailed prior to today, but as always if you're running Windows on any of your machines it's time once again to prepare to get your patches on.",
+        "link": "https://krebsonsecurity.com/2020/05/microsoft-patch-tuesday-may-2020-edition/",
+        "guid": "https://krebsonsecurity.com/?p=51606"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1397,
+    "fields": {
+        "description": "Diebold Nixdorf, a major provider of automatic teller machines (ATMs) and payment technology to banks and retailers, recently suffered a ransomware attack that disrupted some operations. The company says the hackers never touched its ATMs or customer networks, and that the intrusion only affected its corporate network.",
+        "link": "https://krebsonsecurity.com/2020/05/ransomware-hit-atm-giant-diebold-nixdorf/",
+        "guid": "https://krebsonsecurity.com/?p=51554"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1398,
+    "fields": {
+        "description": "Millions of Americans now filing for unemployment will receive benefits via a prepaid card issued by U.S. Bank, a Minnesota-based financial institution that handles unemployment payments for more than a dozen U.S. states. Some of these unemployment applications will trigger an automatic letter from U.S. Bank to the applicant. The letters are intended to prevent identity theft, but many people are mistaking these vague missives for a notification that someone has hijacked their identity.",
+        "link": "https://krebsonsecurity.com/2020/05/meant-to-combat-id-theft-unemployment-benefits-letter-prompts-id-theft-worries/",
+        "guid": "https://krebsonsecurity.com/?p=51545"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1399,
+    "fields": {
+        "description": "A new email scam is making the rounds, warning recipients that someone using their Internet address has been caught viewing child pornography. The message claims to have been sent from Microsoft Support, and says the recipient's Windows license will be suspended unless they call an \"MS Support\" number to reinstate the license, but the number goes to a phony tech support scam that tries to trick callers into giving fraudsters direct access to their PCs.",
+        "link": "https://krebsonsecurity.com/2020/05/tech-support-scam-uses-child-porn-warning/",
+        "guid": "https://krebsonsecurity.com/?p=51548"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1400,
+    "fields": {
+        "description": "For the first time, Twitter has hidden a tweet on the president's profile behind a warning.",
+        "link": "https://www.bbc.co.uk/news/technology-52846679",
+        "guid": "https://www.bbc.co.uk/news/technology-52846679"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1401,
+    "fields": {
+        "description": "Glastonbury report insists recommendation of 5GBioShield came from committee member - not council.",
+        "link": "https://www.bbc.co.uk/news/technology-52848913",
+        "guid": "https://www.bbc.co.uk/news/technology-52848913"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1402,
+    "fields": {
+        "description": "The CEO of PlayStation reveals how it's responded to coronavirus as it prepares to release the PS5.",
+        "link": "https://www.bbc.co.uk/news/newsbeat-52851506",
+        "guid": "https://www.bbc.co.uk/news/newsbeat-52851506"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1403,
+    "fields": {
+        "description": "About 55% of the online offences logged by police in England and Wales were on a Facebook-owned app.",
+        "link": "https://www.bbc.co.uk/news/technology-52841358",
+        "guid": "https://www.bbc.co.uk/news/technology-52841358"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1404,
+    "fields": {
+        "description": "Firm says the issue is now resolved after customers across the UK reported connection difficulties.",
+        "link": "https://www.bbc.co.uk/news/technology-52848894",
+        "guid": "https://www.bbc.co.uk/news/technology-52848894"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1405,
+    "fields": {
+        "description": "The former director of global news at the BBC will examine online posts from programmes and staff.",
+        "link": "https://www.bbc.co.uk/news/entertainment-arts-52848642",
+        "guid": "https://www.bbc.co.uk/news/entertainment-arts-52848642"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1406,
+    "fields": {
+        "description": "Videos of the red bikes being crushed were shared online after Uber sold its Jump business to Lime.",
+        "link": "https://www.bbc.co.uk/news/technology-52832791",
+        "guid": "https://www.bbc.co.uk/news/technology-52832791"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1407,
+    "fields": {
+        "description": "The US president's move follows a decision by Twitter to add a \"fact-check\" notice to his tweets.",
+        "link": "https://www.bbc.co.uk/news/technology-52843986",
+        "guid": "https://www.bbc.co.uk/news/technology-52843986"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1408,
+    "fields": {
+        "description": "One minister has compared the UK and France's outlier approaches to their nuclear deterrent effort.",
+        "link": "https://www.bbc.co.uk/news/technology-52832279",
+        "guid": "https://www.bbc.co.uk/news/technology-52832279"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1409,
+    "fields": {
+        "description": "After fact-checking President Trump, Twitter adds warnings to Chinese tweets too.",
+        "link": "https://www.bbc.co.uk/news/technology-52833063",
+        "guid": "https://www.bbc.co.uk/news/technology-52833063"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1410,
+    "fields": {
+        "description": "BBC Click's Paul Carter looks at some of the best of the week's technology news stories.",
+        "link": "https://www.bbc.co.uk/news/technology-52755685",
+        "guid": "https://www.bbc.co.uk/news/technology-52755685"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1411,
+    "fields": {
+        "description": "One young woman used popular game Animal Crossing for her family tradition of Bai San.",
+        "link": "https://www.bbc.co.uk/news/world-52831036",
+        "guid": "https://www.bbc.co.uk/news/world-52831036"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1412,
+    "fields": {
+        "description": "Kate Russell looks at the online tools and guides helping motivate you to take exercise.",
+        "link": "https://www.bbc.co.uk/news/technology-52755684",
+        "guid": "https://www.bbc.co.uk/news/technology-52755684"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1413,
+    "fields": {
+        "description": "Trials of delivery by drone are taking place on the Isle of Mull on Scotland's west coast.",
+        "link": "https://www.bbc.co.uk/news/uk-scotland-glasgow-west-52823590",
+        "guid": "https://www.bbc.co.uk/news/uk-scotland-glasgow-west-52823590"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1414,
+    "fields": {
+        "description": "Video calling has risen during the pandemic but for some disabled people it also brought challenges.",
+        "link": "https://www.bbc.co.uk/news/technology-52653125",
+        "guid": "https://www.bbc.co.uk/news/technology-52653125"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1415,
+    "fields": {
+        "description": "LEDs already light our houses but developments are making them even more powerful.",
+        "link": "https://www.bbc.co.uk/news/business-52535125",
+        "guid": "https://www.bbc.co.uk/news/business-52535125"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1416,
+    "fields": {
+        "description": "Millions in the UK will soon be asked to monitor who they have been near to combat coronavirus.",
+        "link": "https://www.bbc.co.uk/news/explainers-52442754",
+        "guid": "https://www.bbc.co.uk/news/explainers-52442754"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1417,
+    "fields": {
+        "description": "Officials are taking another look into Huawei, but the Chinese firm warns against a 5G ban.",
+        "link": "https://www.bbc.co.uk/news/technology-52797859",
+        "guid": "https://www.bbc.co.uk/news/technology-52797859"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1418,
+    "fields": {
+        "description": "Digital transformation has advanced two years in just two months, says Microsoft.",
+        "link": "https://www.bbc.co.uk/news/technology-52772428",
+        "guid": "https://www.bbc.co.uk/news/technology-52772428"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1419,
+    "fields": {
+        "description": "Salons are giving advice via video chat apps to help people style and colour their hair at home.",
+        "link": "https://www.bbc.co.uk/news/technology-52800250",
+        "guid": "https://www.bbc.co.uk/news/technology-52800250"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1420,
+    "fields": {
+        "description": "Microsoft today released software patches to plug at least 129 security holes in its Windows operating systems and supported software, by some accounts a record number of fixes in one go for the software giant. None of the bugs addressed this month are known to have been exploited or detailed prior to today, but there are a few vulnerabilities that deserve special attention -- particularly for enterprises and employees working remotely.",
+        "link": "https://krebsonsecurity.com/2020/06/microsoft-patch-tuesday-june-2020-edition/",
+        "guid": "https://krebsonsecurity.com/?p=51948"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1421,
+    "fields": {
+        "description": "In late May, KrebsOnSecurity alerted numerous officials in Florence, Ala. that their information technology systems had been infiltrated by hackers who specialize in deploying ransomware. Nevertheless, on Friday, June 5, the intruders sprang their attack, deploying ransomware and demanding nearly $300,000 worth of bitcoin. City officials now say they plan to pay the ransom demand, in hopes of keeping the personal data of their citizens off of the Internet.",
+        "link": "https://krebsonsecurity.com/2020/06/florence-ala-hit-by-ransomware-12-days-after-being-alerted-by-krebsonsecurity/",
+        "guid": "https://krebsonsecurity.com/?p=51926"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1422,
+    "fields": {
+        "description": "The co-owners of vDOS, a now-defunct service that for four years helped paying customers launch more than two million distributed denial-of-service (DDoS) attacks that knocked countless Internet users and websites offline, each have been sentenced to six months of community service by an Israeli court.",
+        "link": "https://krebsonsecurity.com/2020/06/owners-of-ddos-for-hire-service-vdos-get-6-months-community-service/",
+        "guid": "https://krebsonsecurity.com/?p=51904"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1423,
+    "fields": {
+        "description": "An exhaustive inquiry published today by a consortium of investigative journalists says a three-part series KrebsOnSecurity published in 2015 on a Romanian ATM skimming gang operating in Mexico's top tourist destinations disrupted their highly profitable business, which raked in an estimated $20 million a month and enjoyed the protection of top Mexican authorities.",
+        "link": "https://krebsonsecurity.com/2020/06/romanian-skimmer-gang-in-mexico-outed-by-krebsonsecurity-stole-1-2-billion/",
+        "guid": "https://krebsonsecurity.com/?p=51880"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1424,
+    "fields": {
+        "description": "The criminal group behind the REvil ransomware enterprise has begun auctioning off sensitive data stolen from companies hit by its malicious software. The move marks an escalation in tactics aimed at coercing victims to pay up -- and publicly shaming those don't. But it may also signal that ransomware purveyors are searching for new ways to profit from their crimes as victim businesses struggle just to keep the lights on during the unprecedented economic slowdown caused by the COVID-19 pandemic.",
+        "link": "https://krebsonsecurity.com/2020/06/revil-ransomware-gang-starts-auctioning-victim-data/",
+        "guid": "https://krebsonsecurity.com/?p=51868"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1425,
+    "fields": {
+        "description": "When law enforcement agencies tout their latest cybercriminal arrest, the defendant is often cast as a bravado outlaw engaged in sophisticated, lucrative, even exciting activity. But new research suggests that as cybercrime has become dominated by pay-for-service offerings, the vast majority of day-to-day activity needed to support these enterprises is in fact mind-numbingly boring and tedious, and that highlighting this reality may be a far more effective way combat cybercrime and steer offenders toward a better path.",
+        "link": "https://krebsonsecurity.com/2020/05/career-choice-tip-cybercrime-is-mostly-boring/",
+        "guid": "https://krebsonsecurity.com/?p=51836"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1426,
+    "fields": {
+        "description": "A switch to the Google-Apple model is being considered, but developers believe it would be a mistake.",
+        "link": "https://www.bbc.co.uk/news/technology-52995881",
+        "guid": "https://www.bbc.co.uk/news/technology-52995881"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1427,
+    "fields": {
+        "description": "The Japanese firm is due to unveil some of the highly anticipated PlayStation 5's games.",
+        "link": "https://www.bbc.co.uk/news/technology-53000013",
+        "guid": "https://www.bbc.co.uk/news/technology-53000013"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1428,
+    "fields": {
+        "description": "Spending too long wearing a virtual reality headset could have implications for vision, doctor warns.",
+        "link": "https://www.bbc.co.uk/news/technology-52992675",
+        "guid": "https://www.bbc.co.uk/news/technology-52992675"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1429,
+    "fields": {
+        "description": "The video call app allowed some patients to see recordings of others' sessions with medics.",
+        "link": "https://www.bbc.co.uk/news/technology-52986629",
+        "guid": "https://www.bbc.co.uk/news/technology-52986629"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1430,
+    "fields": {
+        "description": "Zynn is facing accusations that it has been stealing content from other apps.",
+        "link": "https://www.bbc.co.uk/news/technology-52997673",
+        "guid": "https://www.bbc.co.uk/news/technology-52997673"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1431,
+    "fields": {
+        "description": "The group said it had to take the step because moderators had reached breaking point.",
+        "link": "https://www.bbc.co.uk/news/technology-52992676",
+        "guid": "https://www.bbc.co.uk/news/technology-52992676"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1432,
+    "fields": {
+        "description": "Dozens of users complained they had been banned from the app for supporting the cause.",
+        "link": "https://www.bbc.co.uk/news/technology-52994746",
+        "guid": "https://www.bbc.co.uk/news/technology-52994746"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1433,
+    "fields": {
+        "description": "Gaurav Agrawal said the \"magical evening\" he captured last summer was never intended to cause harm.",
+        "link": "https://www.bbc.co.uk/news/technology-52978884",
+        "guid": "https://www.bbc.co.uk/news/technology-52978884"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1434,
+    "fields": {
+        "description": "The T-shirt, available on the US store, broke guidelines about depicting a crime scene.",
+        "link": "https://www.bbc.co.uk/news/technology-52978193",
+        "guid": "https://www.bbc.co.uk/news/technology-52978193"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1435,
+    "fields": {
+        "description": "The market value of the firm has eclipsed Fiat even though it has yet to deliver a single truck.",
+        "link": "https://www.bbc.co.uk/news/business-52988086",
+        "guid": "https://www.bbc.co.uk/news/business-52988086"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1436,
+    "fields": {
+        "description": "Subscribers had problems making and receiving calls but could still text and use mobile data.",
+        "link": "https://www.bbc.co.uk/news/technology-52986626",
+        "guid": "https://www.bbc.co.uk/news/technology-52986626"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1437,
+    "fields": {
+        "description": "Juneteenth is celebrated on 19 June to commemorate the end of slavery in the US.",
+        "link": "https://www.bbc.co.uk/news/business-52975341",
+        "guid": "https://www.bbc.co.uk/news/business-52975341"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1438,
+    "fields": {
+        "description": "Car-maker says cyber-attack has affected production, sales and development worldwide.",
+        "link": "https://www.bbc.co.uk/news/technology-52982427",
+        "guid": "https://www.bbc.co.uk/news/technology-52982427"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1439,
+    "fields": {
+        "description": "BBC Click's Kate Russell looks at the apps and websites that can boost your creativity.",
+        "link": "https://www.bbc.co.uk/news/technology-52920909",
+        "guid": "https://www.bbc.co.uk/news/technology-52920909"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1440,
+    "fields": {
+        "description": "Phil Spencer shares details about how the virus is affecting Microsoft and the wider games industry.",
+        "link": "https://www.bbc.co.uk/news/technology-52920908",
+        "guid": "https://www.bbc.co.uk/news/technology-52920908"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1441,
+    "fields": {
+        "description": "A games designer creates a face mask that shows animated mouth shapes as you speak.",
+        "link": "https://www.bbc.co.uk/news/technology-52944499",
+        "guid": "https://www.bbc.co.uk/news/technology-52944499"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1442,
+    "fields": {
+        "description": "BBC Click's Paul Carter looks at some of the best of the week's technology news stories.",
+        "link": "https://www.bbc.co.uk/news/technology-52833549",
+        "guid": "https://www.bbc.co.uk/news/technology-52833549"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1443,
+    "fields": {
+        "description": "Tristan Cross taught himself how to make the 3D models from scratch by watching YouTube videos.",
+        "link": "https://www.bbc.co.uk/news/technology-52833546",
+        "guid": "https://www.bbc.co.uk/news/technology-52833546"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1444,
+    "fields": {
+        "description": "People share the oldest gadgets they still use, via social media.",
+        "link": "https://www.bbc.co.uk/news/technology-52965974",
+        "guid": "https://www.bbc.co.uk/news/technology-52965974"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1445,
+    "fields": {
+        "description": "Taiwan credits civic hackers and memes with helping keep down the coronavirus death toll.",
+        "link": "https://www.bbc.co.uk/news/technology-52883838",
+        "guid": "https://www.bbc.co.uk/news/technology-52883838"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1446,
+    "fields": {
+        "description": "Xbox chief Phil Spencer explains how coronavirus has affected the console's release strategy.",
+        "link": "https://www.bbc.co.uk/news/technology-52961835",
+        "guid": "https://www.bbc.co.uk/news/technology-52961835"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1447,
+    "fields": {
+        "description": "The ex-Microsoft head is currently the target of all kinds of outlandish theories and false claims.",
+        "link": "https://www.bbc.co.uk/news/technology-52833706",
+        "guid": "https://www.bbc.co.uk/news/technology-52833706"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1448,
+    "fields": {
+        "description": "Recycled rare earth magnets are one solution to the rising demand for minerals used in our tech.",
+        "link": "https://www.bbc.co.uk/news/business-52701851",
+        "guid": "https://www.bbc.co.uk/news/business-52701851"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1449,
+    "fields": {
+        "description": "The testing site used to film Top Gear and the James Bond film Casino Royale has turned 50",
+        "link": "https://www.bbc.co.uk/news/uk-england-beds-bucks-herts-52789161",
+        "guid": "https://www.bbc.co.uk/news/uk-england-beds-bucks-herts-52789161"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1450,
+    "fields": {
+        "description": "The move comes after IBM ended its facial recognition activities amid concerns over racial bias.",
+        "link": "https://www.bbc.co.uk/news/business-52989128",
+        "guid": "https://www.bbc.co.uk/news/business-52989128"
+    }
+},
+{
+    "model": "api.rssarticle",
+    "pk": 1451,
+    "fields": {
+        "description": "The international group has been overseeing talks on taxing US tech giants.",
+        "link": "https://www.bbc.co.uk/news/business-53001251",
+        "guid": "https://www.bbc.co.uk/news/business-53001251"
+    }
+}
+]
