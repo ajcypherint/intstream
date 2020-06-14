@@ -177,11 +177,12 @@ def process_rss_source(source_url, source_id, organization_id):
                                                target=predictions[i])
             prediction.save()
 
-
+#unit test
 def model_dir(id):
     model_directory = os.path.join(settings.VENV_DIR, MODEL+str(id))
     return model_directory
 
+#todo unit test
 @shared_task()
 def process_rss_sources():
     #generate
@@ -242,7 +243,7 @@ BASE_CLASSIFY_FILE = "base_classify_file.py"
 CUSTOM_CLASSIFY_FILE = "train_classify.py"
 INTSTREAM_PROXY_ENV = "INTSTREAM_PROXY"
 
-
+#todo unit test
 def classify(directory, text_list, model_version_id):
     """
     :param directory: str
@@ -296,7 +297,7 @@ def create_dirs(script_directory):
     create_script_directory(script_directory)
     create_virtual_env(script_directory)
 
-
+#todo unit test
 def create_script_directory(script_directory):
     """
 
@@ -405,7 +406,7 @@ def update_status(job_name, status):
     model_version.status=status
     model_version.save()
 
-
+#todo refactor into one method for task and another for function to allow unit testing of function
 @shared_task(bind=True)
 def train_model(self,
                 model,

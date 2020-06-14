@@ -26,15 +26,4 @@ class TestTasks(TestCase):
         headers={"Content-Type":"application/json"}
         self.c.login(username=username,password=password)
 
-    @patch("api.tasks.requests.get")
-    def test_process_entry(self,get):
-        get.side_effect=post_get
-        res = tasks.process_entry(post_title="test",
-                            post_description="test",
-                            post_id=1,
-                            post_link="http://testcom",
-                            source_id=1,
-                            organization_id=1)
-        self.assertIsNone(res)
-
 
