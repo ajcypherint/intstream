@@ -107,9 +107,12 @@ async def fetch(url):
 PLACEHOLDER_TEXT = "placeholder text for classifier"
 
 
-
 @shared_task()
 def process_rss_source(source_url, source_id, organization_id):
+    _process_rss_source(source_url, source_id, organization_id)
+
+
+def _process_rss_source(source_url, source_id, organization_id):
     #todo(aj) add logging here and save to database for lookup
     """
     will launch them async
@@ -164,28 +167,34 @@ def process_rss_source(source_url, source_id, organization_id):
     if len(articles) == 0:
         logger.debug("no articles to classify: " + source_url)
         return
-    #todo(aj) implement paging here to prevent overload
+
     article_texts = [[i.text] for i in articles]
     org = models.Organization.objects.get(id=organization_id)
     for version in active_model_versions:
         directory = version.model.script_directory
         predictions = classify(directory, article_texts, version.id)
-        for i,article in enumerate(articles):
+        for i, article in enumerate(articles):
             prediction = models.Prediction(article=article,
                                                organization=org,
                                                mlmodel=version.model,
                                                target=predictions[i])
             prediction.save()
 
+
 #unit test
 def model_dir(id):
     model_directory = os.path.join(settings.VENV_DIR, MODEL+str(id))
     return model_directory
 
-#todo unit test
+
 @shared_task()
 def process_rss_sources():
-    #generate
+    _process_rss_sources()
+
+
+def _process_rss_sources():
+#todo unit test
+   #generate
     # 1. model_version dir
     # 2. script dir
     # 3. venv dir

@@ -34,7 +34,7 @@ from utils import vector, read
 from scipy.cluster import  hierarchy
 import json
 
-MAX_CLUSTER = 1000
+MAX_CLUSTER = 200
 # Create your views here.
 
 class MLModelFilter(filters.FilterSet):
