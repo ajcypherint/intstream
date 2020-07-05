@@ -130,6 +130,28 @@ class MLModel(models.Model):
         return str(self.id)
 
 
+class TrainingScript(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['name', 'organization'], name='unique_script'),
+            ]
+
+    name = models.TextField(max_length=300)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+
+
+class TrainingScriptVersion(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['script', 'version', 'organization'], name='unique_script_version'),
+            ]
+    script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=False)
+    zip = models.FileField(upload_to="train_scripts")
+    # null for system scripts.  User will not have this exposed via api. only for migrations that add system scripts
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    version = models.TextField(max_length=10, default="0.0.1")
+
+
 # name and api_endpoint for frontend  / sdk
 class ArticleType(models.Model):
     name = models.CharField(max_length=100,unique=True)

@@ -60,7 +60,8 @@ router.register("modelversion", views.ModelVersionViewSet, basename="modelversio
 SETTINGS = "setting"
 router.register(SETTINGS,views.SettingsViewSet, basename="setting")
 
-
+router.register("trainingscriptversion", views.TrainingScriptVersionViewSet, basename="trainingscriptversion")
+router.register("trainingscript", views.TrainingScriptViewSet, basename="trainingscript")
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view

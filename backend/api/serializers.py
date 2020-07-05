@@ -8,6 +8,7 @@ from .models import (MLModel, JobSource,
                      SourceType, ArticleType,
                      HtmlArticle, RSSArticle,
                      Setting, Prediction,
+                     TrainingScript, TrainingScriptVersion,
                      Classification, Organization)
 from django_celery_results.models import TaskResult as TaskResultMdl
 from utils import read
@@ -276,6 +277,8 @@ class ClassificationSerializer(serializers.ModelSerializer):
         model = Classification
 
     def create(self, validated_data):
+        # lookup with given kwargs, update with defaults if exists
+        # created is boolean on whether or not one was created
         classification, created = Classification.objects.update_or_create(
             article_id = validated_data.get("article_id", None),
             mlmodel_id = validated_data.get("mlmodel_id", None),
@@ -443,6 +446,26 @@ class RSSSerializer(serializers.ModelSerializer):
         model = RSSArticle
 
 
+class TrainingScriptSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=(
+            "id",
+            "name",
+            "organization",
+        )
+        model = TrainingScript
+
+
+class TrainingScriptVersion(serializers.ModelSerializer):
+    class Meta:
+        fields=(
+            "id",
+            "version",
+            "zip"
+        )
+
+
+
 class SettingSerializer(serializers.ModelSerializer):
     class Meta:
         fields=(
@@ -464,7 +487,6 @@ class SettingSerializer(serializers.ModelSerializer):
                 "aws_s3_log_base":validated_data.get("aws_s3_log_base", None),
                 "aws_s3_upload_base":validated_data.get("aws_s3_upload_base", None),
                 "aws_region":validated_data.get("aws_region", None),
-                "organization":validated_data.get("organization", None)
 
             }
         )

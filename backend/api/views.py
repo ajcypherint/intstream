@@ -600,6 +600,42 @@ class OrgViewSet(viewsets.ModelViewSet):
         serializer.save(organization = self.request.user.organization)
 
 
+class TrainingScriptFilter(filters.FilterSet):
+    class Meta:
+        model = models.TrainingScript
+        fields = ("id", "name")
+
+
+class TrainingScriptViewSet(OrgViewSet):
+    permissions = (permissions.IsAuthandReadOnlyIntegrator)
+    serializer_class = serializers.TrainingScript
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('id','name')
+    filterset_class = TrainingScriptFilter
+
+    def get_queryset(self):
+        return models.TrainingScript.objects.filter(organization=self.request.user.organization)
+
+
+class TrainingScriptVersionFilter(filters.FilterSet):
+    class Meta:
+        model = models.TrainingScriptVersion
+        fields = ("id", "version")
+
+
+class TrainingScriptVersionViewSet(OrgViewSet):
+    permissions = (permissions.IsAuthandReadOnlyIntegrator)
+    serializer_class = serializers.TrainingScriptVersion
+    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('id','version')
+    filterset_class = TrainingScriptVersionFilter
+
+    def get_queryset(self):
+        # return scripts for org or where org is SYSTEM
+        return models.TrainingScriptVersion.objects.filter(Q(organization=self.request.user.organization)
+                                                           | Q(organization__name=settings.SYSTEM_ORG))
+
+
 class SourceViewSet(OrgViewSet):
     permissions=(permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.SourceSerializer

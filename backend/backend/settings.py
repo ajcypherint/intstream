@@ -19,6 +19,7 @@ AWS_TRAIN_FILES = os.path.join(BASE_DIR,"aws_training_files")
 VENV_DIR = "/tmp"
 MODEL_FOLDER = "model.clf"
 DEFAULT_SCRIPT_MODEL = "uuid-original-default"
+SYSTEM_ORG = "SYSTEM"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
