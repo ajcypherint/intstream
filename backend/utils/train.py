@@ -25,6 +25,10 @@ import botocore
 from django.conf import settings
 import tempfile
 import asyncio_pool
+import gzip
+import shutil
+import zipfile
+
 LOG = logging.getLogger(__name__)
 
 def handle_exception(loop, exception):
@@ -85,6 +89,7 @@ class DeployPySparkScriptOnAws(object):
         :param training_script: str; script to upload to EWS for training
         :param logger: logger
         """
+        # todo(aj) download script for model to temp folder instead of training_script_folder
         self.extra_kwargs=extra_kwargs
         self.logger = logger
         self.metric=metric
@@ -118,6 +123,13 @@ class DeployPySparkScriptOnAws(object):
                                     aws_secret_access_key=self.aws_secret_access_key)        # Select AWS IAM profileboto
         self.s3 = self.session.resource('s3')                         # Open S3 connection
         self.sync_s3 = self.sync_session.resource("s3")
+
+        #retrieve training script
+        self.training_script_object = models.TrainingScriptVersion.objects.filter(
+            script__mlmodel__id=self.app_name
+            ).order_by("-script__mlmodel__training_script__trainingscriptversion")[0]
+
+        self.training_script_filename = self.training_script_object.zip.path
 
     def lock(self):
         #todo(aj)
@@ -163,7 +175,7 @@ class DeployPySparkScriptOnAws(object):
         for chunk in self.chunks(files,20):
             pool = asyncio_pool.AioPool(4)
             loop.run_until_complete(pool.map(self.upload_article, chunk))
-        res = loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
+            res = loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
         return res
 
     def locked(self):
@@ -232,19 +244,28 @@ class DeployPySparkScriptOnAws(object):
         """
         # Create tar.gz file
         REQ = "requirements.txt"
-        t_file = tarfile.open(self.script_tar.name, 'w:gz')
-        # Add Spark script path to tar.gz file
-        t_file.add(os.path.join(self.AWS_TRAIN_DIR,
-                                self.TRAIN_SCRIPT), arcname=self.TRAIN_SCRIPT)
-        t_file.add(os.path.join(self.AWS_TRAIN_DIR, self.training_script_folder, self.TRAIN_CLASSIFY),
-                   arcname=self.TRAIN_CLASSIFY)
-        t_file.add(os.path.join(self.AWS_TRAIN_DIR, self.training_script_folder, REQ),
-                   arcname=REQ)
+        archive = tarfile.open(self.training_script_filename, 'r:gz')
 
-        # List all files in tar.gz
-        for f in t_file.getnames():
-            self.logger.info("Added %s to tar-file" % f)
-        t_file.close()
+        with tempfile.NamedTemporaryFile() as req:
+            tmpreq = archive.extractfile(REQ)
+            req.write(tmpreq.read())
+            req.flush()
+            with tempfile.NamedTemporaryFile() as script:
+                tmp = archive.extractfile(self.TRAIN_CLASSIFY)
+                script.write(tmp.read())
+                script.flush()
+
+                t_file = tarfile.open(self.script_tar.name, 'w:gz')
+                # Add Spark script path to tar.gz file
+                t_file.add(script.name, arcname=self.TRAIN_CLASSIFY)
+                t_file.add(req.name, arcname=REQ)
+                t_file.add(os.path.join(self.AWS_TRAIN_DIR,  self.TRAIN_SCRIPT),
+                           arcname=self.TRAIN_SCRIPT)
+
+                # List all files in tar.gz
+                for f in t_file.getnames():
+                    self.logger.info("Added %s to tar-file" % f)
+                t_file.close()
 
     async def upload_article(self, article):
         await self.s3.Object(self.s3_bucket_temp_files, self.UPLOAD_DIR+str(article.id))\

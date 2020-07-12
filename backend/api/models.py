@@ -4,6 +4,7 @@ from polymorphic.models import PolymorphicModel
 from django.contrib.auth.models import AbstractUser
 from django.db.models.constraints import UniqueConstraint
 from django.db.models import Q, F,Value
+from semantic_version.django_fields import VersionField
 
 import uuid
 import os
@@ -79,6 +80,28 @@ class JobSource(Source):
     task = models.TextField() # todo(aj) foreignkey to
 
 
+class TrainingScript(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['name', 'organization'], name='unique_script'),
+            ]
+
+    name = models.TextField(max_length=300)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+
+
+class TrainingScriptVersion(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['script', 'version', 'organization'], name='unique_script_version'),
+            ]
+    script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=False)
+    zip = models.FileField(upload_to="train_scripts")
+    # null for system scripts.  User will not have this exposed via api. only for migrations that add system scripts
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    version = VersionField()
+
+
 class ModelVersion(models.Model):
     class Meta:
         constraints = [
@@ -98,11 +121,12 @@ class ModelVersion(models.Model):
     metric_value = models.FloatField(blank=True, null=True)
 
     # set once activated for classification
-    # can only be activated once file is not null; todo(aj) set with constraint
     active = models.BooleanField(default=False)
 
     # set on classify history
     virtual_env_loc = models.CharField(max_length=1000, null=True, blank=True)
+
+    training_script_version = models.ForeignKey(TrainingScriptVersion, on_delete=models.CASCADE, editable=True)
 
 
 class ClassifyHistory(models.Model):
@@ -125,34 +149,13 @@ class MLModel(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
     active = models.BooleanField(default=False) # allow to show in gui
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    #todo(aj) add script_version
+    training_script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=True)
 
     def __str__(self):
         return str(self.id)
 
 
-class TrainingScript(models.Model):
-    class Meta:
-        constraints = [
-            UniqueConstraint(fields=['name', 'organization'], name='unique_script'),
-            ]
-
-    name = models.TextField(max_length=300)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-
-
-class TrainingScriptVersion(models.Model):
-    class Meta:
-        constraints = [
-            UniqueConstraint(fields=['script', 'version', 'organization'], name='unique_script_version'),
-            ]
-    script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=False)
-    zip = models.FileField(upload_to="train_scripts")
-    # null for system scripts.  User will not have this exposed via api. only for migrations that add system scripts
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    version = models.TextField(max_length=10, default="0.0.1")
-
-
-# name and api_endpoint for frontend  / sdk
 class ArticleType(models.Model):
     name = models.CharField(max_length=100,unique=True)
     api_endpoint = models.TextField(max_length=100, unique=True)

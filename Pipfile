@@ -38,6 +38,7 @@ django-filter = {git = "https://github.com/rpkilby/django-filter.git",ref = "fil
 pystemmer = "*"
 cython = "*"
 django-rest-passwordreset = "*"
+semantic-version = "*"
 
 [requires]
 python_version = "3.6"

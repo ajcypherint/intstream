@@ -13,4 +13,8 @@ tar zxvf "/home/hadoop/script.tar.gz" -C /home/hadoop/
 python --version
 # Install requirements for Python script
 sudo /usr/bin/python3 -m pip install cython
+echo "finished cython"
 sudo /usr/bin/python3 -m pip install -r /home/hadoop/requirements.txt
+echo "cat requirements"
+cat /home/hadoop/requirements.txt
+echo "finished requirements"

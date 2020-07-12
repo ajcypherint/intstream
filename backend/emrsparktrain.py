@@ -10,7 +10,7 @@ from utils.train import TrainResult
 
 
 from utils import train
-from api.models import ModelVersion, MLModel, Organization, ModelVersion
+from api.models import ModelVersion, MLModel, Organization, ModelVersion, TrainingScriptVersion
 MODEL=2
 ORGANIZATION=1
 METRIC="f1"
@@ -53,9 +53,11 @@ def update_status(job_name, status):
 if __name__ == "__main__":
     model = MLModel.objects.get(id=MODEL)
     org = Organization.objects.get(id=ORGANIZATION)
+    script = TrainingScriptVersion.objects.first()
     model_version = ModelVersion(organization=org,
                                  model=model,
                                  version=trainer.job_name,
+                                 training_script_version=script,
                                  metric_name=METRIC)
     model_version.save()
     try:
