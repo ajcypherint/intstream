@@ -30,6 +30,11 @@ import EditModels from './ModelsEditFormComp'
 import EditJob from './SourceEditJobFormComp'
 import Article from "../containers/Article"
 import Train from "../containers/Train"
+
+import TrainingScriptsList from "../containers/TrainingScriptsList"
+import TrainingScriptsEdit from "../containers/TrainingScriptsEdit"
+import EditTrainingScripts from './TrainingScriptsEditFormComp'
+
 import ForgotPassword from "../containers/forgotPassword"
 import TrainList from "../containers/TrainList"
 import {ADD, EDIT} from "../util/util"
@@ -44,7 +49,7 @@ const Main = (props)=>(
     <Route exact path="/train/:id/:model" component={Train} />
     <Route exact path="/train_list" component={TrainList} />
     <Route exact path="/versions" component={Ver} />
-
+  
     <Route exact path="/createmlversion/:id" component={CreateMLVersion} />
 
     <Route exact path="/sources_upload" component={SourcesUploadList} />
@@ -129,6 +134,29 @@ const Main = (props)=>(
             }}
             match={match}/>} 
     />
+
+   <Route exact path="/trainingscripts" component={TrainingScriptsList} />
+    <Route exact path="/trainingscripts_add" 
+      render={()=>
+      <TrainingScriptsEdit 
+        form={<EditTrainingScripts/>}
+        state={ {
+          action:ADD,
+        }}
+        match={undefined}/>} 
+      />
+
+
+    <Route exact path="/trainingscripts/:id"       
+      render={({match})=>
+      <TrainingScriptsEdit 
+        form={<EditTrainingScripts/>}
+        state={ {
+          action:EDIT,
+        }}
+        match={match}/>} 
+      />
+
 
     <Route exact path="/models" component={ModelsList} />
     <Route exact path="/models_add" 

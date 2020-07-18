@@ -102,14 +102,17 @@ export default class Example extends React.Component {
                   Training 
                 </DropdownToggle>
                 <DropdownMenu right  >
+                 <DropdownItem tag={Link} to="/train_list">
+                    History
+                  </DropdownItem>
                   <DropdownItem tag={Link} to="/models">
                    Models 
                   </DropdownItem>
                   <DropdownItem tag={Link} to="/versions">
                    Model Versions
                   </DropdownItem>
-                  <DropdownItem tag={Link} to="/train_list">
-                    History
+                  <DropdownItem tag={Link} to="/trainingscripts">
+                    Training Scripts 
                   </DropdownItem>
                   </DropdownMenu>
               </UncontrolledDropdown>:null}

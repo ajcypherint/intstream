@@ -16,9 +16,11 @@ import settings, * as fromSettings from "./settings"
 import modelVersions, * as fromModelVersions from "./modelVersions.js"
 import filterModelVer, * as fromFilterModelVer from "./modelVersionFilter.js"
 import forgotPassword, * as fromForgotPassword from "./forgotPassword.js"
+import trainingScripts, * as fromTrainingScripts from "./trainingScripts.js"
 
 export default combineReducers({
   modelVersions:modelVersions,
+  trainingScripts:trainingScripts,
   filterModelVer:filterModelVer,
   auth: auth,
   filter:filter,
@@ -145,6 +147,16 @@ export const getModelVersionFilterMLModels = state => fromFilterModelVer.mlmodel
 //forgotPassword
 export const getFPassErrors = state => fromForgotPassword.errors(state.forgotPassword)
 export const getMessage = state => fromForgotPassword.getMessage(state.forgotPassword)
+
+//fromTrainingScripts
+export const getTrainingScripts = state => fromTrainingScripts.trainingScripts(state.models)
+export const getTrainingScriptsErrors = state => fromTrainingScripts.errors(state.models)
+export const getTrainingScriptsLoading = state => fromTrainingScripts.loading(state.models)
+export const getTrainingScriptsSaving = state => fromTrainingScripts.saving(state.models)
+export const getTrainingScriptsTotalCount = state => fromTrainingScripts.totalcount(state.models)
+export const getTrainingScriptsNextPage = state => fromTrainingScripts.nextPage(state.models)
+export const getTrainingScriptsPreviousPage = state => fromTrainingScripts.previousPage(state.models)
+
 
 export function withAuth(headers={}) {
   return (state) => ({
