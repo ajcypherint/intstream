@@ -448,21 +448,23 @@ class RSSSerializer(serializers.ModelSerializer):
 
 class TrainingScriptSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=(
+        fields = (
             "id",
             "name",
-            "organization",
+            "organization"
         )
         model = TrainingScript
 
 
-class TrainingScriptVersion(serializers.ModelSerializer):
+class TrainingScriptVersionSerializer(serializers.ModelSerializer):
     class Meta:
         fields=(
             "id",
             "version",
+            "script",
             "zip"
         )
+        model = TrainingScriptVersion
 
 
 

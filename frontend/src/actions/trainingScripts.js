@@ -5,21 +5,26 @@ import  URL  from  'url-parse'
 import {setParams,getAll} from './util'
 import {PAGINATION} from '../util/util'
 
-export const GET_TRAINING_SCRIPTS_REQUEST = '@@models/GET_TRAINING_SCRIPTS_REQUEST';
-export const GET_TRAINING_SCRIPTS_SUCCESS = '@@models/GET_TRAINING_SCRIPTS_SUCCESS';
-export const GET_TRAINING_SCRIPTS_FAILURE = '@@models/GET_TRAINING_SCRIPTS_FAILURE';
+export const GET_TRAINING_SCRIPTS_REQUEST = '@@trainingscripts/GET_TRAINING_SCRIPTS_REQUEST';
+export const GET_TRAINING_SCRIPTS_SUCCESS = '@@trainingscripts/GET_TRAINING_SCRIPTS_SUCCESS';
+export const GET_TRAINING_SCRIPTS_FAILURE = '@@trainingscripts/GET_TRAINING_SCRIPTS_FAILURE';
 
-export const SET_TRAINING_SCRIPTS_REQUEST = '@@models/SET_TRAINING_SCRIPTS_REQUEST';
-export const SET_TRAINING_SCRIPTS_SUCCESS = '@@models/SET_TRAINING_SCRIPTS_SUCCESS';
-export const SET_TRAINING_SCRIPTS_FAILURE = '@@models/SET_TRAINING_SCRIPTS_FAILURE';
+export const SET_TRAINING_SCRIPTS_REQUEST = '@@trainingscripts/SET_TRAINING_SCRIPTS_REQUEST';
+export const SET_TRAINING_SCRIPTS_SUCCESS = '@@trainingscripts/SET_TRAINING_SCRIPTS_SUCCESS';
+export const SET_TRAINING_SCRIPTS_FAILURE = '@@trainingscripts/SET_TRAINING_SCRIPTS_FAILURE';
 
-export const TRAININGSCRIPT_FORM_UPDATE = '@@models/MODEL_FORM_UPDATE';
+export const SET_TRAINING_SCRIPTS_VERSION_REQUEST = '@@trainingscripts/SET_TRAINING_SCRIPTS_VERSION_REQUEST';
+export const SET_TRAINING_SCRIPTS_VERSION_SUCCESS = '@@trainingscripts/SET_TRAINING_SCRIPTS_VERSION_SUCCESS';
+export const SET_TRAINING_SCRIPTS_VERSION_FAILURE = '@@trainingscripts/SET_TRAINING_SCRIPTS_VERSION_FAILURE';
 
-export const CLEAR = '@@models/CLEAR';
-export const GET_TOTAL_TRAINING_SCRIPTS = '@@models/TOTAL';
 
-export const API = '/api/mlmodels/'
-export const clearModels = ()=>{
+export const TRAININGSCRIPT_FORM_UPDATE = '@@trainingscripts/TRAINING_SCRIPTS_FORM_UPDATE';
+
+export const CLEAR = '@@trainingscripts/CLEAR';
+export const GET_TOTAL_TRAINING_SCRIPTS = '@@trainingscripts/TOTAL';
+
+export const API = '/api/trainingscript/'
+export const clear= ()=>{
   return {
     type:CLEAR,
     payload:{}
@@ -37,7 +42,7 @@ export const totalTrainingScripts = (data, total) =>{
 
   return {
     type:GET_TOTAL_TRAINING_SCRIPTS,
-    payload:{models:data,totalCount:total}
+    payload:{trainingscripts:data,totalCount:total}
   }
 }
 export const getTrainingScripts = (url, params=undefined)=>{
@@ -58,6 +63,40 @@ export const getTrainingScripts = (url, params=undefined)=>{
 }
 }
 
+export const editScripts = (url, data, method, goBack)=>{
+    //change edit to use this instead of setTrainingScripts
+    //edit the name if it changed.
+    // upload a new version
+  return async(dispatch, getState) =>{ 
+    let putData = { name:data.name }
+    let resp = await dispatch(setTrainingScripts(url, putData ))
+    if (resp.error){
+      return
+    }
+    goBack()
+
+  }
+}
+
+export const uploadVersion = (url, data, method='POST') => {
+  //uploads new version for script
+  // filters - list[string]
+  return {
+  [RSAA]:{
+   endpoint: url,
+    fetch:fetch,
+      method: method,
+      body: JSON.stringify(data),
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+       SET_TRAINING_SCRIPTS_VERSION_REQUEST, SET_TRAINING_SCRIPTS_VERSION_SUCCESS, SET_TRAINING_SCRIPTS_VERSION_FAILURE
+      ]
+
+    }
+  }
+
+}
+
 export const setTrainingScripts= (url,data,method='PUT' )=>{
   // filters - list[string]
   return {
@@ -75,13 +114,19 @@ export const setTrainingScripts= (url,data,method='PUT' )=>{
 }
 }
 
-export const getAllModels=getAll(getTrainingScripts)(totalTrainingScripts);
+export const getAllScripts = getAll(getTrainingScripts)(totalTrainingScripts);
 
 
-export const  addModels = (url, data, method, goBack) =>{
+export const  addScripts = (url, data, method, goBack) =>{
+  //url - str
+  //data - props: name, file, id
+  //method - str
+  //goBack - func
   return async(dispatch, getState) => {
-      let totalresp = await dispatch(setTrainingScripts(url, data, method))
-      if (!totalresp.error){
+      let resp = await dispatch(setTrainingScripts(url, data.name, method))
+      let respVersions = await(dispatch(uploadVersion()))
+      //todo add file to versions table
+      if (!resp.error && !respVersions){
         goBack()
       }
   }

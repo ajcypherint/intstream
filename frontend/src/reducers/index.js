@@ -149,13 +149,13 @@ export const getFPassErrors = state => fromForgotPassword.errors(state.forgotPas
 export const getMessage = state => fromForgotPassword.getMessage(state.forgotPassword)
 
 //fromTrainingScripts
-export const getTrainingScripts = state => fromTrainingScripts.trainingScripts(state.models)
-export const getTrainingScriptsErrors = state => fromTrainingScripts.errors(state.models)
-export const getTrainingScriptsLoading = state => fromTrainingScripts.loading(state.models)
-export const getTrainingScriptsSaving = state => fromTrainingScripts.saving(state.models)
-export const getTrainingScriptsTotalCount = state => fromTrainingScripts.totalcount(state.models)
-export const getTrainingScriptsNextPage = state => fromTrainingScripts.nextPage(state.models)
-export const getTrainingScriptsPreviousPage = state => fromTrainingScripts.previousPage(state.models)
+export const getTrainingScripts = state => fromTrainingScripts.trainingScripts(state.trainingScripts)
+export const getTrainingScriptsErrors = state => fromTrainingScripts.errors(state.trainingScripts)
+export const getTrainingScriptsLoading = state => fromTrainingScripts.loading(state.trainingScripts)
+export const getTrainingScriptsSaving = state => fromTrainingScripts.saving(state.trainingScripts)
+export const getTrainingScriptsTotalCount = state => fromTrainingScripts.totalcount(state.trainingScripts)
+export const getTrainingScriptsNextPage = state => fromTrainingScripts.nextPage(state.trainingScripts)
+export const getTrainingScriptsPreviousPage = state => fromTrainingScripts.previousPage(state.trainingScripts)
 
 
 export function withAuth(headers={}) {

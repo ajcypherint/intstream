@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import {FormGroup, Alert, Button, Jumbotron,  Form } from 'reactstrap';
+import {Input, FormGroup, Alert, Button, Jumbotron,  Form } from 'reactstrap';
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
 import FormButtons from './compFormButtons'
+
+import {ADD,EDIT} from '../util/util'
 
 export default class Edit extends Component {
   constructor(props){
@@ -16,7 +18,7 @@ export default class Edit extends Component {
  goVersions(event){
     this.props.history.push('/train/'+this.props.match.params.id+"/"+this.props.object.name)
  }
- 
+
  render(){
    return (
         <Form onSubmit={this.props.onSubmit} >
@@ -28,17 +30,17 @@ export default class Edit extends Component {
             value={this.props.object.name}  
             error={this.err_name} />
          </FormGroup>
+          { this.props.state.action !== EDIT ?
+            <FormGroup>
+              <Input type="file" name="filein" id="FileInput" />
+            </FormGroup>: null}
 
           <FormGroup>
-          <Button className="button-brand-primary" name={"Versions"} onClick={this.goVersions} size="lg">
-                  Add Sources
-                  </Button>
-
          <FormButtons saving={this.props.saving}
                       onSubmit={this.props.onSubmit}
                        goBack={this.props.goBack}/>
          </FormGroup>
-
+          
          </Form>
       )
     }
@@ -56,6 +58,9 @@ Edit.propTypes = {
   }
 
   ),
+  state:propTypes.shape({
+    action:propTypes.string,
+  }),
   goBack:propTypes.func,
   onSubmit:propTypes.func
 }

@@ -117,7 +117,7 @@ class ClassifPageFilterSetting(filters.FilterSet):
 
 
 class ClassifPageFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
-    permissions = (permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.ClassifFilterSerializer
     filterset_class = ClassifPageFilterSetting
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -170,7 +170,7 @@ class HomeFilterSetting(filters.FilterSet):
 
 
 class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
-    permissions = (permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.HomeFilterSerializer
     filterset_class = HomeFilterSetting
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -606,15 +606,18 @@ class TrainingScriptFilter(filters.FilterSet):
         fields = ("id", "name")
 
 
-class TrainingScriptViewSet(OrgViewSet):
-    permissions = (permissions.IsAuthandReadOnlyIntegrator)
-    serializer_class = serializers.TrainingScript
+class TrainingScriptViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyOrIsAdminIntegratorSameOrg,)
+    serializer_class = serializers.TrainingScriptSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name')
     filterset_class = TrainingScriptFilter
 
     def get_queryset(self):
-        return models.TrainingScript.objects.filter(organization=self.request.user.organization)
+        return models.TrainingScript.objects.filter(Q(organization=self.request.user.organization)
+                                                           | Q(organization__name=settings.SYSTEM_ORG))
+    def perform_create(self, serializer):
+        serializer.save(organization = self.request.user.organization)
 
 
 class TrainingScriptVersionFilter(filters.FilterSet):
@@ -624,8 +627,8 @@ class TrainingScriptVersionFilter(filters.FilterSet):
 
 
 class TrainingScriptVersionViewSet(OrgViewSet):
-    permissions = (permissions.IsAuthandReadOnlyIntegrator)
-    serializer_class = serializers.TrainingScriptVersion
+    permission_classes = (permissions.IsAuthandReadOnlyOrIsAdminIntegratorSameOrg,)
+    serializer_class = serializers.TrainingScriptVersionSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','version')
     filterset_class = TrainingScriptVersionFilter
@@ -637,7 +640,7 @@ class TrainingScriptVersionViewSet(OrgViewSet):
 
 
 class SourceViewSet(OrgViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.SourceSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active','url')
@@ -659,7 +662,7 @@ class PredictionFilter(filters.FilterSet):
 
 
 class PredictionViewSet(OrgViewSet):
-    permissions = (permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     serializer_class = serializers.PredictionSerializer
     filterset_class = PredictionFilter
@@ -678,7 +681,7 @@ class ClassificationFilter(filters.FilterSet):
 
 
 class ClassificationViewSet(OrgViewSet):
-    permissions = (permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.ClassificationSerializer
     filterset_class = ClassificationFilter
 
@@ -687,7 +690,7 @@ class ClassificationViewSet(OrgViewSet):
 
 
 class SettingsViewSet(OrgViewSet):
-    permissions = (permissions.IsAuthandReadOnlyStaff,)
+    permission_classes = (permissions.IsAuthandReadOnlyStaff,)
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     serializer_class = serializers.SettingSerializer
 
@@ -702,7 +705,7 @@ class RssFilter(filters.FilterSet):
 
 
 class RssSourceViewSet(OrgViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.RssSourceSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active','url')
@@ -719,7 +722,7 @@ class UploadSourceFilter(filters.FilterSet):
 
 
 class UploadSourceViewSet(OrgViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.UploadSourceSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active')
@@ -749,7 +752,7 @@ class JobSourceFilter(filters.FilterSet):
 
 
 class JobSourceViewSet(OrgViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.JobSourceSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = jobsourcecols
@@ -760,7 +763,7 @@ class JobSourceViewSet(OrgViewSet):
 
 
 class MLModelViewSet(OrgViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.MLModelSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','created_date','enabled')
@@ -806,7 +809,7 @@ class ArticleFilter(filters.FilterSet):
 
 
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.ArticleSerializer
     filter_backends = (filters.DjangoFilterBackend, rest_filters.OrderingFilter)
     filterset_class = ArticleFilter
@@ -822,7 +825,7 @@ class RSSArticleFilter(filters.FilterSet):
 
 
 class RSSArticleViewSet(viewsets.ModelViewSet):
-    permissions = (permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.RSSSerializer
     filter_backends = (filters.DjangoFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
@@ -844,7 +847,7 @@ class HtmlArticleFilter(filters.FilterSet):
 
 
 class HtmlArticleViewSet(viewsets.ModelViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.HtmlArticle.objects.all()
     serializer_class = serializers.HtmlSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -868,7 +871,7 @@ class TxtArticleFilter(filters.FilterSet):
 
 
 class TxtArticleViewSet(viewsets.ModelViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.TxtSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
@@ -909,7 +912,7 @@ class UserSingleViewSet(viewsets.ModelViewSet):
         return models.UserIntStream.objects.filter(id=self.request.user.id)
 
 class WordDocxArticleViewSet(viewsets.ModelViewSet):
-    permissions = (permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.WordDocxArticle.objects.all()
     serializer_class = serializers.WordDocxSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -933,7 +936,7 @@ class PDFArticleFilter(filters.FilterSet):
 
 
 class PDFArticleViewSet(viewsets.ModelViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.PDFSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
@@ -952,14 +955,14 @@ class PDFArticleViewSet(viewsets.ModelViewSet):
 
 
 class ArticleTypeViewSet(viewsets.ReadOnlyModelViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.ArticleType.objects.all()
     serializer_class = serializers.ArticleTypeSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
     # userinfo on login
-    permissions=(permissions.IsAuthandReadOnly,)
+    permission_classes = (permissions.IsAuthandReadOnly,)
     serializer_class = serializers.UserSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "is_staff","is_integrator")
@@ -972,7 +975,7 @@ class AllUserViewSet(viewsets.ModelViewSet):
     """
     All user view for super users
     """
-    permissions=(permissions.IsAuthandSuperUser,)
+    permission_classes = (permissions.IsAuthandSuperUser,)
     serializer_class = serializers.SuperUserSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id",
@@ -991,7 +994,7 @@ class AllUserViewSet(viewsets.ModelViewSet):
 
 class OrgUserViewSet(viewsets.ModelViewSet):
     # org user view for staff members
-    permissions=(permissions.IsAuthandReadOnlyStaff)
+    permission_classses = (permissions.IsAuthandReadOnlyStaff)
     serializer_class = serializers.SuperUserSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id",
@@ -1010,7 +1013,7 @@ class OrgUserViewSet(viewsets.ModelViewSet):
 
 
 class OrganizationViewSet(viewsets.ModelViewSet):
-    permissions=(permissions.IsAuthandReadOnlyStaff,)
+    permission_classes = (permissions.IsAuthandReadOnlyStaff,)
     serializer_class = serializers.OrganizationSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "name")
@@ -1020,7 +1023,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
 
 class AllOrganizationViewSet(viewsets.ModelViewSet):
-    permissions=(permissions.IsAuthandSuperUser,)
+    permission_classese = (permissions.IsAuthandSuperUser,)
     serializer_class = serializers.OrganizationSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "name")
@@ -1029,7 +1032,7 @@ class AllOrganizationViewSet(viewsets.ModelViewSet):
 
 
 class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
-    permissions=(permissions.IsAuthandReadOnly,)
+    permission_classes = (permissions.IsAuthandReadOnly,)
     serializer_class = serializers.TaskResult
     filterset_fields = ("id", )
 
@@ -1038,7 +1041,7 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ModelVersionViewSet(viewsets.ModelViewSet):
-    permissions=(permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.ModelVersionSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "version","model__active", "model", "active")
