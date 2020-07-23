@@ -2,6 +2,7 @@ from celery import shared_task
 import feedparser
 import asyncio
 import aiohttp
+import tarfile
 
 from celery.utils.log import get_task_logger
 
@@ -171,8 +172,7 @@ def _process_rss_source(source_url, source_id, organization_id):
     article_texts = [[i.text] for i in articles]
     org = models.Organization.objects.get(id=organization_id)
     for version in active_model_versions:
-        directory = version.model.script_directory
-        predictions = classify(directory, article_texts, version.id)
+        predictions = classify(article_texts, version.id)
         for i, article in enumerate(articles):
             prediction = models.Prediction(article=article,
                                                organization=org,
@@ -209,10 +209,11 @@ def _process_rss_sources():
                 model_tar.extractall(path=model_directory)
             except Exception as e:
                 if os.path.exists(model_directory):
-                    os.rmdir(model_directory)
+                    shutil.rmtree(model_directory)
                 raise e
-        #create venv and program folders
-        create_dirs(version.model.script_directory)
+    script_versions = models.TrainingScriptVersion.objects.all()
+    for v in script_versions:
+        create_dirs(v)
     sources = models.RSSSource.objects.filter(active=True).all()
     for source in sources:
         logger.info("source:" + source.name)
@@ -253,18 +254,18 @@ CUSTOM_CLASSIFY_FILE = "train_classify.py"
 INTSTREAM_PROXY_ENV = "INTSTREAM_PROXY"
 
 #todo unit test
-def classify(directory, text_list, model_version_id):
+def classify(text_list, model_version_id):
     """
-    :param directory: str
     :param text_list: list[str]
+    :param model_version_id: int
     :return:
     """
     model = ModelVersion.objects.get(id=model_version_id)
     model_directory = model_dir(model.id)
     full_model_dir = os.path.join(model_directory,settings.MODEL_FOLDER)
 
-    script_directory = os.path.join(settings.VENV_DIR, SCRIPT + directory)
-    venv_directory = os.path.join(settings.VENV_DIR, VENV + directory)
+    script_directory =  get_script_directory(model_version_id)
+    venv_directory = get_venv_directory(model_version_id)
     json_data = {"classifier":full_model_dir, "text":text_list}
     path_python = os.path.join(venv_directory,"bin","python")
     script = os.path.join(script_directory,BASE_CLASSIFY_FILE)
@@ -298,43 +299,67 @@ def classify(directory, text_list, model_version_id):
     return classifications
 
 
-def create_dirs(script_directory):
+def create_dirs(training_script_version):
     """
-    :param script_directory: str
+    :param training_script_version: models.TrainingScriptVersion
     :return:
     """
-    create_script_directory(script_directory)
-    create_virtual_env(script_directory)
+    create_script_directory(training_script_version)
+    create_virtual_env(training_script_version)
+
+
+def get_script_directory(id):
+    """
+
+    :param id: int
+    :return:
+    """
+    directory = os.path.join(settings.VENV_DIR, SCRIPT + str(id))
+    return  directory
+
 
 #todo unit test
-def create_script_directory(script_directory):
+def create_script_directory(training_script_version):
     """
-
-    :param script_directory: str
+    :param training_script_version: models.TrainingScriptVersion
     :return:
     """
-    directory = os.path.join(settings.VENV_DIR, SCRIPT + script_directory)
+    directory = get_script_directory(training_script_version.id)
+    #VENV_DIR = /tmp
     if not os.path.exists(directory):
         try:
             os.mkdir(directory)
             base_script = os.path.join(settings.AWS_TRAIN_FILES, BASE_CLASSIFY_FILE)
             copyfile(base_script,os.path.join(directory,BASE_CLASSIFY_FILE))
-            train_classify_script = os.path.join(settings.AWS_TRAIN_FILES, script_directory, CUSTOM_CLASSIFY_FILE)
-            copyfile(train_classify_script, os.path.join(directory, CUSTOM_CLASSIFY_FILE))
+            # todo(aj) open tar file
+            archive = tarfile.open(training_script_version.zip.path, 'r:gz')
+
+            tmp = archive.extractfile(CUSTOM_CLASSIFY_FILE)
+            with open(os.path.join(directory, CUSTOM_CLASSIFY_FILE),"wb") as f:
+                f.write(tmp.read())
+                f.flush()
         except Exception as e:
-            os.rmdir(directory)
+            shutil.rmtree(directory)
             raise e
 
 
-def create_virtual_env(script_directory):
+def get_venv_directory(id):
+    """
+    :param id: int
+    :return:
+    """
+    directory = os.path.join(settings.VENV_DIR, VENV + str(id))
+    return directory
+
+
+def create_virtual_env(training_script_version):
     """
     generate virtual env in dir for models
-    :param script_directory: str
-    :param proxy: str
+    :param training_script_version: models.TrainingScriptVersion
     :return:
     """
     proxy = os.environ.get(INTSTREAM_PROXY_ENV, None)
-    directory = os.path.join(settings.VENV_DIR, VENV + script_directory)
+    directory = get_venv_directory(training_script_version.id)
     if not os.path.exists(directory):
         try:
             # todo causes error isADirectory when running virtualenv
@@ -386,20 +411,26 @@ def create_virtual_env(script_directory):
             if res.returncode != 0:
                 raise Pip
 
-            # add PYTHON_PATH to virtual env params
-            respip2 = subprocess.run([os.path.join(directory,"bin/python"),
-                              "-m",
-                              "pip",
-                              "install",
-                              "-r",
-                              os.path.join(settings.AWS_TRAIN_FILES,script_directory,"requirements.txt")],
-                           env=env,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
-            logger.info("pip stderr: " + str(respip2.stderr))
-            logger.info("pip stdout: " + str(respip2.stdout))
-            if res.returncode != 0:
-                raise Pip
+            REQ = "requirements.txt"
+            archive = tarfile.open(training_script_version.zip.path, 'r:gz')
+            with tempfile.NamedTemporaryFile() as req:
+                tmpreq = archive.extractfile(REQ)
+                req.write(tmpreq.read())
+                req.flush()
+                # add PYTHON_PATH to virtual env params
+                respip2 = subprocess.run([os.path.join(directory,"bin/python"),
+                                  "-m",
+                                  "pip",
+                                  "install",
+                                  "-r",
+                                  req.name],
+                               env=env,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+                logger.info("pip stderr: " + str(respip2.stderr))
+                logger.info("pip stdout: " + str(respip2.stdout))
+                if res.returncode != 0:
+                    raise Pip
         except Exception as e:
             shutil.rmtree(directory)
             raise e

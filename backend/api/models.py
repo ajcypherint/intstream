@@ -144,12 +144,14 @@ class MLModel(models.Model):
 
     sources = models.ManyToManyField(Source)
     name = models.CharField(max_length=250, )
+
+    #todo no longer need script_directory
     script_directory = models.CharField(max_length=500, default=settings.DEFAULT_SCRIPT_MODEL)
+
     train_lock = models.BooleanField(default=True)
     created_date = models.DateTimeField(default=timezone.now)
     active = models.BooleanField(default=False) # allow to show in gui
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    #todo(aj) add script_version
     training_script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=True)
 
     def __str__(self):
