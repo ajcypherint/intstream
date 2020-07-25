@@ -20,13 +20,12 @@ sudo apt-get update
 #python
 echo "------"
 echo " install pipenv"
+sudo apt-get -qq install python
 sudo apt-get -qq install python3-pip
 sudo pip3 install pipenv
 
 echo "------"
-echo " cloning into instream"
-#clone python code
-#### REMOVED FOR DOCKER #### git clone git@gitlab.com:cypherint/intstream.git
+echo " install dependencies"
 cd "$base_dir/intstream/"
 pipenv install
 venvpath="$(pipenv --venv)"
