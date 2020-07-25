@@ -12,13 +12,13 @@ sudo apt-get update
 #python
 echo "------"
 echo " install pipenv"
-sudo apt-get install python3-pip
+sudo apt-get -qq install python3-pip
 sudo pip3 install pipenv
 
 echo "------"
 echo " cloning into instream"
 #clone python code
-git clone git@gitlab.com:cypherint/intstream.git
+#### REMOVED FOR DOCKER #### git clone git@gitlab.com:cypherint/intstream.git
 cd "$base_dir/intstream/"
 pipenv install
 venvpath="$(pipenv --venv)"
@@ -32,7 +32,7 @@ sudo systemctl enable redis-server
 echo "------"
 echo " postgres setup"
 #postgres
-sudo apt-get install postgresql
+sudo apt-get -qq install postgresql
 sudo systemctl restart postgresql 
 password=$(trap - PIPE ; cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1) 
 # if user exists just change the password
@@ -82,7 +82,7 @@ sudo systemctl enable celeryworker
 echo "------"
 echo " nginx setup"
 #nginx
-sudo apt-get install nginx
+sudo apt-get -qq install nginx
 echo "Enter your registered DNS name: " 
 read dns_name 
 sed -e "s/\${server_name}/server_name $dns_name/g" -e "s/\${cwd}/${curdir//\//\\/}/g" ./utility/intstream > ./utility/intstream_new
@@ -139,6 +139,6 @@ npm run build
 cat "$base_dir/intstream/utility/rc.local" >> /etc/rc.local
 
 # pyspark requires java 1.8 
-sudo apt install openjdk-8-jdk
+sudo apt -qq install  openjdk-8-jdk
 #https://stackoverflow.com/questions/53583199/pyspark-error-unsupported-class-file-major-version-55
 sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
