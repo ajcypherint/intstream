@@ -1,6 +1,15 @@
 set -x
 set -e
 
+
+if [ -z "$1" ]
+  then
+    echo "No dns_name"
+    exit 1
+fi
+
+dns_name="$1"
+cd ../..
 #standalone installation script
 base_dir=$(pwd)
 
@@ -25,7 +34,7 @@ venvpath="$(pipenv --venv)"
 
 echo "------"
 echo " redis setup"
-sudo apt-get install redis-server
+sudo apt-get install -y redis-server
 sudo systemctl enable redis-server
 
 
@@ -83,22 +92,11 @@ echo "------"
 echo " nginx setup"
 #nginx
 sudo apt-get -qq install nginx
-echo "Enter your registered DNS name: " 
-read dns_name 
 sed -e "s/\${server_name}/server_name $dns_name/g" -e "s/\${cwd}/${curdir//\//\\/}/g" ./utility/intstream > ./utility/intstream_new
 sudo cp ./utility/intstream_new /etc/nginx/sites-available/$dns_name
 sudo ln -sf /etc/nginx/sites-available/$dns_name /etc/nginx/sites-enabled/$dns_name
 sudo systemctl restart nginx
 
-
-echo "------"
-echo " ssl setup"
-sudo apt-get install software-properties-common
-sudo add-apt-repository universe
-sudo add-apt-repository ppa:certbot/certbot
-sudo apt-get update
-sudo apt-get install certbot python-certbot-nginx
-sudo certbot --nginx -d $dns_name
 
 echo "------"
 echo " create database"
