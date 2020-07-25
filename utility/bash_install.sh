@@ -103,10 +103,10 @@ echo " create database"
 export PASSWORD="$password"
 cd "$base_dir/intstream/backend/"
 pipenv run python manage.py migrate
+
 echo "------"
-echo " create super user"
+echo " create secret keyuser"
 pipenv run python manage.py generate_secret_key --replace 
-pipenv run python manage.py createsuperuser 
 
 echo "------"
 echo " collect static for backend to $base_dir/intstream/backend/"
@@ -114,7 +114,7 @@ pipenv run python manage.py collectstatic
 
 echo "------"
 echo " create media directory"
-mkdir -p "$base_dir/intstream/backend/media"
+mkdir -p "$base_dir/intstream/backend/media" 
 
 echo "------"
 echo " nvm install"
