@@ -1,7 +1,6 @@
 set -x
 set -e
 
-
 if [ -z "$1" ]
   then
     echo "No dns_name"
@@ -105,16 +104,12 @@ cd "$base_dir/intstream/backend/"
 pipenv run python manage.py migrate
 
 echo "------"
-echo " create secret keyuser"
+echo " create secret key"
 pipenv run python manage.py generate_secret_key --replace 
 
 echo "------"
 echo " collect static for backend to $base_dir/intstream/backend/"
 pipenv run python manage.py collectstatic
-
-echo "------"
-echo " create media directory"
-mkdir -p "$base_dir/intstream/backend/media" 
 
 echo "------"
 echo " nvm install"
