@@ -13,6 +13,7 @@ from .models import (MLModel, JobSource,
 from django_celery_results.models import TaskResult as TaskResultMdl
 from utils import read
 from django.conf import settings
+from api import tasks
 
 
 class SourceTypeSerializer(serializers.ModelSerializer):
@@ -114,6 +115,14 @@ class RssSourceSerializer(serializers.ModelSerializer):
 
         ]
         model = RSSSource
+
+    def create(self, validated_data):
+        src = RSSSource(**validated_data)
+        src.save()
+        tasks.process_rss_source.delay(organization_id=src.organization.id,
+                                 source_url=src.url,
+                                 source_id=src.id)
+        return src
 
 
 class SourceSerializerNested(serializers.Serializer):
@@ -426,6 +435,7 @@ class RSSSerializer(serializers.ModelSerializer):
     def get_clean_text(self, obj):
         reader = read.HTMLRead(obj.text)
         return reader.read()
+
 
     class Meta:
         fields= [

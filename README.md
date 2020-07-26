@@ -1,6 +1,13 @@
 # intstream
 Cyber Intelligence classification and information summarization.
 
+# install script
+1. cd utilities
+1. ./bash_install.sh
+
+initial user: intstreamadmin
+initial password: changeme@
+
 # Initiate shell
 `python manage.py shell`
 
