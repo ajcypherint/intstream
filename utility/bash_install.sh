@@ -128,7 +128,7 @@ echo " npm build"
 npm run build
 
 #todo move file to /etc/rc.local
-cat "$base_dir/intstream/utility/rc.local" >> /etc/rc.local
+sudo bash -c 'cat "$base_dir/intstream/utility/rc.local" >> /etc/rc.local'
 
 # pyspark requires java 1.8 
 sudo apt -qq install  openjdk-8-jdk
