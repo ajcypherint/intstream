@@ -26,7 +26,9 @@ class Train(TestCase):
                 "Classification.json",
                 "Source.json",
                 "JobSource.json",
-                "UploadSource.json"
+                "UploadSource.json",
+                "TrainingScript.json",
+                "TrainingScriptVersion.json"
                 ]
 
     def setUp(self):

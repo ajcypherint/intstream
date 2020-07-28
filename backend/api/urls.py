@@ -43,10 +43,10 @@ router.register(SOURCE, views.SourceViewSet,basename="source")
 router.register("homefilter",views.HomeFilter, basename="homefilter")
 router.register("classiffilter",views.ClassifPageFilter, basename="classiffilter")
 
-router.register("userinfo",views.UserViewSet, basename="userinfo")
-router.register("alluserinfo",views.AllUserViewSet, basename="alluserinfo")
-router.register("orguserinfo",views.OrgUserViewSet, basename="orguserinfo")
-router.register("usersingle",views.UserSingleViewSet, basename="usersingle")
+router.register("userinfo",views.UserViewSet, basename="userinfo") # single user info
+router.register("alluserinfo",views.AllUserViewSet, basename="alluserinfo") # all users; super user only
+router.register("orguserinfo",views.OrgUserViewSet, basename="orguserinfo") # org users; staff user only
+router.register("usersingle",views.UserSingleViewSet, basename="usersingle") # single user for password reset
 #classifications
 router.register("classifications",views.ClassificationViewSet, basename="classifications")
 router.register("predictions",views.PredictionViewSet, basename="predictions")

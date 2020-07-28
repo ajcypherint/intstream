@@ -33,6 +33,7 @@ import itertools
 from utils import vector, read
 from scipy.cluster import  hierarchy
 import json
+from rest_framework import mixins
 
 MAX_CLUSTER = 200
 # Create your views here.
@@ -894,23 +895,6 @@ class WordDocxArticleFilter(filters.FilterSet):
         fields = ARTICLE_SORT_FIELDS
 
 
-class UserSingleViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.UserSerializer
-    filterset_fields = ('username', 'first_name', 'last_name', 'email', 'is_active', 'date_joined')
-
-    @action(detail=True,methods=['post'], permission_classes=[permissions.IsAuthorStaff])
-    def set_password(self, request, pk=None):
-        user = request.user
-        serializer=serializers.UserSerializerUpdate(user,data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'status':'password set'},status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
-    def get_queryset(self):
-        return models.UserIntStream.objects.filter(id=self.request.user.id)
-
 class WordDocxArticleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.WordDocxArticle.objects.all()
@@ -960,12 +944,31 @@ class ArticleTypeViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ArticleTypeSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    # userinfo on login
+class UserSingleViewSet(viewsets.GenericViewSet,
+                        mixins.ListModelMixin,
+                        mixins.RetrieveModelMixin):
+    serializer_class = serializers.UserSerializer
+
+    @action(detail=True,methods=['post'], permission_classes=[permissions.IsAuthorStaff])
+    def set_password(self, request, pk=None):
+        user = request.user
+        serializer=serializers.UserSerializerUpdate(user,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status':'password set'},status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        return models.UserIntStream.objects.filter(id=self.request.user.id)
+
+
+class UserViewSet(viewsets.GenericViewSet,
+                  mixins.ListModelMixin,
+                  mixins.RetrieveModelMixin):
+    """ userinfo on login """
     permission_classes = (permissions.IsAuthandReadOnly,)
     serializer_class = serializers.UserSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ("id", "is_staff","is_integrator")
 
     def get_queryset(self):
         return models.UserIntStream.objects.filter(id=self.request.user.id).all()
@@ -976,7 +979,7 @@ class AllUserViewSet(viewsets.ModelViewSet):
     All user view for super users
     """
     permission_classes = (permissions.IsAuthandSuperUser,)
-    serializer_class = serializers.SuperUserSerializer
+    serializer_class = serializers.UserSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id",
                         "username",
@@ -985,7 +988,6 @@ class AllUserViewSet(viewsets.ModelViewSet):
                         "email",
                         "is_staff",
                         "is_integrator",
-                        "is_superuser",
                         "organization")
 
     def get_queryset(self):
@@ -995,7 +997,7 @@ class AllUserViewSet(viewsets.ModelViewSet):
 class OrgUserViewSet(viewsets.ModelViewSet):
     # org user view for staff members
     permission_classses = (permissions.IsAuthandReadOnlyStaff)
-    serializer_class = serializers.SuperUserSerializer
+    serializer_class = serializers.UserSerializer
     filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id",
                         "username",
@@ -1004,9 +1006,7 @@ class OrgUserViewSet(viewsets.ModelViewSet):
                         "email",
                         "is_staff",
                         "is_integrator",
-                        "is_superuser",
                         "organization")
-
 
     def get_queryset(self):
         return models.UserIntStream.objects.filter(organization=self.request.user.organization).all()

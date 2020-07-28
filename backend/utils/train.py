@@ -172,6 +172,7 @@ class DeployPySparkScriptOnAws(object):
                                               )
         if len(files) == 0:
             return False
+        res = None
         for chunk in self.chunks(files,20):
             pool = asyncio_pool.AioPool(4)
             loop.run_until_complete(pool.map(self.upload_article, chunk))

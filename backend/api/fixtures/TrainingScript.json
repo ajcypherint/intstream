@@ -1,0 +1,10 @@
+[
+{
+    "model": "api.trainingscript",
+    "pk": 3,
+    "fields": {
+        "name": "default",
+        "organization": 6
+    }
+}
+]

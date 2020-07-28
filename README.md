@@ -32,4 +32,5 @@ initial password: changeme@
 `celery worker -A backend.celery:celery_app -l info`
 
 ## backend
+1. dump data `python manage.py dumpdata app.model_name --indent 4 > fixtures/file_name.json``
 

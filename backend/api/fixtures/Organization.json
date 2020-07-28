@@ -19,5 +19,12 @@
     "fields": {
         "name": "nosettings"
     }
+},
+{
+    "model": "api.organization",
+    "pk": 6,
+    "fields": {
+        "name": "SYSTEM"
+    }
 }
 ]

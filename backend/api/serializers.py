@@ -36,47 +36,74 @@ class ArticleTypeSerializer(serializers.ModelSerializer):
         model = ArticleType
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializerUpdate(serializers.ModelSerializer):
+    """
+    used to set password
+    """
     class Meta:
-
-        fields=[
-            "id",
-            "is_integrator",
-            "is_staff",
-            "is_superuser"
-        ]
-        read_only_fields=[
-            "is_integrator",
-            "is_staff",
-            "is_superuser"
-        ]
-
         model = UserIntStream
+        fields = ('username', 'password')
+
+        write_only_fields=["password"]
+
+    def create(self,*args,**kwargs):
+        user = super().create(*args,**kwargs)
+        p = user.password
+        user.set_password(p)
+        user.save()
+        return user
+
+    def update(self, *args,**kwargs):
+        user = super().update(*args,**kwargs)
+        p = user.password
+        user.set_password(p)
+        user.save()
+        return user
 
 
-class SuperUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    """
+    used to get user information;
+    create a user
+    """
     class Meta:
-        fields=[
+        fields = [
             "id",
+            "organization",
             "first_name",
             "last_name",
-            "email",
             "username",
+            "email",
+            "password"
             "is_integrator",
             "is_staff",
-            "is_superuser",
-            "organization",
         ]
-        read_only_fields=[
-            "email",
-            "username",
+        read_only_fields = [
+            "id",
         ]
+        write_only_fields = ["password"]
 
         model = UserIntStream
+
+    def create(self,*args,**kwargs):
+        user = super().create(*args,**kwargs)
+        p = user.password
+        user.set_password(p)
+        user.save()
+        return user
+
+    def update(self, *args,**kwargs):
+        user = super().update(*args,**kwargs)
+        p = user.password
+        user.set_password(p)
+        user.save()
+        return user
+
+
 
 class JobSourceSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=[
+        fields = [
             "id",
             'name',
             'active',
@@ -95,7 +122,7 @@ class JobSourceSerializer(serializers.ModelSerializer):
 
 class UploadSourceSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=[
+        fields = [
             "id",
             'name',
             'active',
@@ -107,7 +134,7 @@ class UploadSourceSerializer(serializers.ModelSerializer):
 
 class RssSourceSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=[
+        fields = [
             "id",
             'name',
             'active',
@@ -159,12 +186,12 @@ class MLModelOnlySerializer(serializers.ModelSerializer):
         model = MLModel
 
 
-
 class HomeSerializer(serializers.ModelSerializer):
     mlmodel = serializers.CharField()
     mlmodel_id = serializers.IntegerField()
+
     class Meta:
-        fields=[
+        fields = [
             'id',
             'name',
             'active',
@@ -174,6 +201,7 @@ class HomeSerializer(serializers.ModelSerializer):
 
         ]
         model = Source
+
 
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -193,20 +221,21 @@ class ClassifFilterSerializer(serializers.Serializer):
     active = serializers.BooleanField(read_only=True)
     mlmodel = serializers.CharField(max_length=1000,read_only=True)
     mlmodel_id = serializers.IntegerField(read_only=True)
-    mlmodel_active= serializers.BooleanField(read_only=True)
+    mlmodel_active = serializers.BooleanField(read_only=True)
     target = serializers.BooleanField(read_only=True)
 
     def to_representation(self, instance):
         return {
-            "id":instance["id"],
-            "name":instance["name"],
-            "active":instance["active"],
-            "mlmodel":instance["mlmodel"],
-            "mlmodel_id":instance["mlmodel_id"],
-            "mlmodel_active":instance["mlmodel_active"],
-            "target":instance["target"]
+            "id": instance["id"],
+            "name": instance["name"],
+            "active": instance["active"],
+            "mlmodel": instance["mlmodel"],
+            "mlmodel_id": instance["mlmodel_id"],
+            "mlmodel_active": instance["mlmodel_active"],
+            "target": instance["target"]
 
         }
+
 
 class HomeFilterSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
@@ -214,18 +243,18 @@ class HomeFilterSerializer(serializers.Serializer):
     active = serializers.BooleanField(read_only=True)
     mlmodel = serializers.CharField(max_length=1000,read_only=True)
     mlmodel_id = serializers.IntegerField(read_only=True)
-    mlmodel_active= serializers.BooleanField(read_only=True)
+    mlmodel_active = serializers.BooleanField(read_only=True)
     target = serializers.BooleanField(read_only=True)
 
     def to_representation(self, instance):
         return {
-            "id":instance["id"],
-            "name":instance["name"],
-            "active":instance["active"],
-            "mlmodel":instance["mlmodel"],
-            "mlmodel_id":instance["mlmodel_id"],
-            "mlmodel_active":instance["mlmodel_active"],
-            "target":instance["target"]
+            "id": instance["id"],
+            "name": instance["name"],
+            "active": instance["active"],
+            "mlmodel": instance["mlmodel"],
+            "mlmodel_id": instance["mlmodel_id"],
+            "mlmodel_active": instance["mlmodel_active"],
+            "target": instance["target"]
 
         }
 
@@ -379,49 +408,7 @@ class HtmlSerializer(serializers.ModelSerializer):
         ]
         model = HtmlArticle
 
-class UserSerializerUpdate(serializers.ModelSerializer):
-    class Meta:
-        model = UserIntStream
-        fields = ('username', 'password')
 
-    def create(self,*args,**kwargs):
-        user = super().create(*args,**kwargs)
-        p = user.password
-        user.set_password(p)
-        user.save()
-        return user
-
-    def update(self, *args,**kwargs):
-        user = super().update(*args,**kwargs)
-        p = user.password
-        user.set_password(p)
-        user.save()
-        return user
-
-class UserSerializerRegister(serializers.ModelSerializer):
-    class Meta:
-        model = UserIntStream
-        fields = ('id',
-                  'username',
-                  'password',
-                  'email',
-                  'first_name',
-                  'last_name')
-        write_only_fields = ('password',)
-        read_only_fields = ('id',)
-
-    def create(self, validated_data):
-        user = User.objects.create(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
-        )
-
-        user.set_password(validated_data['password'])
-        user.save()
-
-        return user
 
 class WordDocxSerializer(serializers.ModelSerializer):
     article_set = ArticleSerializer(many=True, read_only=True)
