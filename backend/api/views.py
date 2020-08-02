@@ -1,18 +1,18 @@
-from django.shortcuts import render
-import coreapi, coreschema
-from sklearn.metrics.pairwise import cosine_similarity
 import math
-import numpy as np
+from django.utils.encoding import force_bytes
+from django.core.mail import EmailMessage
+from api.tokens import account_activation_token
+from django.utils.http import urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
+from django.db import IntegrityError
+from django.template.loader import render_to_string
 import urllib.parse as urlparse
 from django.core import exceptions
 from . import tasks
 from urllib.parse import urlencode
 from random import randint
 from dateutil.parser import parse
-from django.utils import timezone
 from . import serializers
-from django.utils import timezone
 from . import models
 from django_celery_results.models import TaskResult as TaskResultMdl
 from rest_framework import filters as rest_filters
@@ -22,7 +22,7 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 from django_filters import rest_framework as filters
 from django_filters.groups import CombinedGroup
-from  utils.document import TXT, PDF, WordDocx
+from utils.document import TXT, PDF, WordDocx
 from . import permissions
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -326,6 +326,135 @@ class Train(APIView):
         return Response({"job_id":result.id},status.HTTP_200_OK)
 
 
+class SignUpView(APIView):
+    permission_classes = (permissions.AllUsers,)
+
+    email = openapi.Parameter('email',
+                              in_=openapi.IN_BODY,
+                              required=True,
+                              description="email address",
+                              type=openapi.TYPE_STRING
+                              )
+    username = openapi.Parameter('username',
+                              in_=openapi.IN_BODY,
+                              required=True,
+                              description="username",
+                              type=openapi.TYPE_STRING
+                              )
+    first_name = openapi.Parameter('first_name',
+                              in_=openapi.IN_BODY,
+                              required=True,
+                              description="first name",
+                              type=openapi.TYPE_STRING
+                              )
+    last_name = openapi.Parameter('last_name',
+                              in_=openapi.IN_BODY,
+                              required=True,
+                              description="last name",
+                              type=openapi.TYPE_STRING
+                              )
+    organization_name = openapi.Parameter('organization_name',
+                              in_=openapi.IN_BODY,
+                              required=True,
+                              description="organization name",
+                              type=openapi.TYPE_STRING
+                              )
+    password = openapi.Parameter('password',
+                              in_=openapi.IN_BODY,
+                              required=True,
+                              description="password",
+                              type=openapi.TYPE_STRING
+                              )
+
+    response = openapi.Response('success',
+            openapi.Schema( type=openapi.TYPE_OBJECT,
+                            properties={
+                                     "status":openapi.Schema(type=openapi.TYPE_STRING),
+                                    }
+                            )
+                        )
+
+    error = openapi.Response('success',
+            openapi.Schema( type=openapi.TYPE_OBJECT,
+                            properties={
+                                     "status":openapi.Schema(type=openapi.TYPE_STRING),
+                                     "error":openapi.Schema(type=openapi.TYPE_STRING),
+                                    }
+                            ))
+
+    @swagger_auto_schema(manual_parameters=[email,
+                                            username,
+                                            first_name,
+                                            last_name,
+                                            organization_name,
+                                            password], responses={200:response,400:error})
+    def post(self, request, format=None):
+        email = request.data.get("email", None)
+        username = request.data.get("username", None)
+        first_name = request.data.get("first_name", None)
+        last_name = request.data.get("last_name", None)
+        password = request.data.get("password", None)
+        org_name = request.data.get("organization_name", None)
+
+        # check all above
+        org_ser = serializers.OrganizationSerializer(data={"name":org_name})
+        if not org_ser.is_valid():
+            response = {
+                "status": "failed",
+                "errors": org_ser.errors
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        # if integrity error return error
+        try:
+            org_ser.save()
+        except IntegrityError as e:
+            response = {
+                "status": "failed",
+                "errors": str(e)
+            }
+            return Response(response, status.HTTP_400_BAD_REQUEST)
+        user = serializers.UserSerializer(data={"username": username,
+                                        "email": email,
+                                        "password": password,
+                                        "first_name": first_name,
+                                        "last_name": last_name,
+                                        "is_active":False,
+                                        "organization": org_ser.data.get("id")
+                                        }
+                                        )
+        if not user.is_valid():
+            response = {
+                "status": "failed",
+                "errors": org_ser.errors
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user.save()
+        except IntegrityError as e:
+            response = {
+                "status": "failed",
+                "errors": str(e)
+            }
+            return Response(response, status.HTTP_400_BAD_REQUEST)
+
+        current_site = get_current_site(request)
+        subject = 'Activate Your MySite Account'
+        message = render_to_string('emails/account_activation_email.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.instance.pk)),
+            'token': account_activation_token.make_token(user),
+        })
+        email = EmailMessage(
+            subject, message, to=[user.instance.email]
+        )
+        email.send()
+
+        response = {
+            "status": "Please confirm your email to complete registration"
+        }
+        return Response(response, status.HTTP_201_CREATED)
+
 
 class HomePage(APIView):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
@@ -421,7 +550,7 @@ class HomePage(APIView):
                     new_values.append(i)
         return new_values
 
-    @swagger_auto_schema(manual_parameters=[source_id,start_date,end_date,threshold], responses={200:response,404:error})
+    @swagger_auto_schema(manual_parameters=[source_id,start_date,end_date,threshold], responses={200:response,400:error})
     def get(self, request, format=None):
         # todo(aj) filter by model id
         # either pass in source ids list to filter by or double nested

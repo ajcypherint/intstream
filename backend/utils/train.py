@@ -172,11 +172,10 @@ class DeployPySparkScriptOnAws(object):
                                               )
         if len(files) == 0:
             return False
-        res = None
-        for chunk in self.chunks(files,20):
+        for chunk in self.chunks(files, 20):
             pool = asyncio_pool.AioPool(4)
             loop.run_until_complete(pool.map(self.upload_article, chunk))
-            res = loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
+        res = loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
         return res
 
     def locked(self):

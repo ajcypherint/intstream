@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
         "password": "pbkdf2_sha256$150000$oJKw6uGe7dGQ$myhrKxtKV47p/w2e8rN/buc/vSFVb3yrCAEwlIIqrhs=",
-        "last_login": "2020-05-09T16:22:29.092Z",
+        "last_login": "2020-07-21T00:55:46.606Z",
         "is_superuser": true,
         "username": "ubuntu",
         "first_name": "",
@@ -75,6 +75,26 @@
         "is_integrator": false,
         "organization": 1,
         "email": "analyst@analyst.com",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "api.userintstream",
+    "pk": 10,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$SDfyKm6al2kM$hF3yJKWJjMT6+VWQOkVRvflgQ63XXB3dNVP3ADP5hpM=",
+        "last_login": null,
+        "is_superuser": true,
+        "username": "intstreamadmin",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2020-07-25T20:18:54.842Z",
+        "is_integrator": false,
+        "organization": 6,
+        "email": "intstreamadmin@intstream.com",
         "groups": [],
         "user_permissions": []
     }

@@ -109,9 +109,9 @@ class Train(TestCase):
         temp_bucket_exists.return_value = True
         tar_python_script.return_value = True
         upload_temp_files.side_effect = mock_upload_temp_files
-        chunks.return_value = []
+        chunks.return_value = [[1]]
         objects = mock.Mock()
-        objects.filter.return_value = [1]
+        objects.filter.return_value = [1,2]
 
         Article.objects = objects
 

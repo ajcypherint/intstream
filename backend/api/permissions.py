@@ -2,6 +2,11 @@ from rest_framework import permissions
 from api import models
 
 
+class AllUsers(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return True
+
+
 class IsAuthandReadOnlyOrIsAdminIntegratorSameOrg(permissions.BasePermission):
     """
     special permissions for scripts
@@ -15,7 +20,7 @@ class IsAuthandReadOnlyOrIsAdminIntegratorSameOrg(permissions.BasePermission):
             if (view.action == "update") and request.data == {}:
                 return True
             if view.action == "update":
-                object =  models.TrainingScript.objects.get(id=view.kwargs["pk"])
+                object = models.TrainingScript.objects.get(id=view.kwargs["pk"])
                 if object.organization == request.user.organization:
                     return True
                 return False
