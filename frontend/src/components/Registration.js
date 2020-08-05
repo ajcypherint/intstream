@@ -7,7 +7,11 @@ import TextInput from './TextInput'
 
 export default class LoginForm extends Component {
   state = {
-    password: ''
+    username: '',
+    password:'',
+    password2:'',
+    email:'',
+    org:'',
   }
 
   handleInputChange = (event) => {
@@ -18,17 +22,18 @@ export default class LoginForm extends Component {
     if(name==="username"){
       this.props.onUserChange(event.target.value)
     }
-    if (name==="password"){
-      this.setState({
+    this.setState({
         [name]: value
       });
-    }
   }
 
 
   onSubmit = (event) => {
     event.preventDefault()
-    this.props.onSubmit(this.props.username, this.state.password)
+    this.props.onSubmit(this.props.username, 
+      this.state.email,
+      this.state.Organization,
+      this.state.password)
   }
 
   render() {
@@ -41,9 +46,12 @@ export default class LoginForm extends Component {
             {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
             <TextInput name="username" label="Username" error={errors.username}  onChange={this.handleInputChange}/>
             <TextInput name="password" label="Password" error={errors.password} type="password" onChange={this.handleInputChange}/>
+            <TextInput name="password2" label="Password" error={errors.password} type="password" onChange={this.handleInputChange}/>
+            <TextInput name="email" label="Email" error={errors.email}  onChange={this.handleInputChange}/>
+            <TextInput name="org" label="Organization" error={errors.organization}  onChange={this.handleInputChange}/>
           </FormGroup>
           <FormGroup>
-            <Button type="submit" className="button-brand-primary" size="lg">Log In</Button>
+            <Button type="submit" className="button-brand-primary" size="lg">Register</Button>
           </FormGroup>
           <FormGroup>
             <Link to={"/forgot_password"}>
@@ -55,4 +63,4 @@ export default class LoginForm extends Component {
  
     )
   }
-}
+:

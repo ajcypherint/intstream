@@ -2,8 +2,10 @@ import math
 from django.utils.encoding import force_bytes
 from django.core.mail import EmailMessage
 from api.tokens import account_activation_token
-from django.utils.http import urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_text
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.template.loader import render_to_string
 import urllib.parse as urlparse
@@ -23,6 +25,7 @@ from rest_framework.views import APIView
 from django_filters import rest_framework as filters
 from django_filters.groups import CombinedGroup
 from utils.document import TXT, PDF, WordDocx
+from rest_framework import permissions as drfpermissions
 from . import permissions
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -327,7 +330,7 @@ class Train(APIView):
 
 
 class SignUpView(APIView):
-    permission_classes = (permissions.AllUsers,)
+    permission_classes = (drfpermissions.AllowAny,)
 
     email = openapi.Parameter('email',
                               in_=openapi.IN_BODY,
@@ -365,6 +368,12 @@ class SignUpView(APIView):
                               description="password",
                               type=openapi.TYPE_STRING
                               )
+    password2 = openapi.Parameter('password2',
+                              in_=openapi.IN_BODY,
+                              required=True,
+                              description="password2",
+                              type=openapi.TYPE_STRING
+                              )
 
     response = openapi.Response('success',
             openapi.Schema( type=openapi.TYPE_OBJECT,
@@ -394,13 +403,14 @@ class SignUpView(APIView):
         first_name = request.data.get("first_name", None)
         last_name = request.data.get("last_name", None)
         password = request.data.get("password", None)
+        password2 = request.data.get("password2", None)
         org_name = request.data.get("organization_name", None)
+
 
         # check all above
         org_ser = serializers.OrganizationSerializer(data={"name":org_name})
         if not org_ser.is_valid():
             response = {
-                "status": "failed",
                 "errors": org_ser.errors
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
@@ -409,7 +419,6 @@ class SignUpView(APIView):
             org_ser.save()
         except IntegrityError as e:
             response = {
-                "status": "failed",
                 "errors": str(e)
             }
             return Response(response, status.HTTP_400_BAD_REQUEST)
@@ -418,32 +427,35 @@ class SignUpView(APIView):
                                         "password": password,
                                         "first_name": first_name,
                                         "last_name": last_name,
-                                        "is_active":False,
+                                        "is_active": False,
                                         "organization": org_ser.data.get("id")
                                         }
                                         )
         if not user.is_valid():
             response = {
-                "status": "failed",
                 "errors": org_ser.errors
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        if password != password2:
+            response = {
+                "errors": "Passwords do not match"
+            }
+            return Response(response, status.HTTP_400_BAD_REQUEST)
         try:
             user.save()
         except IntegrityError as e:
             response = {
-                "status": "failed",
                 "errors": str(e)
             }
             return Response(response, status.HTTP_400_BAD_REQUEST)
 
         current_site = get_current_site(request)
-        subject = 'Activate Your MySite Account'
-        message = render_to_string('emails/account_activation_email.html', {
+        subject = 'Activate Your Intstream Account'
+        message = render_to_string('api/account_activation_email.html', {
             'user': user,
             'domain': current_site.domain,
             'uid': urlsafe_base64_encode(force_bytes(user.instance.pk)),
-            'token': account_activation_token.make_token(user),
+            'token': account_activation_token.make_token(user.instance),
         })
         email = EmailMessage(
             subject, message, to=[user.instance.email]
@@ -451,9 +463,29 @@ class SignUpView(APIView):
         email.send()
 
         response = {
-            "status": "Please confirm your email to complete registration"
+            "message": "Please confirm your email to complete registration",
         }
         return Response(response, status.HTTP_201_CREATED)
+
+
+class Activate(APIView):
+    permission_classes = (drfpermissions.AllowAny,)
+
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = models.UserIntStream.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, exceptions.ObjectDoesNotExist):
+            user = None
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            response = {"message": "Thank you for your email confirmation. Now you can login your account."}
+            return Response(response, status.HTTP_200_OK)
+        else:
+            response = {"message": "Activate link is invalid",
+                        "errors":"Activate link is invalid"}
+            return Response(response, status.HTTP_400_BAD_REQUEST)
 
 
 class HomePage(APIView):

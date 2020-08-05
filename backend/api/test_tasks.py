@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.test import Client
 from unittest import mock
-from unittest.mock import patch
 from api import tasks
 import aiohttp
 
