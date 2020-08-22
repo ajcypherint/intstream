@@ -132,6 +132,7 @@ class UploadSourceSerializer(serializers.ModelSerializer):
         model = UploadSource
 
 
+
 class RssSourceSerializer(serializers.ModelSerializer):
     class Meta:
         fields = [
@@ -204,6 +205,7 @@ class HomeSerializer(serializers.ModelSerializer):
 
 
 class SourceSerializer(serializers.ModelSerializer):
+
     class Meta:
         fields=[
             'id',
@@ -409,7 +411,6 @@ class HtmlSerializer(serializers.ModelSerializer):
         model = HtmlArticle
 
 
-
 class WordDocxSerializer(serializers.ModelSerializer):
     article_set = ArticleSerializer(many=True, read_only=True)
     class Meta:
@@ -441,6 +442,7 @@ class TxtSerializer(serializers.ModelSerializer):
         ]
         model = TxtArticle
 
+
 class RSSSerializer(serializers.ModelSerializer):
     article_set = ArticleSerializer(many=True, read_only=True)
     clean_text = serializers.SerializerMethodField()
@@ -463,7 +465,6 @@ class RSSSerializer(serializers.ModelSerializer):
             'link',
             'guid',
             'article_set',
-            'organization',
         ]
 
         model = RSSArticle

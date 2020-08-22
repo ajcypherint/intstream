@@ -8,8 +8,16 @@ export const PASSWORDRESET_REQUEST = '@@password-reset/PASSWORDRESET_REQUEST';
 export const PASSWORDRESET_SUCCESS = '@@password-reset/PASSWORDRESET_SUCCESS';
 export const PASSWORDRESET_FAILURE = '@@password-reset/PASSWORDRESET_FAILURE';
 
+export const PASSWORDRESET_CLEAR= '@@password-reset/PASSWORDRESET_CLEAR';
 
-export const sendEmail = (email, history)=>{
+export const clear = ()=>{
+  return {
+    type:PASSWORDRESET_CLEAR,
+    payload:{}
+
+  }
+}
+export const sendEmail = (email)=>{
   let data = {
     "email":email
               }
@@ -35,6 +43,7 @@ export const sendEmailRedirect= (email, history) =>{
    if(resp.error){
      return
    }
+   history.goBack()
    
  }
 }

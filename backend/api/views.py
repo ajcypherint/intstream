@@ -1,5 +1,7 @@
 import math
 from django.utils.encoding import force_bytes
+from api.backend import DisabledHTMLFilterBackend
+from rest_framework import mixins
 from django.core.mail import EmailMessage
 from api.tokens import account_activation_token
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -8,6 +10,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.template.loader import render_to_string
+from django_rest_passwordreset import views as drpr_views
 import urllib.parse as urlparse
 from django.core import exceptions
 from . import tasks
@@ -22,6 +25,7 @@ from rest_framework import status, generics, mixins
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
+from api.cache import CustomAnonRateThrottle
 from django_filters import rest_framework as filters
 from django_filters.groups import CombinedGroup
 from utils.document import TXT, PDF, WordDocx
@@ -124,7 +128,7 @@ class ClassifPageFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.ClassifFilterSerializer
     filterset_class = ClassifPageFilterSetting
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
 
     def get_queryset(self):
         return models.Article.objects.filter(organization=self.request.user.organization).\
@@ -177,7 +181,7 @@ class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.HomeFilterSerializer
     filterset_class = HomeFilterSetting
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
 
     def get_queryset(self):
         return models.Article.objects.filter(organization=self.request.user.organization).\
@@ -331,6 +335,7 @@ class Train(APIView):
 
 class SignUpView(APIView):
     permission_classes = (drfpermissions.AllowAny,)
+    authentication_classes = []
 
     email = openapi.Parameter('email',
                               in_=openapi.IN_BODY,
@@ -378,18 +383,14 @@ class SignUpView(APIView):
     response = openapi.Response('success',
             openapi.Schema( type=openapi.TYPE_OBJECT,
                             properties={
-                                     "status":openapi.Schema(type=openapi.TYPE_STRING),
+                                     "message":openapi.Schema(type=openapi.TYPE_STRING),
                                     }
                             )
                         )
-
     error = openapi.Response('success',
             openapi.Schema( type=openapi.TYPE_OBJECT,
-                            properties={
-                                     "status":openapi.Schema(type=openapi.TYPE_STRING),
-                                     "error":openapi.Schema(type=openapi.TYPE_STRING),
-                                    }
-                            ))
+                            )
+                        )
 
     @swagger_auto_schema(manual_parameters=[email,
                                             username,
@@ -406,70 +407,80 @@ class SignUpView(APIView):
         password2 = request.data.get("password2", None)
         org_name = request.data.get("organization_name", None)
 
+        if password != password2:
+           response = {
+                    "password":["passwords do not match"],
+                    "password2":["passwords do not match"]
+            }
+           return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
-        # check all above
         org_ser = serializers.OrganizationSerializer(data={"name":org_name})
+        # if org ser is valid and
         if not org_ser.is_valid():
             response = {
-                "errors": org_ser.errors
+                    "organization_name": org_ser.errors["name"]
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        # if integrity error return error
-        try:
-            org_ser.save()
-        except IntegrityError as e:
-            response = {
-                "errors": str(e)
-            }
-            return Response(response, status.HTTP_400_BAD_REQUEST)
-        user = serializers.UserSerializer(data={"username": username,
-                                        "email": email,
-                                        "password": password,
-                                        "first_name": first_name,
-                                        "last_name": last_name,
-                                        "is_active": False,
-                                        "organization": org_ser.data.get("id")
-                                        }
-                                        )
-        if not user.is_valid():
-            response = {
-                "errors": org_ser.errors
-            }
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        if password != password2:
-            response = {
-                "errors": "Passwords do not match"
-            }
-            return Response(response, status.HTTP_400_BAD_REQUEST)
-        try:
-            user.save()
-        except IntegrityError as e:
-            response = {
-                "errors": str(e)
-            }
-            return Response(response, status.HTTP_400_BAD_REQUEST)
 
-        current_site = get_current_site(request)
-        subject = 'Activate Your Intstream Account'
-        message = render_to_string('api/account_activation_email.html', {
-            'user': user,
-            'domain': current_site.domain,
-            'uid': urlsafe_base64_encode(force_bytes(user.instance.pk)),
-            'token': account_activation_token.make_token(user.instance),
-        })
-        email = EmailMessage(
-            subject, message, to=[user.instance.email]
-        )
-        email.send()
+        num_users = models.UserIntStream.objects.filter(organization__name=org_name).count()
+        org_exists_count = models.Organization.objects.filter(name=org_name).count()
 
-        response = {
-            "message": "Please confirm your email to complete registration",
-        }
-        return Response(response, status.HTTP_201_CREATED)
+        if org_exists_count == 0:
+            try:
+                org_ser.save()
+            except IntegrityError as e:
+                response = {
+                    "organization": [str(e)]
+                }
+                return Response(response, status.HTTP_400_BAD_REQUEST)
+
+        # if org exists and has no users or org didn't exist
+        if (org_exists_count == 1 and num_users == 0) or org_exists_count == 0:
+            user = serializers.UserSerializer(data={"username": username,
+                                            "email": email,
+                                            "password": password,
+                                            "first_name": first_name,
+                                            "last_name": last_name,
+                                            "is_active": False,
+                                            "organization": org_ser.data.get("id")
+                                            }
+                                            )
+            if not user.is_valid():
+                response = {
+                        "user": user.errors
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                user.save()
+            except IntegrityError as e:
+                response = {
+                    "user": [str(e)]
+                }
+                return Response(response, status.HTTP_400_BAD_REQUEST)
+
+            current_site = get_current_site(request)
+            subject = 'Activate Your Intstream Account'
+            message = render_to_string('api/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.instance.pk)),
+                'token': account_activation_token.make_token(user.instance),
+            })
+            email = EmailMessage(
+                subject, message, to=[user.instance.email]
+            )
+            email.send()
+
+            response = {
+                "message": "Please confirm your email to complete registration",
+            }
+            return Response(response, status.HTTP_201_CREATED)
 
 
 class Activate(APIView):
     permission_classes = (drfpermissions.AllowAny,)
+    authentication_classes = []
+    throttle_classes = [CustomAnonRateThrottle]
 
     def get(self, request, uidb64, token):
         try:
@@ -480,11 +491,12 @@ class Activate(APIView):
         if user is not None and account_activation_token.check_token(user, token):
             user.is_active = True
             user.save()
-            response = {"message": "Thank you for your email confirmation. Now you can login your account."}
+            response = {"detail": "Thank you for your email confirmation. Now you can login your account."}
             return Response(response, status.HTTP_200_OK)
         else:
-            response = {"message": "Activate link is invalid",
-                        "errors":"Activate link is invalid"}
+            response = {
+                "detail": "Activate link is invalid",
+                        }
             return Response(response, status.HTTP_400_BAD_REQUEST)
 
 
@@ -771,7 +783,7 @@ class TrainingScriptFilter(filters.FilterSet):
 class TrainingScriptViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyOrIsAdminIntegratorSameOrg,)
     serializer_class = serializers.TrainingScriptSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name')
     filterset_class = TrainingScriptFilter
 
@@ -791,7 +803,7 @@ class TrainingScriptVersionFilter(filters.FilterSet):
 class TrainingScriptVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyOrIsAdminIntegratorSameOrg,)
     serializer_class = serializers.TrainingScriptVersionSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','version')
     filterset_class = TrainingScriptVersionFilter
 
@@ -804,7 +816,7 @@ class TrainingScriptVersionViewSet(OrgViewSet):
 class SourceViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.SourceSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active','url')
     filterset_class = SourceFilter
 
@@ -825,7 +837,7 @@ class PredictionFilter(filters.FilterSet):
 
 class PredictionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     serializer_class = serializers.PredictionSerializer
     filterset_class = PredictionFilter
 
@@ -853,7 +865,7 @@ class ClassificationViewSet(OrgViewSet):
 
 class SettingsViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyStaff,)
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     serializer_class = serializers.SettingSerializer
 
     def get_queryset(self):
@@ -869,7 +881,7 @@ class RssFilter(filters.FilterSet):
 class RssSourceViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.RssSourceSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active','url')
     filterset_class = RssFilter
 
@@ -886,7 +898,7 @@ class UploadSourceFilter(filters.FilterSet):
 class UploadSourceViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.UploadSourceSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active')
     filterset_class = UploadSourceFilter
 
@@ -916,7 +928,7 @@ class JobSourceFilter(filters.FilterSet):
 class JobSourceViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.JobSourceSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = jobsourcecols
     filterset_class = JobSourceFilter
 
@@ -927,7 +939,7 @@ class JobSourceViewSet(OrgViewSet):
 class MLModelViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.MLModelSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','created_date','enabled')
     filterset_class = MLModelFilter
 
@@ -973,7 +985,7 @@ class ArticleFilter(filters.FilterSet):
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.ArticleSerializer
-    filter_backends = (filters.DjangoFilterBackend, rest_filters.OrderingFilter)
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter)
     filterset_class = ArticleFilter
 
     def get_queryset(self):
@@ -986,10 +998,12 @@ class RSSArticleFilter(filters.FilterSet):
         fields = ARTICLE_SORT_FIELDS
 
 
+
+
 class RSSArticleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.RSSSerializer
-    filter_backends = (filters.DjangoFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = RSSArticleFilter
 
@@ -998,6 +1012,7 @@ class RSSArticleViewSet(viewsets.ModelViewSet):
         text = instance.read()
         serializer.save(text=text,organization=self.request.user.organization)
 
+    #todo move this logic into serializer so browseable api filtering works
     def get_queryset(self):
         return models.RSSArticle.objects.filter(organization=self.request.user.organization)
 
@@ -1012,7 +1027,7 @@ class HtmlArticleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.HtmlArticle.objects.all()
     serializer_class = serializers.HtmlSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = HtmlArticleFilter
 
@@ -1035,7 +1050,7 @@ class TxtArticleFilter(filters.FilterSet):
 class TxtArticleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.TxtSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = TxtArticleFilter
 
@@ -1060,7 +1075,7 @@ class WordDocxArticleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.WordDocxArticle.objects.all()
     serializer_class = serializers.WordDocxSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = WordDocxArticleFilter
 
@@ -1083,7 +1098,7 @@ class PDFArticleFilter(filters.FilterSet):
 class PDFArticleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.PDFSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = PDFArticleFilter
 
@@ -1141,7 +1156,7 @@ class AllUserViewSet(viewsets.ModelViewSet):
     """
     permission_classes = (permissions.IsAuthandSuperUser,)
     serializer_class = serializers.UserSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id",
                         "username",
                         "first_name",
@@ -1157,9 +1172,9 @@ class AllUserViewSet(viewsets.ModelViewSet):
 
 class OrgUserViewSet(viewsets.ModelViewSet):
     # org user view for staff members
-    permission_classses = (permissions.IsAuthandReadOnlyStaff)
+    permission_classes = (permissions.IsAuthandReadOnlyStaff)
     serializer_class = serializers.UserSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id",
                         "username",
                         "first_name",
@@ -1176,7 +1191,7 @@ class OrgUserViewSet(viewsets.ModelViewSet):
 class OrganizationViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyStaff,)
     serializer_class = serializers.OrganizationSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "name")
 
     def get_queryset(self):
@@ -1186,7 +1201,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 class AllOrganizationViewSet(viewsets.ModelViewSet):
     permission_classese = (permissions.IsAuthandSuperUser,)
     serializer_class = serializers.OrganizationSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "name")
     def get_queryset(self):
         return models.Organization.objects.all()
@@ -1204,7 +1219,7 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
 class ModelVersionViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.ModelVersionSerializer
-    filter_backends = (filters.DjangoFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "version","model__active", "model", "active")
     # todo(aj)
     # change from readonly
@@ -1213,3 +1228,65 @@ class ModelVersionViewSet(viewsets.ModelViewSet):
         return models.ModelVersion.objects.filter(model__organization=self.request.user.organization)
 
 
+class ResetPasswordConfirm(drpr_views.ResetPasswordConfirm):
+    authentication_classes = []
+    permission_classes = (drfpermissions.AllowAny,)
+    throttle_classes = [CustomAnonRateThrottle]
+
+
+class ResetPasswordValidateToken(drpr_views.ResetPasswordValidateToken):
+    authentication_classes = []
+    permission_classes = (drfpermissions.AllowAny,)
+    throttle_classes = [CustomAnonRateThrottle]
+
+
+class ResetPasswordRequest(drpr_views.ResetPasswordRequestToken):
+    authentication_classes = []
+    permission_classes = (drfpermissions.AllowAny,)
+    throttle_classes = [CustomAnonRateThrottle]
+from django.core.mail import EmailMultiAlternatives
+from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django.urls import reverse
+
+from django_rest_passwordreset.signals import reset_password_token_created
+
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+    """
+    Handles password reset tokens
+    When a token is created, an e-mail needs to be sent to the user
+    :param sender: View Class that sent the signal
+    :param instance: View Instance that sent the signal
+    :param reset_password_token: Token Model Object
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    # send an e-mail to the user
+    context = {
+        'current_user': reset_password_token.user,
+        'username': reset_password_token.user.username,
+        'email': reset_password_token.user.email,
+        'reset_password_url': "{}?token={}".format(
+            instance.request.build_absolute_uri(reverse('reset-password-confirm')),
+            reset_password_token.key)
+    }
+
+    # render email text
+    email_html_message = render_to_string('email/user_reset_password.html', context)
+    email_plaintext_message = render_to_string('email/user_reset_password.txt', context)
+
+    msg = EmailMultiAlternatives(
+        # title:
+        "Password Reset for {title}".format(title="Some website title"),
+        # message:
+        email_plaintext_message,
+        # from:
+        "noreply@somehost.local",
+        # to:
+        [reset_password_token.user.email]
+    )
+    msg.attach_alternative(email_html_message, "text/html")
+    msg.send()

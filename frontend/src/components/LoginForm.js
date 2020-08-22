@@ -33,12 +33,14 @@ export default class LoginForm extends Component {
 
   render() {
     const errors = this.props.errors || {}
+    const message = this.props.message || ""
 
     return (
       <Container>
             <Form onSubmit={this.onSubmit} align="center">
             <FormGroup>
             {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
+            {message!==""?<Alert color="info">{message}</Alert>:""}
             <TextInput name="username" label="Username" error={errors.username}  onChange={this.handleInputChange}/>
             <TextInput name="password" label="Password" error={errors.password} type="password" onChange={this.handleInputChange}/>
           </FormGroup>
@@ -48,6 +50,11 @@ export default class LoginForm extends Component {
           <FormGroup>
             <Link to={"/forgot_password"}>
                Forgot Password
+             </Link>
+          </FormGroup>
+          <FormGroup>
+           <Link to={"/register"}>
+               Register 
              </Link>
           </FormGroup>
           </Form>

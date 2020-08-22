@@ -35,12 +35,11 @@ import TrainingScriptsList from "../containers/TrainingScriptsList"
 import TrainingScriptsEdit from "../containers/TrainingScriptsEdit"
 import EditTrainingScripts from './TrainingScriptsEditFormComp'
 
-import ForgotPassword from "../containers/forgotPassword"
+import Registration from "../containers/Registration"
 import TrainList from "../containers/TrainList"
 import {ADD, EDIT} from "../util/util"
 import CreateMLVersion from "../containers/CreateMLVersion"
 import Ver from "../containers/ModelVersionList"
-export const FORGOT_LINK = "/forgot_password"
 const Main = (props)=>(
   <Switch>
     <Route exact path="/" component={Home} />

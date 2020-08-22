@@ -16,9 +16,13 @@ export default class Main extends React.Component{
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
+  componentDidMount(){
+     this.props.clear()
+  }
+ 
   handleSubmit(event){
     event.preventDefault()
-    this.props.sendEmail(event.target.value, this.props.history)
+    this.props.onSubmit(this.state.email, this.props.history)
   }
   handleChange(event){
     this.setState({
@@ -30,6 +34,7 @@ export default class Main extends React.Component{
 
   render(){
     const errors = this.props.errors || {}
+    const message = this.props.message || ""
     return (
      <div className="container" >
        <div className="row" >
@@ -38,29 +43,34 @@ export default class Main extends React.Component{
          <div className="col-sm-4" align="center">
  
            <img src={intstream} className="img-fluid" width="300" hieght="200" alt="instream"/>
-          <Form onSubmit={this.handleClick}>
+          <Form onSubmit={this.handleSubmit}>
               {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+              {message!==""?<Alert color="info">{message}</Alert>:""}
               
-              <TextInput className="form-control"  
-                type="text"
+            <FormGroup>
+              <TextInput   
                 label="Email"
                 error={errors.email}
                 name="email"  
                 value = {this.state.email} onChange={this.handleChange}/>
-  
-              <FormGroup >
+            </FormGroup>
+               <FormGroup >
                 <div className="container">
-                  <Row>
+                  <Row className="mt-1">
                     <Col className="text-center"> 
                       <Button type="submit" disabled={this.state.submitDisabled} className="brand-primary" size="lg">Submit</Button>
                     </Col>
+                  </Row>
+                  <Row className="mt-1">
                     <Col className="text-center"> 
                       <Button className="brand-primary" size="lg" onClick={this.props.history.goBack}>Back</Button>
                     </Col>
                   </Row>
               </div>
             </FormGroup>
-        </Form>
+  
+       </Form>
+
        </div>
        <div className="col-sm-4">
        </div>

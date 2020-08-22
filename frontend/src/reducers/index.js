@@ -1,22 +1,23 @@
 import { combineReducers } from 'redux'
-import auth, * as fromAuth from './auth.js'
-import password, * as fromPassword from './password.js'
-import categories, * as fromCategories from './categories.js'
-import sources, * as fromSources from  './sources.js'
-import models, * as fromModels from  './models.js'
-import articles, * as fromArticles from  './articles.js'
-import orgs, * as fromOrgs from  './organizations.js'
-import childArticles, * as fromChildArticles from  './children.js'
-import randomArticle, * as fromRandomArticle from  './randomArticle.js'
-import filter, * as fromFilter from  './filter.js'
-import trainFilter, * as fromTrainFilter from  './trainFilter.js'
-import selectArticles, * as fromSelect from "./selectArticles.js"
+import auth, * as fromAuth from './auth'
+import password, * as fromPassword from './password'
+import categories, * as fromCategories from './categories'
+import sources, * as fromSources from  './sources'
+import models, * as fromModels from  './models'
+import articles, * as fromArticles from  './articles'
+import orgs, * as fromOrgs from  './organizations'
+import childArticles, * as fromChildArticles from  './children'
+import randomArticle, * as fromRandomArticle from  './randomArticle'
+import filter, * as fromFilter from  './filter'
+import trainFilter, * as fromTrainFilter from  './trainFilter'
+import selectArticles, * as fromSelect from "./selectArticles"
 import classifications, * as fromClassif from "./classifications"
 import settings, * as fromSettings from "./settings"
-import modelVersions, * as fromModelVersions from "./modelVersions.js"
-import filterModelVer, * as fromFilterModelVer from "./modelVersionFilter.js"
-import forgotPassword, * as fromForgotPassword from "./forgotPassword.js"
-import trainingScripts, * as fromTrainingScripts from "./trainingScripts.js"
+import modelVersions, * as fromModelVersions from "./modelVersions"
+import filterModelVer, * as fromFilterModelVer from "./modelVersionFilter"
+import forgotPassword, * as fromForgotPassword from "./forgotPassword"
+import trainingScripts, * as fromTrainingScripts from "./trainingScripts"
+import registration, * as fromRegistration from "./registration"
 
 export default combineReducers({
   modelVersions:modelVersions,
@@ -37,6 +38,7 @@ export default combineReducers({
   settings:settings,
   orgs:orgs,
   forgotPassword:forgotPassword,
+  registration:registration,
 })
 //fromAuth
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
@@ -146,7 +148,7 @@ export const getModelVersionFilterMLModels = state => fromFilterModelVer.mlmodel
 
 //forgotPassword
 export const getFPassErrors = state => fromForgotPassword.errors(state.forgotPassword)
-export const getMessage = state => fromForgotPassword.getMessage(state.forgotPassword)
+export const getFPMessage = state => fromForgotPassword.getFPMessage(state.forgotPassword)
 
 //fromTrainingScripts
 export const getTrainingScripts = state => fromTrainingScripts.trainingScripts(state.trainingScripts)
@@ -156,6 +158,12 @@ export const getTrainingScriptsSaving = state => fromTrainingScripts.saving(stat
 export const getTrainingScriptsTotalCount = state => fromTrainingScripts.totalcount(state.trainingScripts)
 export const getTrainingScriptsNextPage = state => fromTrainingScripts.nextPage(state.trainingScripts)
 export const getTrainingScriptsPreviousPage = state => fromTrainingScripts.previousPage(state.trainingScripts)
+
+//fromRegistration
+export const getRegErrors = state => fromRegistration.errors(state.registration)
+export const getRegSaving = state => fromRegistration.saving(state.registration)
+export const getRegMessage = state => fromRegistration.getRegMessage(state.registration)
+
 
 
 export function withAuth(headers={}) {

@@ -64,7 +64,19 @@ echo "------"
 echo " gunicorn setup"
 #gunicorn
 curdir=$(pwd) #base dir + intstream
-sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${curdir//\//\\/}\/backend\//g" -e "s/\${venvpath}/${venvpath//\//\\/}/g" ./utility/gunicorn > ./utility/gunicorn_new
+
+email_host=${EMAIL_HOST:=""}
+email_port=${EMAIL_PORT:=""}
+email_host_user=${EMAIL_HOST_USER:=""}
+email_host_password=${EMAIL_HOST_PASSWORD:=""}
+sed -e "s/\${postgres_pw}/$password/g" \
+    -e "s/\${user}/$USER/g" \
+    -e "s/\${email_host}/$email_host/g"  \
+    -e "s/\${email_port}/$email_port/g"  \
+    -e "s/\${email_user}/$email_user/g"  \
+    -e "s/\${email_host_password}/$email_host_password/g"  \
+    -e "s/\${cwd}/${curdir//\//\\/}\/backend\//g" \
+    -e "s/\${venvpath}/${venvpath//\//\\/}/g" ./utility/gunicorn > ./utility/gunicorn_new
 sudo cp ./utility/gunicorn_new /etc/systemd/system/gunicorn.service
 sudo systemctl daemon-reload
 sudo systemctl restart gunicorn

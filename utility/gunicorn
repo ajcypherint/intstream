@@ -5,6 +5,10 @@ After=network.target
 [Service]
 User=${user}
 Environment=PASSWORD=${postgres_pw}
+Environment=EMAIL_HOST=${email_host}
+Environment=EMAIL_PORT=${email_port}
+Environment=EMAIL_HOST_USER=${email_host_user}
+Environment=EMAIL_HOST_PASSWORD=${email_host_password}
 Group=www-data
 WorkingDirectory=${cwd}
 ExecStart=${venvpath}/bin/gunicorn --access-logfile - --workers 3 --bind unix:${cwd}/awesome.sock backend.wsgi:application

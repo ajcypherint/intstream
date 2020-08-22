@@ -18,6 +18,8 @@ export const FORM_UPDATE = '@@organizations/FORM_UPDATE';
 export const CLEAR = '@@organizations/CLEAR';
 export const GET_TOTAL_ORGANIZATIONS = '@@organizations/TOTAL';
 
+export const ORGAPI = "/api/organization/"
+
 export const clear = ()=>{
   return {
     type:CLEAR,

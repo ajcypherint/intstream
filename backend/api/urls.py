@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.urls import path,include
 from rest_framework.schemas import get_schema_view as g_schema
+from rest_framework import permissions as drfpermissions
 from rest_framework.documentation import include_docs_urls
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView,TokenVerifyView
 from . import views
-from django_rest_passwordreset import urls as pass_urls
 
 HTMLARTICLES = 'htmlarticles'
 PDFARTICLES = "pdfarticles"
@@ -83,9 +83,11 @@ schema_view = get_schema_view(
 urlpatterns=[
     path("register/",views.SignUpView.as_view()),
     path("activate/<str:uidb64>/<str:token>",views.Activate.as_view(), name="activate"),
-    path("password-reset/",include(pass_urls, namespace='password_reset')),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('',include(router.urls)),
+    path('password-reset/validate_token/', views.ResetPasswordValidateToken.as_view(), name="reset-password-validate"),
+    path('password-reset/confirm/', views.ResetPasswordConfirm.as_view(), name="reset-password-confirm"),
+    path('password-reset/', views.ResetPasswordRequest.as_view(), name="reset-password-request"),
     path('token-auth/', TokenObtainPairView.as_view()),
     path('token-refresh/', TokenRefreshView.as_view()),
     path('token-verify/', TokenVerifyView.as_view()),

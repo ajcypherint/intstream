@@ -5,6 +5,14 @@ export const initialState = {
 }
 export default (state=initialState, action) => {
   switch(action.type) {
+    case forgot.PASSWORDRESET_CLEAR:
+      {
+        return {
+          ...initialState,
+        }
+
+      }
+ 
     case forgot.PASSWORDRESET_REQUEST:
       {
         return {
@@ -33,7 +41,7 @@ export default (state=initialState, action) => {
   }
 }
 
-export const getMessage = (state)=>{
+export const getFPMessage = (state)=>{
   return state.message
 }
 

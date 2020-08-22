@@ -6,7 +6,8 @@ import intstream from './IntStreamwhite.png'
 import LoginForm from '../components/LoginForm'
 import {login, loginGroup} from  '../actions/auth'
 import {setUser} from  '../actions/auth'
-import {authErrors, isAuthenticated,get_username} from '../reducers'
+import {authErrors, getRegMessage,isAuthenticated,get_username} from '../reducers'
+import { clear } from '../actions/forgotPassword'
 
 const Login = (props) => {
   if(props.isAuthenticated) {
@@ -19,7 +20,7 @@ const Login = (props) => {
          <div className="col-sm-4 " >
          </div>
          <div className="col-sm-4" align="center">
-           <img src={intstream} class="img-fluid" width="300" hieght="200" alt="instream"/>
+           <img src={intstream} className="img-fluid" width="300" hieght="200" alt="instream"/>
           <LoginForm {...props}/>
         </div>
          <div className="col-sm-4">
@@ -32,8 +33,9 @@ const Login = (props) => {
 
 const mapStateToProps = (state) => ({
   errors: authErrors(state),
-  isAuthenticated: isAuthenticated(state),
-  username:get_username(state)
+  isAuthenticated:isAuthenticated(state),
+  username:get_username(state),
+  message:getRegMessage(state)
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -41,8 +43,9 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(setUser(username))
   },
   onSubmit: (username, password) => {
-    dispatch(loginGroup(username, password))
-  }
+    dispatch(loginGroup(username, password));
+    dispatch(clear())
+  },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
