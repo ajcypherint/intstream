@@ -443,6 +443,7 @@ class SignUpView(APIView):
                                             "last_name": last_name,
                                             "is_active": False,
                                             "is_staff": True,
+                                            "is_integrator": True,
                                             "organization": org_ser.data.get("id")
                                             }
                                             )
