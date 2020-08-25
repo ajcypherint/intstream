@@ -296,9 +296,11 @@ SIMPLE_JWT = {
 # Email settings
 # Production
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND",'django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = os.environ.get("EMAIL_HOST","")
-EMAIL_PORT = os.environ.get("EMAIL_PORT",25)
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER","")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD","")
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
+EMAIL_PORT = os.environ.get("EMAIL_PORT", 25)
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", False)
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", False)
 # Dev set an environ variable to
 # 'django.core.mail.backends.console.EmailBackend'
