@@ -264,8 +264,8 @@ def classify(text_list, model_version_id):
     model_directory = model_dir(model.id)
     full_model_dir = os.path.join(model_directory,settings.MODEL_FOLDER)
 
-    script_directory =  get_script_directory(model_version_id)
-    venv_directory = get_venv_directory(model_version_id)
+    script_directory =  get_script_directory_model_version_id(model_version_id)
+    venv_directory = get_venv_directory_model_version_id(model_version_id)
     json_data = {"classifier":full_model_dir, "text":text_list}
     path_python = os.path.join(venv_directory,"bin","python")
     script = os.path.join(script_directory,BASE_CLASSIFY_FILE)
@@ -308,13 +308,25 @@ def create_dirs(training_script_version):
     create_virtual_env(training_script_version)
 
 
-def get_script_directory(id):
+def get_script_directory_script_version_id(id):
     """
 
-    :param id: int
+    :param id: int script id
     :return:
     """
     directory = os.path.join(settings.VENV_DIR, SCRIPT + str(id))
+    return  directory
+
+
+def get_script_directory_model_version_id(id):
+    """
+
+    :param id: int model id
+    :return:
+    """
+    model_version = models.ModelVersion.objects.get(id=id)
+    script_id = model_version.training_script_version.id
+    directory = os.path.join(settings.VENV_DIR, SCRIPT + str(script_id))
     return  directory
 
 
@@ -324,7 +336,7 @@ def create_script_directory(training_script_version):
     :param training_script_version: models.TrainingScriptVersion
     :return:
     """
-    directory = get_script_directory(training_script_version.id)
+    directory = get_script_directory_script_version_id(training_script_version.id)
     #VENV_DIR = /tmp
     if not os.path.exists(directory):
         try:
@@ -343,7 +355,19 @@ def create_script_directory(training_script_version):
             raise e
 
 
-def get_venv_directory(id):
+def get_venv_directory_model_version_id(id):
+    """
+    :param id: int
+    :return:
+    """
+    model_version = models.ModelVersion.objects.get(id=id)
+    script_id = model_version.training_script_version.id
+
+    directory = os.path.join(settings.VENV_DIR, VENV + str(script_id))
+    return directory
+
+
+def get_venv_directory_script_version(id):
     """
     :param id: int
     :return:
@@ -359,7 +383,7 @@ def create_virtual_env(training_script_version):
     :return:
     """
     proxy = os.environ.get(INTSTREAM_PROXY_ENV, None)
-    directory = get_venv_directory(training_script_version.id)
+    directory = get_venv_directory_script_version(training_script_version.id)
     if not os.path.exists(directory):
         try:
             # todo causes error isADirectory when running virtualenv

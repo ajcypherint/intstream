@@ -113,6 +113,10 @@ echo " create database"
 export PASSWORD="$password"
 cd "$base_dir/intstream/backend/"
 pipenv run python manage.py migrate
+echo "------"
+echo " create celery cache backend"
+python manage.py migrate django_celery_results
+python manage.py createcachetable
 
 echo "------"
 echo " create secret key"
