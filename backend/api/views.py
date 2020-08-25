@@ -468,7 +468,8 @@ class SignUpView(APIView):
                 'token': account_activation_token.make_token(user.instance),
             })
             email = EmailMessage(
-                subject, message, to=[user.instance.email]
+
+                subject, message,from_email=settings.EMAIL_FROM, to=[user.instance.email]
             )
             email.send()
 
