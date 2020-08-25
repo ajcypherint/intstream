@@ -463,7 +463,7 @@ class SignUpView(APIView):
             current_site = get_current_site(request)
             subject = 'Activate Your Intstream Account'
             message = render_to_string('api/account_activation_email.html', {
-                'user': user,
+                'user': user.instance.username,
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.instance.pk)),
                 'token': account_activation_token.make_token(user.instance),
