@@ -442,6 +442,7 @@ class SignUpView(APIView):
                                             "first_name": first_name,
                                             "last_name": last_name,
                                             "is_active": False,
+                                            "is_staff": True,
                                             "organization": org_ser.data.get("id")
                                             }
                                             )
