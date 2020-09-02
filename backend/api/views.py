@@ -1,4 +1,5 @@
 import math
+
 from django.utils.encoding import force_bytes
 from api.backend import DisabledHTMLFilterBackend
 from rest_framework import mixins
@@ -41,6 +42,9 @@ from utils import vector, read
 from scipy.cluster import  hierarchy
 import json
 from rest_framework import mixins
+from django.views import View
+from django.shortcuts import render
+
 
 MAX_CLUSTER = 200
 # Create your views here.
@@ -480,12 +484,10 @@ class SignUpView(APIView):
             return Response(response, status.HTTP_201_CREATED)
 
 
-class Activate(APIView):
-    permission_classes = (drfpermissions.AllowAny,)
-    authentication_classes = []
-    throttle_classes = [CustomAnonRateThrottle]
+class Activate(View):
 
     def get(self, request, uidb64, token):
+
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
             user = models.UserIntStream.objects.get(pk=uid)
@@ -494,13 +496,16 @@ class Activate(APIView):
         if user is not None and account_activation_token.check_token(user, token):
             user.is_active = True
             user.save()
-            response = {"detail": "Thank you for your email confirmation. Now you can login your account."}
-            return Response(response, status.HTTP_200_OK)
+            context = {
+                       "message": "Thank you for your email confirmation. Now you can login your account."}
+            # todo: return template
+            return render(request, "api/registration.html", context=context, status=status.HTTP_200_OK)
         else:
-            response = {
-                "detail": "Activate link is invalid",
+            context = {
+                "message": "Activate link is invalid",
                         }
-            return Response(response, status.HTTP_400_BAD_REQUEST)
+            # todo return template
+            return render(request, "api/registration.html", context=context, status=status.HTTP_400_BAD_REQUEST)
 
 
 class HomePage(APIView):

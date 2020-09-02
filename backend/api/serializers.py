@@ -502,6 +502,7 @@ class SettingSerializer(serializers.ModelSerializer):
             "aws_s3_upload_base",
             "aws_region"
         )
+        extra_kwargs = {'aws_secret': {'write_only': True}}
         model = Setting
 
     def create(self, validated_data):
