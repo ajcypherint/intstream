@@ -33,9 +33,17 @@ export default class Edit extends Component {
             onChange={this.props.handleChange}
             type={'checkbox'} 
             name={'active'}  
-            label={'active'}  
+            label={'Active'}  
             readOnly
             checked={this.props.object.active}   />
+          <CheckBoxInput    
+            onChange={this.props.handleChange}
+            type={'checkbox'} 
+            name={'extract_indicators'}  
+            label={'Extract Indicators'}  
+            readOnly
+            checked={this.props.object.extract_indicators}   />
+ 
           <FormButtons saving={this.props.saving}
                        goBack={this.props.goBack}/>
           </Form>

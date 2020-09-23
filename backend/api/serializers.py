@@ -8,6 +8,8 @@ from .models import (MLModel, JobSource,
                      SourceType, ArticleType,
                      HtmlArticle, RSSArticle,
                      Setting, Prediction,
+                     IndicatorUrl, IndicatorMD5, IndicatorSha1, IndicatorSha256,
+                     IndicatorIPV4, IndicatorIPV6, IndicatorNetLoc,
                      TrainingScript, TrainingScriptVersion,
                      Classification, Organization)
 from django_celery_results.models import TaskResult as TaskResultMdl
@@ -77,9 +79,11 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "is_integrator",
             "is_staff",
+            "is_superuser"
         ]
         read_only_fields = [
             "id",
+            "is_superuser"
         ]
         write_only_fields = ["password"]
 
@@ -141,6 +145,7 @@ class RssSourceSerializer(serializers.ModelSerializer):
             'active',
             'url',
             'organization',
+            'extract_indicators',
 
         ]
         model = RSSSource
@@ -559,7 +564,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         fields=(
             "id",
-            "name"
+            "name",
+            "freemium"
         )
         model = Organization
 
@@ -593,4 +599,58 @@ class ModelVersionSerializer(serializers.ModelSerializer):
                   "metric_value")
 
         model = ModelVersion
+
+
+class IndicatorMD5Serializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "source",
+            "value"
+        ]
+        model = IndicatorMD5
+
+
+class IndicatorSha256Serializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "source",
+            "value"
+        ]
+        model = IndicatorSha256
+
+
+class IndicatorSha1Serializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "source",
+            "value"
+        ]
+        model = IndicatorSha1
+
+
+class IndicatorUrlSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "source",
+            "value"
+        ]
+        model = IndicatorUrl
+
+
+class IndicatorIPV6Serializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "source",
+            "value"
+        ]
+        model = IndicatorIPV6
+
+
+class IndicatorIPV4Serializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "source",
+            "value"
+        ]
+        model = IndicatorIPV4
 

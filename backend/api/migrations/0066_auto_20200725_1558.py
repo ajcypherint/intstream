@@ -17,7 +17,7 @@ def generate_superuser(apps, schema_editor):
     from api.models import UserIntStream
 
     # system org
-    system_org = Organization.objects.get(name=settings.SYSTEM_ORG)
+    system_org = Organization.objects.only("id","name").get(name=settings.SYSTEM_ORG)
 
     superuser = UserIntStream.objects.create_superuser(
         username=DJANGO_SU_NAME,

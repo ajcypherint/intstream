@@ -822,7 +822,7 @@ class TrainingScriptVersionViewSet(OrgViewSet):
 
 
 class SourceViewSet(OrgViewSet):
-    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    permission_classes = (permissions.SourcePermissions,)
     serializer_class = serializers.SourceSerializer
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active','url')
@@ -1133,7 +1133,7 @@ class UserSingleViewSet(viewsets.GenericViewSet,
                         mixins.RetrieveModelMixin):
     serializer_class = serializers.UserSerializer
 
-    @action(detail=True,methods=['post'], permission_classes=[permissions.IsAuthorStaff])
+    @action(detail=True,methods=['post'], permission_classes=[permissions.IsAuthor])
     def set_password(self, request, pk=None):
         user = request.user
         serializer=serializers.UserSerializerUpdate(user,data=request.data)
@@ -1144,6 +1144,10 @@ class UserSingleViewSet(viewsets.GenericViewSet,
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
+        """
+        limited to single user info only
+        :return:
+        """
         return models.UserIntStream.objects.filter(id=self.request.user.id)
 
 
@@ -1180,7 +1184,7 @@ class AllUserViewSet(viewsets.ModelViewSet):
 
 class OrgUserViewSet(viewsets.ModelViewSet):
     # org user view for staff members
-    permission_classes = (permissions.IsAuthandReadOnlyStaff)
+    permission_classes = (permissions.IsAuthandReadOnlyStaff,)
     serializer_class = serializers.UserSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id",
@@ -1197,7 +1201,7 @@ class OrgUserViewSet(viewsets.ModelViewSet):
 
 
 class OrganizationViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthandReadOnlyStaff,)
+    permission_classes = (permissions.IsAuthandSuperUser,)
     serializer_class = serializers.OrganizationSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "name")
@@ -1222,6 +1226,60 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return TaskResultMdl.objects.all()
+
+
+class IndicatorMd5ViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
+    serializer_class = serializers.IndicatorMD5
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+
+    def get_queryset(self):
+        return models.IndicatorMD5.objects.filter(organizaation=self.request.user.organizataion)
+
+
+class IndicatorSha1ViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
+    serializer_class = serializers.IndicatorSha1
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+
+    def get_queryset(self):
+        return models.IndicatorSha1.objects.filter(organizaation=self.request.user.organizataion)
+
+
+class IndicatorSha256ViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
+    serializer_class = serializers.IndicatorSha256
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+
+    def get_queryset(self):
+        return models.IndicatorSha256.objects.filter(organizaation=self.request.user.organizataion)
+
+
+class IndicatorUrlViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
+    serializer_class = serializers.IndicatorUrl
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+
+    def get_queryset(self):
+        return models.IndicatorUrl.objects.filter(organizaation=self.request.user.organizataion)
+
+
+class IndicatorIPV4ViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
+    serializer_class = serializers.IndicatorIPV4
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+
+    def get_queryset(self):
+        return models.IndicatorIPV4.objects.filter(organizaation=self.request.user.organizataion)
+
+
+class IndicatorIPV6ViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
+    serializer_class = serializers.IndicatorIPV6
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+
+    def get_queryset(self):
+        return models.IndicatorIPV6.objects.filter(organizaation=self.request.user.organizataion)
 
 
 class ModelVersionViewSet(viewsets.ModelViewSet):
@@ -1252,6 +1310,7 @@ class ResetPasswordRequest(drpr_views.ResetPasswordRequestToken):
     authentication_classes = []
     permission_classes = (drfpermissions.AllowAny,)
     throttle_classes = [CustomAnonRateThrottle]
+
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string

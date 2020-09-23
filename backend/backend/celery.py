@@ -25,9 +25,17 @@ def debug_task(self):
 celery_app.conf.beat_schedule = {
     # assign to single worker with concurrency = 1
     "rss_sources":{
-        "task":"api.tasks.process_rss_sources",
+        "task": "api.tasks.process_rss_sources",
         "schedule": crontab(hour="*/1", minute="2") # every hour at 2 mins
         #"schedule": crontab(hour="*", minute="*/1") # testing
+    },
+    'clean_history_freemium':{
+        "task": "api.tasks.remove_old_articles",
+        "schedule": crontab(hour="1", minute="30") # every day at hour 1
+    },
+    'update_tld': {
+        "task": "api.tasks.update_suffixes",
+        "schedule": crontab(day_of_week="0", hour="1", minute="15")
     }
 }
 

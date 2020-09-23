@@ -39,6 +39,8 @@ pystemmer = "*"
 cython = "*"
 django-rest-passwordreset = "*"
 semantic-version = "*"
+iocextract = "*"
+tldextract = "*"
 
 [requires]
 python_version = "3.6"

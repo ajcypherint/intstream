@@ -5,7 +5,11 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.constraints import UniqueConstraint
 from django.db.models import Q, F,Value
 from semantic_version.django_fields import VersionField
+from django.utils.translation import gettext_lazy as _
+from django.core import validators
+import tldextract
 
+from django.core.exceptions import ValidationError
 import uuid
 import os
 from fernet_fields import EncryptedTextField
@@ -18,8 +22,11 @@ from django.db.models.functions import Concat
 # integrator can only see their own org; cannot add orgs
 # Not integrator and not admin can only see their own org; cannot add orgs
 
+
 class Organization(models.Model):
     name = models.CharField(max_length=200, unique=True)
+    freemium = models.BooleanField(default=True)
+
     def __str__(self):
         return self.name
 
@@ -55,6 +62,8 @@ class Source(PolymorphicModel):
     name = models.CharField(max_length=100, )
     active = models.BooleanField(default=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    extract_indicators = models.BooleanField(default=False)
+
     def __str__(self):
         return self.name + " (" + str(self.id) + ")"
 
@@ -242,3 +251,66 @@ class Setting(models.Model):
     aws_s3_upload_base = models.CharField(max_length=500)
     ec2_key_name = models.CharField(max_length=500)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+
+
+class Indicator(PolymorphicModel):
+    articles = models.ManyToManyField(Article)
+    organization = models.ForeignKey(Organization,on_delete=models.CASCADE)
+
+
+class IndicatorUrl(Indicator):
+    value = models.URLField()
+
+
+class IndicatorMD5(Indicator):
+    value = models.TextField(max_length=32)
+
+
+class IndicatorSha256(Indicator):
+    value = models.TextField(max_length=64)
+
+
+class IndicatorSha1(Indicator):
+    value = models.TextField(max_length=40)
+
+
+class Suffix(models.Model):
+    value = models.TextField(max_length=30, unique=True)
+
+
+class IndicatorNetLoc(Indicator):
+    subdomain = models.TextField(validators=[validators.RegexValidator(regex=r'[^a-zA-Z0-9\-]', inverse_match=True)], max_length=63)
+    domain = models.TextField(validators=[validators.RegexValidator(regex=r'[^a-zA-Z0-9\-]', inverse_match=True)], max_length=63)
+    suffix = models.ForeignKey(Suffix, on_delete=models.CASCADE)
+
+    def __str__(self):
+        total = ""
+        if self.subdomain != "":
+            total = total + str(self.subdomain) + "."
+
+        if self.domain != "":
+            total = total + str(self.domain) + "."
+
+        total = total + str(self.suffix)
+
+        return total
+
+
+class IndicatorIPV4(Indicator):
+    value = models.GenericIPAddressField(protocol="IPv4") #todo custom format
+
+
+class IndicatorIPV6(Indicator):
+    value = models.GenericIPAddressField(protocol="IPv6") #todo custom format
+
+
+class IndicatorCustomType(models.Model):
+    name = models.TextField(max_length=500,)
+    validator = models.TextField() # used to validate input in create
+    #todo verification
+
+
+class IndicatorCustom(Indicator):
+    value = models.TextField()
+    type = models.ForeignKey(IndicatorCustomType, on_delete=models.CASCADE)
+

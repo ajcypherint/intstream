@@ -2,7 +2,37 @@ from django.test import TestCase
 from django.test import Client
 from unittest import mock
 from api import tasks
+from api import models
 import aiohttp
+import datetime
+
+
+class MockResponse():
+    def __init__(self):
+        self.text = """
+// ===BEGIN ICANN DOMAINS===
+
+// ac : https://en.wikipedia.org/wiki/.ac
+ac
+com.ac
+edu.ac
+gov.ac
+net.ac
+mil.ac
+org.ac
+
+// ad : https://en.wikipedia.org/wiki/.ad
+ad
+nom.ad 
+// ===BEGIN PRIVATE DOMAINS===
+"""
+
+    def raise_for_status(self):
+        pass
+
+
+def mock_get(url):
+    return MockResponse()
 
 
 class PostResp(object):
@@ -38,6 +68,56 @@ class TestTasks(TestCase):
         self.c = Client()
         headers={"Content-Type":"application/json"}
         self.c.login(username=username,password=password)
+
+    @mock.patch("api.tasks._now")
+    def test_remove_old_articles(self, now):
+        #fake date way in future as current date for remove_articles function
+        now.return_value = datetime.datetime(3000,1,1, tzinfo=datetime.timezone.utc)
+        source = models.Source.objects.get(id=1)
+        organization = models.Organization.objects.get(id=1)
+        article = models.Article(source=source,
+                                 text="test test",
+                                 title="test test",
+                                 organization=organization
+                                 )
+        article.save()
+        tasks._remove_old_articles()
+        #todo mock datetime.datetime.now return last year
+        articles = models.Article.objects.all()
+        self.assertEqual(articles.count(), 0)
+
+
+    def test_extract_indicators(self):
+        text = """
+        192.168.1.1
+        192[.]168[.]1[.]1
+        http://test.com
+        098f6bcd4621d373cade4e832627b4f6
+        4468e5deabf5e6d0740cd1a77df56f67093ec943
+        9123dcbb0b42652b0e105956c68d3ca2ff34584f324fa41a29aedd32b883e131
+        2607:f0d0:1002:0051:0000:0000:0000:0004
+        """
+        source = models.Source.objects.get(id=1)
+        organization = models.Organization.objects.get(id=1)
+        article = models.Article(source=source,
+                                 text="test test",
+                                 title="test test",
+                                 organization=organization
+                                 )
+        article.save()
+        tasks.extract_indicators(text, article, organization)
+        ipv4s = models.IndicatorIPV4.objects.all()
+        self.assertEqual(len(ipv4s), 2)
+        ipv6s = models.IndicatorIPV6.objects.all()
+        self.assertEqual(len(ipv6s), 1)
+        md5s = models.IndicatorMD5.objects.all()
+        self.assertEqual(len(md5s), 1)
+        sha1 = models.IndicatorSha1.objects.all()
+        self.assertEqual(len(sha1), 1)
+        sha256 = models.IndicatorSha1.objects.all()
+        self.assertEqual(len(sha256), 1)
+        urls = models.IndicatorUrl.objects.all()
+        self.assertEqual(len(urls), 2)
 
 
     @mock.patch("api.tasks.classify")
@@ -88,6 +168,12 @@ class TestTasks(TestCase):
         data = Data()
         feedparser_parse.return_value = data
         tasks._process_rss_source("http:/test", 1, 1)
+
+    @mock.patch("api.tasks.requests.get")
+    def test_suffix_update(self, mock_get):
+        mock_get.return_value = MockResponse()
+        tasks._update_suffixes()
+
 
     @mock.patch("api.tasks.process_rss_source.delay")
     @mock.patch("api.tasks.create_dirs")

@@ -1,8 +1,10 @@
 from celery import shared_task
 import feedparser
 import asyncio
+from utils import domain
 import aiohttp
 import tarfile
+import re
 
 from celery.utils.log import get_task_logger
 
@@ -16,8 +18,10 @@ import numpy as np
 logger = get_task_logger(__name__)
 from utils import vector, read, train
 import shutil
+import iocextract
 import venv
 from api.models import ModelVersion, MLModel, Organization
+from api import serializers
 from django.core.files import File
 from django.conf import settings
 from celery import group
@@ -107,6 +111,81 @@ async def fetch(url):
 
 PLACEHOLDER_TEXT = "placeholder text for classifier"
 
+PUBLIC_SUFFIX_RE = re.compile(r'^(?P<suffix>[.*!]*\w[\S]*)', re.UNICODE | re.MULTILINE)
+
+
+def _update_suffixes():
+    proxies = {
+        "https": settings.PROXY,
+        "http": settings.PROXY
+    }
+
+    resp = requests.get(settings.SUFFIX_LIST_URL, proxies=proxies, timeout=60)
+    resp.raise_for_status()
+    text, _, _ = resp.text.partition('// ===BEGIN PRIVATE DOMAINS===')
+    tlds = [m.group('suffix') for m in PUBLIC_SUFFIX_RE.finditer(text)]
+    for x in tlds:
+        suffix = models.Suffix(value=x)
+        suffix.save()
+
+
+@shared_task()
+def update_suffixes():
+    _update_suffixes()
+
+
+def extract_indicators(text, article, organization):
+    """
+    :param text: str
+    :param article: models.Article
+    :return:
+    """
+    ipv4s = iocextract.extract_ipv4s(text, refang=True)
+    for i in ipv4s:
+        ip = models.IndicatorIPV4(value=i, organization=organization)
+        ip.save()
+        ip.articles.add(article)
+
+    ipv6s = iocextract.extract_ipv6s(text)
+    for i in ipv6s:
+        ip = models.IndicatorIPV6(value=i, organization=organization)
+        ip.save()
+        ip.articles.add(article)
+
+    urls = iocextract.extract_urls(text, refang=True)
+    for i in urls:
+        # todo  load extra suffixes from models.suffixes
+        subdomain, dom, suff = domain.extract(i)
+        if suff != "":
+            suffix = models.Suffix.objects.get(value=suff)
+            dm = models.IndicatorNetLoc(subdomain=subdomain,
+                                        domain=domain,
+                                        suffix=suffix,
+                                        organization=organization)
+            dm.save()
+
+        url = models.IndicatorUrl(value=i, organization=organization)
+        url.save()
+        url.articles.add(article)
+
+    md5s = iocextract.extract_md5_hashes(text)
+    for i in md5s:
+        md5 = models.IndicatorMD5(value=i, organization=organization)
+        md5.save()
+        md5.articles.add(article)
+
+    sha1s = iocextract.extract_sha1_hashes(text)
+    for i in sha1s:
+        sha1 = models.IndicatorSha1(value=i, organization=organization)
+        sha1.save()
+        sha1.articles.add(article)
+
+    sha256s = iocextract.extract_sha256_hashes(text)
+    for i in sha256s:
+        sha256 = models.IndicatorSha256(value=i, organization=organization)
+        sha256.save()
+        sha256.articles.add(article)
+
 
 @shared_task()
 def process_rss_source(source_url, source_id, organization_id):
@@ -145,6 +224,9 @@ def _process_rss_source(source_url, source_id, organization_id):
 
     htmls = loop.run_until_complete(asyncio.gather(*tasks))
     articles = []
+    source = models.Source.objects.get(id=source_id)
+    org = models.Organization.objects.get(id=organization_id)
+
     for i, html in enumerate(htmls):
 
         article = models.RSSArticle(
@@ -159,8 +241,13 @@ def _process_rss_source(source_url, source_id, organization_id):
         article.organization_id=organization_id
         article.save()
         articles.append(article)
+        article_ser = serializers.RSSSerializer(article)
+        if source.extract_indicators:
+            # todo iocextract from readable text
+            text = article_ser.clean_text
+            extract_indicators(text, article, org)
 
-        # filter ModelVersion by model__source=source and model__active=True
+    # filter ModelVersion by model__source=source and model__active=True
     active_model_versions = models.ModelVersion.objects.filter(organization__id=organization_id,
                                                                model__sources__id=source_id,
                                                                model__active=True,
@@ -469,6 +556,29 @@ def update_status(job_name, status):
     model_version = models.ModelVersion.objects.get(version=job_name)
     model_version.status=status
     model_version.save()
+
+
+def _now(tz):
+    """
+    :param tz: datetime.timezone
+    :return: datetime
+    """
+    return datetime.datetime.now(tz=tz)
+
+
+def _remove_old_articles():
+    startdate = _now(tz=datetime.timezone.utc)
+    monthprior = startdate - datetime.timedelta(days=30)
+    # delete articles not used for classifications for freemium accounts older than 1 month
+    old_articles = models.Article.objects.filter(organization__freemium=True,
+                                                 upload_date__lt=monthprior,
+                                                 classification__isnull=True)
+    old_articles.delete()
+
+
+@shared_task(bind=True)
+def remove_old_articles(self):
+    _remove_old_articles()
 
 #todo refactor into one method for task and another for function to allow unit testing of function
 @shared_task(bind=True)

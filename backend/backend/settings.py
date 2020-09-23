@@ -38,7 +38,9 @@ with open(os.path.join(BASE_DIR, 'secretkey.txt')) as f:
 #default to false
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ['true','yes']
 ALLOWED_HOSTS = ['*']
-
+PROXY=os.environ.get("INSTREAM_PRXOY", None)
+SUFFIX_LIST_URL = os.environ.get("SUFFIX_LIST_URL", "https://publicsuffix.org/list/public_suffix_list.dat")
+MAX_SOURCES = os.environ.get("MAX_SOURCES", 5)
 # Application definition
 
 
@@ -58,7 +60,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_celery_beat',
     'django_celery_results',
-    'debug_toolbar',
+    #'debug_toolbar',
     'django_rest_passwordreset',
     #'django_s3_storage'
 ]
@@ -91,7 +93,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+   # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 INTERNAL_IPS = [

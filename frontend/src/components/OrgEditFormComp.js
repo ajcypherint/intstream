@@ -21,6 +21,12 @@ export default class Edit extends Component {
             label={'Name'}  
             value={this.props.object.name}  
             error={this.err_name} />
+          <CheckBoxInput name={"freemium"} label={"Freemium"}
+            onChange={this.props.handleChange}
+            type={'checkbox'} 
+            readOnly
+            checked={this.props.object.freemium}   />
+ 
          <FormButtons saving={this.props.saving}
                       onSubmit={this.props.onSubmit}
                        goBack={this.props.goBack}/>

@@ -13,7 +13,7 @@ import {
 
 //edit
 const API = '/api/sourcesrss/'
-const FIELDS = ["id","name","url","active"]
+const FIELDS = ["id","name","url","active","extract_indicators"]
 const HEADING = "RSS Sources"
 const EDITURI = /sources_rss/
 const ADDURI = "/sources_rss_add"
