@@ -50,7 +50,7 @@ export default function  (totalcount,
                               child:{
                                 ...selections,
                                 page:parseInt(selections.page)-1}}): setPage({...allSelections,
-                                                                      page:allSelections.page-1});
+                                                                      page:parseInt(allSelections.page)-1});
                 fetchFullUri(previous)}}/>
           }
         </PaginationItem>
@@ -62,11 +62,13 @@ export default function  (totalcount,
             <PaginationItem active={page===pageSel} key={page}>
               <PaginationLink  
                 onClick={(event)=>{
-                  let newSel = child ? {...allSelections,
-                              child:{
-                                ...selections,
-                                page:page}}:{...allSelections,page:page};
-                  fetchit(newSel,page)}}>
+                                    let newSel = child ? {...allSelections,
+                                                child:{
+                                                  ...selections,
+                                                  page:page}}:{...allSelections,page:page};
+                                    setPage(newSel) 
+                                    fetchit(newSel,page)}
+                                  }>
                 {page }
               </PaginationLink>
             </PaginationItem>
@@ -83,7 +85,7 @@ export default function  (totalcount,
                 child ? setPage({...allSelections,
                               child:{
                                 ...selections,
-                                page:parseInt(selections.page)+1}}): setPage({...allSelections,page:selections.page+1})
+                                page:parseInt(selections.page)+1}}): setPage({...allSelections,page:parseInt(selections.page)+1})
                 fetchFullUri(next)}} />
           }
         </PaginationItem>

@@ -109,7 +109,7 @@ class SourcesList extends Component {
 
   }
   fetch(selections,page){
-    this.props.fetchSources("ordering="+selections.orderDir+selections.ordering+"&page="+page)
+    this.props.fetchSources("ordering="+selections.orderDir+selections.ordering+"&page="+parseInt(page))
   }
   render() {
     const heading = this.props.heading;

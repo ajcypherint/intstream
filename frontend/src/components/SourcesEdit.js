@@ -11,8 +11,8 @@ class SourcesEdit extends Component {
   constructor(props){
     super(props)
     this.state=this.props.state
-   this.handleInputChange = this.handleInputChange.bind(this) 
-   this.onSubmit = this.onSubmit.bind(this)
+    this.handleInputChange = this.handleInputChange.bind(this) 
+    this.onSubmit = this.onSubmit.bind(this)
     this.goBack = this.goBack.bind(this)
   }
   componentDidMount(){

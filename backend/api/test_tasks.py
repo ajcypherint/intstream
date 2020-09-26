@@ -3,7 +3,6 @@ from django.test import Client
 from unittest import mock
 from api import tasks
 from api import models
-import aiohttp
 import datetime
 
 
@@ -173,6 +172,7 @@ class TestTasks(TestCase):
     def test_suffix_update(self, mock_get):
         mock_get.return_value = MockResponse()
         tasks._update_suffixes()
+        self.assertEqual(mock_get.called, True)
 
 
     @mock.patch("api.tasks.process_rss_source.delay")

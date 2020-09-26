@@ -125,8 +125,7 @@ def _update_suffixes():
     text, _, _ = resp.text.partition('// ===BEGIN PRIVATE DOMAINS===')
     tlds = [m.group('suffix') for m in PUBLIC_SUFFIX_RE.finditer(text)]
     for x in tlds:
-        suffix = models.Suffix(value=x)
-        suffix.save()
+        suffix = models.Suffix.objects.get_or_create(value=x)
 
 
 @shared_task()
