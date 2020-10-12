@@ -785,8 +785,12 @@ class HomePage(APIView):
 
 
 class OrgViewSet(viewsets.ModelViewSet):
+
     def perform_create(self, serializer):
         serializer.save(organization = self.request.user.organization)
+
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
 
 
 class TrainingScriptFilter(filters.FilterSet):
@@ -1041,6 +1045,9 @@ class RSSArticleViewSet(viewsets.ModelViewSet):
         if serializer.instance.source.extract_indicators:
             tasks.extract_indicators.delay(text, serializer.instance.id, serializer.instance.organization.id)
 
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+
     def get_queryset(self):
         return models.RSSArticle.objects.filter(organization=self.request.user.organization)
 
@@ -1067,6 +1074,9 @@ class HtmlArticleViewSet(viewsets.ModelViewSet):
         text = serializer.get_clean_text(serializer.instance)
         if serializer.instance.source.extract_indicators:
             tasks.extract_indicators.delay(text, serializer.instance.id, serializer.instance.organization.id)
+
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
 
     def get_queryset(self):
         return models.HtmlArticle.objects.filter(organization=self.request.user.organization)
@@ -1097,6 +1107,9 @@ class TxtArticleViewSet(viewsets.ModelViewSet):
         if serializer.instance.source.extract_indicators:
             tasks.extract_indicators.delay(text, serializer.instance.id, serializer.instance.organization.id)
 
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+
     def get_queryset(self):
         return models.TxtArticle.objects.filter(organization=self.request.user.organization)
 
@@ -1126,6 +1139,9 @@ class WordDocxArticleViewSet(viewsets.ModelViewSet):
         if serializer.instance.source.extract_indicators:
             tasks.extract_indicators.delay(text, serializer.instance.id, serializer.instance.organization.id)
 
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+
     def get_queryset(self):
         return models.WordDocxArticle.objects.filter(organization=self.request.user.organization)
 
@@ -1154,6 +1170,9 @@ class PDFArticleViewSet(viewsets.ModelViewSet):
         text = serializer.get_clean_text(serializer.instance)
         if serializer.instance.source.extract_indicators:
             tasks.extract_indicators.delay(text, serializer.instance.id, serializer.instance.organization.id)
+
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
 
     def get_queryset(self):
         return models.PDFArticle.objects.filter(organization=self.request.user.organization)
@@ -1384,6 +1403,15 @@ class ModelVersionViewSet(OrgViewSet):
 
     def get_queryset(self):
         return models.ModelVersion.objects.filter(model__organization=self.request.user.organization)
+
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        if instance.active:
+            articles = models.Article.objects.filter(upload_date_gte=instance.train_start_date).all()
+            for article in articles:
+                tasks.predict.delay(articles=[article.id],
+                                    organization=article.organization.id,
+                                    source_id=article.source.id)
 
 
 class IndicatorMD5ViewSet(OrgViewSet):

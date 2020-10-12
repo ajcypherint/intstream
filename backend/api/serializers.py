@@ -599,14 +599,6 @@ class ModelVersionSerializer(serializers.ModelSerializer):
 
         model = models.ModelVersion
 
-    def update(self, instance, validated_data):
-        if instance.active:
-            articles = models.Article.objects.filter(upload_date_gte=instance.train_start_date).all()
-            for article in articles:
-                tasks.predict.delay(articles=[article.id],
-                                    organization=article.organization.id,
-                                    source_id=article.source.id)
-
 
 class IndicatorMD5Serializer(serializers.ModelSerializer):
     class Meta:
