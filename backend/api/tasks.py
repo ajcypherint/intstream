@@ -18,6 +18,7 @@ import numpy as np
 logger = get_task_logger(__name__)
 from utils import vector, read, train
 import shutil
+from rest_framework_simplejwt.tokens import RefreshToken
 import iocextract
 import venv
 from api.models import ModelVersion, MLModel, Organization
@@ -133,22 +134,71 @@ def update_suffixes():
     _update_suffixes()
 
 
-def extract_indicators(text, article, organization):
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+
+@shared_task()
+def job(id):
+    job = models.JobSource.objects.get(id=id)
+    user = models.UserIntStream.objects.get(username=job.username)
+    job_version = models.JobVersion.objects.get(active=True, job=job)
+    tokens = get_tokens_for_user(user)
+    # todo
+    # create virtualenv
+    # create script dir
+    # run script with args
+    create_job_script_directory(job_version)
+    create_virtual_env(job_version, aws_req=False, job=True)
+    run_job(tokens, job_version.id)
+
+
+CUSTOM_JOB_FILE = "train_classify.py"
+
+
+def create_job_script_directory(jobversion):
+    directory = get_script_directory_script_version_id(jobversion.id)
+    if not os.path.exists(directory):
+        try:
+            os.mkdir(directory)
+            archive = tarfile.open(jobversion.zip.path, 'r:gz')
+            tmp = archive.extractfile(CUSTOM_JOB_FILE)
+            with open(os.path.join(directory, CUSTOM_JOB_FILE), "wb") as f:
+                f.write(tmp.read())
+                f.flush()
+        except Exception as e:
+            shutil.rmtree(directory)
+            raise e
+
+def create_job_virtual_env(jobversion):
+    pass
+
+
+def run_job(tokens, job_version_id):
+    pass
+
+
+def _extract_indicators(text, article_id, organization_id):
     """
     :param text: str
     :param article: models.Article
     :return:
     """
+
+    article = models.Article.objects.get(id=article_id)
+    organization = models.Organization.objects.get(id=organization_id)
     ipv4s = iocextract.extract_ipv4s(text, refang=True)
     for i in ipv4s:
-        ip = models.IndicatorIPV4(value=i, organization=organization)
-        ip.save()
+        ip, _ = models.IndicatorIPV4.objects.get_or_create(value=i, organization=organization)
         ip.articles.add(article)
 
     ipv6s = iocextract.extract_ipv6s(text)
     for i in ipv6s:
-        ip = models.IndicatorIPV6(value=i, organization=organization)
-        ip.save()
+        ip, _ = models.IndicatorIPV6.objects.get_or_create(value=i, organization=organization)
         ip.articles.add(article)
 
     urls = iocextract.extract_urls(text, refang=True)
@@ -157,20 +207,17 @@ def extract_indicators(text, article, organization):
         subdomain, dom, suff = domain.extract(i)
         if suff != "":
             suffix = models.Suffix.objects.get(value=suff)
-            dm = models.IndicatorNetLoc(subdomain=subdomain,
+            dm, _ = models.IndicatorNetLoc.objects.get_or_create(subdomain=subdomain,
                                         domain=domain,
                                         suffix=suffix,
                                         organization=organization)
-            dm.save()
 
-        url = models.IndicatorUrl(value=i, organization=organization)
-        url.save()
+        url, _ = models.IndicatorUrl.objects.get_or_create(value=i, organization=organization)
         url.articles.add(article)
 
     md5s = iocextract.extract_md5_hashes(text)
     for i in md5s:
-        md5 = models.IndicatorMD5(value=i, organization=organization)
-        md5.save()
+        md5, _ = models.IndicatorMD5.objects.get_or_create(value=i, organization=organization)
         md5.articles.add(article)
 
     sha1s = iocextract.extract_sha1_hashes(text)
@@ -184,6 +231,10 @@ def extract_indicators(text, article, organization):
         sha256 = models.IndicatorSha256(value=i, organization=organization)
         sha256.save()
         sha256.articles.add(article)
+
+@shared_task()
+def extract_indicators(text, article_id, organization_id):
+    _extract_indicators(text, article_id, organization_id)
 
 
 @shared_task()
@@ -227,34 +278,33 @@ def _process_rss_source(source_url, source_id, organization_id):
     org = models.Organization.objects.get(id=organization_id)
 
     for i, html in enumerate(htmls):
-
+        #todo change to use serializer
         article = models.RSSArticle(
             title=collect[i].title[0:1000],
             description=collect[i].description,
             guid=collect[i].id,
             link=collect[i].link,
-            text=html
+            text=html,
+            source=source,
+            organization=org
             )
-
-        article.source_id = source_id
-        article.organization_id=organization_id
         article.save()
-        articles.append(article)
-        article_ser = serializers.RSSSerializer(article)
-        if source.extract_indicators:
-            # todo iocextract from readable text
-            text = article_ser.clean_text
-            extract_indicators(text, article, org)
+        articles.append(article.pk)
 
+    _predict([articles], source_id, organization_id)
+
+
+def _predict(article_ids, source_id, organization_id):
     # filter ModelVersion by model__source=source and model__active=True
     active_model_versions = models.ModelVersion.objects.filter(organization__id=organization_id,
                                                                model__sources__id=source_id,
                                                                model__active=True,
                                                                active=True)
-    if len(articles) == 0:
-        logger.debug("no articles to classify: " + source_url)
-        return
-
+    # move to new task pass article.id, and org id.
+    # call function from serializer.create
+    # this way when an article is sent in through the api it is classified
+    # and when an article is processed through this job it is classified.
+    articles = models.Article.objects.filter(id__in=article_ids).all()
     article_texts = [[i.text] for i in articles]
     org = models.Organization.objects.get(id=organization_id)
     for version in active_model_versions:
@@ -266,6 +316,9 @@ def _process_rss_source(source_url, source_id, organization_id):
                                                target=predictions[i])
             prediction.save()
 
+@shared_task()
+def predict(article_ids, source_id, organization_id):
+    _predict(article_ids, source_id, organization_id)
 
 #unit test
 def model_dir(id):
@@ -350,7 +403,7 @@ def classify(text_list, model_version_id):
     model_directory = model_dir(model.id)
     full_model_dir = os.path.join(model_directory,settings.MODEL_FOLDER)
 
-    script_directory =  get_script_directory_model_version_id(model_version_id)
+    script_directory = get_script_directory_model_version_id(model_version_id)
     venv_directory = get_venv_directory_model_version_id(model_version_id)
     json_data = {"classifier":full_model_dir, "text":text_list}
     path_python = os.path.join(venv_directory,"bin","python")
@@ -423,7 +476,6 @@ def create_script_directory(training_script_version):
     :return:
     """
     directory = get_script_directory_script_version_id(training_script_version.id)
-    #VENV_DIR = /tmp
     if not os.path.exists(directory):
         try:
             os.mkdir(directory)
@@ -453,23 +505,25 @@ def get_venv_directory_model_version_id(id):
     return directory
 
 
-def get_venv_directory_script_version(id):
+def get_venv_directory_script_version(id, job=False):
     """
     :param id: int
     :return:
     """
-    directory = os.path.join(settings.VENV_DIR, VENV + str(id))
-    return directory
+    if job:
+        return os.path.join(settings.VENV_DIR , VENV + "_job" + str(id))
+
+    return os.path.join(settings.VENV_DIR , VENV + str(id))
 
 
-def create_virtual_env(training_script_version):
+def create_virtual_env(training_script_version, aws_req=True, job=False):
     """
     generate virtual env in dir for models
     :param training_script_version: models.TrainingScriptVersion
     :return:
     """
     proxy = os.environ.get(INTSTREAM_PROXY_ENV, None)
-    directory = get_venv_directory_script_version(training_script_version.id)
+    directory = get_venv_directory_script_version(training_script_version.id, job)
     if not os.path.exists(directory):
         try:
             # todo causes error isADirectory when running virtualenv
@@ -506,18 +560,18 @@ def create_virtual_env(training_script_version):
             logger.info("pip stdout: " + str(respip.stdout))
             if res.returncode != 0:
                 raise Pip
-
-            respip = subprocess.run([os.path.join(directory,"bin/python"),
-                              "-m",
-                              "pip",
-                              "install",
-                              "-r",
-                              os.path.join(settings.AWS_TRAIN_FILES,"requirements.txt")],
-                           env=env,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
-            logger.info("pip stderr: " + str(respip.stderr))
-            logger.info("pip stdout: " + str(respip.stdout))
+            if aws_req:
+                respip = subprocess.run([os.path.join(directory,"bin/python"),
+                                  "-m",
+                                  "pip",
+                                  "install",
+                                  "-r",
+                                  os.path.join(settings.AWS_TRAIN_FILES,"requirements.txt")],
+                               env=env,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+                logger.info("pip stderr: " + str(respip.stderr))
+                logger.info("pip stdout: " + str(respip.stdout))
             if res.returncode != 0:
                 raise Pip
 

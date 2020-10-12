@@ -1,21 +1,20 @@
 from rest_framework import serializers
-import json
-from .models import (MLModel, JobSource,
-                     TxtArticle, UserIntStream,
-                     Article, PDFArticle,
-                    Source, ModelVersion,
-                     UploadSource, RSSSource,
-                     SourceType, ArticleType,
-                     HtmlArticle, RSSArticle,
-                     Setting, Prediction,
-                     IndicatorUrl, IndicatorMD5, IndicatorSha1, IndicatorSha256,
-                     IndicatorIPV4, IndicatorIPV6, IndicatorNetLoc,
-                     TrainingScript, TrainingScriptVersion,
-                     Classification, Organization)
+from django_celery_beat.models import PeriodicTask, CrontabSchedule
 from django_celery_results.models import TaskResult as TaskResultMdl
 from utils import read
 from django.conf import settings
 from api import tasks
+from api import models
+
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=(
+            "id",
+            "name",
+            "freemium"
+        )
+        model = models.Organization
 
 
 class SourceTypeSerializer(serializers.ModelSerializer):
@@ -25,7 +24,7 @@ class SourceTypeSerializer(serializers.ModelSerializer):
             "name",
             "api_endpoint"
         ]
-        model = SourceType
+        model = models.SourceType
 
 
 class ArticleTypeSerializer(serializers.ModelSerializer):
@@ -35,7 +34,7 @@ class ArticleTypeSerializer(serializers.ModelSerializer):
            "name",
            "api_endpoint"
         ]
-        model = ArticleType
+        model = models.ArticleType
 
 
 class UserSerializerUpdate(serializers.ModelSerializer):
@@ -43,7 +42,7 @@ class UserSerializerUpdate(serializers.ModelSerializer):
     used to set password
     """
     class Meta:
-        model = UserIntStream
+        model = models.UserIntStream
         fields = ('username', 'password')
 
         write_only_fields=["password"]
@@ -87,7 +86,7 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         write_only_fields = ["password"]
 
-        model = UserIntStream
+        model = models.UserIntStream
 
     def create(self,*args,**kwargs):
         user = super().create(*args,**kwargs)
@@ -104,24 +103,53 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-
 class JobSourceSerializer(serializers.ModelSerializer):
+
     class Meta:
+
         fields = [
             "id",
             'name',
             'active',
-            'script_path',
-            'working_dir',
-            'virtual_env_path',
-            'python_binary_fullpath',
+            'script',
             'last_run',
             'last_status',
             'arguments',
             'organization'
+            'crontab_day_of_week',
+            'crontab_day_of_month',
+            'crontab_month_of_year',
+            'crontab_hour',
+            'crontab_minute',
+            'username',
 
         ]
-        model = JobSource
+        model = models.JobSource
+
+    def _create_schedule(self, job_id, *args, **kwargs):
+        schedule, created = CrontabSchedule.objects.get_or_create(
+             day_of_week=kwargs.get("crontab_day_of_week", None),
+             day_of_month=kwargs.get("crontab_day_of_month", None),
+             month_of_year=kwargs.get("month_of_year", None),
+             hour=kwargs.get("crontab_hour", None),
+             minute=kwargs.get("crontab_minute", None))
+
+        task, _ = PeriodicTask.objects.get_or_create(
+            interval=schedule,
+            name = kwargs.get("name", None),
+            task='api.tasks.job',
+            args={"id":job_id}
+        )
+
+    def create(self,*args,**kwargs):
+        job = super().create(*args,**kwargs)
+        self._create_schedule(job.id, *args, **kwargs)
+        return job
+
+    def update(self, *args,**kwargs):
+        job = super().update(*args,**kwargs)
+        self._create_schedule(*args, **kwargs)
+        return job
 
 
 class UploadSourceSerializer(serializers.ModelSerializer):
@@ -133,8 +161,7 @@ class UploadSourceSerializer(serializers.ModelSerializer):
             'organization',
 
         ]
-        model = UploadSource
-
+        model = models.UploadSource
 
 
 class RssSourceSerializer(serializers.ModelSerializer):
@@ -148,15 +175,7 @@ class RssSourceSerializer(serializers.ModelSerializer):
             'extract_indicators',
 
         ]
-        model = RSSSource
-
-    def create(self, validated_data):
-        src = RSSSource(**validated_data)
-        src.save()
-        tasks.process_rss_source.delay(organization_id=src.organization.id,
-                                 source_url=src.url,
-                                 source_id=src.id)
-        return src
+        model = models.RSSSource
 
 
 class SourceSerializerNested(serializers.Serializer):
@@ -177,6 +196,7 @@ class SourceSerializerNested(serializers.Serializer):
         }
         """
 
+
 class MLModelOnlySerializer(serializers.ModelSerializer):
      class Meta:
         fields=[
@@ -189,7 +209,7 @@ class MLModelOnlySerializer(serializers.ModelSerializer):
             'organization',
         ]
 
-        model = MLModel
+        model = models.MLModel
 
 
 class HomeSerializer(serializers.ModelSerializer):
@@ -206,7 +226,7 @@ class HomeSerializer(serializers.ModelSerializer):
             "mlmodel_id"
 
         ]
-        model = Source
+        model = models.Source
 
 
 class SourceSerializer(serializers.ModelSerializer):
@@ -219,7 +239,7 @@ class SourceSerializer(serializers.ModelSerializer):
             'organization',
 
         ]
-        model = Source
+        model = models.Source
 
 
 class ClassifFilterSerializer(serializers.Serializer):
@@ -280,12 +300,12 @@ class MLModelSerializer(serializers.ModelSerializer):
             'organization',
         ]
 
-        model = MLModel
+        model = models.MLModel
 
     def create(self, validated_data):
         sources = validated_data["sources"]
         ids = [source["id"] for source in sources]
-        ob = MLModel(
+        ob = models.MLModel(
             name=validated_data["name"],
             script_directory=validated_data.get("script_directory",settings.DEFAULT_SCRIPT_MODEL),
             active=validated_data.get("active",False),
@@ -308,6 +328,7 @@ class MLModelSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class ClassificationSerializer(serializers.ModelSerializer):
     article_id = serializers.IntegerField()
     mlmodel_id = serializers.IntegerField()
@@ -320,12 +341,12 @@ class ClassificationSerializer(serializers.ModelSerializer):
             "mlmodel_id",
             "organization",
         )
-        model = Classification
+        model = models.Classification
 
     def create(self, validated_data):
         # lookup with given kwargs, update with defaults if exists
         # created is boolean on whether or not one was created
-        classification, created = Classification.objects.update_or_create(
+        classification, created = models.Classification.objects.update_or_create(
             article_id = validated_data.get("article_id", None),
             mlmodel_id = validated_data.get("mlmodel_id", None),
             organization = validated_data.get("organization", None),
@@ -338,9 +359,10 @@ class ClassificationSerializer(serializers.ModelSerializer):
 
 class ArticleSerializerSet(serializers.ModelSerializer):
     source = SourceSerializer(read_only=True)
+
     class Meta:
         fields= [
-            'id',
+           'id',
            'source',
            'title',
            'upload_date',
@@ -348,58 +370,41 @@ class ArticleSerializerSet(serializers.ModelSerializer):
            'organization',
         ]
 
-        model = Article
+        model = models.Article
 
-class ArticleSerializer(serializers.ModelSerializer):
-    source = SourceSerializer(read_only=True)
+
+class DefaultArticleSerializer(serializers.ModelSerializer):
+    clean_text = serializers.SerializerMethodField()
+
+    def get_clean_text(self, obj):
+        reader = read.HTMLRead(obj.text)
+        return reader.read()
+
+
+class ArticleSerializer(DefaultArticleSerializer):
+    source = serializers.PrimaryKeyRelatedField(queryset=models.Source.objects.all())
+    organization = OrganizationSerializer(read_only=True)
     classification_set = ClassificationSerializer(read_only=True, many=True)
     article_set = ArticleSerializerSet(many=True, read_only=True)
-    clean_text = serializers.SerializerMethodField()
-
-    def get_clean_text(self, obj):
-        reader = read.HTMLRead(obj.text)
-        return reader.read()
 
     class Meta:
         fields= [
-            'id',
+           'id',
            'source',
            'title',
            'upload_date',
            'encoding',
-            'clean_text',
-            'article_set',
-            'organization',
-            'classification_set',
+           'clean_text',
+           'article_set',
+           'organization',
+           'classification_set',
         ]
-        model = Article
+        model = models.Article
 
 
-class PDFSerializer(serializers.ModelSerializer):
-    article_set = ArticleSerializer(many=True, read_only=True)
-    class Meta:
-        fields= [
-            'id',
-           'source',
-           'title',
-           'upload_date',
-           'file',
-           'encoding',
-            'password',
-            'article_set',
-            'organization',
-        ]
-
-        model = PDFArticle
-
-
-class HtmlSerializer(serializers.ModelSerializer):
-    article_set = ArticleSerializer(many=True, read_only=True)
-    clean_text = serializers.SerializerMethodField()
-
-    def get_clean_text(self, obj):
-        reader = read.HTMLRead(obj.text)
-        return reader.read()
+class PDFSerializer(DefaultArticleSerializer):
+    source = serializers.PrimaryKeyRelatedField(queryset=models.Source.objects.all())
+    organization = OrganizationSerializer(read_only=True)
 
     class Meta:
         fields= [
@@ -409,80 +414,94 @@ class HtmlSerializer(serializers.ModelSerializer):
            'upload_date',
            'file',
            'encoding',
-            'clean_text',
-            'article_set',
-            'organization',
+           'password',
+           'organization',
         ]
-        model = HtmlArticle
+
+        model = models.PDFArticle
 
 
-class WordDocxSerializer(serializers.ModelSerializer):
-    article_set = ArticleSerializer(many=True, read_only=True)
+class HtmlSerializer(DefaultArticleSerializer):
+    source = serializers.PrimaryKeyRelatedField(queryset=models.Source.objects.all())
+    organization = OrganizationSerializer(read_only=True)
+
     class Meta:
         fields= [
-            'id',
+           'id',
            'source',
            'title',
            'upload_date',
            'file',
            'encoding',
-            'article_set',
-            'organization',
+           'clean_text',
+           'organization',
         ]
-        model = TxtArticle
+        model = models.HtmlArticle
 
 
-class TxtSerializer(serializers.ModelSerializer):
-    article_set = ArticleSerializer(many=True, read_only=True)
+class WordDocxSerializer(DefaultArticleSerializer):
+    source = serializers.PrimaryKeyRelatedField(queryset=models.Source.objects.all())
+    organization = OrganizationSerializer(read_only=True)
+
     class Meta:
         fields= [
-            'id',
+           'id',
            'source',
            'title',
            'upload_date',
            'file',
            'encoding',
-            'article_set',
-            'organization',
+           'organization',
         ]
-        model = TxtArticle
+        model = models.TxtArticle
 
 
-class RSSSerializer(serializers.ModelSerializer):
-    article_set = ArticleSerializer(many=True, read_only=True)
-    clean_text = serializers.SerializerMethodField()
-
-    def get_clean_text(self, obj):
-        reader = read.HTMLRead(obj.text)
-        return reader.read()
-
+class TxtSerializer(DefaultArticleSerializer):
+    source = serializers.PrimaryKeyRelatedField(queryset=models.Source.objects.all())
+    organization = OrganizationSerializer(read_only=True)
 
     class Meta:
         fields= [
-            'id',
+           'id',
+           'source',
+           'title',
+           'upload_date',
+           'file',
+           'encoding',
+           'organization',
+        ]
+        model = models.TxtArticle
+
+
+class RSSSerializer(DefaultArticleSerializer):
+    source = serializers.PrimaryKeyRelatedField(queryset=models.Source.objects.all())
+    organization = OrganizationSerializer(read_only=True)
+
+    class Meta:
+        fields= [
+           'id',
            'source',
            'title',
            'upload_date',
            'encoding',
-            'clean_text',
-
-            'description',
-            'link',
-            'guid',
-            'article_set',
+           'clean_text',
+           'description',
+           'link',
+           'guid',
         ]
 
-        model = RSSArticle
+        model = models.RSSArticle
 
 
 class TrainingScriptSerializer(serializers.ModelSerializer):
+    organization = OrganizationSerializer(read_only=True)
     class Meta:
         fields = (
             "id",
             "name",
             "organization"
         )
-        model = TrainingScript
+        model = models.TrainingScript
 
 
 class TrainingScriptVersionSerializer(serializers.ModelSerializer):
@@ -493,14 +512,15 @@ class TrainingScriptVersionSerializer(serializers.ModelSerializer):
             "script",
             "zip"
         )
-        model = TrainingScriptVersion
-
+        model = models.TrainingScriptVersion
 
 
 class SettingSerializer(serializers.ModelSerializer):
+    organization = serializers.PrimaryKeyRelatedField(queryset=models.Setting.objects.all())
     class Meta:
         fields=(
             "id",
+            "organization",
             "aws_key",
             "aws_secret",
             "aws_s3_log_base",
@@ -508,21 +528,7 @@ class SettingSerializer(serializers.ModelSerializer):
             "aws_region"
         )
         extra_kwargs = {'aws_secret': {'write_only': True}}
-        model = Setting
-
-    def create(self, validated_data):
-        setting, created = Setting.objects.update_or_create(
-            organization=validated_data.get("organization", None),
-            defaults={
-                "aws_key":validated_data.get("aws_key", None),
-                "aws_secret":validated_data.get("aws_secret", None),
-                "aws_s3_log_base":validated_data.get("aws_s3_log_base", None),
-                "aws_s3_upload_base":validated_data.get("aws_s3_upload_base", None),
-                "aws_region":validated_data.get("aws_region", None),
-
-            }
-        )
-        return setting
+        model = models.Setting
 
 
 class TaskResult(serializers.ModelSerializer):
@@ -558,16 +564,8 @@ class TaskResult(serializers.ModelSerializer):
 class ArticleIDSerializer(serializers.ModelSerializer):
     class Meta:
         fields=("id",)
-        model = Article
+        model = models.Article
 
-class OrganizationSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields=(
-            "id",
-            "name",
-            "freemium"
-        )
-        model = Organization
 
 
 class PredictionSerializer(serializers.ModelSerializer):
@@ -578,11 +576,12 @@ class PredictionSerializer(serializers.ModelSerializer):
                 "mlmodel",
                 "organization",
                 )
-        model = Prediction
+        model = models.Prediction
 
 
 class ModelVersionSerializer(serializers.ModelSerializer):
     model = MLModelOnlySerializer(read_only=True)
+
     class Meta:
         fields = (
                  "id",
@@ -598,59 +597,88 @@ class ModelVersionSerializer(serializers.ModelSerializer):
                   "active",
                   "metric_value")
 
-        model = ModelVersion
+        model = models.ModelVersion
+
+    def update(self, instance, validated_data):
+        if instance.active:
+            articles = models.Article.objects.filter(upload_date_gte=instance.train_start_date).all()
+            for article in articles:
+                tasks.predict.delay(articles=[article.id],
+                                    organization=article.organization.id,
+                                    source_id=article.source.id)
 
 
 class IndicatorMD5Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
-            "source",
+            "id",
+            "articles",
+            "organization",
             "value"
         ]
-        model = IndicatorMD5
+        model = models.IndicatorMD5
+
 
 
 class IndicatorSha256Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
-            "source",
-            "value"
+            "id",
+            "articles",
+            "organization",
+            "value",
         ]
-        model = IndicatorSha256
+        model = models.IndicatorSha256
 
 
 class IndicatorSha1Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
-            "source",
+            "id",
+            "articles",
+            "organization",
             "value"
         ]
-        model = IndicatorSha1
+        model = models.IndicatorSha1
 
 
-class IndicatorUrlSerializer(serializers.ModelSerializer):
+class IndicatorNetLocSerializerCreate(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        return obj.subdomain + "." + obj.domain + "." + obj.suffix
+
     class Meta:
         fields = [
-            "source",
-            "value"
+            "id",
+            "articles",
+            "organization",
+            "subdomain",
+            "domain",
+            "suffix",
+            "url",
         ]
-        model = IndicatorUrl
+        model = models.IndicatorNetLoc
 
 
 class IndicatorIPV6Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
-            "source",
+            "id",
+            "articles",
+            "organization",
             "value"
         ]
-        model = IndicatorIPV6
+        model = models.IndicatorIPV6
 
 
 class IndicatorIPV4Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
-            "source",
+            "id",
+            "articles",
+            "organization",
             "value"
         ]
-        model = IndicatorIPV4
+        model = models.IndicatorIPV4
 

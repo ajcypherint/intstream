@@ -5,18 +5,14 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.constraints import UniqueConstraint
 from django.db.models import Q, F,Value
 from semantic_version.django_fields import VersionField
-from django.utils.translation import gettext_lazy as _
 from django.core import validators
-import tldextract
 
-from django.core.exceptions import ValidationError
 import uuid
 import os
 from fernet_fields import EncryptedTextField
 from django.conf import settings
 from django.db.models.functions import Concat
 
-#todo(aj) mutitenant - organization table
 # all queries filter by org
 # Admin can see all orgs; add new orgs
 # integrator can only see their own org; cannot add orgs
@@ -48,6 +44,7 @@ def get_file_path(instance, filename):
 class SourceType(models.Model):
     name = models.CharField(max_length=25,unique=True)
     api_endpoint = models.TextField(max_length=50,unique=True)
+
     def __str__(self):
         return self.name + " (" + str(self.id) + ")"
 
@@ -62,31 +59,46 @@ class Source(PolymorphicModel):
     name = models.CharField(max_length=100, )
     active = models.BooleanField(default=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    extract_indicators = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name + " (" + str(self.id) + ")"
 
 
 class UploadSource(Source):
-    pass
+    extract_indicators = models.BooleanField(default=False)
 
 
 # this will trigger an rss source to accept incoming intel
 class RSSSource(Source):
     url = models.URLField(max_length=1000)
+    extract_indicators = models.BooleanField(default=False)
 
 
 # this will trigger a python script to run
 class JobSource(Source):
-    script_path = models.TextField(max_length=500)
-    working_dir = models.TextField(max_length=500)
-    virtual_env_path = models.TextField(max_length=500)
-    python_binary_fullpath = models.TextField(max_length=500)
+    python_version = models.TextField(max_length=3)
     last_run = models.DateTimeField(blank=True, null=True)
     last_status = models.BooleanField(blank=True, null=True)
     arguments = models.TextField(max_length=1000)
-    task = models.TextField() # todo(aj) foreignkey to
+    cron_day_of_week = models.TextField(max_length=20)
+    cron_day_of_month = models.TextField(max_length=10)
+    crontab_month_of_year = models.TextField(max_length=20)
+    cron_hour = models.TextField(max_length=10)
+    cron_minute = models.TextField(max_length=10)
+    user = models.TextField(max_length=250)
+    password = EncryptedTextField()
+
+
+class JobVersion(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['job', 'version', 'organization'], name='unique_job_version'),
+            ]
+
+    job = models.ForeignKey(JobSource, on_delete=models.CASCADE, editable=False)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    zip = models.FileField(upload_to="job_scripts")
+    version = VersionField()
 
 
 class TrainingScript(models.Model):
@@ -106,7 +118,6 @@ class TrainingScriptVersion(models.Model):
             ]
     script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=False)
     zip = models.FileField(upload_to="train_scripts")
-    # null for system scripts.  User will not have this exposed via api. only for migrations that add system scripts
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     version = VersionField()
 
@@ -162,6 +173,7 @@ class MLModel(models.Model):
     active = models.BooleanField(default=False) # allow to show in gui
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     training_script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=True)
+    train_start_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return str(self.id)
@@ -250,35 +262,50 @@ class Setting(models.Model):
     aws_s3_log_base = models.CharField(max_length=500)
     aws_s3_upload_base = models.CharField(max_length=500)
     ec2_key_name = models.CharField(max_length=500)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False, unique=True)
 
 
 class Indicator(PolymorphicModel):
-    articles = models.ManyToManyField(Article)
-    organization = models.ForeignKey(Organization,on_delete=models.CASCADE)
+    articles = models.ManyToManyField(Article, blank=True)
+    organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
 
 
 class IndicatorUrl(Indicator):
-    value = models.URLField()
+    value = models.URLField(unique=True)
 
 
 class IndicatorMD5(Indicator):
-    value = models.TextField(max_length=32)
+    value = models.TextField(max_length=32,
+                             validators=[validators.RegexValidator(regex=r"^[0-9a-fA-F]{32}$",
+                                                                   message="must be valid md5 hash")],
+                             unique=True)
 
 
 class IndicatorSha256(Indicator):
-    value = models.TextField(max_length=64)
+    value = models.TextField(max_length=64,
+                             validators=[validators.RegexValidator(regex=r"^[0-9a-fA-F]{64}$",
+                                                                   message="must be valid sha256"),],
+                             unique=True)
 
 
 class IndicatorSha1(Indicator):
-    value = models.TextField(max_length=40)
+    value = models.TextField(max_length=40,
+                             validators=[validators.RegexValidator(regex=r"^[0-9a-fA-F]{40}$",
+                                                                   message="must be valid sha1")],
+                             unique=True)
 
 
 class Suffix(models.Model):
-    value = models.TextField(max_length=30, unique=True)
+    value = models.TextField(max_length=30,
+                             unique=True)
 
 
 class IndicatorNetLoc(Indicator):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['subdomain', 'domain', 'suffix'], name='unique_domain'),
+            ]
+
     subdomain = models.TextField(validators=[validators.RegexValidator(regex=r'[^a-zA-Z0-9\-]', inverse_match=True)], max_length=63)
     domain = models.TextField(validators=[validators.RegexValidator(regex=r'[^a-zA-Z0-9\-]', inverse_match=True)], max_length=63)
     suffix = models.ForeignKey(Suffix, on_delete=models.CASCADE)
@@ -297,20 +324,24 @@ class IndicatorNetLoc(Indicator):
 
 
 class IndicatorIPV4(Indicator):
-    value = models.GenericIPAddressField(protocol="IPv4") #todo custom format
+    value = models.GenericIPAddressField(protocol="IPv4",
+                                         unique=True)
+    ttl = models.IntegerField(default=0)
 
 
 class IndicatorIPV6(Indicator):
-    value = models.GenericIPAddressField(protocol="IPv6") #todo custom format
+    value = models.GenericIPAddressField(protocol="IPv6",
+                                         unique=True)
+    ttl = models.IntegerField(default=0)
 
 
 class IndicatorCustomType(models.Model):
-    name = models.TextField(max_length=500,)
+    name = models.TextField(max_length=500, unique=True)
     validator = models.TextField() # used to validate input in create
     #todo verification
 
 
 class IndicatorCustom(Indicator):
-    value = models.TextField()
+    value = models.TextField(unique=True)
     type = models.ForeignKey(IndicatorCustomType, on_delete=models.CASCADE)
 

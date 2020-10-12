@@ -1,4 +1,5 @@
 import math
+import iocextract
 
 from django.utils.encoding import force_bytes
 from api.backend import DisabledHTMLFilterBackend
@@ -44,6 +45,12 @@ import json
 from rest_framework import mixins
 from django.views import View
 from django.shortcuts import render
+from django.core.mail import EmailMultiAlternatives
+from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django.urls import reverse
+
+from django_rest_passwordreset.signals import reset_password_token_created
 
 
 MAX_CLUSTER = 200
@@ -788,7 +795,7 @@ class TrainingScriptFilter(filters.FilterSet):
         fields = ("id", "name")
 
 
-class TrainingScriptViewSet(viewsets.ModelViewSet):
+class TrainingScriptViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyOrIsAdminIntegratorSameOrg,)
     serializer_class = serializers.TrainingScriptSerializer
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -798,8 +805,6 @@ class TrainingScriptViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return models.TrainingScript.objects.filter(Q(organization=self.request.user.organization)
                                                            | Q(organization__name=settings.SYSTEM_ORG))
-    def perform_create(self, serializer):
-        serializer.save(organization = self.request.user.organization)
 
 
 class TrainingScriptVersionFilter(filters.FilterSet):
@@ -917,10 +922,6 @@ class UploadSourceViewSet(OrgViewSet):
 jobsourcecols = ('id',
                   'name',
                   'active',
-                  'script_path',
-                  'working_dir',
-                  'virtual_env_path',
-                  'python_binary_fullpath',
                   'last_run',
                   'last_status',
                   'arguments',
@@ -995,6 +996,24 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ArticleSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter)
     filterset_class = ArticleFilter
+    
+    @action(methods=["post"],
+            detail=True,
+            permission_classes=[permissions.IsAuthandReadOnlyIntegrator]
+            )
+    def link(self, request, **kwargs):
+        article_id = kwargs["pk"]
+        indicator_ids = self.request.data.getlist("indicator_ids", None)
+        if indicator_ids is None:
+            return Response({"indicator_ids":"required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not isinstance(indicator_ids, list):
+            return Response({"indicator_ids": "must be a list"}, status=status.HTTP_400_BAD_REQUEST)
+        article = models.Article.objects.get(id=article_id)
+        indicators = models.Indicator.objects.filter(id__in=indicator_ids).all()
+        ids = [i.id for i in indicators]
+        for i in indicators:
+            article.indicator_set.add(i)
+        return Response({"added": ids}, status=status.HTTP_200_OK)
 
     def get_queryset(self):
         return models.Article.objects.filter(organization=self.request.user.organization)
@@ -1006,9 +1025,8 @@ class RSSArticleFilter(filters.FilterSet):
         fields = ARTICLE_SORT_FIELDS
 
 
-
-
 class RSSArticleViewSet(viewsets.ModelViewSet):
+    #todo(aj) delete put
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.RSSSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter)
@@ -1016,11 +1034,13 @@ class RSSArticleViewSet(viewsets.ModelViewSet):
     filterset_class = RSSArticleFilter
 
     def perform_create(self, serializer):
-        instance = TXT(self.request.FILES['file'],self.request.data.encoding)
-        text = instance.read()
-        serializer.save(text=text,organization=self.request.user.organization)
+        source = models.Source.objects.get(id=self.request.data["source"])
+        serializer.save(source=source, organization=self.request.user.organization)
+        tasks.predict.delay([serializer.instance.pk], serializer.instance.source.id, serializer.instance.organization.id)
+        text = serializer.get_clean_text(serializer.instance)
+        if serializer.instance.source.extract_indicators:
+            tasks.extract_indicators.delay(text, serializer.instance.id, serializer.instance.organization.id)
 
-    #todo move this logic into serializer so browseable api filtering works
     def get_queryset(self):
         return models.RSSArticle.objects.filter(organization=self.request.user.organization)
 
@@ -1032,6 +1052,7 @@ class HtmlArticleFilter(filters.FilterSet):
 
 
 class HtmlArticleViewSet(viewsets.ModelViewSet):
+    #todo(aj) delete put
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.HtmlArticle.objects.all()
     serializer_class = serializers.HtmlSerializer
@@ -1040,10 +1061,12 @@ class HtmlArticleViewSet(viewsets.ModelViewSet):
     filterset_class = HtmlArticleFilter
 
     def perform_create(self, serializer):
-        instance = TXT(self.request.FILES['file'],self.request.data.encoding)
-        text = instance.read()
         source = models.Source.objects.get(id=self.request.data["source"])
-        serializer.save(source=source, text=text,organization=self.request.user.organization)
+        serializer.save(source=source, organization=self.request.user.organization)
+        tasks.predict.delay([serializer.instance.pk], serializer.instance.source.id, serializer.instance.organization.id)
+        text = serializer.get_clean_text(serializer.instance)
+        if serializer.instance.source.extract_indicators:
+            tasks.extract_indicators.delay(text, serializer.instance.id, serializer.instance.organization.id)
 
     def get_queryset(self):
         return models.HtmlArticle.objects.filter(organization=self.request.user.organization)
@@ -1056,6 +1079,7 @@ class TxtArticleFilter(filters.FilterSet):
 
 
 class TxtArticleViewSet(viewsets.ModelViewSet):
+    #todo(aj) delete put
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.TxtSerializer
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -1068,6 +1092,10 @@ class TxtArticleViewSet(viewsets.ModelViewSet):
         #todo(add source field)
         source = models.Source.objects.get(id=self.request.data["source"])
         serializer.save(source=source, text=text, organization=self.request.user.organization)
+        tasks.predict.delay([serializer.instance.pk], serializer.instance.source.id, serializer.instance.organization.id)
+        text = serializer.get_clean_text(serializer.instance)
+        if serializer.instance.source.extract_indicators:
+            tasks.extract_indicators.delay(text, serializer.instance.id, serializer.instance.organization.id)
 
     def get_queryset(self):
         return models.TxtArticle.objects.filter(organization=self.request.user.organization)
@@ -1080,6 +1108,7 @@ class WordDocxArticleFilter(filters.FilterSet):
 
 
 class WordDocxArticleViewSet(viewsets.ModelViewSet):
+    #todo(aj) delete put
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.WordDocxArticle.objects.all()
     serializer_class = serializers.WordDocxSerializer
@@ -1092,6 +1121,10 @@ class WordDocxArticleViewSet(viewsets.ModelViewSet):
         text = instance.read()
         source = models.Source.objects.get(id=self.request.data["source"])
         serializer.save(source=source, text=text, organization=self.request.user.organization)
+        tasks.predict.delay([serializer.instance.pk], serializer.instance.source.id, serializer.instance.organization.id)
+        text = serializer.get_clean_text(serializer.instance)
+        if serializer.instance.source.extract_indicators:
+            tasks.extract_indicators.delay(text, serializer.instance.id, serializer.instance.organization.id)
 
     def get_queryset(self):
         return models.WordDocxArticle.objects.filter(organization=self.request.user.organization)
@@ -1104,19 +1137,23 @@ class PDFArticleFilter(filters.FilterSet):
 
 
 class PDFArticleViewSet(viewsets.ModelViewSet):
+    #todo(aj) delete put
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.PDFSerializer
-    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = PDFArticleFilter
 
     def perform_create(self, serializer):
         password = self.request.data.password if 'password' in self.request.data else ''
-        instance = PDF(self.request.FILES['file'],password=password)
+        instance = PDF(self.request.FILES['file'], password=password)
         text = instance.read()
         source = models.Source.objects.get(id=self.request.data["source"])
         serializer.save(source=source, text=text, organization=self.request.user.organization)
-
+        tasks.predict.delay([serializer.instance.pk], serializer.instance.source.id, serializer.instance.organization.id)
+        text = serializer.get_clean_text(serializer.instance)
+        if serializer.instance.source.extract_indicators:
+            tasks.extract_indicators.delay(text, serializer.instance.id, serializer.instance.organization.id)
 
     def get_queryset(self):
         return models.PDFArticle.objects.filter(organization=self.request.user.organization)
@@ -1182,7 +1219,7 @@ class AllUserViewSet(viewsets.ModelViewSet):
         return models.UserIntStream.objects.all()
 
 
-class OrgUserViewSet(viewsets.ModelViewSet):
+class OrgUserViewSet(OrgViewSet):
     # org user view for staff members
     permission_classes = (permissions.IsAuthandReadOnlyStaff,)
     serializer_class = serializers.UserSerializer
@@ -1195,6 +1232,14 @@ class OrgUserViewSet(viewsets.ModelViewSet):
                         "is_staff",
                         "is_integrator",
                         "organization")
+
+    def perform_update(self, serializer):
+        user = serializer.save(organization=self.request.user.organization)
+        p = user.password
+        user.set_password(p)
+        user.save()
+        return user
+
 
     def get_queryset(self):
         return models.UserIntStream.objects.filter(organization=self.request.user.organization).all()
@@ -1215,6 +1260,7 @@ class AllOrganizationViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.OrganizationSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "name")
+
     def get_queryset(self):
         return models.Organization.objects.all()
 
@@ -1224,74 +1270,136 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.TaskResult
     filterset_fields = ("id", )
 
+    #todo(aj) how to limit results to your org? use submit id? create a table linking org to task_id?
     def get_queryset(self):
         return TaskResultMdl.objects.all()
 
 
-class IndicatorMd5ViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
-    serializer_class = serializers.IndicatorMD5
-    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+class IndicatorMD5Filter(filters.FilterSet):
+    value__in = filters.IsoDateTimeFilter(field_name="value",lookup_expr="in")
+
+    class Meta:
+        model = models.IndicatorMD5
+        fields = ('id', 'value',)
+
+
+class IndicatorSha1Filter(filters.FilterSet):
+    value__in = filters.IsoDateTimeFilter(field_name="value",lookup_expr="in")
+
+    class Meta:
+        model = models.IndicatorSha1
+        fields = ('id', 'value',)
+
+
+class IndicatorSha256Filter(filters.FilterSet):
+    value__in = filters.IsoDateTimeFilter(field_name="value",lookup_expr="in")
+
+    class Meta:
+        model = models.IndicatorSha256
+        fields = ('id', 'value',)
+
+
+class IndicatorIPV4Filter(filters.FilterSet):
+    value__in = filters.IsoDateTimeFilter(field_name="value",lookup_expr="in")
+
+    class Meta:
+        model = models.IndicatorIPV4
+        fields = ('id', 'value',)
+
+
+class IndicatorIPV6Filter(filters.FilterSet):
+    value__in = filters.IsoDateTimeFilter(field_name="value",lookup_expr="in")
+
+    class Meta:
+        model = models.IndicatorIPV6
+        fields = ('id', 'value',)
+
+
+class IndicatorSha1ViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorSha1Serializer
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_class = IndicatorSha1Filter
 
     def get_queryset(self):
-        return models.IndicatorMD5.objects.filter(organizaation=self.request.user.organizataion)
+        return models.IndicatorSha1.objects.filter(organization=self.request.user.organization)
+
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get("data", {}), list):
+            kwargs["many"] = True #bulk
+
+        return super(IndicatorSha1ViewSet, self).get_serializer(*args, **kwargs)
 
 
-class IndicatorSha1ViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
-    serializer_class = serializers.IndicatorSha1
-    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
-
-    def get_queryset(self):
-        return models.IndicatorSha1.objects.filter(organizaation=self.request.user.organizataion)
-
-
-class IndicatorSha256ViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
-    serializer_class = serializers.IndicatorSha256
-    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+class IndicatorSha256ViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorSha256Serializer
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_class = IndicatorSha256Filter
 
     def get_queryset(self):
-        return models.IndicatorSha256.objects.filter(organizaation=self.request.user.organizataion)
+        return models.IndicatorSha256.objects.filter(organization=self.request.user.organization)
+
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get("data", {}), list):
+            kwargs["many"] = True #bulk
+
+        return super(IndicatorSha256ViewSet, self).get_serializer(*args, **kwargs)
 
 
-class IndicatorUrlViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
-    serializer_class = serializers.IndicatorUrl
+class IndicatorUrlViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorNetLocSerializerCreate
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
 
     def get_queryset(self):
         return models.IndicatorUrl.objects.filter(organizaation=self.request.user.organizataion)
 
 
-class IndicatorIPV4ViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
-    serializer_class = serializers.IndicatorIPV4
+class IndicatorIPV4ViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorIPV4Serializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_class = IndicatorIPV4Filter
 
     def get_queryset(self):
         return models.IndicatorIPV4.objects.filter(organizaation=self.request.user.organizataion)
 
 
-class IndicatorIPV6ViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthandReadOnlyIntegrator)
-    serializer_class = serializers.IndicatorIPV6
+class IndicatorIPV6ViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorIPV6Serializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_class = IndicatorIPV6Filter
 
     def get_queryset(self):
         return models.IndicatorIPV6.objects.filter(organizaation=self.request.user.organizataion)
 
 
-class ModelVersionViewSet(viewsets.ModelViewSet):
+class ModelVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.ModelVersionSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ("id", "version","model__active", "model", "active")
-    # todo(aj)
-    # change from readonly
-    # add upsert to serializer
+
     def get_queryset(self):
         return models.ModelVersion.objects.filter(model__organization=self.request.user.organization)
+
+
+class IndicatorMD5ViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorMD5Serializer
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_class = IndicatorMD5Filter
+
+    def get_queryset(self):
+        return models.IndicatorMD5.objects.filter(organization=self.request.user.organization)
+
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get("data", {}), list):
+            kwargs["many"] = True #bulk
+
+        return super(IndicatorMD5ViewSet, self).get_serializer(*args, **kwargs)
 
 
 class ResetPasswordConfirm(drpr_views.ResetPasswordConfirm):
@@ -1310,13 +1418,6 @@ class ResetPasswordRequest(drpr_views.ResetPasswordRequestToken):
     authentication_classes = []
     permission_classes = (drfpermissions.AllowAny,)
     throttle_classes = [CustomAnonRateThrottle]
-
-from django.core.mail import EmailMultiAlternatives
-from django.dispatch import receiver
-from django.template.loader import render_to_string
-from django.urls import reverse
-
-from django_rest_passwordreset.signals import reset_password_token_created
 
 
 @receiver(reset_password_token_created)

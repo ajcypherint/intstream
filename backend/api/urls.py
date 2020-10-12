@@ -57,7 +57,7 @@ router.register("allorganization",views.AllOrganizationViewSet, basename="allorg
 router.register("taskresult", views.TaskResultViewSet, basename="taskresult")
 router.register("modelversion", views.ModelVersionViewSet, basename="modelversion")
 
-router.register("indicatormd5", views.IndicatorMd5ViewSet, basename="indicatormd5")
+router.register("indicatormd5", views.IndicatorMD5ViewSet, basename="indicatormd5")
 router.register("indicatorsha1", views.IndicatorSha1ViewSet, basename="indicatorsha1")
 router.register("indicatorsha256", views.IndicatorSha256ViewSet, basename="indicatorsha256")
 router.register("indicatorurl", views.IndicatorUrlViewSet, basename="indicatorurl")

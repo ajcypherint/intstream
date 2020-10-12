@@ -4,13 +4,16 @@ import Stemmer #Pystemmer
 import re
 from selectolax.parser import HTMLParser
 
+
 class ExceptionNoBody(Exception):
     pass
+
 
 def clean_html_regex(raw_html):
     cleanr = re.compile('<.*?>')
     cleantext = re.sub(cleanr,'',raw_html)
     return cleantext
+
 
 def clean_html(raw):
     tree = HTMLParser(raw)

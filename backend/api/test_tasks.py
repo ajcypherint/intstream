@@ -88,8 +88,8 @@ class TestTasks(TestCase):
 
     def test_extract_indicators(self):
         text = """
-        192.168.1.1
-        192[.]168[.]1[.]1
+        192.168.9.1
+        192[.]168[.]9[.]1
         http://test.com
         098f6bcd4621d373cade4e832627b4f6
         4468e5deabf5e6d0740cd1a77df56f67093ec943
@@ -106,7 +106,7 @@ class TestTasks(TestCase):
         article.save()
         tasks.extract_indicators(text, article, organization)
         ipv4s = models.IndicatorIPV4.objects.all()
-        self.assertEqual(len(ipv4s), 2)
+        self.assertEqual(len(ipv4s), 1)
         ipv6s = models.IndicatorIPV6.objects.all()
         self.assertEqual(len(ipv6s), 1)
         md5s = models.IndicatorMD5.objects.all()
