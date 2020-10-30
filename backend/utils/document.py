@@ -45,6 +45,7 @@ class WordDocx(Document):
         # todo(aj) change to use file_handle instead
         return docx2txt.process(self.file_handle)
 
+
 class PDF(Document):
     def __init__(self,file_handle, password='',**kwargs):
         """
@@ -76,19 +77,15 @@ class PDF(Document):
                                      password=password,
                                      caching=True,
                                      check_extractable=True)
-        try:
-            for page in page_gen:
-                self.interpreter.process_page(page)
-        except pdfdocument.PDFPasswordIncorrect as e:
-            return False
-        except pdfdocument.PDFEncryptionError as e:
-            return False
+        for page in page_gen:
+            self.interpreter.process_page(page)
 
         self.text = self.retstr.getvalue()
-        if sys.version_info[0] <3:
+        if sys.version_info[0] < 3:
             self.text = self.text.decode('utf8',errors='ignore')
-        self.fp.close()
+        # fp will be closed by django api
+        #self.fp.close()
         self.device.close()
         self.retstr.close()
-        return True
+        return self.text
 

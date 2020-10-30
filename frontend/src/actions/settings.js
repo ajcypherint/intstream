@@ -18,6 +18,8 @@ export const FORM_UPDATE = '@@settings/FORM_UPDATE';
 export const CLEAR = '@@settings/CLEAR';
 export const GET_TOTAL_SETTINGS = '@@settings/TOTAL';
 
+export const API = '/api/setting/'
+
 export const clear = ()=>{
   return {
     type:CLEAR,
@@ -57,7 +59,7 @@ export const getSettings = (url, params=undefined)=>{
 }
 }
 
-export const setSettings = (url,data,method='POST' )=>{
+export const editSettings = (url,data,method='POST' )=>{
   // filters - list[string]
   return {
   [RSAA]:{
@@ -76,4 +78,20 @@ export const setSettings = (url,data,method='POST' )=>{
 
 export const getAllSettings=getAll(getSettings)(total);
 
+export const setSettings = (url, data)=>{
+  return async(dispatch,getState)=>{
+    let resp = await dispatch(getSettings(API))
+     if (resp.error) {
+      //  // the last dispatched action has errored, break out of the promise chain.
+       return
+     }
+    let articles = []
+    if(resp.payload.results.length > 0){
+      let id = resp.payload.results[0].id
+      return await dispatch(editSettings(url + "/" + id + "/", data, 'PUT'))
+   } else {
+      return await dispatch(editSettings(url, data, 'POST'))
+   }
+  }
+}
 

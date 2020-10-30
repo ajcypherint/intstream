@@ -36,7 +36,7 @@ class TestUpload(TestCase):
         self.assertEqual(r.status_code,status.HTTP_201_CREATED)
 
     def test_upload_pdf(self):
-        file = open('./sample_files/pdf-test.pdf','rb')
+        file = open('./sample_files/f1065.pdf','rb')
         data = {'source':1,'title':'test','file':file}
         r = self.c.post("/api/pdfarticles/",data=data)
         self.assertEqual(r.status_code,status.HTTP_201_CREATED)

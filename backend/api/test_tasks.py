@@ -104,7 +104,7 @@ class TestTasks(TestCase):
                                  organization=organization
                                  )
         article.save()
-        tasks.extract_indicators(text, article, organization)
+        tasks.extract_indicators(text, article.pk, organization.pk)
         ipv4s = models.IndicatorIPV4.objects.all()
         self.assertEqual(len(ipv4s), 1)
         ipv6s = models.IndicatorIPV6.objects.all()

@@ -148,10 +148,6 @@ def job(id):
     user = models.UserIntStream.objects.get(username=job.username)
     job_version = models.JobVersion.objects.get(active=True, job=job)
     tokens = get_tokens_for_user(user)
-    # todo
-    # create virtualenv
-    # create script dir
-    # run script with args
     create_job_script_directory(job_version)
     create_virtual_env(job_version, aws_req=False, job=True)
     run_job(tokens, job_version.id)
@@ -234,6 +230,13 @@ def _extract_indicators(text, article_id, organization_id):
 
 @shared_task()
 def extract_indicators(text, article_id, organization_id):
+    """
+
+    :param text: str
+    :param article_id: int
+    :param organization_id: int
+    :return:
+    """
     _extract_indicators(text, article_id, organization_id)
 
 
@@ -291,7 +294,7 @@ def _process_rss_source(source_url, source_id, organization_id):
         article.save()
         articles.append(article.pk)
 
-    _predict([articles], source_id, organization_id)
+    _predict(articles, source_id, organization_id)
 
 
 def _predict(article_ids, source_id, organization_id):

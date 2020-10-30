@@ -382,7 +382,7 @@ class DefaultArticleSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(DefaultArticleSerializer):
-    source = serializers.PrimaryKeyRelatedField(queryset=models.Source.objects.all())
+    source = SourceSerializer(read_only=True)
     organization = OrganizationSerializer(read_only=True)
     classification_set = ClassificationSerializer(read_only=True, many=True)
     article_set = ArticleSerializerSet(many=True, read_only=True)
@@ -419,6 +419,23 @@ class PDFSerializer(DefaultArticleSerializer):
         ]
 
         model = models.PDFArticle
+
+
+class RawSerializer(DefaultArticleSerializer):
+    source = serializers.PrimaryKeyRelatedField(queryset=models.Source.objects.all())
+    organization = OrganizationSerializer(read_only=True)
+
+    class Meta:
+        fields= [
+           'id',
+           'source',
+           'title',
+           'upload_date',
+           'text',
+           'clean_text',
+           'organization',
+        ]
+        model = models.RawArticle
 
 
 class HtmlSerializer(DefaultArticleSerializer):
@@ -488,6 +505,7 @@ class RSSSerializer(DefaultArticleSerializer):
            'description',
            'link',
            'guid',
+            'organization'
         ]
 
         model = models.RSSArticle
@@ -516,7 +534,7 @@ class TrainingScriptVersionSerializer(serializers.ModelSerializer):
 
 
 class SettingSerializer(serializers.ModelSerializer):
-    organization = serializers.PrimaryKeyRelatedField(queryset=models.Setting.objects.all())
+    organization = OrganizationSerializer(read_only=True)
     class Meta:
         fields=(
             "id",
@@ -561,11 +579,11 @@ class TaskResult(serializers.ModelSerializer):
         )
         model = TaskResultMdl
 
+
 class ArticleIDSerializer(serializers.ModelSerializer):
     class Meta:
         fields=("id",)
         model = models.Article
-
 
 
 class PredictionSerializer(serializers.ModelSerializer):
@@ -611,7 +629,6 @@ class IndicatorMD5Serializer(serializers.ModelSerializer):
         model = models.IndicatorMD5
 
 
-
 class IndicatorSha256Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
@@ -621,6 +638,17 @@ class IndicatorSha256Serializer(serializers.ModelSerializer):
             "value",
         ]
         model = models.IndicatorSha256
+
+
+class IndicatorEmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            "articles",
+            "organization",
+            "value",
+        ]
+        model = models.IndicatorEmail
 
 
 class IndicatorSha1Serializer(serializers.ModelSerializer):
@@ -634,11 +662,16 @@ class IndicatorSha1Serializer(serializers.ModelSerializer):
         model = models.IndicatorSha1
 
 
-class IndicatorNetLocSerializerCreate(serializers.ModelSerializer):
+class IndicatorNetLocSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
+    registered = serializers.SerializerMethodField()
 
     def get_url(self, obj):
-        return obj.subdomain + "." + obj.domain + "." + obj.suffix
+        subdomain = obj.subdomain + "." if obj.subdomain != "" else ""
+        return "http://" + subdomain + obj.domain + "." + obj.suffix.value
+
+    def get_registered(self, obj):
+        return obj.domain + "." + obj.suffix.value
 
     class Meta:
         fields = [
@@ -649,8 +682,18 @@ class IndicatorNetLocSerializerCreate(serializers.ModelSerializer):
             "domain",
             "suffix",
             "url",
+            "registered"
         ]
         model = models.IndicatorNetLoc
+
+
+class SuffixSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            "value"
+        ]
+        model = models.Suffix
 
 
 class IndicatorIPV6Serializer(serializers.ModelSerializer):

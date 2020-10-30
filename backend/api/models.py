@@ -243,6 +243,7 @@ class TxtArticle(Article):
     file = models.FileField(upload_to='article')
 
 
+
 class HtmlArticle(Article):
     file = models.FileField(upload_to='article')
 
@@ -255,6 +256,11 @@ class RSSArticle(Article):
     guid = models.CharField(max_length=2000,)
 
 
+class RawArticle(Article):
+    # used to upload article without a file
+    extra = models.TextField(blank=True, null=True)
+
+
 class Setting(models.Model):
     aws_key = EncryptedTextField(max_length=100)
     aws_secret = EncryptedTextField(max_length=250)
@@ -262,7 +268,7 @@ class Setting(models.Model):
     aws_s3_log_base = models.CharField(max_length=500)
     aws_s3_upload_base = models.CharField(max_length=500)
     ec2_key_name = models.CharField(max_length=500)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False, unique=True)
+    organization = models.OneToOneField(Organization, on_delete=models.CASCADE, editable=False)
 
 
 class Indicator(PolymorphicModel):
@@ -306,8 +312,12 @@ class IndicatorNetLoc(Indicator):
             UniqueConstraint(fields=['subdomain', 'domain', 'suffix'], name='unique_domain'),
             ]
 
-    subdomain = models.TextField(validators=[validators.RegexValidator(regex=r'[^a-zA-Z0-9\-]', inverse_match=True)], max_length=63)
-    domain = models.TextField(validators=[validators.RegexValidator(regex=r'[^a-zA-Z0-9\-]', inverse_match=True)], max_length=63)
+    subdomain = models.TextField(blank=True,
+                                 null=True,
+                                 validators=[validators.RegexValidator(regex=r'[^a-zA-Z0-9\-]', inverse_match=True)],
+                                 max_length=63)
+    domain = models.TextField(validators=[validators.RegexValidator(regex=r'[^a-zA-Z0-9\-]', inverse_match=True)],
+                              max_length=63)
     suffix = models.ForeignKey(Suffix, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -323,16 +333,20 @@ class IndicatorNetLoc(Indicator):
         return total
 
 
+class IndicatorEmail(Indicator):
+    value = models.EmailField(unique=True)
+
+
 class IndicatorIPV4(Indicator):
     value = models.GenericIPAddressField(protocol="IPv4",
                                          unique=True)
-    ttl = models.IntegerField(default=0)
+    ttl = models.IntegerField(default=14)
 
 
 class IndicatorIPV6(Indicator):
     value = models.GenericIPAddressField(protocol="IPv6",
                                          unique=True)
-    ttl = models.IntegerField(default=0)
+    ttl = models.IntegerField(default=14)
 
 
 class IndicatorCustomType(models.Model):

@@ -12,6 +12,7 @@ PDFARTICLES = "pdfarticles"
 TXTARTICLES = "txtarticles"
 DOCXARTICLES = 'docxarticles'
 RSSARTICLES = 'rssarticles'
+RAWRTICLES = 'rawarticles'
 
 router = routers.DefaultRouter()
 #models
@@ -26,6 +27,7 @@ router.register(HTMLARTICLES,views.HtmlArticleViewSet, basename="htmlarticles")
 router.register(PDFARTICLES,views.PDFArticleViewSet, basename="pdfarticles")
 router.register(DOCXARTICLES,views.WordDocxArticleViewSet, basename="docxarticles")
 router.register(RSSARTICLES,views.RSSArticleViewSet, basename="rssarticles")
+router.register(RAWRTICLES,views.RawArticleViewSet, basename="rawarticles")
 
 # sources
 router.register('sourcetypes',views.SourceTypeViewSet)
@@ -60,9 +62,12 @@ router.register("modelversion", views.ModelVersionViewSet, basename="modelversio
 router.register("indicatormd5", views.IndicatorMD5ViewSet, basename="indicatormd5")
 router.register("indicatorsha1", views.IndicatorSha1ViewSet, basename="indicatorsha1")
 router.register("indicatorsha256", views.IndicatorSha256ViewSet, basename="indicatorsha256")
-router.register("indicatorurl", views.IndicatorUrlViewSet, basename="indicatorurl")
+router.register("indicatornetloc", views.IndicatorNetLocViewSet, basename="indicatornetloc")
+router.register("indicatoremail", views.IndicatorEmailViewSet, basename="indicatoremail")
 router.register("indicatoripv4", views.IndicatorIPV4ViewSet, basename="indicatoripv4")
 router.register("indicatoripv6", views.IndicatorIPV6ViewSet, basename="indicatoripv6")
+router.register("indicatornetloc", views.IndicatorNetLocViewSet, basename="indicatornetloc")
+router.register("indicatorsuffix", views.SuffixViewSet, basename="suffix")
 
 SETTINGS = "setting"
 router.register(SETTINGS,views.SettingsViewSet, basename="setting")

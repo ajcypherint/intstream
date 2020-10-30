@@ -5,6 +5,7 @@ from unittest import mock
 from api import tasks
 from api import models
 import datetime
+import json
 
 
 class TestTasks(TestCase):
@@ -22,11 +23,11 @@ class TestTasks(TestCase):
                 ]
 
     def setUp(self):
-        username = "ubuntu"
-        password = "hinton50"
+        self.username = "ubuntu"
+        self.password = "hinton50"
         self.c = Client()
-        headers={"Content-Type":"application/json"}
-        self.c.login(username=username,password=password)
+        headers = {"Content-Type":"application/json"}
+        self.c.login(username=self.username,password=self.password)
 
     def test_integrity_error(self):
         data = {'value': 'ac'}
@@ -47,8 +48,40 @@ class TestTasks(TestCase):
                                     organization=org,
                                     source=source)
         article.save()
-        data = {"indicator_ids": [id,id]}
-        r = self.c.post("/api/articles/" + str(article.id) + "/link/", data=data)
+        data = {"indicator_ids": [id]}
+        r = self.c.post("/api/articles/" + str(article.id) + "/link/", content_type="application/json", data=data)
+
         link_article = models.Article.objects.get(id=article.id)
-        self.assertEqual(len(link_article.indicator_set.all()), 1)
+        self.assertEqual(link_article.indicator_set.count(), 1)
+
+    def test_net_loc(self):
+        suffix =  models.Suffix.objects.get(value="com").pk
+        data = {
+            "subdomain":"testing",
+            "domain":"mycompany",
+            "suffix":suffix
+            }
+        r = self.c.post("/api/indicatornetloc/", data=data)
+        self.assertEqual(r.status_code, 201)
+
+    def test_settings(self):
+        data = {
+            "aws_key": "test",
+            "aws_secret": "test",
+            "aws_s3_log_base": "test_log",
+            "aws_s3_upload_base": "test_upload",
+            "aws_region": "us-east"
+        }
+        r = self.c.post("/api/setting/", content_type="application/json", data=data)
+        self.assertEqual(r.status_code, 201)
+        data = {
+            "aws_key": "test",
+            "aws_secret": "test1",
+            "aws_s3_log_base": "test_log",
+            "aws_s3_upload_base": "test_upload",
+            "aws_region": "us-east"
+        }
+        # strange bug with put
+        r_put = self.c.put("/api/setting/" + str(r.data["id"]) + "/", content_type="application/json", data=data)
+        self.assertEqual(r_put.status_code, 200)
 
