@@ -15,7 +15,6 @@ class TestTasks(TestCase):
                 "ModelVersion.json",
                 "RSSSource.json",
                 "Source.json",
-                "JobSource.json",
                 "UploadSource.json",
                 "TrainingScript.json",
                 "TrainingScriptVersion.json"

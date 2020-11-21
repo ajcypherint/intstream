@@ -1,9 +1,13 @@
+import tempfile
 from django.test import TestCase
 from django.test import Client
 from unittest import mock
 from api import tasks
 from api import models
 import datetime
+import os
+from django.conf import settings
+from django.core.files import File
 
 
 class MockResponse():
@@ -54,7 +58,6 @@ class TestTasks(TestCase):
                 "ModelVersion.json",
                 "RSSSource.json",
                 "Source.json",
-                "JobSource.json",
                 "UploadSource.json",
                 "TrainingScript.json",
                 "TrainingScriptVersion.json"
@@ -113,10 +116,8 @@ class TestTasks(TestCase):
         self.assertEqual(len(md5s), 1)
         sha1 = models.IndicatorSha1.objects.all()
         self.assertEqual(len(sha1), 1)
-        sha256 = models.IndicatorSha1.objects.all()
+        sha256 = models.IndicatorSha256.objects.all()
         self.assertEqual(len(sha256), 1)
-        urls = models.IndicatorUrl.objects.all()
-        self.assertEqual(len(urls), 2)
 
 
     @mock.patch("api.tasks.classify")
@@ -196,3 +197,4 @@ class TestTasks(TestCase):
         self.assertTrue(tar_open.called)
         self.assertTrue(create_dirs.called)
         self.assertTrue(process.called)
+

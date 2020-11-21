@@ -75,17 +75,24 @@ def close_logging(signal=None, sender=None, task_id=None, task=None, args=None, 
         version.save()
 """
 
-
-class RSSArticleSave(Exception):
+class IntstreamException(Exception):
     pass
 
-class Venv(Exception):
+class RSSArticleSave(IntstreamException):
+    pass
+
+class Venv(IntstreamException):
     pass
 
 
-class ClassifyError(Exception):
+class ClassifyError(IntstreamException):
     pass
 
+class IndicatorJobError(IntstreamException):
+    pass
+
+class JobError(IntstreamException):
+    pass
 
 class Create(Venv):
     pass
@@ -102,10 +109,14 @@ def add(x,y):
 async def fetch(url):
     async with aiohttp.ClientSession() as session:
         try:
-            async with session.get(url, timeout=25) as response:
+            async with session.get(url, timeout=120) as response:
                 try:
                     return await response.text()
                 except UnicodeDecodeError as e:
+                    return str(e)
+                except aiohttp.ClientError as e:
+                    return str(e)
+                except asyncio.TimeoutError as e:
                     return str(e)
         except aiohttp.ClientError as e:
             return str(e)
@@ -142,40 +153,146 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
 
+INDICATOR_JOB_PREFIX = "indicator"
+JOB_PREFIX = "standard"
+SCRIPT_INDICATOR_JOB = "indicatorjob.py"
+SCRIPT_JOB = "job.py"
+
+
+@shared_task()
+def indicatorjob(id, indicator):
+    _indicatorjob(id, indicator)
+
+
+def _indicatorjob(id, indicator):
+    job = models.IndicatorJob.objects.get(id=id)
+    user = models.UserIntStream.objects.get(username=job.user)
+    job_version = models.IndicatorJobVersion.objects.get(job=job)
+    tokens = get_tokens_for_user(user)
+    directory = get_script_directory_indicator_script_version_id(job_version.id)
+    create_job_script_directory(job_version, directory, SCRIPT_INDICATOR_JOB)
+    create_virtual_env(job_version, aws_req=False, job=INDICATOR_JOB_PREFIX)
+
+    job_args = "" if job_version.job.arguments is None else job_version.job.arguments
+    script_directory = get_script_directory_indicator_script_version_id(job_version.id)
+    venv_directory = get_venv_directory_script_version(job_version.id, INDICATOR_JOB_PREFIX)
+    path_python = os.path.join(venv_directory,"bin","python")
+    script = os.path.join(script_directory, SCRIPT_INDICATOR_JOB)
+    proc = None
+    try:
+        args = [
+            path_python,
+            script,
+            "--indicator",
+            indicator,
+            ]
+        if len(job_args) > 0:
+            args.extend(job_args.split(" "))
+        proc = subprocess.run(args,
+            env={
+                "JOB_SERVER_URL": os.environ.get("INSTREAM_URL","http://127.0.0.1:8000"),
+                "JOB_REFRESH": tokens["refresh"],
+                "JOB_ACCESS": tokens["access"],
+                "VIRTUAL_ENV": venv_directory,
+                "PATH": os.path.join(venv_directory, "bin") + ":" + os.environ["PATH"],
+                 },
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+            timeout=job.timeout)
+
+        if proc.returncode != 0:
+            raise IndicatorJobError("ErrorCode: "+ str(proc.returncode) +
+                                "\nstdout: " + proc.stdout +
+                                "\nstderr: " + proc.stderr)
+
+        log = models.IndicatorJobLog(organization=job_version.organization,
+                                     job=job_version.job,
+                                     stdout=proc.stdout,
+                                     stderr=proc.stderr)
+        log.save()
+    except TimeoutError:
+        proc.kill()
+        outs, errs = proc.communicate()
+        log = models.IndicatorJobLog(organization=job_version.organization,
+                                     job=job_version.job,
+                                     stdout=outs,
+                                     stderr=errs)
+        log.save()
+        raise IndicatorJobError("Timeout reached: " + str(job.timeout))
+
 @shared_task()
 def job(id):
-    job = models.JobSource.objects.get(id=id)
+    _job(id)
+
+def _job(id):
+    job = models.Job.objects.get(id=id)
     user = models.UserIntStream.objects.get(username=job.username)
     job_version = models.JobVersion.objects.get(active=True, job=job)
     tokens = get_tokens_for_user(user)
-    create_job_script_directory(job_version)
-    create_virtual_env(job_version, aws_req=False, job=True)
-    run_job(tokens, job_version.id)
+    directory = get_script_directory_script_version_id(job_version.id)
+    create_job_script_directory(job_version, directory)
+    create_virtual_env(job_version, aws_req=False, job=JOB_PREFIX)
+
+    job_version = models.JobVersion.objects.get(id=job_version.id)
+    job_args = job_version.job.arguments
+    script_directory = get_script_directory_script_version_id(job_version.id)
+    venv_directory = get_venv_directory_script_version(job.id, JOB_PREFIX)
+    path_python = os.path.join(venv_directory,"bin","python")
+    script = os.path.join(script_directory, SCRIPT)
+    proc = None
+    try:
+        proc = subprocess.run([
+            path_python,
+            script,
+            ].extend(job_args.split(" ")),
+            env={
+                "JOB_REFRESH": tokens["refresh"],
+                "JOB_ACCESS": tokens["access"],
+                "VIRTUAL_ENV": venv_directory,
+                "PATH": os.path.join(venv_directory, "bin") + ":" + os.environ["PATH"],
+                 },
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+            timeout=job.timeout)
+
+        if proc.returncode != 0:
+            raise IndicatorJobError("ErrorCode: "+ str(proc.returncode) +
+                                "\nstdout: " + proc.stdout +
+                                "\nstderr: " + proc.stderr)
+
+        log = models.JobLog(organization=job_version.organization,
+                                     job=job_version.job,
+                                     stdout=proc.stdout,
+                                     stderr=proc.stderr)
+        log.save()
+    except TimeoutError:
+        proc.kill()
+        outs, errs = proc.communicate()
+        log = models.JobLog(organization=job_version.organization,
+                                     job=job_version.job,
+                                     stdout=outs,
+                                     stderr=errs)
+        log.save()
+        raise JobError("Timeout reached: " + str(job.timeout))
 
 
-CUSTOM_JOB_FILE = "train_classify.py"
+CUSTOM_TRAIN_FILE = "train_classify.py"
 
 
-def create_job_script_directory(jobversion):
-    directory = get_script_directory_script_version_id(jobversion.id)
+def create_job_script_directory(jobversion, directory, file=CUSTOM_TRAIN_FILE):
     if not os.path.exists(directory):
         try:
             os.mkdir(directory)
             archive = tarfile.open(jobversion.zip.path, 'r:gz')
-            tmp = archive.extractfile(CUSTOM_JOB_FILE)
-            with open(os.path.join(directory, CUSTOM_JOB_FILE), "wb") as f:
+            tmp = archive.extractfile(file)
+            with open(os.path.join(directory, file), "wb") as f:
                 f.write(tmp.read())
                 f.flush()
         except Exception as e:
             shutil.rmtree(directory)
             raise e
-
-def create_job_virtual_env(jobversion):
-    pass
-
-
-def run_job(tokens, job_version_id):
-    pass
 
 
 def _extract_indicators(text, article_id, organization_id):
@@ -191,11 +308,22 @@ def _extract_indicators(text, article_id, organization_id):
     for i in ipv4s:
         ip, _ = models.IndicatorIPV4.objects.get_or_create(value=i, organization=organization)
         ip.articles.add(article)
+        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="IPV4",
+                                                   organization=organization,
+                                                   job__active=True)
+        for job in jobs:
+            indicatorjob.delay(job.id, ip.value)
 
     ipv6s = iocextract.extract_ipv6s(text)
     for i in ipv6s:
         ip, _ = models.IndicatorIPV6.objects.get_or_create(value=i, organization=organization)
         ip.articles.add(article)
+        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="IPV6",
+                                                   organization=organization,
+                                                   job__active=True)
+        for job in jobs:
+            indicatorjob.delay(job.id, ip.value)
+
 
     urls = iocextract.extract_urls(text, refang=True)
     for i in urls:
@@ -203,30 +331,51 @@ def _extract_indicators(text, article_id, organization_id):
         subdomain, dom, suff = domain.extract(i)
         if suff != "":
             suffix = models.Suffix.objects.get(value=suff)
-            dm, _ = models.IndicatorNetLoc.objects.get_or_create(subdomain=subdomain,
+            instance, _ = models.IndicatorNetLoc.objects.get_or_create(subdomain=subdomain,
                                         domain=domain,
                                         suffix=suffix,
                                         organization=organization)
 
-        url, _ = models.IndicatorUrl.objects.get_or_create(value=i, organization=organization)
-        url.articles.add(article)
+            instance.articles.add(article)
+            jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="NetLoc",
+                                                       organization=organization,
+                                                       job__active=True)
+            serial_instance = serializers.IndicatorNetLocSerializer(instance)
+            for job in jobs:
+                indicatorjob.delay(job.id, serial_instance.url)
 
     md5s = iocextract.extract_md5_hashes(text)
     for i in md5s:
         md5, _ = models.IndicatorMD5.objects.get_or_create(value=i, organization=organization)
         md5.articles.add(article)
+        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="MD5",
+                                                   organization=organization,
+                                                   job__active=True)
+        for job in jobs:
+            indicatorjob.delay(job.id, md5.value)
 
     sha1s = iocextract.extract_sha1_hashes(text)
     for i in sha1s:
         sha1 = models.IndicatorSha1(value=i, organization=organization)
         sha1.save()
         sha1.articles.add(article)
+        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="Sha1",
+                                                   organization=organization,
+                                                   job__active=True)
+        for job in jobs:
+            indicatorjob.delay(job.id, sha1.value)
 
     sha256s = iocextract.extract_sha256_hashes(text)
     for i in sha256s:
         sha256 = models.IndicatorSha256(value=i, organization=organization)
         sha256.save()
         sha256.articles.add(article)
+        # todo(run indicatorJobs)
+        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="Sha256",
+                                                   organization=organization,
+                                                   job__active=True)
+        for job in jobs:
+            indicatorjob.delay(job.id, sha256.value)
 
 @shared_task()
 def extract_indicators(text, article_id, organization_id):
@@ -389,6 +538,7 @@ def upload_docs(self,
 
 
 SCRIPT = "script_"
+DIRINDSCRIPT = "indscript_"
 VENV = "venv_"
 MODEL = "model_"
 BASE_CLASSIFY_FILE = "base_classify_file.py"
@@ -450,6 +600,15 @@ def create_dirs(training_script_version):
     create_virtual_env(training_script_version)
 
 
+def get_script_directory_indicator_script_version_id(id):
+    """
+    :param id: int script id
+    :return:
+    """
+    directory = os.path.join(settings.VENV_DIR, DIRINDSCRIPT + str(id))
+    return  directory
+
+
 def get_script_directory_script_version_id(id):
     """
 
@@ -508,18 +667,18 @@ def get_venv_directory_model_version_id(id):
     return directory
 
 
-def get_venv_directory_script_version(id, job=False):
+def get_venv_directory_script_version(id, job=None):
     """
     :param id: int
     :return:
     """
-    if job:
-        return os.path.join(settings.VENV_DIR , VENV + "_job" + str(id))
+    if job is not None:
+        return os.path.join(settings.VENV_DIR , VENV + "_" + job + str(id))
 
     return os.path.join(settings.VENV_DIR , VENV + str(id))
 
 
-def create_virtual_env(training_script_version, aws_req=True, job=False):
+def create_virtual_env(training_script_version, aws_req=True, job=None):
     """
     generate virtual env in dir for models
     :param training_script_version: models.TrainingScriptVersion
@@ -596,7 +755,7 @@ def create_virtual_env(training_script_version, aws_req=True, job=False):
                                stderr=subprocess.PIPE)
                 logger.info("pip stderr: " + str(respip2.stderr))
                 logger.info("pip stdout: " + str(respip2.stdout))
-                if res.returncode != 0:
+                if respip2.returncode != 0:
                     raise Pip
         except Exception as e:
             shutil.rmtree(directory)
@@ -626,7 +785,19 @@ def _remove_old_articles():
     startdate = _now(tz=datetime.timezone.utc)
     monthprior = startdate - datetime.timedelta(days=30)
     # delete articles not used for classifications for freemium accounts older than 1 month
-    old_articles = models.Article.objects.filter(organization__freemium=True,
+    old_articles = models.RSSArticle.objects.filter(organization__freemium=True,
+                                                 upload_date__lt=monthprior,
+                                                 classification__isnull=True)
+    old_articles.delete()
+    old_articles = models.TxtArticle.objects.filter(organization__freemium=True,
+                                                 upload_date__lt=monthprior,
+                                                 classification__isnull=True)
+    old_articles.delete()
+    old_articles = models.HtmlArticle.objects.filter(organization__freemium=True,
+                                                 upload_date__lt=monthprior,
+                                                 classification__isnull=True)
+    old_articles.delete()
+    old_articles = models.PDFArticle.objects.filter(organization__freemium=True,
                                                  upload_date__lt=monthprior,
                                                  classification__isnull=True)
     old_articles.delete()

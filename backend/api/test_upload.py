@@ -11,9 +11,9 @@ class TestUpload(TestCase):
                 'Organization.json',
                 "RSSSource.json",
                 "Source.json",
-                "JobSource.json",
                 "UploadSource.json"
                 ]
+
     def setUp(self):
         username = "ubuntu"
         password = "hinton50"

@@ -1,6 +1,6 @@
 import math
 import iocextract
-
+from django.db import models as db_models
 from django.utils.encoding import force_bytes
 from api.backend import DisabledHTMLFilterBackend
 from rest_framework import mixins
@@ -8,6 +8,7 @@ from django.core.mail import EmailMessage
 from api.tokens import account_activation_token
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
+from django_filters.widgets import CSVWidget
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -119,8 +120,8 @@ class RandomUnclassified(APIView):
 
 
 class ClassifPageFilterSetting(filters.FilterSet):
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
     class Meta:
         model = models.Article
         fields = ("source","source__active",
@@ -172,8 +173,8 @@ class ClassifPageFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class HomeFilterSetting(filters.FilterSet):
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
     class Meta:
         model = models.Article
         fields = ("source","source__active",
@@ -863,7 +864,7 @@ class PredictionViewSet(OrgViewSet):
 
 
 class ClassificationFilter(filters.FilterSet):
-    article_id_in = NumberInFilter(field_name="article_id", lookup_expr=("in"))
+    article_id_in = NumberInFilter(field_name="article_id", lookup_expr="in")
     article_id = filters.NumberFilter(field_name="article_id")
 
     class Meta:
@@ -923,7 +924,7 @@ class UploadSourceViewSet(OrgViewSet):
         return models.UploadSource.objects.filter(organization=self.request.user.organization)
 
 
-jobsourcecols = ('id',
+jobcols = ('id',
                   'name',
                   'active',
                   'last_run',
@@ -932,22 +933,31 @@ jobsourcecols = ('id',
                   )
 
 
-class JobSourceFilter(filters.FilterSet):
+class JobFilter(filters.FilterSet):
     class Meta:
-        model = models.JobSource
-        fields = jobsourcecols
+        model = models.Job
+        fields = jobcols
 
 
-class JobSourceViewSet(OrgViewSet):
+class JobViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
-    serializer_class = serializers.JobSourceSerializer
+    serializer_class = serializers.JobSerializer
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = jobsourcecols
-    filterset_class = JobSourceFilter
+    filterset_fields = jobcols
+    filterset_class = JobFilter
 
     def get_queryset(self):
-        return models.JobSource.objects.filter(organization=self.request.user.organization)
+        return models.Job.objects.filter(organization=self.request.user.organization)
 
+
+class JobVersionViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.JobSerializer
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('job', 'id','version')
+
+    def get_queryset(self):
+        return models.JobVersion.objects.filter(organization=self.request.user.organization)
 
 class MLModelViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
@@ -965,9 +975,9 @@ ARTICLE_SORT_FIELDS =('id','source','title','upload_date', 'source__name')
 
 class ArticleFilter(filters.FilterSet):
     source__name = filters.CharFilter(lookup_expr='exact')
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('gte'))
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr=('lte'))
-    article_id_multi = filters.AllValuesMultipleFilter(field_name="id", lookup_expr=("exact"))
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
+    article_id_multi = filters.AllValuesMultipleFilter(field_name="id", lookup_expr="exact")
     #todo(aj) add combinedfilter https://rpkilby.github.io/django-filter/ref/groups.html
 
     ordering = filters.OrderingFilter(
@@ -1307,63 +1317,85 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
         return TaskResultMdl.objects.all()
 
 
-class IndicatorMD5Filter(filters.FilterSet):
-    value__in = filters.CharFilter(field_name="value",lookup_expr="in")
+class IndicatorBaseViewSet(viewsets.ModelViewSet):
 
+    def tasks(self, instance, jobs):
+        for j in jobs:
+            if isinstance(instance, list):
+                for i in instance:
+                    tasks.indicatorjob.delay(id=j.id, indicator=i.value)
+            else:
+                tasks.indicatorjob.delay(id=j.id, indicator=instance.value)
+
+
+#todo(aj) Blog this
+class CharInFilter(filters.BaseInFilter, filters.CharFilter):
+    pass
+
+
+class IndicatorMD5Filter(filters.FilterSet):
+    value__in = CharInFilter(field_name="value", lookup_expr="in")
     class Meta:
         model = models.IndicatorMD5
-        fields = ('id', 'value',)
+        fields = ('id', 'value', "value__in")
 
 
 class IndicatorSha1Filter(filters.FilterSet):
-    value__in = filters.CharFilter(field_name="value",lookup_expr="in")
+    value__in = CharInFilter(field_name="value", lookup_expr="in")
 
     class Meta:
         model = models.IndicatorSha1
-        fields = ('id', 'value',)
+        fields = ('id', 'value', "value__in")
 
 
 class IndicatorSha256Filter(filters.FilterSet):
-    value__in = filters.CharFilter(field_name="value",lookup_expr="in")
+    value__in = CharInFilter(field_name="value", lookup_expr="in")
 
     class Meta:
         model = models.IndicatorSha256
-        fields = ('id', 'value',)
+        fields = ('id', 'value', "value__in")
+
+
+class IPV4Filter(filters.Filter):
+    field_class = db_models.IPAddressField
 
 
 class IndicatorIPV4Filter(filters.FilterSet):
-    value__in = filters.CharFilter(field_name="value",lookup_expr="in")
+    value__in = CharInFilter(field_name="value",lookup_expr="in")
 
     class Meta:
         model = models.IndicatorIPV4
-        fields = ('id', 'value',)
+        fields = ('id', 'value', "value__in")
 
 
 class IndicatorEmailFilter(filters.FilterSet):
-    value__in = filters.CharFilter(field_name="value", lookup_expr="in")
+    value__in = CharInFilter(field_name="value", lookup_expr="in")
 
     class Meta:
         model = models.IndicatorEmail
-        fields = ('id', 'value',)
+        fields = ('id', 'value', 'value__in')
 
 
 class IndicatorIPV6Filter(filters.FilterSet):
-    value__in = filters.CharFilter(field_name="value", lookup_expr="in")
+    value__in = CharInFilter(field_name="value", lookup_expr="in")
 
     class Meta:
         model = models.IndicatorIPV6
-        fields = ('id', 'value',)
+        fields = ('id', 'value', 'value__in')
 
 
 class SuffixFilter(filters.FilterSet):
-    value__in = filters.CharFilter(field_name="value", lookup_expr="in")
+    value__in = CharInFilter(field_name="value", lookup_expr="in")
 
     class Meta:
         model = models.Suffix
-        fields = ('id', 'value',)
+        fields = ('id', 'value', 'value__in')
 
 
-class IndicatorSha1ViewSet(OrgViewSet):
+SHA1 = "Sha1"
+
+
+class IndicatorSha1ViewSet(IndicatorBaseViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorSha1Serializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
@@ -1378,8 +1410,20 @@ class IndicatorSha1ViewSet(OrgViewSet):
 
         return super(IndicatorSha1ViewSet, self).get_serializer(*args, **kwargs)
 
+    def perform_create(self, serializer):
+        instance = serializer.save(organization = self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=SHA1).all()
+        self.tasks(instance, jobs)
 
-class IndicatorSha256ViewSet(OrgViewSet):
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=SHA1).all()
+        self.tasks(instance, jobs)
+
+SHA256 = "Sha256"
+
+
+class IndicatorSha256ViewSet(IndicatorBaseViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorSha256Serializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
@@ -1391,21 +1435,34 @@ class IndicatorSha256ViewSet(OrgViewSet):
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get("data", {}), list):
             kwargs["many"] = True #bulk
-
         return super(IndicatorSha256ViewSet, self).get_serializer(*args, **kwargs)
+
+    def perform_create(self, serializer):
+        instance = serializer.save(organization = self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=SHA256).all()
+        self.tasks(instance, jobs)
+
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=SHA256).all()
+        self.tasks(instance, jobs)
 
 
 class NetLocFilter(filters.FilterSet):
 
-    domain__in = filters.CharFilter(field_name="domain",lookup_expr="in")
-    subdomain__in = filters.CharFilter(field_name="subdomain",lookup_expr="in")
-    suffix__in = filters.CharFilter(field_name="suffix__value",lookup_expr="in")
+    domain__in = CharInFilter(field_name="domain",lookup_expr="in")
+    subdomain__in = CharInFilter(field_name="subdomain",lookup_expr="in")
+    suffix__in = CharInFilter(field_name="suffix__value",lookup_expr="in")
     class Meta:
         model = models.IndicatorNetLoc
-        fields = ('id', 'domain', 'subdomain', 'suffix__value', 'suffix')
+        fields = ('id', 'domain', 'subdomain', 'suffix__value', 'suffix',
+                  "domain__in", "subdomain__in", "suffix__in")
 
 
-class IndicatorNetLocViewSet(OrgViewSet):
+NETLOC = "NetLoc"
+
+
+class IndicatorNetLocViewSet(IndicatorBaseViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorNetLocSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -1419,6 +1476,15 @@ class IndicatorNetLocViewSet(OrgViewSet):
             kwargs["many"] = True  # bulk
         return super(IndicatorNetLocViewSet, self).get_serializer(*args, **kwargs)
 
+    def perform_create(self, serializer):
+        instance = serializer.save(organization = self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=NETLOC).all()
+        self.tasks(instance, jobs)
+
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=NETLOC).all()
+        self.tasks(instance, jobs)
 
 class SuffixViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
@@ -1435,7 +1501,10 @@ class SuffixViewSet(OrgViewSet):
         return models.Suffix.objects.all()
 
 
-class IndicatorEmailViewSet(OrgViewSet):
+EMAIL = "Email"
+
+
+class IndicatorEmailViewSet(IndicatorBaseViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorEmailSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -1449,8 +1518,21 @@ class IndicatorEmailViewSet(OrgViewSet):
             kwargs["many"] = True #bulk
         return super(IndicatorEmailViewSet, self).get_serializer(*args, **kwargs)
 
+    def perform_create(self, serializer):
+        instance = serializer.save(organization = self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=EMAIL).all()
+        self.tasks(instance, jobs)
 
-class IndicatorIPV4ViewSet(OrgViewSet):
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=EMAIL).all()
+        self.tasks(instance, jobs)
+
+
+IPV4 = "IPV4"
+
+
+class IndicatorIPV4ViewSet(IndicatorBaseViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorIPV4Serializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -1464,8 +1546,21 @@ class IndicatorIPV4ViewSet(OrgViewSet):
             kwargs["many"] = True #bulk
         return super(IndicatorIPV4ViewSet, self).get_serializer(*args, **kwargs)
 
+    def perform_create(self, serializer):
+        instance = serializer.save(organization = self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=IPV4).all()
+        self.tasks(instance, jobs)
 
-class IndicatorIPV6ViewSet(OrgViewSet):
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=IPV4).all()
+        self.tasks(instance, jobs)
+
+
+IPV6 = "IPV6"
+
+
+class IndicatorIPV6ViewSet(IndicatorBaseViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorIPV6Serializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
@@ -1478,6 +1573,16 @@ class IndicatorIPV6ViewSet(OrgViewSet):
         if isinstance(kwargs.get("data", {}), list):
             kwargs["many"] = True #bulk
         return super(IndicatorIPV6ViewSet, self).get_serializer(*args, **kwargs)
+
+    def perform_create(self, serializer):
+        instance = serializer.save(organization = self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=IPV6).all()
+        self.tasks(instance, jobs)
+
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=IPV6).all()
+        self.tasks(instance, jobs)
 
 
 class ModelVersionViewSet(OrgViewSet):
@@ -1499,7 +1604,10 @@ class ModelVersionViewSet(OrgViewSet):
                                     source_id=article.source.id)
 
 
-class IndicatorMD5ViewSet(OrgViewSet):
+IPV4 = "IPV4"
+
+
+class IndicatorMD5ViewSet(IndicatorBaseViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorMD5Serializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
@@ -1513,6 +1621,85 @@ class IndicatorMD5ViewSet(OrgViewSet):
             kwargs["many"] = True #bulk
 
         return super(IndicatorMD5ViewSet, self).get_serializer(*args, **kwargs)
+
+    def perform_create(self, serializer):
+        instance = serializer.save(organization = self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=IPV4).all()
+        self.tasks(instance, jobs)
+
+    def perform_update(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        jobs = models.IndicatorJob.objects.filter(name=IPV4).all()
+        self.tasks(instance, jobs)
+
+        # todo(aj) run jobs
+
+
+class IndicatorTextFieldViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorTextField
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+
+    def get_queryset(self):
+        return models.IndicatorTextField.objects.filter(organization=self.request.user.organization)
+
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get("data", {}), list):
+            kwargs["many"] = True #bulk
+
+        return super(IndicatorTextFieldViewSet, self).get_serializer(*args, **kwargs)
+
+
+class IndicatorJobViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorJobSerializer
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_fields = ('id','name', 'active')
+
+    def get_queryset(self):
+        return models.IndicatorJob.objects.filter(organization=self.request.user.organization)
+
+
+class IndicatorType(filters.FilterSet):
+    class Meta:
+        model = models.IndicatorType
+        fields = ("id", "name")
+
+
+class IndicatorTypeViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthor,)
+    serializer_class = serializers.IndicatorType
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_class = IndicatorType
+
+    def get_queryset(self):
+        return models.IndicatorType.objects.all()
+
+
+class IndicatorJobVersionViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorJobVersionSerializer
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_fields = ('id', 'job', 'version')
+
+    def get_queryset(self):
+        return models.IndicatorJobVersion.objects.filter(organization=self.request.user.organization)
+
+
+class IndicatorNumericFieldViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorNumericField
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_fields = ('id','name')
+
+    def get_queryset(self):
+        return models.IndicatorNumericField.objects.filter(organization=self.request.user.organization)
+
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get("data", {}), list):
+            kwargs["many"] = True # bulk
+
+        return super(IndicatorNumericFieldViewSet, self).get_serializer(*args, **kwargs)
 
 
 class ResetPasswordConfirm(drpr_views.ResetPasswordConfirm):

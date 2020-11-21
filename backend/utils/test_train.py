@@ -25,7 +25,6 @@ class Train(TestCase):
                 "Article.json",
                 "Classification.json",
                 "Source.json",
-                "JobSource.json",
                 "UploadSource.json",
                 "TrainingScript.json",
                 "TrainingScriptVersion.json"

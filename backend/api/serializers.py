@@ -103,7 +103,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class JobSourceSerializer(serializers.ModelSerializer):
+class JobSerializer(serializers.ModelSerializer):
 
     class Meta:
 
@@ -111,20 +111,19 @@ class JobSourceSerializer(serializers.ModelSerializer):
             "id",
             'name',
             'active',
-            'script',
             'last_run',
             'last_status',
             'arguments',
-            'organization'
-            'crontab_day_of_week',
-            'crontab_day_of_month',
-            'crontab_month_of_year',
-            'crontab_hour',
-            'crontab_minute',
-            'username',
+            'organization',
+            'cron_day_of_week',
+            'cron_day_of_month',
+            'cron_month_of_year',
+            'cron_hour',
+            'cron_minute',
+            'user',
 
         ]
-        model = models.JobSource
+        model = models.Job
 
     def _create_schedule(self, job_id, *args, **kwargs):
         schedule, created = CrontabSchedule.objects.get_or_create(
@@ -150,6 +149,60 @@ class JobSourceSerializer(serializers.ModelSerializer):
         job = super().update(*args,**kwargs)
         self._create_schedule(*args, **kwargs)
         return job
+
+
+class JobVersionSerlializer(serializers.ModelSerializer):
+    job = serializers.PrimaryKeyRelatedField(queryset=models.Job.objects.all())
+    class Meta:
+        fields = [
+            "id",
+            "job",
+            "organization",
+            "zip",
+            "version"
+        ]
+        model = models.JobVersion
+
+
+class IndicatorJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            "name",
+            "active",
+            "organization",
+            "indicator_types",
+            "python_version",
+            "last_run",
+            "last_status",
+            "arguments",
+            "user",
+            "timeout",
+        ]
+        model = models.IndicatorJob
+
+
+class IndicatorType(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            "name"
+        ]
+
+        model = models.IndicatorType
+
+
+class IndicatorJobVersionSerializer(serializers.ModelSerializer):
+    job = serializers.PrimaryKeyRelatedField(queryset=models.IndicatorJob.objects.all())
+    class Meta:
+        fields = [
+            "id",
+            "job",
+            "organization",
+            "zip",
+            "version"
+        ]
+        model = models.IndicatorJobVersion
 
 
 class UploadSourceSerializer(serializers.ModelSerializer):
@@ -716,4 +769,28 @@ class IndicatorIPV4Serializer(serializers.ModelSerializer):
             "value"
         ]
         model = models.IndicatorIPV4
+
+
+class IndicatorNumericField(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            "value",
+            "name",
+            "organization",
+            "indicator",
+        ]
+        model = models.IndicatorNumericField
+
+
+class IndicatorTextField(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            "value",
+            "name",
+            "organization",
+            "indicator",
+        ]
+        model = models.IndicatorTextField
 

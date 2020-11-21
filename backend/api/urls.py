@@ -13,6 +13,7 @@ TXTARTICLES = "txtarticles"
 DOCXARTICLES = 'docxarticles'
 RSSARTICLES = 'rssarticles'
 RAWRTICLES = 'rawarticles'
+JOBSOURCE = "jobsource" # do not remove used in migrations
 
 router = routers.DefaultRouter()
 #models
@@ -34,13 +35,15 @@ router.register('sourcetypes',views.SourceTypeViewSet)
 
 UPLOADSOURCE = 'sourcesupload'
 RSSSOURCE = 'sourcesrss'
-JOBSOURCE = 'sourcesjob'
 SOURCE = 'sources'
 
-
+router.register("indicatortype", views.IndicatorTypeViewSet, basename="indicatotype")
 router.register(UPLOADSOURCE, views.UploadSourceViewSet, basename="uploadsource")
 router.register(RSSSOURCE, views.RssSourceViewSet, basename="rsssource")
-router.register(JOBSOURCE, views.JobSourceViewSet, basename="jobsource")
+router.register("job", views.JobViewSet, basename="job")
+router.register("jobversion", views.JobVersionViewSet, basename="jobversion")
+router.register("indicatorjob", views.IndicatorJobViewSet, basename="indicatorjob")
+router.register("indicatorjobversion", views.IndicatorJobVersionViewSet, basename="indicatorjobversion")
 router.register(SOURCE, views.SourceViewSet,basename="source")
 router.register("homefilter",views.HomeFilter, basename="homefilter")
 router.register("classiffilter",views.ClassifPageFilter, basename="classiffilter")
@@ -68,6 +71,9 @@ router.register("indicatoripv4", views.IndicatorIPV4ViewSet, basename="indicator
 router.register("indicatoripv6", views.IndicatorIPV6ViewSet, basename="indicatoripv6")
 router.register("indicatornetloc", views.IndicatorNetLocViewSet, basename="indicatornetloc")
 router.register("indicatorsuffix", views.SuffixViewSet, basename="suffix")
+
+router.register("indicatornumericfield", views.IndicatorNumericFieldViewSet, basename="indicatornumericfield")
+router.register("indicatortextfield", views.IndicatorTextFieldViewSet, basename="indicatortextfield")
 
 SETTINGS = "setting"
 router.register(SETTINGS,views.SettingsViewSet, basename="setting")

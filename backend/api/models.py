@@ -74,19 +74,78 @@ class RSSSource(Source):
     extract_indicators = models.BooleanField(default=False)
 
 
-# this will trigger a python script to run
-class JobSource(Source):
+class IndicatorType(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+
+
+class IndicatorJob(models.Model):
+    class Meta:
+        constraints = [
+                UniqueConstraint(fields=['name', 'organization'], name='unique_indicatorjob'),
+                ]
+    name = models.CharField(max_length=100, unique=True)
+    active = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    indicator_types = models.ManyToManyField(IndicatorType)
+
     python_version = models.TextField(max_length=3)
     last_run = models.DateTimeField(blank=True, null=True)
     last_status = models.BooleanField(blank=True, null=True)
-    arguments = models.TextField(max_length=1000)
+    arguments = models.TextField(max_length=1000, blank=True, default="")
+    user = models.TextField(max_length=250)
+    timeout = models.IntegerField(default=600) # seconds; default 10 mins
+
+
+class IndicatorJobLog(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    date = models.DateTimeField(default=timezone.now)
+    stderr = models.TextField()
+    stdout = models.TextField()
+    job = models.ForeignKey(IndicatorJob, on_delete=models.CASCADE)
+
+
+class IndicatorJobVersion(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['job', 'version', 'organization'], name='indicator_unique_job_version'),
+            ]
+
+    job = models.ForeignKey(IndicatorJob, on_delete=models.CASCADE, editable=False)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    zip = models.FileField(upload_to="job_scripts")
+    version = VersionField()
+
+
+class Job(models.Model):
+    class Meta:
+        constraints = [
+                UniqueConstraint(fields=['name',  'organization'], name='unique_job'),
+                ]
+
+    name = models.CharField(max_length=100, )
+    active = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+
+    python_version = models.TextField(max_length=3)
+    last_run = models.DateTimeField(blank=True, null=True)
+    last_status = models.BooleanField(blank=True, null=True)
+    arguments = models.TextField(max_length=1000, default="")
     cron_day_of_week = models.TextField(max_length=20)
     cron_day_of_month = models.TextField(max_length=10)
-    crontab_month_of_year = models.TextField(max_length=20)
+    cron_month_of_year = models.TextField(max_length=20)
     cron_hour = models.TextField(max_length=10)
     cron_minute = models.TextField(max_length=10)
     user = models.TextField(max_length=250)
     password = EncryptedTextField()
+    timeout = models.IntegerField(default=600) # seconds; default 10 mins
+
+
+class JobLog(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    date = models.DateTimeField(default=timezone.now)
+    stderr = models.TextField()
+    stdout = models.TextField()
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
 
 
 class JobVersion(models.Model):
@@ -95,7 +154,7 @@ class JobVersion(models.Model):
             UniqueConstraint(fields=['job', 'version', 'organization'], name='unique_job_version'),
             ]
 
-    job = models.ForeignKey(JobSource, on_delete=models.CASCADE, editable=False)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, editable=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     zip = models.FileField(upload_to="job_scripts")
     version = VersionField()
@@ -276,10 +335,6 @@ class Indicator(PolymorphicModel):
     organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
 
 
-class IndicatorUrl(Indicator):
-    value = models.URLField(unique=True)
-
-
 class IndicatorMD5(Indicator):
     value = models.TextField(max_length=32,
                              validators=[validators.RegexValidator(regex=r"^[0-9a-fA-F]{32}$",
@@ -358,4 +413,18 @@ class IndicatorCustomType(models.Model):
 class IndicatorCustom(Indicator):
     value = models.TextField(unique=True)
     type = models.ForeignKey(IndicatorCustomType, on_delete=models.CASCADE)
+
+
+class IndicatorNumericField(models.Model):
+    value = models.FloatField()
+    name = models.CharField(max_length=50)
+    organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
+    indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
+
+
+class IndicatorTextField(models.Model):
+    value = models.TextField()
+    name = models.CharField(max_length=50)
+    organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
+    indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
 

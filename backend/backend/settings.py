@@ -20,7 +20,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 SCRIPT_URL = "/script/"
 SCRIPT_ROOT = os.path.join(BASE_DIR, 'script')
 
-AWS_TRAIN_FILES = os.path.join(BASE_DIR,"aws_training_files")
+AWS_TRAIN_FILES = os.path.join(BASE_DIR, "aws_training_files")
 VENV_DIR = "/tmp"
 MODEL_FOLDER = "model.clf"
 DEFAULT_SCRIPT_MODEL = "uuid-original-default"
@@ -94,7 +94,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-   # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 INTERNAL_IPS = [
