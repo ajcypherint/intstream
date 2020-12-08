@@ -18,6 +18,7 @@ import filterModelVer, * as fromFilterModelVer from "./modelVersionFilter"
 import forgotPassword, * as fromForgotPassword from "./forgotPassword"
 import trainingScripts, * as fromTrainingScripts from "./trainingScripts"
 import registration, * as fromRegistration from "./registration"
+import indicators, * as fromIndicators from "./indicators"
 
 export default combineReducers({
   modelVersions:modelVersions,
@@ -39,6 +40,7 @@ export default combineReducers({
   orgs:orgs,
   forgotPassword:forgotPassword,
   registration:registration,
+  indicators:indicators
 })
 //fromAuth
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
@@ -164,6 +166,18 @@ export const getRegErrors = state => fromRegistration.errors(state.registration)
 export const getRegSaving = state => fromRegistration.saving(state.registration)
 export const getRegMessage = state => fromRegistration.getRegMessage(state.registration)
 
+//fromIndicators
+export const getIPV4= state => fromIndicators.ipv4(state.indicators)
+export const getMD5 = state => fromIndicators.md5(state.indicators)
+export const getSHA1 = state => fromIndicators.sha1(state.indicators)
+export const getSHA256 = state => fromIndicators.sha256(state.indicators)
+export const getIndicators= state => fromIndicators.indicators(state.indicators)
+export const getIndicatorErrors = state => fromIndicators.errors(state.indicators)
+export const getIndicatorLoading = state => fromIndicators.loading(state.indicators)
+export const getIndicatorSaving = state => fromIndicators.saving(state.indicators)
+export const getIndicatorTotalCount = state => fromIndicators.totalcount(state.indicators)
+export const getIndicatorNextPage = state => fromIndicators.nextPage(state.indicators)
+export const getIndicatorPreviousPage = state => fromIndicators.previousPage(state.indicators)
 
 
 export function withAuth(headers={}) {

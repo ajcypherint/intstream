@@ -6,6 +6,8 @@ import {setParams, getAll} from './util'
 import {PAGINATION, dateString} from '../util/util'
 import {getSources} from './sources'
 import {getArticles, clearArticles, ARTICLE_URL} from '../actions/articles'
+import {getIPV4, getMD5, getSHA1, getSHA256, 
+  getIndicators, clearIndicators, INDICATOR_URL} from '../actions/indicators'
 import {setChildHomeSelections} from '../actions/childFilter'
 import {getChildArticles} from '../actions/childArticles'
 
@@ -62,6 +64,64 @@ export const getfilter= (url, params=undefined)=>{
 
 export const getAllSources = getAll(getfilter)(totalSources);
 
+const filterInitial = (selections, setQuery) =>{
+  //
+  //selections: {modelChosen: int, sourceChosen: int}
+  //returns: { predictionStr, sourceStr}
+    let modelChosen = selections.modelChosen || ''
+    let sourceChosen = selections.sourceChosen || ''
+    let orderdir = selections.orderdir || ''
+    selections.startDate.setHours(0,0,0,0);
+    selections.endDate.setHours(23,59,59,999);
+ 
+    selections = {
+      ...selections,
+      modelChosen:modelChosen,
+      sourceChosen:sourceChosen,
+      orderdir:orderdir,
+    }
+    setQuery(selections)
+    //refactor
+    let predictionStr = modelChosen !=="" ? 
+      "&prediction__mlmodel="+modelChosen+ "&prediction__target=true" :
+      ""
+    let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
+      "&end_upload_date="+selections.endDate.toISOString()+
+      "&source="+sourceChosen+
+      "&source__active=true" + predictionStr
+  
+    return {predictionStr, sourceStr, orderdir, sourceChosen}
+ 
+}
+export const filterIndChange = (selections, setQuery) =>{
+  return async (dispatch, getState)=>{
+    let {predictionStr, sourceStr, orderdir, sourceChosen } = filterInitial(selections, setQuery)
+    //fetch sources and models; * not just sources but all filters not inc dates *
+    // could ignore this for child
+    let resp = await dispatch(getAllSources(API_FILTER, sourceStr))
+    if (resp.error) {
+        return
+    }
+    let pageSel = selections.page 
+    let indicatorStr = "ordering=" + selections.ordering +
+      "&orderdir="+ orderdir + 
+      "&source=" + sourceChosen +
+      "&page=" + selections.page +
+      "&start_upload_date=" + selections.startDate.toISOString() +
+      "&end_upload_date=" + selections.endDate.toISOString() +
+      "&source__active=true" + predictionStr
+    //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
+    let [respmd5] = await Promise.all([
+      dispatch(getIPV4(indicatorStr)),
+      dispatch(getMD5(indicatorStr)),
+      dispatch(getSHA1(indicatorStr)),
+      dispatch(getSHA256(indicatorStr)),
+      ])
+    return await dispatch(getIndicators(INDICATOR_URL, selections.selectedTabIndex, indicatorStr))
+
+  }
+
+}
 export const filterChange = (selections,  setQuery, parent)=>{
   return async (dispatch, getState)=>{
     let modelChosen = selections.modelChosen || ''

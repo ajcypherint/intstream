@@ -430,7 +430,6 @@ def _process_rss_source(source_url, source_id, organization_id):
     org = models.Organization.objects.get(id=organization_id)
 
     for i, html in enumerate(htmls):
-        #todo change to use serializer
         article = models.RSSArticle(
             title=collect[i].title[0:1000],
             description=collect[i].description,
@@ -441,9 +440,13 @@ def _process_rss_source(source_url, source_id, organization_id):
             organization=org
             )
         article.save()
+        ser = serializers.RSSSerializer(article)
         articles.append(article.pk)
+        if source.extract_indicators:
+            extract_indicators.delay(ser.data["clean_text"], ser.instance.id, ser.instance.organization.id)
 
-    _predict(articles, source_id, organization_id)
+
+    predict.delay(articles, source_id, organization_id)
 
 
 def _predict(article_ids, source_id, organization_id):

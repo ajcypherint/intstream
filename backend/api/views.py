@@ -76,6 +76,10 @@ class SourceFilter(filters.FilterSet):
     article___upload_date__lte = filters.IsoDateTimeFilter(field_name="article__upload_date", lookup_expr="lte")
     article = filters.NumberFilter(field_name="article__id")
 
+    indicator___upload_date__gte = filters.IsoDateTimeFilter(field_name="article__indicator__upload_date",lookup_expr="gte")
+    indicator___upload_date__lte = filters.IsoDateTimeFilter(field_name="article__indicator__upload_date", lookup_expr="lte")
+    indicator = filters.NumberFilter(field_name="article__indicator__id")
+
     class Meta:
         model = models.Source
         fields = ('id','name','active',"mlmodel")
@@ -959,6 +963,7 @@ class JobVersionViewSet(OrgViewSet):
     def get_queryset(self):
         return models.JobVersion.objects.filter(organization=self.request.user.organization)
 
+
 class MLModelViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.MLModelSerializer
@@ -1335,6 +1340,9 @@ class CharInFilter(filters.BaseInFilter, filters.CharFilter):
 
 class IndicatorMD5Filter(filters.FilterSet):
     value__in = CharInFilter(field_name="value", lookup_expr="in")
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
+
     class Meta:
         model = models.IndicatorMD5
         fields = ('id', 'value', "value__in")
@@ -1342,6 +1350,8 @@ class IndicatorMD5Filter(filters.FilterSet):
 
 class IndicatorSha1Filter(filters.FilterSet):
     value__in = CharInFilter(field_name="value", lookup_expr="in")
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
 
     class Meta:
         model = models.IndicatorSha1
@@ -1350,6 +1360,8 @@ class IndicatorSha1Filter(filters.FilterSet):
 
 class IndicatorSha256Filter(filters.FilterSet):
     value__in = CharInFilter(field_name="value", lookup_expr="in")
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
 
     class Meta:
         model = models.IndicatorSha256
@@ -1362,6 +1374,8 @@ class IPV4Filter(filters.Filter):
 
 class IndicatorIPV4Filter(filters.FilterSet):
     value__in = CharInFilter(field_name="value",lookup_expr="in")
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
 
     class Meta:
         model = models.IndicatorIPV4
@@ -1370,6 +1384,8 @@ class IndicatorIPV4Filter(filters.FilterSet):
 
 class IndicatorEmailFilter(filters.FilterSet):
     value__in = CharInFilter(field_name="value", lookup_expr="in")
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
 
     class Meta:
         model = models.IndicatorEmail
@@ -1378,6 +1394,8 @@ class IndicatorEmailFilter(filters.FilterSet):
 
 class IndicatorIPV6Filter(filters.FilterSet):
     value__in = CharInFilter(field_name="value", lookup_expr="in")
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
 
     class Meta:
         model = models.IndicatorIPV6
@@ -1604,7 +1622,6 @@ class ModelVersionViewSet(OrgViewSet):
                                     source_id=article.source.id)
 
 
-IPV4 = "IPV4"
 
 
 class IndicatorMD5ViewSet(IndicatorBaseViewSet):

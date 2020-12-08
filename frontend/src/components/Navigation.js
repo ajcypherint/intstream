@@ -116,7 +116,23 @@ export default class Example extends React.Component {
                   </DropdownItem>
                   </DropdownMenu>
               </UncontrolledDropdown>:null}
+
+              <UncontrolledDropdown nav inNavbar >
+                <DropdownToggle nav caret>
+                  Main
+                </DropdownToggle>
+                <DropdownMenu right  >
+                 <DropdownItem tag={Link} to="/">
+                   Articles 
+                  </DropdownItem>
+                  <DropdownItem tag={Link} to="/indicatorhome">
+                    Indicators
+                  </DropdownItem>
  
+               </DropdownMenu>
+              </UncontrolledDropdown>
+
+
              <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
                  Account

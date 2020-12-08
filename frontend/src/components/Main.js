@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route,Switch } from 'react-router-dom'
 import Home from "../containers/Home"
+import IndicatorHome from "../containers/IndicatorHome"
 import SourcesJobList from "../containers/SourcesJobList"
 import SourcesJobEdit from "../containers/SourcesJobEdit"
 import SourcesUploadList from "../containers/SourcesUploadList"
@@ -43,6 +44,7 @@ import Ver from "../containers/ModelVersionList"
 const Main = (props)=>(
   <Switch>
     <Route exact path="/" component={Home} />
+    <Route exact path="/indicatorhome" component={IndicatorHome} />
   
     <Route exact path="/article/:id" component={Article} />
     <Route exact path="/train/:id/:model" component={Train} />

@@ -671,6 +671,17 @@ class ModelVersionSerializer(serializers.ModelSerializer):
         model = models.ModelVersion
 
 
+class IndicatorSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            "articles",
+            "organization",
+            "value"
+        ]
+        model = models.Indicator
+
+
 class IndicatorMD5Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [

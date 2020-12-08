@@ -69,7 +69,6 @@ router.register("indicatornetloc", views.IndicatorNetLocViewSet, basename="indic
 router.register("indicatoremail", views.IndicatorEmailViewSet, basename="indicatoremail")
 router.register("indicatoripv4", views.IndicatorIPV4ViewSet, basename="indicatoripv4")
 router.register("indicatoripv6", views.IndicatorIPV6ViewSet, basename="indicatoripv6")
-router.register("indicatornetloc", views.IndicatorNetLocViewSet, basename="indicatornetloc")
 router.register("indicatorsuffix", views.SuffixViewSet, basename="suffix")
 
 router.register("indicatornumericfield", views.IndicatorNumericFieldViewSet, basename="indicatornumericfield")

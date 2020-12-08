@@ -15,7 +15,16 @@ function ucFirst(string)
 {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
+export function getIdsModels(uniqueModels){
+  // uniqueModels: [{ id:int}]
+    let idsModels = []
+    for (let i=0; i<uniqueModels.length;i++){
+      if(uniqueModels[i].id){
+        idsModels.push(uniqueModels[i].id.toString())
+      }
+    }
+  return idsModels 
+}
 export function getUniqueTrainListTF(filterArray){
   let uniqueTFPre= _.uniqBy(filterArray,v => [v.target].join())
   let uniqueTFPre2 = uniqueTFPre.filter((object)=>{ 
@@ -90,7 +99,7 @@ export function dateString(
         "&page=" + page +
         "&start_upload_date=" + start.toISOString() +
     "&end_upload_date=" + end.toISOString() +
-    (threshold!=="undefined" ? "&threshold=" + threshold : "")
+    (typeof threshold!=="undefined" ? "&threshold=" + threshold : "")
 
 
 }

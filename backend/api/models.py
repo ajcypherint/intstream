@@ -333,6 +333,7 @@ class Setting(models.Model):
 class Indicator(PolymorphicModel):
     articles = models.ManyToManyField(Article, blank=True)
     organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
+    upload_date = models.DateTimeField(default=timezone.now, db_index=True)
 
 
 class IndicatorMD5(Indicator):
