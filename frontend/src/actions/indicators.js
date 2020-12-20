@@ -19,6 +19,18 @@ export const GET_INDICATORS_REQUEST = '@@indicators/GET_INDICATORS_REQUEST';
 export const GET_INDICATORS_SUCCESS = '@@indicators/GET_INDICATORS_SUCCESS';
 export const GET_INDICATORS_FAILURE = '@@indicators/GET_INDICATORS_FAILURE';
 
+export const GET_IPV6_REQUEST = '@@indicators/GET_IPV6_REQUEST';
+export const GET_IPV6_SUCCESS = '@@indicators/GET_IPV6_SUCCESS';
+export const GET_IPV6_FAILURE = '@@indicators/GET_IPV6_FAILURE';
+
+export const GET_EMAIL_REQUEST = '@@indicators/GET_EMAIL_REQUEST';
+export const GET_EMAIL_SUCCESS = '@@indicators/GET_EMAIL_SUCCESS';
+export const GET_EMAIL_FAILURE = '@@indicators/GET_EMAIL_FAILURE';
+
+export const GET_NETLOC_REQUEST = '@@indicators/GET_NETLOC_REQUEST';
+export const GET_NETLOC_SUCCESS = '@@indicators/GET_NETLOC_SUCCESS';
+export const GET_NETLOC_FAILURE = '@@indicators/GET_NETLOC_FAILURE';
+
 export const GET_MD5_REQUEST = '@@indicators/GET_MD5_REQUEST';
 export const GET_MD5_SUCCESS = '@@indicators/GET_MD5_SUCCESS';
 export const GET_MD5_FAILURE = '@@indicators/GET_MD5_FAILURE';
@@ -34,7 +46,6 @@ export const GET_SHA256_FAILURE = '@@indicators/GET_SHA256_FAILURE';
 export const GET_IPV4_REQUEST = '@@indicators/GET_IPV4_REQUEST';
 export const GET_IPV4_SUCCESS = '@@indicators/GET_IPV4_SUCCESS';
 export const GET_IPV4_FAILURE = '@@indicators/GET_IPV4_FAILURE';
-
 
 export const SET_INDICATORS_REQUEST = '@@indicators/SET_INDICATORS_REQUEST';
 export const SET_INDICATORS_SUCCESS = '@@indicators/SET_INDICATORS_SUCCESS';
@@ -52,6 +63,58 @@ export const clearIndicators = (data)=>{
 
   }
 }
+
+export const getIPV6= ( params) => {
+  let url = setParams("/api/indicatoripv6/", params)
+  return {
+    [RSAA]:{
+      endpoint: url,
+      method: 'GET',
+      fetch:fetch,
+      body: '',
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+         GET_IPV6_REQUEST, GET_IPV6_SUCCESS, GET_IPV6_FAILURE
+        ]
+
+    }
+  }
+}
+
+export const getEMAIL= ( params) => {
+  let url = setParams("/api/indicatoremail/", params)
+  return {
+    [RSAA]:{
+      endpoint: url,
+      method: 'GET',
+      fetch:fetch,
+      body: '',
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+         GET_EMAIL_REQUEST, GET_EMAIL_SUCCESS, GET_EMAIL_FAILURE
+        ]
+
+    }
+  }
+}
+
+export const getNETLOC= ( params) => {
+  let url = setParams("/api/indicatornetloc/", params)
+  return {
+    [RSAA]:{
+      endpoint: url,
+      method: 'GET',
+      fetch:fetch,
+      body: '',
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+         GET_NETLOC_REQUEST, GET_NETLOC_SUCCESS, GET_NETLOC_FAILURE
+        ]
+
+    }
+  }
+}
+
 export const getIPV4= ( params) => {
   let url = setParams("/api/indicatoripv4/", params)
   return {
@@ -68,6 +131,7 @@ export const getIPV4= ( params) => {
     }
   }
 }
+
 export const getSHA1= ( params) => {
   let url = setParams("/api/indicatorsha1/", params)
   return {
@@ -84,6 +148,7 @@ export const getSHA1= ( params) => {
     }
   }
 }
+
 export const getSHA256 = ( params) => {
   let url = setParams("/api/indicatorsha256/", params)
   return {
@@ -100,6 +165,7 @@ export const getSHA256 = ( params) => {
     }
   }
 }
+
 export const getMD5 = ( params) => {
 
   let url = setParams("/api/indicatormd5/", params)

@@ -49,6 +49,33 @@ export const initialState ={
     previouspage:null,
     saving:false
   },
+  netloc:{
+    indicators:[],
+    loading:false,
+    totalcount:0,
+    errors: {},
+    nextpage:null,
+    previouspage:null,
+    saving:false
+  },
+  email:{
+    indicators:[],
+    loading:false,
+    totalcount:0,
+    errors: {},
+    nextpage:null,
+    previouspage:null,
+    saving:false
+  },
+  ipv6:{
+    indicators:[],
+    loading:false,
+    totalcount:0,
+    errors: {},
+    nextpage:null,
+    previouspage:null,
+    saving:false
+  },
   indicators:[],
   loading:false,
   totalcount:0,
@@ -236,6 +263,138 @@ export default (state=initialState, action) => {
         }
       }
       }
+   case indicatorsData.GET_IPV6_REQUEST:
+      {
+      return {
+        ...state,
+        ipv6:{
+          ...state.ipv6,
+          loading:true,
+          errors:{}
+        }
+      }
+      }
+
+    case indicatorsData.GET_IPV6_SUCCESS:
+      {
+        //let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
+        //#let newindicatorsourcesData= {...result}
+      return {
+        ...state,
+        ipv6:{
+          ...state.ipv6,
+          indicators:action.payload.results,
+          totalcount:action.payload.count,
+          loading:false,
+          nextpage:action.payload.next,
+          previouspage:action.payload.previous,
+          errors: {},
+        }
+      }
+      }
+    case indicatorsData.GET_IPV6_FAILURE:
+      {
+      return {
+        ...state,
+        ipv6:{
+          ...state.ipv6,
+          indicators:[],
+          totalcount:0,
+          loading:false,
+          nextpage:null,
+          previouspage:null,
+          errors: action.payload.response || {'non_field_errors': action.payload.statusText},
+        }
+      }
+      }
+    case indicatorsData.GET_NETLOC_REQUEST:
+      {
+      return {
+        ...state,
+        netloc:{
+          ...state.netloc,
+          loading:true,
+          errors:{}
+        }
+      }
+      }
+    case indicatorsData.GET_NETLOC_SUCCESS:
+      {
+        //let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
+        //#let newindicatorsourcesData= {...result}
+      return {
+        ...state,
+        netloc:{
+          ...state.netloc,
+          indicators:action.payload.results,
+          totalcount:action.payload.count,
+          loading:false,
+          nextpage:action.payload.next,
+          previouspage:action.payload.previous,
+          errors: {},
+        }
+      }
+      }
+    case indicatorsData.GET_NETLOC_FAILURE:
+      {
+      return {
+        ...state,
+        netloc:{
+          ...state.netloc,
+          indicators:[],
+          totalcount:0,
+          loading:false,
+          nextpage:null,
+          previouspage:null,
+          errors: action.payload.response || {'non_field_errors': action.payload.statusText},
+        }
+      }
+      }
+ 
+    case indicatorsData.GET_EMAIL_REQUEST:
+      {
+      return {
+        ...state,
+        email:{
+          ...state.email,
+          loading:true,
+          errors:{}
+        }
+      }
+      }
+
+    case indicatorsData.GET_EMAIL_SUCCESS:
+      {
+        //let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
+        //#let newindicatorsourcesData= {...result}
+      return {
+        ...state,
+        email:{
+          ...state.email,
+          indicators:action.payload.results,
+          totalcount:action.payload.count,
+          loading:false,
+          nextpage:action.payload.next,
+          previouspage:action.payload.previous,
+          errors: {},
+        }
+      }
+      }
+    case indicatorsData.GET_EMAIL_FAILURE:
+      {
+      return {
+        ...state,
+        email:{
+          ...state.email,
+          indicators:[],
+          totalcount:0,
+          loading:false,
+          nextpage:null,
+          previouspage:null,
+          errors: action.payload.response || {'non_field_errors': action.payload.statusText},
+        }
+      }
+      }
  
     case indicatorsData.GET_MD5_REQUEST:
       {
@@ -333,6 +492,23 @@ export function indicators(state) {
   }
 }
 
+export function netloc(state) {
+  if (state.netloc) {
+    return  state.netloc
+  }
+}
+
+export function email(state) {
+  if (state.email) {
+    return  state.email
+  }
+}
+
+export function ipv6(state) {
+  if (state.ipv6) {
+    return  state.ipv6
+  }
+}
 export function ipv4(state) {
   if (state.ipv4) {
     return  state.ipv4

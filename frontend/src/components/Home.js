@@ -6,7 +6,6 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import '../custom.css';
 import { dateString } from '../util/util'
-import {changesort} from './ChangeSort'
 import {Children} from "./Children"
 import Choice from "./Choice"
 import {getUniqueModels} from "../util/util"
@@ -19,7 +18,6 @@ export class Main extends React.Component{
     this.handleModelChange = this.handleModelChange.bind(this) 
     this.handleStartChange = this.handleStartChange.bind(this)
     this.handleEndChange = this.handleEndChange.bind(this)
-    this.changesort = changesort.bind(this)
     this.updateDate = this.updateDate.bind(this)
     this.handleThresholdChange = this.handleThresholdChange.bind(this)
     this.handleMaxDfChange = this.handleMaxDfChange.bind(this)

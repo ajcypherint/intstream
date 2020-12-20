@@ -5,8 +5,7 @@ import propTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import '../custom.css';
-import { dateString } from '../util/util'
-import {changesort} from './ChangeSort'
+import { getOpts, dateString } from '../util/util'
 import Choice from "./Choice"
 import {getUniqueModels, getIdsModels} from "../util/util"
 import {ASC, DESC, ALL} from "../util/util"
@@ -20,11 +19,11 @@ export class Main extends React.Component{
     this.handleModelChange = this.handleModelChange.bind(this) 
     this.handleStartChange = this.handleStartChange.bind(this)
     this.handleEndChange = this.handleEndChange.bind(this)
-    this.changesort = changesort.bind(this)
     this.updateDate = this.updateDate.bind(this)
     this.paginate = Paginate.bind(this)
     this.tabUpdate = this.tabUpdate.bind(this)
     this.fetch = this.fetch.bind(this)
+    this.changeColChoice = this.changeColChoice.bind(this)
   }
   handleStartChange(date){
     let selections = this.props.query
@@ -34,7 +33,22 @@ export class Main extends React.Component{
     let selections = this.props.query
     this.updateDate(selections.startDate, date, false)
   }
-
+  changeColChoice(event){
+    
+    let type = event.target.dataset.type
+    let selected = getOpts(event)
+	  let newSel = {
+      [type]:selected,
+      page:1
+    }
+    let selections ={
+      ...this.props.query,
+      ...newSel
+    }
+    //again here we set selections then fetch
+    this.props.filterChange(selections, this.props.setQuery)
+ 
+  }
   updateDate(startDate,endDate,start_filter=true){
     // fix start_date or end_date based on input
     //startdate - date
@@ -67,7 +81,7 @@ export class Main extends React.Component{
       ...this.props.query,
       ...newSel
      }
-    this.props.filterChange(selections,this.props.setQuery)
+    this.props.filterChange(selections,this.props.setQuery )
   }
   updateComponent(){
     let START = new Date();
@@ -86,6 +100,13 @@ export class Main extends React.Component{
     let next = this.props.query.next || ''
     let previous = this.props.query.previous || ''
     let selectedTabIndex = this.props.query.selectedTabIndex || "md5"
+    let selectedTabIndexNum = this.props.query.selectedTabIndexNum || 0 
+    let numCols = this.props.query.numCols || []
+    let textCols = this.props.query.textCols || []
+    //todo: check if intersection of selected cols and possible cols
+    let numColsObjs = this.props.numCols
+    let textColsObjs = this.props.textCols
+    let numColsList = []
 
     let selections = {
       ordering:ordering, 
@@ -97,9 +118,12 @@ export class Main extends React.Component{
       endDate:endDate,
       next:next,
       previous:previous,
-      selectedTabIndex:selectedTabIndex
+      selectedTabIndex:selectedTabIndex,
+      selectedTabIndexNum:selectedTabIndexNum,
+      numCols:numCols,
+      textCols:textCols
     }
-    this.props.filterChange(selections, this.props.setQuery) 
+    this.props.filterChange(selections, this.props.setQuery )
  
   }
   componentDidMount() {
@@ -122,7 +146,7 @@ export class Main extends React.Component{
       ...newSel
     }
     //again here we set selections then fetch
-    this.props.filterChange(selections, this.props.setQuery)
+    this.props.filterChange(selections, this.props.setQuery )
   }
 
   handleSourceChange(event){
@@ -137,16 +161,20 @@ export class Main extends React.Component{
     }
     this.props.filterChange(selections, this.props.setQuery)
   }
+
   tabUpdate(index, lastIndex, event) {
     let newSel = {
       selectedTabIndex:event.target.dataset.value,
+      selectedTabIndexNum:index,
       page:1
     }
     let selections = {
       ...this.props.query,
       ...newSel
     }
-    this.props.filterChange(selections, this.props.setQuery)
+    this.props.filterChange(selections, 
+      this.props.setQuery, 
+      )
  
   }
  
@@ -229,6 +257,14 @@ export class Main extends React.Component{
         sha1={this.props.sha1}
         sha256={this.props.sha256}
         ipv4={this.props.ipv4}
+        ipv6={this.props.ipv6}
+        netloc={this.props.netloc}
+        email={this.props.email}
+        filterChange={this.props.filterChange}
+        changeColChoice={this.changeColChoice}
+        numCols={this.props.numCols}
+        textCols={this.props.textCols}
+        query={this.props.query}
       />
   </div>
     )
@@ -239,7 +275,7 @@ export class Main extends React.Component{
 Main.propTypes = {
   sourcesList:propTypes.array,
   indicatorsList:propTypes.array,
-  indicatorsLoading:propTypes.string,
+  indicatorsLoading:propTypes.bool,
   indicatorsTotalCount:propTypes.number,
   indicatorsNext:propTypes.string,
   indicatorsPrevious:propTypes.string,

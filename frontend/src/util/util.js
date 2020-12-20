@@ -11,6 +11,16 @@ export const ALL = "---"
 export const ASC = ''
 export const DESC = '-'
 
+export function getOpts(event){
+  let opts = [], opt;
+  for (let i = 0, len = event.target.options.length; i < len; i++) {
+      opt = event.target.options[i];
+      if (opt.selected) {
+          opts.push(opt.value);
+      }
+  }
+  return opts 
+}
 function ucFirst(string) 
 {
     return string.charAt(0).toUpperCase() + string.slice(1);

@@ -672,9 +672,11 @@ class ModelVersionSerializer(serializers.ModelSerializer):
 
 
 class IndicatorSerializer(serializers.ModelSerializer):
+
     class Meta:
         fields = [
             "id",
+            "ind_type",
             "articles",
             "organization",
             "value"
@@ -683,9 +685,11 @@ class IndicatorSerializer(serializers.ModelSerializer):
 
 
 class IndicatorMD5Serializer(serializers.ModelSerializer):
+
     class Meta:
         fields = [
             "id",
+            "ind_type",
             "articles",
             "organization",
             "value"
@@ -694,9 +698,11 @@ class IndicatorMD5Serializer(serializers.ModelSerializer):
 
 
 class IndicatorSha256Serializer(serializers.ModelSerializer):
+
     class Meta:
         fields = [
             "id",
+            "ind_type",
             "articles",
             "organization",
             "value",
@@ -705,9 +711,11 @@ class IndicatorSha256Serializer(serializers.ModelSerializer):
 
 
 class IndicatorEmailSerializer(serializers.ModelSerializer):
+
     class Meta:
         fields = [
             "id",
+            "ind_type",
             "articles",
             "organization",
             "value",
@@ -716,9 +724,11 @@ class IndicatorEmailSerializer(serializers.ModelSerializer):
 
 
 class IndicatorSha1Serializer(serializers.ModelSerializer):
+
     class Meta:
         fields = [
             "id",
+            "ind_type",
             "articles",
             "organization",
             "value"
@@ -727,12 +737,18 @@ class IndicatorSha1Serializer(serializers.ModelSerializer):
 
 
 class IndicatorNetLocSerializer(serializers.ModelSerializer):
+
     url = serializers.SerializerMethodField()
+    value = serializers.SerializerMethodField()
     registered = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         subdomain = obj.subdomain + "." if obj.subdomain != "" else ""
         return "http://" + subdomain + obj.domain + "." + obj.suffix.value
+
+    def get_value(self, obj):
+        subdomain = obj.subdomain + "." if obj.subdomain != "" else ""
+        return subdomain + obj.domain + "." + obj.suffix.value
 
     def get_registered(self, obj):
         return obj.domain + "." + obj.suffix.value
@@ -740,11 +756,13 @@ class IndicatorNetLocSerializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
+            "ind_type",
             "articles",
             "organization",
             "subdomain",
             "domain",
             "suffix",
+            "value",
             "url",
             "registered"
         ]
@@ -761,9 +779,11 @@ class SuffixSerializer(serializers.ModelSerializer):
 
 
 class IndicatorIPV6Serializer(serializers.ModelSerializer):
+
     class Meta:
         fields = [
             "id",
+            "ind_type",
             "articles",
             "organization",
             "value"
@@ -775,6 +795,7 @@ class IndicatorIPV4Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
+            "ind_type",
             "articles",
             "organization",
             "value"
@@ -786,10 +807,28 @@ class IndicatorNumericField(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
-            "value",
             "name",
+            "value",
             "organization",
             "indicator",
+        ]
+        model = models.IndicatorNumericField
+
+
+class IndicatorTextFieldName(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "name",
+            "organization",
+        ]
+        model = models.IndicatorTextField
+
+
+class IndicatorNumericFieldName(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "name",
+            "organization",
         ]
         model = models.IndicatorNumericField
 
@@ -798,8 +837,8 @@ class IndicatorTextField(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
-            "value",
             "name",
+            "value",
             "organization",
             "indicator",
         ]

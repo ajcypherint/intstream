@@ -6,7 +6,9 @@ import {setParams, getAll} from './util'
 import {PAGINATION, dateString} from '../util/util'
 import {getSources} from './sources'
 import {getArticles, clearArticles, ARTICLE_URL} from '../actions/articles'
+import {getColNumeric, getColText} from "../actions/indicatorColumns"
 import {getIPV4, getMD5, getSHA1, getSHA256, 
+  getIPV6, getEMAIL, getNETLOC,
   getIndicators, clearIndicators, INDICATOR_URL} from '../actions/indicators'
 import {setChildHomeSelections} from '../actions/childFilter'
 import {getChildArticles} from '../actions/childArticles'
@@ -24,7 +26,15 @@ export const GET_FILTER_REQUEST = '@@filter/GET_FILTER_REQUEST';
 export const GET_FILTER_SUCCESS = '@@filter/GET_FILTER_SUCCESS';
 export const GET_FILTER_FAILURE = '@@filter/GET_FILTER_FAILURE';
 
-
+export const MAP_IND = {
+	email: "Email",
+	ipv4: "IPV4",
+	ipv6: "IPV6",
+	netloc: "NetLoc",
+	sha256: "Sha256",
+	sha1:"Sha1",
+	md5:"MD5"
+}
 export const setPage= (data)=>{
   return {
     type:PAGE,
@@ -64,16 +74,31 @@ export const getfilter= (url, params=undefined)=>{
 
 export const getAllSources = getAll(getfilter)(totalSources);
 
-const filterInitial = (selections, setQuery) =>{
-  //
+function intersect(selectedCols, allColsObjs){
+    let cols = selectedCols || []
+    let ColsList = []
+    var i;
+    for(i = 0; i < allColsObjs.length; i++){
+      ColsList.push(allColsObjs[i].name)
+    }
+    cols = _.intersection(cols, ColsList)
+    return cols 
+}
+export const filterIndChange = (selections, 
+  setQuery, 
+  ) =>{
+  return async (dispatch, getState)=>{
   //selections: {modelChosen: int, sourceChosen: int}
   //returns: { predictionStr, sourceStr}
     let modelChosen = selections.modelChosen || ''
     let sourceChosen = selections.sourceChosen || ''
     let orderdir = selections.orderdir || ''
+    
+    
+    //reset textCols
+
     selections.startDate.setHours(0,0,0,0);
     selections.endDate.setHours(23,59,59,999);
- 
     selections = {
       ...selections,
       modelChosen:modelChosen,
@@ -85,17 +110,12 @@ const filterInitial = (selections, setQuery) =>{
     let predictionStr = modelChosen !=="" ? 
       "&prediction__mlmodel="+modelChosen+ "&prediction__target=true" :
       ""
+
     let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
       "&end_upload_date="+selections.endDate.toISOString()+
       "&source="+sourceChosen+
       "&source__active=true" + predictionStr
-  
-    return {predictionStr, sourceStr, orderdir, sourceChosen}
  
-}
-export const filterIndChange = (selections, setQuery) =>{
-  return async (dispatch, getState)=>{
-    let {predictionStr, sourceStr, orderdir, sourceChosen } = filterInitial(selections, setQuery)
     //fetch sources and models; * not just sources but all filters not inc dates *
     // could ignore this for child
     let resp = await dispatch(getAllSources(API_FILTER, sourceStr))
@@ -103,22 +123,46 @@ export const filterIndChange = (selections, setQuery) =>{
         return
     }
     let pageSel = selections.page 
-    let indicatorStr = "ordering=" + selections.ordering +
+		let ind_type = MAP_IND[selections.selectedTabIndex]
+    let indicatorStr = "ordering=" + orderdir + selections.ordering +
       "&orderdir="+ orderdir + 
       "&source=" + sourceChosen +
-      "&page=" + selections.page +
       "&start_upload_date=" + selections.startDate.toISOString() +
       "&end_upload_date=" + selections.endDate.toISOString() +
       "&source__active=true" + predictionStr
+    let indicatorStrPage = indicatorStr + "&page=" + selections.page 
     //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
-    let [respmd5] = await Promise.all([
+    let all_resp = await Promise.all([
       dispatch(getIPV4(indicatorStr)),
+      dispatch(getIPV6(indicatorStr)),
+      dispatch(getEMAIL(indicatorStr)),
+      dispatch(getNETLOC(indicatorStr)),
       dispatch(getMD5(indicatorStr)),
       dispatch(getSHA1(indicatorStr)),
       dispatch(getSHA256(indicatorStr)),
       ])
-    return await dispatch(getIndicators(INDICATOR_URL, selections.selectedTabIndex, indicatorStr))
-
+    let resp_ind = await dispatch(getIndicators(INDICATOR_URL, selections.selectedTabIndex, indicatorStrPage))
+    if (resp_ind.error) {
+      return
+    }
+    let indicators = resp_ind.payload.results
+    let ids = []
+    for (let i=0;i<indicators.length;i++){
+      ids.push(i.id)
+    }
+    // todo get text cols and numeric cols:wq
+    let param_cols = "start_upload_date=" + selections.startDate.toISOString() +
+      "&end_upload_date=" + selections.endDate.toISOString() +
+      "&ind_type=" + ind_type + 
+      "&source=" + sourceChosen + "&model=" + modelChosen
+    let resp_num = await dispatch(getColNumeric(param_cols))
+    if (resp_num.error){
+      return
+    }
+    let resp_text = await dispatch(getColText(param_cols))
+    if (resp_text.error){
+      return
+    }
   }
 
 }

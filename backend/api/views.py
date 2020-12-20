@@ -53,9 +53,14 @@ from django.urls import reverse
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
-
+EMAIL = "Email"
+IPV4 = "IPV4"
+IPV6 = "IPV6"
+NETLOC = "NetLoc"
+SHA256 = "Sha256"
+SHA1 = "Sha1"
+MD5 = "MD5"
 MAX_CLUSTER = 200
-# Create your views here.
 
 class MLModelFilter(filters.FilterSet):
     modelversion__isnull = filters.BooleanFilter(field_name="modelversion",
@@ -859,6 +864,7 @@ class PredictionFilter(filters.FilterSet):
 
 class PredictionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     serializer_class = serializers.PredictionSerializer
     filterset_class = PredictionFilter
@@ -1333,15 +1339,20 @@ class IndicatorBaseViewSet(viewsets.ModelViewSet):
                 tasks.indicatorjob.delay(id=j.id, indicator=instance.value)
 
 
-#todo(aj) Blog this
 class CharInFilter(filters.BaseInFilter, filters.CharFilter):
+    pass
+
+
+class NumInFilter(filters.BaseInFilter, filters.NumberFilter):
     pass
 
 
 class IndicatorMD5Filter(filters.FilterSet):
     value__in = CharInFilter(field_name="value", lookup_expr="in")
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
+    start_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='gte', distinct=True)
+    end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
+    source = filters.NumberFilter(field_name="articles__source", distinct=True)
+    prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
 
     class Meta:
         model = models.IndicatorMD5
@@ -1350,8 +1361,10 @@ class IndicatorMD5Filter(filters.FilterSet):
 
 class IndicatorSha1Filter(filters.FilterSet):
     value__in = CharInFilter(field_name="value", lookup_expr="in")
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
+    start_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='gte', distinct=True)
+    end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
+    source = filters.NumberFilter(field_name="articles__source", distinct=True)
+    prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
 
     class Meta:
         model = models.IndicatorSha1
@@ -1360,22 +1373,22 @@ class IndicatorSha1Filter(filters.FilterSet):
 
 class IndicatorSha256Filter(filters.FilterSet):
     value__in = CharInFilter(field_name="value", lookup_expr="in")
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
+    start_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='gte', distinct=True)
+    end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
+    source = filters.NumberFilter(field_name="articles__source", distinct=True)
+    prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
 
     class Meta:
         model = models.IndicatorSha256
         fields = ('id', 'value', "value__in")
 
 
-class IPV4Filter(filters.Filter):
-    field_class = db_models.IPAddressField
-
-
 class IndicatorIPV4Filter(filters.FilterSet):
     value__in = CharInFilter(field_name="value",lookup_expr="in")
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
+    start_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='gte', distinct=True)
+    end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
+    source = filters.NumberFilter(field_name="articles__source", distinct=True)
+    prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
 
     class Meta:
         model = models.IndicatorIPV4
@@ -1384,8 +1397,10 @@ class IndicatorIPV4Filter(filters.FilterSet):
 
 class IndicatorEmailFilter(filters.FilterSet):
     value__in = CharInFilter(field_name="value", lookup_expr="in")
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
+    start_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='gte', distinct=True)
+    end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
+    source = filters.NumberFilter(field_name="articles__source", distinct=True)
+    prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
 
     class Meta:
         model = models.IndicatorEmail
@@ -1394,8 +1409,10 @@ class IndicatorEmailFilter(filters.FilterSet):
 
 class IndicatorIPV6Filter(filters.FilterSet):
     value__in = CharInFilter(field_name="value", lookup_expr="in")
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
+    start_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='gte', distinct=True)
+    end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
+    source = filters.NumberFilter(field_name="articles__source", distinct=True)
+    prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
 
     class Meta:
         model = models.IndicatorIPV6
@@ -1410,7 +1427,6 @@ class SuffixFilter(filters.FilterSet):
         fields = ('id', 'value', 'value__in')
 
 
-SHA1 = "Sha1"
 
 
 class IndicatorSha1ViewSet(IndicatorBaseViewSet):
@@ -1420,7 +1436,10 @@ class IndicatorSha1ViewSet(IndicatorBaseViewSet):
     filterset_class = IndicatorSha1Filter
 
     def get_queryset(self):
-        return models.IndicatorSha1.objects.filter(organization=self.request.user.organization)
+        ind_type = models.IndicatorType.objects.get(name=SHA1)
+        return models.IndicatorSha1.objects.filter(
+            ind_type=ind_type,
+            organization=self.request.user.organization)
 
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get("data", {}), list):
@@ -1438,7 +1457,6 @@ class IndicatorSha1ViewSet(IndicatorBaseViewSet):
         jobs = models.IndicatorJob.objects.filter(name=SHA1).all()
         self.tasks(instance, jobs)
 
-SHA256 = "Sha256"
 
 
 class IndicatorSha256ViewSet(IndicatorBaseViewSet):
@@ -1448,7 +1466,10 @@ class IndicatorSha256ViewSet(IndicatorBaseViewSet):
     filterset_class = IndicatorSha256Filter
 
     def get_queryset(self):
-        return models.IndicatorSha256.objects.filter(organization=self.request.user.organization)
+        ind_type = models.IndicatorType.objects.get(name=SHA256)
+        return models.IndicatorSha256.objects.filter(
+            ind_type=ind_type,
+            organization=self.request.user.organization)
 
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get("data", {}), list):
@@ -1467,6 +1488,8 @@ class IndicatorSha256ViewSet(IndicatorBaseViewSet):
 
 
 class NetLocFilter(filters.FilterSet):
+    start_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='gte', distinct=True)
+    end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
 
     domain__in = CharInFilter(field_name="domain",lookup_expr="in")
     subdomain__in = CharInFilter(field_name="subdomain",lookup_expr="in")
@@ -1477,7 +1500,6 @@ class NetLocFilter(filters.FilterSet):
                   "domain__in", "subdomain__in", "suffix__in")
 
 
-NETLOC = "NetLoc"
 
 
 class IndicatorNetLocViewSet(IndicatorBaseViewSet):
@@ -1487,7 +1509,10 @@ class IndicatorNetLocViewSet(IndicatorBaseViewSet):
     filterset_class = NetLocFilter
 
     def get_queryset(self):
-        return models.IndicatorNetLoc.objects.filter(organization=self.request.user.organization)
+        ind_type = models.IndicatorType.objects.get(name="NetLoc")
+        return models.IndicatorNetLoc.objects.filter(
+            ind_type=ind_type,
+            organization=self.request.user.organization)
 
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get("data", {}), list):
@@ -1519,8 +1544,6 @@ class SuffixViewSet(OrgViewSet):
         return models.Suffix.objects.all()
 
 
-EMAIL = "Email"
-
 
 class IndicatorEmailViewSet(IndicatorBaseViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
@@ -1529,7 +1552,10 @@ class IndicatorEmailViewSet(IndicatorBaseViewSet):
     filterset_class = IndicatorEmailFilter
 
     def get_queryset(self):
-        return models.IndicatorEmail.objects.filter(organization=self.request.user.organization)
+        ind_type = models.IndicatorType.objects.get(name=EMAIL)
+        return models.IndicatorEmail.objects.filter(
+            ind_type=ind_type,
+            organization=self.request.user.organization)
 
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get("data", {}), list):
@@ -1547,8 +1573,6 @@ class IndicatorEmailViewSet(IndicatorBaseViewSet):
         self.tasks(instance, jobs)
 
 
-IPV4 = "IPV4"
-
 
 class IndicatorIPV4ViewSet(IndicatorBaseViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
@@ -1557,7 +1581,10 @@ class IndicatorIPV4ViewSet(IndicatorBaseViewSet):
     filterset_class = IndicatorIPV4Filter
 
     def get_queryset(self):
-        return models.IndicatorIPV4.objects.filter(organization=self.request.user.organization)
+        ind_type = models.IndicatorType.objects.get(name=IPV4)
+        return models.IndicatorIPV4.objects.filter(
+            ind_type=ind_type,
+            organization=self.request.user.organization)
 
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get("data", {}), list):
@@ -1575,8 +1602,6 @@ class IndicatorIPV4ViewSet(IndicatorBaseViewSet):
         self.tasks(instance, jobs)
 
 
-IPV6 = "IPV6"
-
 
 class IndicatorIPV6ViewSet(IndicatorBaseViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
@@ -1585,7 +1610,10 @@ class IndicatorIPV6ViewSet(IndicatorBaseViewSet):
     filterset_class = IndicatorIPV6Filter
 
     def get_queryset(self):
-        return models.IndicatorIPV6.objects.filter(organization=self.request.user.organization)
+        ind_type = models.IndicatorType.objects.get(name=IPV6)
+        return models.IndicatorIPV6.objects.filter(
+            ind_type=ind_type,
+            organization=self.request.user.organization)
 
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get("data", {}), list):
@@ -1631,7 +1659,10 @@ class IndicatorMD5ViewSet(IndicatorBaseViewSet):
     filterset_class = IndicatorMD5Filter
 
     def get_queryset(self):
-        return models.IndicatorMD5.objects.filter(organization=self.request.user.organization)
+        ind_type = models.IndicatorType.objects.get(name=MD5)
+        return models.IndicatorMD5.objects.filter(
+            ind_type=ind_type,
+            organization=self.request.user.organization)
 
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get("data", {}), list):
@@ -1652,10 +1683,117 @@ class IndicatorMD5ViewSet(IndicatorBaseViewSet):
         # todo(aj) run jobs
 
 
+class IndicatorTextFilter(filters.FilterSet):
+    indicator__in = NumberInFilter(field_name="indicator", lookup_expr="in")
+
+    class Meta:
+        model = models.IndicatorTextField
+        fields = ('id',
+                  "value",
+                  "organization",
+                  "name",
+                  "indicator",
+                  "indicator__in"
+                  )
+
+
+class IndicatorNumericFilter(filters.FilterSet):
+    indicator__in = NumberInFilter(field_name="indicator", lookup_expr="in")
+    ind_type = filters.CharFilter(field_name="indicator__ind_type__name", lookup_expr="exact")
+    start_upload_date = filters.IsoDateTimeFilter(field_name='indicator__articles__upload_date',
+                                                  lookup_expr='gte' )
+    end_upload_date = filters.IsoDateTimeFilter(field_name='indicator__articles__upload_date',
+                                                lookup_expr='lte', )
+    source = filters.NumberFilter(field_name="indicator__articles__source", lookup_expr="exact", )
+    model = filters.NumberFilter(field_name="indicator__articles__prediction__mlmodel",
+                                 lookup_expr="exact")
+
+    class Meta:
+        model = models.IndicatorNumericField
+        fields = ('id',
+                  "value",
+                  "name",
+                  "organization",
+                  "indicator",
+                  "ind_type",
+                  "indicator__in"
+                  )
+
+
+class IndicatorTextFilterName(filters.FilterSet):
+    indicator__in = NumberInFilter(field_name="indicator", lookup_expr="in")
+    ind_type = filters.CharFilter(field_name="indicator__ind_type__name", lookup_expr="exact")
+    start_upload_date = filters.IsoDateTimeFilter(field_name='indicator__articles__upload_date',
+                                                  lookup_expr='gte' )
+    end_upload_date = filters.IsoDateTimeFilter(field_name='indicator__articles__upload_date',
+                                                lookup_expr='lte', )
+    source = filters.NumberFilter(field_name="indicator__articles__source", lookup_expr="exact", )
+    model = filters.NumberFilter(field_name="indicator__articles__prediction__mlmodel",
+                                 lookup_expr="exact")
+
+    class Meta:
+        model = models.IndicatorTextField
+        fields = ("name",
+                  "start_upload_date",
+                  "end_upload_date",
+                  "source",
+                  "model",
+                  "ind_type",
+                  "indicator__in",
+                  )
+
+
+class IndicatorTextFieldNameViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    readonly view for distinct column names
+    """
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorTextFieldName
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_class = IndicatorTextFilterName
+
+    def get_queryset(self):
+        return models.IndicatorTextField.objects.order_by("name").distinct("name").\
+            filter(organization=self.request.user.organization)
+
+
+class IndicatorNumericFilterName(filters.FilterSet):
+    indicator__in = NumberInFilter(field_name="indicator", lookup_expr="in")
+    start_upload_date = filters.IsoDateTimeFilter(field_name='indicator__articles__upload_date', lookup_expr='gte', )
+    end_upload_date = filters.IsoDateTimeFilter(field_name='indicator__articles__upload_date', lookup_expr='lte', )
+    source = filters.NumberFilter(field_name="indicator__articles__source", lookup_expr="exact", )
+    model = filters.NumberFilter(field_name="indicator__articles__prediction__mlmodel", lookup_expr="exact", )
+
+    class Meta:
+        model = models.IndicatorNumericField
+        fields = ("name",
+                  "indicator__in",
+                  "start_upload_date",
+                  "end_upload_date",
+                  "source",
+                  "model"
+                  )
+
+
+class IndicatorNumericFieldNameViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    readonly view for distinct column names
+    """
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorNumericFieldName
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_class = IndicatorNumericFilterName
+
+    def get_queryset(self):
+        return models.IndicatorNumericField.objects.order_by("name").\
+            distinct("name").filter(organization=self.request.user.organization)
+
+
 class IndicatorTextFieldViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorTextField
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_class = IndicatorTextFilter
 
     def get_queryset(self):
         return models.IndicatorTextField.objects.filter(organization=self.request.user.organization)
@@ -1707,7 +1845,7 @@ class IndicatorNumericFieldViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorNumericField
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
-    filterset_fields = ('id','name')
+    filterset_class = IndicatorNumericFilter
 
     def get_queryset(self):
         return models.IndicatorNumericField.objects.filter(organization=self.request.user.organization)

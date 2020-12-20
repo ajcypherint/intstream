@@ -19,6 +19,7 @@ import forgotPassword, * as fromForgotPassword from "./forgotPassword"
 import trainingScripts, * as fromTrainingScripts from "./trainingScripts"
 import registration, * as fromRegistration from "./registration"
 import indicators, * as fromIndicators from "./indicators"
+import indicatorColumns, * as fromIndicatorColumns from "./indicatorColumns"
 
 export default combineReducers({
   modelVersions:modelVersions,
@@ -40,7 +41,8 @@ export default combineReducers({
   orgs:orgs,
   forgotPassword:forgotPassword,
   registration:registration,
-  indicators:indicators
+  indicators:indicators,
+  indicatorColumns:indicatorColumns
 })
 //fromAuth
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
@@ -167,7 +169,10 @@ export const getRegSaving = state => fromRegistration.saving(state.registration)
 export const getRegMessage = state => fromRegistration.getRegMessage(state.registration)
 
 //fromIndicators
+export const getIPV6= state => fromIndicators.ipv6(state.indicators)
 export const getIPV4= state => fromIndicators.ipv4(state.indicators)
+export const getEMAIL= state => fromIndicators.email(state.indicators)
+export const getNETLOC= state => fromIndicators.netloc(state.indicators)
 export const getMD5 = state => fromIndicators.md5(state.indicators)
 export const getSHA1 = state => fromIndicators.sha1(state.indicators)
 export const getSHA256 = state => fromIndicators.sha256(state.indicators)
@@ -179,6 +184,11 @@ export const getIndicatorTotalCount = state => fromIndicators.totalcount(state.i
 export const getIndicatorNextPage = state => fromIndicators.nextPage(state.indicators)
 export const getIndicatorPreviousPage = state => fromIndicators.previousPage(state.indicators)
 
+//fromIndicatorColumns
+export const getIndicatorColNum = state => fromIndicatorColumns.getNum(state.indicatorColumns)
+export const getIndicatorColNumErrors = state => fromIndicatorColumns.getNumErrors(state.indicatorColumns)
+export const getIndicatorColText = state => fromIndicatorColumns.getText(state.indicatorColumns)
+export const getIndicatorColTextErrors = state => fromIndicatorColumns.getTextErrors(state.indicatorColumns)
 
 export function withAuth(headers={}) {
   return (state) => ({

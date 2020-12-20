@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from polymorphic.models import PolymorphicModel
 from django.contrib.auth.models import AbstractUser
-from django.db.models.constraints import UniqueConstraint
+from django.db.models.constraints import UniqueConstraint, CheckConstraint
 from django.db.models import Q, F,Value
 from semantic_version.django_fields import VersionField
 from django.core import validators
@@ -333,7 +333,7 @@ class Setting(models.Model):
 class Indicator(PolymorphicModel):
     articles = models.ManyToManyField(Article, blank=True)
     organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
-    upload_date = models.DateTimeField(default=timezone.now, db_index=True)
+    ind_type = models.ForeignKey(IndicatorType, on_delete=models.CASCADE, editable=False)
 
 
 class IndicatorMD5(Indicator):
@@ -417,15 +417,17 @@ class IndicatorCustom(Indicator):
 
 
 class IndicatorNumericField(models.Model):
+    # add constraint that indicator.type == IndicatorNumericField.ind_type
+
     value = models.FloatField()
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
     indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
 
 
 class IndicatorTextField(models.Model):
     value = models.TextField()
-    name = models.CharField(max_length=50)
-    organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
+    name = models.CharField(max_length=100)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
 

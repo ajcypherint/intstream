@@ -24,8 +24,6 @@ export function  changesort(column_name,
   // selections: obj { startDate,endDate,sourceChosen}
   // setHomeSelections: func
   //
-  let path = level === 0 ? 'filter' : 'childFilter'
-  let fetch_string = ""
    if (selections.ordering===column_name) {
       // column matches sort column opposite
      let orderdir = selections.orderdir || ''

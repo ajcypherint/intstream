@@ -14,7 +14,7 @@ import {
   NumberParam,
   ArrayParam,
   ObjectParam,
-  DateParam
+  DateParam,
 } from 'use-query-params';
 
 
@@ -30,13 +30,18 @@ const mapStateToProps = (state) => ({
   md5:reducers.getMD5(state),
   sha1:reducers.getSHA1(state),
   sha256:reducers.getSHA256(state),
-  ipv4:reducers.getIPV4(state)
+  ipv4:reducers.getIPV4(state),
+  netloc:reducers.getNETLOC(state),
+  email:reducers.getEMAIL(state),
+  ipv6:reducers.getIPV6(state),
+  numCols:reducers.getIndicatorColNum(state),
+  textCols:reducers.getIndicatorColText(state)
 })
 
 
 const mapDispatchToProps = (dispatch) => ({
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
-  filterChange: (selections, setPage, parent=undefined ) => dispatch(filterIndChange(selections, setPage, parent)),
+  filterChange: (selections, setPage ) => dispatch(filterIndChange(selections, setPage, )),
   fetchIndicatorsFullUri: (url,  params=undefined) => dispatch(getIndicators(url, undefined, params)),
 })
 
@@ -52,7 +57,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     endDate:DateParam,
     next:StringParam,
     previous:StringParam,
-    selectedTabIndex:StringParam
+    selectedTabIndex:StringParam,
+    selectedTabIndexNum:NumberParam,
+    numCols:ArrayParam,
+    textCols:ArrayParam
   },
  
   Main));
