@@ -439,7 +439,7 @@ class ArticleSerializer(DefaultArticleSerializer):
     organization = OrganizationSerializer(read_only=True)
     classification_set = ClassificationSerializer(read_only=True, many=True)
     article_set = ArticleSerializerSet(many=True, read_only=True)
-
+    indicator_set = serializers.PrimaryKeyRelatedField(queryset=models.Indicator.objects.all(), many=True,)
     class Meta:
         fields= [
            'id',
@@ -451,6 +451,7 @@ class ArticleSerializer(DefaultArticleSerializer):
            'article_set',
            'organization',
            'classification_set',
+           "indicator_set"
         ]
         model = models.Article
 

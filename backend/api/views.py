@@ -659,7 +659,8 @@ class HomePage(APIView):
 
         sql_no_cummulate = models.Article.objects.filter(
                                                     **filter_kwargs
-                                                    ).order_by("id").\
+                                                    ).\
+            order_by("id").\
             select_related("source").values("upload_date",
                                              "source__name",
                                             "source__id",
@@ -782,7 +783,10 @@ class HomePage(APIView):
 
         # set sliced data for page
         sliced = list_of_models[start_slice:end_slice]
-
+        # get indicators for each article in sliced
+        for i in sliced:
+            i["indicator_set"] =  models.Indicator.objects.filter(articles__id=i["id"]).\
+                values_list("id", flat=True)
         # replace match in serial.
         response = {
             "count": len(list_of_models),

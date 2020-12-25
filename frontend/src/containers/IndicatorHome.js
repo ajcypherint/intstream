@@ -21,12 +21,14 @@ import {
 const API_SOURCES = '/api/homefilter/'
 const mapStateToProps = (state) => ({
   sourcesList:reducers.getFilterSources(state),
+
   indicatorsList:reducers.getIndicators(state),
   indicatorsLoading:reducers.getIndicatorLoading(state),
   indicatorsErrors:reducers.getIndicatorErrors(state),
   indicatorsTotalCount:reducers.getIndicatorTotalCount(state),
   indicatorsNext:reducers.getIndicatorNextPage(state),
   indicatorsPrevious:reducers.getIndicatorPreviousPage(state),
+
   md5:reducers.getMD5(state),
   sha1:reducers.getSHA1(state),
   sha256:reducers.getSHA256(state),
@@ -34,8 +36,17 @@ const mapStateToProps = (state) => ({
   netloc:reducers.getNETLOC(state),
   email:reducers.getEMAIL(state),
   ipv6:reducers.getIPV6(state),
+
   numCols:reducers.getIndicatorColNum(state),
-  textCols:reducers.getIndicatorColText(state)
+  textCols:reducers.getIndicatorColText(state),
+  indicatorColTextErrors:reducers.getIndicatorColTextErrors(state),
+  indicatorColNumErrors:reducers.getIndicatorColNumErrors(state),
+
+  numColsData:reducers.getIndicatorColNumData(state),
+  textColsData:reducers.getIndicatorColTextData(state),
+  indicatorColTextDataErrors:reducers.getIndicatorColTextDataErrors(state),
+  indicatorColNumDataErrors:reducers.getIndicatorColNumDataErrors(state)
+
 })
 
 

@@ -22,6 +22,9 @@ celery_app.autodiscover_tasks()
 def debug_task(self):
     print('Request: {0!r}'.format(self.request))
 
+#todo(aj) job to remove indicatoripv4 and indicatoripv6 after ttl
+# calculation = upload_date + ttl < today
+
 celery_app.conf.beat_schedule = {
     # assign to single worker with concurrency = 1
     "rss_sources":{

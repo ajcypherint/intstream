@@ -25,6 +25,13 @@ export class Children extends React.Component{
     this.showChildren = this.showChildren.bind(this)
     this.getArticle = this.getArticle.bind(this)
     this.updateComponent = this.updateComponent.bind(this)
+    this.showIndicator = this.showIndicators.bind(this)
+  }
+  showIndicators(event){
+    let {parent,level}= event.target.dataset
+    let {id, title, match} = JSON.parse(parent) //{id,title, match}
+    let level_int = parseInt(level)
+    this.props.history.push("indicators/?article=" + id)
   }
   updateComponent(){
     let START = new Date();
@@ -147,6 +154,7 @@ export class Children extends React.Component{
     const parentObj = level === 1 ? createParent(this.props.query.parent_id,
                                                  this.props.query.parentTitle,
                                                  this.props.query.parentMatch) : undefined
+    //add IOC column for each article, count of all iocs as a link to show indicators page
     return (
       
     <table className={"table table-sm "+cols + " " + offset}>
@@ -197,6 +205,7 @@ export class Children extends React.Component{
            )}}>Date</td>
          {level===0 ? 
              <td >Similar Articles</td> : null}
+             <td >Indicators</td> 
            </tr>
          </thead>
          { !loading ?
@@ -214,6 +223,9 @@ export class Children extends React.Component{
                   <td>
                     <Match level={level} article={article} showChildren={this.showChildren}/>
                   </td>
+                  <td>
+                    <Match level={level} article={article} showChildren={this.showIndicators}/>
+                  </td>
                </tr>
                   {
                      article.id in selectArticles ?
@@ -224,7 +236,7 @@ export class Children extends React.Component{
                                 <span className="sr-only">Loading...</span>
                               </span>
                             </td>: 
-                              <td colSpan="5">
+                              <td colSpan="6">
                                 <Input type="textarea" className="bktextarea" 
                                   name="text" rows="15" id="Article" readOnly 
                                   value={selectArticles[article.id].data.clean_text}/>

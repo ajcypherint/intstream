@@ -5,20 +5,68 @@ import * as indCol from '../actions/indicatorColumns';
 export const initialState ={
   num:[],
   numErrors:{},
-  text:[],
-  textErrors:{}
 
+  numData:[],
+  numDataErrors:{},
+
+  text:[],
+  textErrors:{},
+
+  textData:[],
+  textDataErrors:{}
 }
  
 export default (state=initialState, action) => {
   switch(action.type) {
       //used for edit
-   case indCol.GET_INDNUMCOLS_REQUEST:
+    case indCol.GET_INDNUMCOLS_DATA_REQUEST:
       {
-
       return {
         ...state,
-        errors:{}
+        numDataErrors:{}
+      }
+      }
+    case indCol.GET_INDNUMCOLS_DATA_SUCCESS:
+      {
+      return {
+        ...state,
+        numData:action.payload.results,
+      }
+      }
+    case indCol.GET_INDNUMCOLS_DATA_FAILURE:
+      {
+      return {
+        ...state,
+        numDataErrors: action.payload.response || {'non_field_errors': action.payload.statusText},
+      }
+      }
+    case indCol.GET_INDTEXTCOLS_DATA_REQUEST:
+      {
+      return {
+        ...state,
+        textDataErrors:{}
+      }
+      }
+    case indCol.GET_INDTEXTCOLS_DATA_SUCCESS:
+      {
+      return {
+        ...state,
+        textData:action.payload.results,
+      }
+      }
+    case indCol.GET_INDTEXTCOLS_DATA_FAILURE:
+      {
+      return {
+        ...state,
+        textDataErrors: action.payload.response || {'non_field_errors': action.payload.statusText},
+      }
+      }
+ 
+   case indCol.GET_INDNUMCOLS_REQUEST:
+      {
+      return {
+        ...state,
+        numErrors:{}
       }
       }
     case indCol.GET_INDNUMCOLS_SUCCESS:
@@ -40,7 +88,7 @@ export default (state=initialState, action) => {
 
       return {
         ...state,
-        errors:{}
+        textErrors:{}
       }
       }
     case indCol.GET_INDTEXTCOLS_SUCCESS:
@@ -54,7 +102,7 @@ export default (state=initialState, action) => {
       {
       return {
         ...state,
-        numErrors: action.payload.response || {'non_field_errors': action.payload.statusText},
+        textErrors: action.payload.response || {'non_field_errors': action.payload.statusText},
       }
       }
      default:
@@ -68,14 +116,29 @@ export function getNum(state){
   return state.num
 }
 
-export function getText(state){
-  return state.text
-}
-
 export function getNumErrors(state){
   return state.numErrors
 }
 
+export function getText(state){
+  return state.text
+}
+
 export function getTextErrors(state){
   return state.TextErrors
+}
+
+export function getTextData(state){
+  return state.textData
+}
+
+export function getTextDataErrors(state){
+  return state.TextDataErrors
+}
+export function getNumData(state){
+  return state.textData
+}
+
+export function getNumDataErrors(state){
+  return state.TextDataErrors
 }

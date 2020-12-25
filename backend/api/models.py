@@ -417,7 +417,10 @@ class IndicatorCustom(Indicator):
 
 
 class IndicatorNumericField(models.Model):
-    # add constraint that indicator.type == IndicatorNumericField.ind_type
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['indicator', 'name','organization'], name='unique_numeric_col'),
+            ]
 
     value = models.FloatField()
     name = models.CharField(max_length=100)
@@ -426,6 +429,11 @@ class IndicatorNumericField(models.Model):
 
 
 class IndicatorTextField(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['indicator', 'name','organization'], name='unique_text_col'),
+            ]
+
     value = models.TextField()
     name = models.CharField(max_length=100)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)

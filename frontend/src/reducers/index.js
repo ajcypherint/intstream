@@ -185,10 +185,15 @@ export const getIndicatorNextPage = state => fromIndicators.nextPage(state.indic
 export const getIndicatorPreviousPage = state => fromIndicators.previousPage(state.indicators)
 
 //fromIndicatorColumns
-export const getIndicatorColNum = state => fromIndicatorColumns.getNum(state.indicatorColumns)
-export const getIndicatorColNumErrors = state => fromIndicatorColumns.getNumErrors(state.indicatorColumns)
 export const getIndicatorColText = state => fromIndicatorColumns.getText(state.indicatorColumns)
 export const getIndicatorColTextErrors = state => fromIndicatorColumns.getTextErrors(state.indicatorColumns)
+export const getIndicatorColNum = state => fromIndicatorColumns.getNum(state.indicatorColumns)
+export const getIndicatorColNumErrors = state => fromIndicatorColumns.getNumErrors(state.indicatorColumns)
+export const getIndicatorColNumData = state => fromIndicatorColumns.getNumData(state.indicatorColumns)
+export const getIndicatorColNumDataErrors = state => fromIndicatorColumns.getNumDataErrors(state.indicatorColumns)
+export const getIndicatorColTextData = state => fromIndicatorColumns.getTextData(state.indicatorColumns)
+export const getIndicatorColTextDataErrors = state => fromIndicatorColumns.getTextDataErrors(state.indicatorColumns)
+
 
 export function withAuth(headers={}) {
   return (state) => ({

@@ -187,6 +187,10 @@ export class Main extends React.Component{
 
     const selections = this.props.query
     const errors = this.props.indicatorsErrors || {}
+    const errorsColText = this.props.indicatorColTextaErrors || {}
+    const errorsColTextData = this.props.indicatorColTextDataErrors || {}
+    const errorsColNum = this.props.indicatorColNumErrors || {}
+    const errorsColNumData = this.props.indicatorColNumDataErrors || {}
 
     const uniqueSources = _.uniqBy(this.props.sourcesList,'id')
     const ids = uniqueSources.map(a=>a.id.toString()) ||[]
@@ -199,6 +203,19 @@ export class Main extends React.Component{
     <Form onSubmit={this.onSubmit} >
           {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
           {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+
+          {errorsColText.detail?<Alert color="danger">{errors.detail}</Alert>:""}
+          {errorsColText.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+
+          {errorsColTextData.detail?<Alert color="danger">{errors.detail}</Alert>:""}
+          {errorsColTextData.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+
+          {errorsColNum.detail?<Alert color="danger">{errors.detail}</Alert>:""}
+          {errorsColNum.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+
+          {errorsColNumData.detail?<Alert color="danger">{errors.detail}</Alert>:""}
+          {errorsColNumData.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+ 
        <FormGroup>
        <Row>
         <Col sm="2" md="2" lg="2">
@@ -264,6 +281,8 @@ export class Main extends React.Component{
         changeColChoice={this.changeColChoice}
         numCols={this.props.numCols}
         textCols={this.props.textCols}
+        numColsData={this.props.numColsData}
+        textColsData={this.props.textColsData}
         query={this.props.query}
       />
   </div>
