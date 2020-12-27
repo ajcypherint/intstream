@@ -70,17 +70,17 @@ export class Main extends React.Component{
       ...newSel
     }
     this.props.filterChange(selections, this.props.setQuery)
-    this.props.child_func.clearParent()
+    this.props.clearParent()
   }
   handleStartChange(date){
     let selections = this.props.query
     this.updateDate(date, selections.endDate, true)
-    this.props.child_func.clearParent()
+    this.props.clearParent()
   }
   handleEndChange(date){
     let selections = this.props.query
     this.updateDate(selections.startDate, date, false)
-    this.props.child_func.clearParent()
+    this.props.clearParent()
   }
 
   updateDate(startDate,endDate,start_filter=true){
@@ -139,7 +139,7 @@ export class Main extends React.Component{
     }
     //again here we set selections then fetch
     this.props.filterChange(selections, this.props.setQuery)
-    this.props.child_func.clearParent()
+    this.props.clearParent()
   }
   handleSourceChange(event){
     //again we set selections then fetchArticles
@@ -156,17 +156,17 @@ export class Main extends React.Component{
       ...newSel
     }
     this.props.filterChange(selections, this.props.setQuery)
-    this.props.child_func.clearParent()
+    this.props.clearParent()
   }
   render(){
     let selections = this.props.query
     let threshold = selections.threshold || 0
-    const articles = this.props.parent.articlesList || [];
-    const loading = typeof this.props.parent.articlesLoading === 'undefined' ? true : this.props.parent.articlesLoading;
-    const totalcount= this.props.parent.articlesTotalCount ||0;
-    const next = this.props.parent.articleNext ;
-    const previous = this.props.parent.articlePrevious;
-    const errors = this.props.parent.articlesErrors || {}
+    const articles = this.props.articlesList || [];
+    const loading = typeof this.props.articlesLoading === 'undefined' ? true : this.props.articlesLoading;
+    const totalcount= this.props.articlesTotalCount ||0;
+    const next = this.props.articleNext ;
+    const previous = this.props.articlePrevious;
+    const errors = this.props.articlesErrors || {}
 
     ////////// 
     //todo(aj) should be a method to be used elsewhere
@@ -270,10 +270,8 @@ export class Main extends React.Component{
           query={this.props.query}
 
           filterChange={this.props.filterChange}
-          parent_func={this.props.parent_func}
+
           level={0}
-          child={this.props.child}
-          child_func={this.props.child_func}
           parent_id = {-1}
           show_children={this.showChildren}
 
@@ -282,7 +280,15 @@ export class Main extends React.Component{
           fetchSelect={this.props.fetchSelect}
           clearSelect={this.props.clearSelect}
 
-          parent={this.props.parent}/>
+          clearParent={this.props.clearParent}
+          articlesList={this.props.articlesList}
+          articlesLoading={this.props.articlesLoading}
+          articleNext={this.props.articlesNext}
+          articlePrevious={this.props.articlesPrevious}
+          articlesTotalCount={this.props.articlesTotalCount}
+          articleuri={this.props.articleuri}
+          />
+        
       </div>
 
     )

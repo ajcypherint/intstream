@@ -228,7 +228,7 @@ export const filterChange = (selections,  setQuery, parent)=>{
     let test = articleStr 
     //todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
     if (parent){
-      return await dispatch(getChildArticles(parent, API_ARTICLES, articleStr))
+      return await dispatch(getArticles(API_ARTICLES, articleStr, parent.id))
     } else {
       return await dispatch(getArticles(API_HOME_ARTICLES, articleStr))
     }

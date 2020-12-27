@@ -118,7 +118,7 @@ export class Children extends React.Component{
         orderDir:""
       }
     }
-    this.props.child_func.clearParent()
+    //this.props.clearParent()
     this.props.filterChange(selections, this.props.setQuery, parentobj)
     
   }
@@ -136,12 +136,12 @@ export class Children extends React.Component{
     const level = this.props.level || 0
     
     let selections = this.props.query
-    const articles = this.props.parent.articlesList || [];
-    const loading = typeof this.props.parent.articlesLoading === 'undefined' ? true : this.props.parent.articlesLoading;
-    const totalcount= this.props.parent.articlesTotalCount ||0;
-    const next = this.props.parent.articleNext ;
-    const previous = this.props.parent.articlePrevious;
-    const errors = this.props.parent.articlesErrors || {}
+    const articles = this.props.articlesList ;
+    const loading = this.props.articlesLoading;
+    const totalcount= this.props.articlesTotalCount ||0;
+    const next = this.props.articleNext ;
+    const previous = this.props.articlePrevious;
+    const errors = this.props.articlesErrors || {}
     let child = this.props.child || {}
     const col_num = level===0 ? 8 : 11
     const cols = "col-sm-"+ col_num
@@ -165,7 +165,7 @@ export class Children extends React.Component{
            next,
            previous,
            page_fetch,
-           this.props.parent_func.fetchArticlesFullUri,
+           this.props.fetchArticlesFullUri,
            selections,
            this.props.setQuery,
            level===1)}
@@ -211,8 +211,8 @@ export class Children extends React.Component{
          { !loading ?
              articles.map((article)=>{
                return (
-                <tbody key={article.id}>
-                <tr key={article.id}>
+                <tbody key={level+article.id}>
+                <tr key={level+article.id}>
                  <td className="hover" data-id={article.id} onClick={this.getArticle}>
                     {article.title}
                       </td>
@@ -246,15 +246,14 @@ export class Children extends React.Component{
                        : null
                    }
 
-                   { level === 0 && article.id === parent_id?
+                   { 
+                     article.hasOwnProperty('children')?
                       <tr>
                         <td colSpan="4">
                           <Children 
                             setQuery={this.props.setQuery}
                             query={this.props.query}
 
-                             parent={this.props.child}
-                             parent_func={this.props.child_func}
                              parent_obj={createParent(article.id,article.title,article.match)}
                              parent_title={article.title}
                              start_date={selections.startDate}
@@ -265,6 +264,13 @@ export class Children extends React.Component{
                              fetchSelect={this.props.fetchSelect}
                              clearSelect={this.props.clearSelect}
                              filterChange={this.props.filterChange}
+
+                            articlesList={article.children.articlesList}
+                            articlesLoading={article.children.articlesLoading}
+                            articleNext={article.children.articlesNext}
+                            articlePrevious={article.children.articlesPrevious}
+                            articlesTotalCount={article.children.articlesTotalCount}
+                            articleuri={article.children.articleuri}
                              level={level+1}
                            />
                          </td>
@@ -276,11 +282,12 @@ export class Children extends React.Component{
                 </tbody>
                  )
              })
-             :<tbody><tr><td><span className="spinner-border" role="status">
+             : 
+             <tbody><tr><td><span className="spinner-border" role="status">
                <span className="sr-only">Loading...</span></span>
-           </td>
-           </tr>
-         </tbody>
+               </td>
+               </tr>
+             </tbody>
              }
        </table>
      </td>
@@ -292,43 +299,28 @@ export class Children extends React.Component{
 }
 Children.propTypes = {
   setQuery:PropTypes.func,
-  query:PropTypes.object,
   filterChange:PropTypes.func,
-  parent_func:PropTypes.shape({
-    fetchArticlesFullUri: PropTypes.func,
-    fetchArticles:PropTypes.func,
-    setHomeSelections:PropTypes.func,
-    setPage:PropTypes.func,
-  }),
-  level:PropTypes.number,
-  child:PropTypes.shape({
-    articlesList:PropTypes.arrayOf(PropTypes.object),
-    articlesLoading:PropTypes.boolean,
-    articleNext:PropTypes.string,
-    articlePrevious:PropTypes.string,
-    articlesTotalCount:PropTypes.number,
-    articleuri:PropTypes.string,
-  }),
-  child_func:PropTypes.shape({
-    fetchArticlesFullUri:PropTypes.func,
-    fetchArticles:PropTypes.func, 
-    setHomeSelections:PropTypes.func,
-    setPage:PropTypes.func,
-    clearParent:PropTypes.func
-  }),
-  parent_id : PropTypes.number,
+
+  fetchArticlesFullUri: PropTypes.func,
+  fetchArticles:PropTypes.func,
+  setHomeSelections:PropTypes.func,
+  setPage:PropTypes.func,
+  clearParent:PropTypes.func,
   show_children:PropTypes.func,
-  selectArticles:PropTypes.object,
-  selectErrors:PropTypes.object,
+
   fetchSelect:PropTypes.func,
   clearSelect:propTypes.func,
-  parent:PropTypes.shape({
-    articlesList:PropTypes.arrayOf(PropTypes.object),
-    articlesLoading:PropTypes.boolean,
-    articleNext:PropTypes.string,
-    articlePrevious:PropTypes.string,
-    articlesTotalCount:PropTypes.number,
-    articleuri:PropTypes.string,
-  }),
+
+  query:PropTypes.object,
+  level:PropTypes.number,
+  parent_id : PropTypes.number,
+  selectArticles:PropTypes.object,
+  selectErrors:PropTypes.object,
+
+  articlesList:PropTypes.arrayOf(PropTypes.object),
+  articleNext:PropTypes.string,
+  articlePrevious:PropTypes.string,
+  articlesTotalCount:PropTypes.number,
+  articleuri:PropTypes.string,
 
 }

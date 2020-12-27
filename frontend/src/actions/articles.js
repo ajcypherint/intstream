@@ -23,7 +23,7 @@ export const clearArticles= (data)=>{
   }
 }
 
-export const getArticles= (url, params=undefined)=>{
+export const getArticles= (url, params=undefined, parent=undefined)=>{
   // filters - list[string]
   url = setParams(url,params)
   return {
@@ -34,8 +34,11 @@ export const getArticles= (url, params=undefined)=>{
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
-         GET_ARTICLES_REQUEST, GET_ARTICLES_SUCCESS, GET_ARTICLES_FAILURE
+        {type:GET_ARTICLES_REQUEST , meta:{parent:parent}},
+        {type:GET_ARTICLES_SUCCESS, meta:{parent:parent}},
+        {type:GET_ARTICLES_FAILURE, meta:{parent:parent}}
         ]
+
 
   }
 }
