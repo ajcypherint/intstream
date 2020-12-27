@@ -25,7 +25,7 @@ export class Children extends React.Component{
     this.showChildren = this.showChildren.bind(this)
     this.getArticle = this.getArticle.bind(this)
     this.updateComponent = this.updateComponent.bind(this)
-    this.showIndicator = this.showIndicators.bind(this)
+    this.showIndicators = this.showIndicators.bind(this)
   }
   showIndicators(event){
     let {parent,level}= event.target.dataset
@@ -53,7 +53,6 @@ export class Children extends React.Component{
     let next = this.props.query.next || ''
     let previous = this.props.query.previous || ''
     let parent_id = this.props.query.parent_id || ''
-    let parentTitle = this.props.query.parentTitle || ''
     let parentMatch = this.props.query.parentMatch || []
     let child = this.props.query.child || {}
     let childPage = child.page || 1
@@ -78,7 +77,6 @@ export class Children extends React.Component{
       next:next,
       previous:previous,
       parent_id:parent_id,
-      parentTitle:parentTitle,
       parentMatch:parentMatch,
       child:childNew
     }
@@ -110,7 +108,6 @@ export class Children extends React.Component{
     let selections = {
       ...this.props.query,
       parent_id:parentobj.id,
-      parentTitle:parentobj.title,
       parentMatch:parentobj.match,
       child:{
         page:1,
@@ -118,7 +115,7 @@ export class Children extends React.Component{
         orderDir:""
       }
     }
-    //this.props.clearParent()
+    this.props.clearParent()
     this.props.filterChange(selections, this.props.setQuery, parentobj)
     
   }
@@ -152,7 +149,6 @@ export class Children extends React.Component{
     const i = 1
     const selectArticles = this.props.selectArticles || {}
     const parentObj = level === 1 ? createParent(this.props.query.parent_id,
-                                                 this.props.query.parentTitle,
                                                  this.props.query.parentMatch) : undefined
     //add IOC column for each article, count of all iocs as a link to show indicators page
     return (
@@ -254,11 +250,7 @@ export class Children extends React.Component{
                             setQuery={this.props.setQuery}
                             query={this.props.query}
 
-                             parent_obj={createParent(article.id,article.title,article.match)}
-                             parent_title={article.title}
-                             start_date={selections.startDate}
-                             end_date={selections.endDate}
-                             source_chosen={selections.sourceChosen}
+                             parent_obj={createParent(article.id,article.match)}
                              selectArticles={this.props.selectArticles}
                              selectErrors={this.props.selectErrors}
                              fetchSelect={this.props.fetchSelect}
@@ -266,12 +258,13 @@ export class Children extends React.Component{
                              filterChange={this.props.filterChange}
 
                             articlesList={article.children.articles}
-                            articlesLoading={article.children.articlesLoading}
-                            articleNext={article.children.articlesNext}
-                            articlePrevious={article.children.articlesPrevious}
-                            articlesTotalCount={article.children.articlesTotalCount}
-                            articleuri={article.children.articleuri}
-                             level={level+1}
+                            articlesLoading={article.children.loading}
+                            articleNext={article.children.nextpage}
+                            articlePrevious={article.children.previouspage}
+                            articlesTotalCount={article.children.totalcount}
+                            fetchArticlesFullUri={this.props.fetchArticlesFullUri}
+                            level={level+1}
+                            history={this.props.history}
                            />
                          </td>
                       </tr>
@@ -319,6 +312,6 @@ Children.propTypes = {
   articleNext:PropTypes.string,
   articlePrevious:PropTypes.string,
   articlesTotalCount:PropTypes.number,
-  articleuri:PropTypes.string,
+  history:PropTypes.object,
 
 }

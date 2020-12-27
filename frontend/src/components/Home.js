@@ -28,7 +28,6 @@ export class Main extends React.Component{
     let newSel = {
       parent_id:'',
       parentMatch:[],
-      parentTitle:'',
       child:{},
       maxDf:event.target.value,
       page:1
@@ -44,7 +43,6 @@ export class Main extends React.Component{
     let newSel  = {
       parent_id:'',
       parentMatch:[],
-      parentTitle:'',
       child:{},
       minDf:event.target.value,
       page:1
@@ -60,7 +58,6 @@ export class Main extends React.Component{
     let newSel = {
       parent_id:'',
       parentMatch:[],
-      parentTitle:'',
       child:{},
       page:1,
       threshold:event.target.value
@@ -112,7 +109,6 @@ export class Main extends React.Component{
     let newSel = {
       parent_id:'',
       parentMatch:[],
-      parentTitle:'',
       child:{},
       page:1,
       startDate:startDate,
@@ -128,7 +124,6 @@ export class Main extends React.Component{
     let newSel = {
       parent_id:'',
       parentMatch:[],
-      parentTitle:'',
       child:{},
       modelChosen:event.target.value,
       page:1
@@ -146,7 +141,6 @@ export class Main extends React.Component{
     let newSel = {
       parent_id:'',
       parentMatch:[],
-      parentTitle:'',
       child:{},
       sourceChosen:event.target.value,
       page:1
@@ -283,10 +277,12 @@ export class Main extends React.Component{
           clearParent={this.props.clearParent}
           articlesList={this.props.articlesList}
           articlesLoading={this.props.articlesLoading}
-          articleNext={this.props.articlesNext}
-          articlePrevious={this.props.articlesPrevious}
+          articleNext={this.props.articleNext}
+          articlePrevious={this.props.articlePrevious}
           articlesTotalCount={this.props.articlesTotalCount}
           articleuri={this.props.articleuri}
+          fetchArticlesFullUri={this.props.fetchArticlesFullUri}
+          history={this.props.history}
           />
         
       </div>

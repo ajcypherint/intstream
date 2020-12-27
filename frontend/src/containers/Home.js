@@ -66,7 +66,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     next:StringParam,
     previous:StringParam,
     parent_id:NumberParam,
-    parentTitle:StringParam,
     parentMatch:DelimitedNumericArrayParam,
     child:ObjectParam,
   },

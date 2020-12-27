@@ -18,7 +18,7 @@ export default ({level,article,showChildren}) => {
         <div>
         { match.length > 0  ?
           <font className="hover" 
-              data-parent={JSON.stringify(createParent(id,title,match))} 
+              data-parent={JSON.stringify(createParent(id,match))} 
               data-level={level}
               onClick={showChildren}>{match.length}</font>:
 

@@ -34,7 +34,7 @@ export const getArticles= (url, params=undefined, parent=undefined)=>{
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
-        {type:GET_ARTICLES_REQUEST , meta:{parent:parent}},
+        {type:GET_ARTICLES_REQUEST, meta:{parent:parent}},
         {type:GET_ARTICLES_SUCCESS, meta:{parent:parent}},
         {type:GET_ARTICLES_FAILURE, meta:{parent:parent}}
         ]
