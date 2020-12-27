@@ -247,7 +247,7 @@ export class Children extends React.Component{
                    }
 
                    { 
-                     article.hasOwnProperty('children')?
+                     article.hasOwnProperty('children') &&
                       <tr>
                         <td colSpan="4">
                           <Children 
@@ -265,7 +265,7 @@ export class Children extends React.Component{
                              clearSelect={this.props.clearSelect}
                              filterChange={this.props.filterChange}
 
-                            articlesList={article.children.articlesList}
+                            articlesList={article.children.articles}
                             articlesLoading={article.children.articlesLoading}
                             articleNext={article.children.articlesNext}
                             articlePrevious={article.children.articlesPrevious}
@@ -275,8 +275,6 @@ export class Children extends React.Component{
                            />
                          </td>
                       </tr>
-                             :
-                             null
                    }                    
  
                 </tbody>

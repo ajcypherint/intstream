@@ -88,6 +88,7 @@ export default (state=initialState, action) => {
     case articlesData.GET_ARTICLES_REQUEST:
       {
         let entry = {
+          articles:[],
           loading:true,
           errors:{}
         }
