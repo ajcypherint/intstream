@@ -71,9 +71,9 @@ router.register("indicatoripv4", views.IndicatorIPV4ViewSet, basename="indicator
 router.register("indicatoripv6", views.IndicatorIPV6ViewSet, basename="indicatoripv6")
 router.register("indicatorsuffix", views.SuffixViewSet, basename="suffix")
 
-router.register("indicatornumericfield", views.IndicatorNumericFieldViewSet, basename="indicatornumericfield")
 router.register("indicatortextfield", views.IndicatorTextFieldViewSet, basename="indicatortextfield")
 router.register("indicatortextfieldname", views.IndicatorTextFieldNameViewSet, basename="indicatortextfieldname")
+router.register("indicatornumericfield", views.IndicatorNumericFieldViewSet, basename="indicatornumericfield")
 router.register("indicatornumericfieldname", views.IndicatorNumericFieldNameViewSet, basename="indicatornumericfieldname")
 
 SETTINGS = "setting"

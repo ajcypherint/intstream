@@ -23,10 +23,14 @@ export default function  (totalcount,
   // selections: object
   // setSelections: func
   //
+  if (child && typeof allSelections.child === "undefined"){
+    //if no child selections then it is a page clear
+    return
+  }
   let total_pages = Math.ceil(totalcount / PAGINATION)
   let pre_list_pages = [...Array(total_pages).keys()]
   let list_pages = pre_list_pages.map((i)=>{ return i+1})
-  let selections = child ? allSelections.child : allSelections
+  let selections = child  ? allSelections.child : allSelections
   if (typeof(fetchit) === 'undefined'){
     return <div> Loading</div>
   }

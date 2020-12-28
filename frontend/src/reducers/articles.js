@@ -41,7 +41,10 @@ function setArticle(stateEntry, state, parent=undefined){
             }
 
   }
-  return stateEntry
+  return {
+    ...state,
+    ...stateEntry
+    }
 }
 export default (state=initialState, action) => {
   switch(action.type) {
