@@ -31,7 +31,7 @@ export class Children extends React.Component{
     let {parent,level}= event.target.dataset
     let {id, title, match} = JSON.parse(parent) //{id,title, match}
     let level_int = parseInt(level)
-    this.props.history.push("indicators/?article=" + id)
+    this.props.history.push("indicatorhome/?article=" + id)
   }
   updateComponent(){
     let START = new Date();
@@ -220,7 +220,7 @@ export class Children extends React.Component{
                     <Match level={level} article={article} showChildren={this.showChildren}/>
                   </td>
                   <td>
-                    <Match level={level} article={article} showChildren={this.showIndicators}/>
+                    <Match level={level} article={article} showChildren={this.showIndicators} field="indicator_set"/>
                   </td>
                </tr>
                   {

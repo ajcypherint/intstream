@@ -22,6 +22,10 @@ const API_SOURCES = '/api/homefilter/'
 const mapStateToProps = (state) => ({
   sourcesList:reducers.getFilterSources(state),
 
+  articlesList:reducers.getArticles(state),
+  articlesLoading:reducers.getArticleLoading(state),
+  articlesErrors:reducers.getArticleErrors(state),
+ 
   indicatorsList:reducers.getIndicators(state),
   indicatorsLoading:reducers.getIndicatorLoading(state),
   indicatorsErrors:reducers.getIndicatorErrors(state),
@@ -59,6 +63,7 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(mapStateToProps, mapDispatchToProps)(
  withQueryParams( 
   {
+    article: StringParam,
     ordering: StringParam,
     page: NumberParam,
     orderdir:StringParam,

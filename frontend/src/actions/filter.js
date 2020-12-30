@@ -88,47 +88,62 @@ function intersect(selectedCols, allColsObjs){
     cols = _.intersection(cols, ColsList)
     return cols 
 }
+
 export const filterIndChange = (selections, 
   setQuery, 
   )=>{
   return async (dispatch, getState)=>{
-
+    let indicatorStr 
     let modelChosen = selections.modelChosen || ''
     let sourceChosen = selections.sourceChosen || ''
     let orderdir = selections.orderdir || ''
-
+    let article = selections.article || ''
     selections.startDate.setHours(0,0,0,0);
     selections.endDate.setHours(23,59,59,999);
     selections = {
-      ...selections,
-      modelChosen:modelChosen,
-      sourceChosen:sourceChosen,
-      orderdir:orderdir,
-    }
-    // set query string
+        ...selections,
+        modelChosen:modelChosen,
+        sourceChosen:sourceChosen,
+        orderdir:orderdir,
+      }
+   
     setQuery(selections)
-    let predictionStr = modelChosen !=="" ? 
-      "&prediction__mlmodel="+modelChosen+ "&prediction__target=true" :
-      ""
-
-    let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
-      "&end_upload_date="+selections.endDate.toISOString()+
-      "&source="+sourceChosen+
-      "&source__active=true" + predictionStr
  
-    //fetch sources and models; * not just sources but all filters not inc dates *
-    // could ignore this for child
-    let resp = await dispatch(getAllSources(API_FILTER, sourceStr))
-    if (resp.error) {
+   // set query string
+    // if article view then just search by article
+    if (article !== ""){
+      let articleStr = "id="+article
+      let resp_article = await dispatch(getArticles(API_ARTICLES, articleStr))
+      if (resp_article.error){
         return
+      }
+      indicatorStr = "ordering=" + orderdir + selections.ordering +
+        "&orderdir="+ orderdir + 
+        "&article=" + selections.article
+    } else {
+      let predictionStr = modelChosen !=="" ? 
+        "&prediction__mlmodel="+modelChosen+ "&prediction__target=true" :
+        ""
+
+      let sourceStr = "start_upload_date="+selections.startDate.toISOString()+
+        "&end_upload_date="+selections.endDate.toISOString()+
+        "&source="+sourceChosen+
+        "&source__active=true" + predictionStr
+   
+      //fetch sources and models; * not just sources but all filters not inc dates *
+      // could ignore this for child
+      let resp = await dispatch(getAllSources(API_FILTER, sourceStr))
+      if (resp.error) {
+          return
+      }
+      indicatorStr = "ordering=" + orderdir + selections.ordering +
+        "&orderdir="+ orderdir + 
+        "&source=" + sourceChosen +
+        "&start_upload_date=" + selections.startDate.toISOString() +
+        "&end_upload_date=" + selections.endDate.toISOString() +
+        "&source__active=true" + predictionStr
+
     }
-		let ind_type = MAP_IND[selections.selectedTabIndex]
-    let indicatorStr = "ordering=" + orderdir + selections.ordering +
-      "&orderdir="+ orderdir + 
-      "&source=" + sourceChosen +
-      "&start_upload_date=" + selections.startDate.toISOString() +
-      "&end_upload_date=" + selections.endDate.toISOString() +
-      "&source__active=true" + predictionStr
     let indicatorStrPage = indicatorStr + "&page=" + selections.page 
     // get counts for each indicator tab
     let all_resp = await Promise.all([
@@ -156,10 +171,17 @@ export const filterIndChange = (selections,
       ids.push(indicators[i].id)
     }
     // get columns available to choose from
-    let param_cols = "start_upload_date=" + selections.startDate.toISOString() +
+    let ind_type = MAP_IND[selections.selectedTabIndex]
+    let param_cols
+    if (typeof selections.article !== "undefined"){
+      param_cols = "article=" + selections.article + "&ind_type=" + ind_type
+    } else {
+      param_cols = "start_upload_date=" + selections.startDate.toISOString() +
       "&end_upload_date=" + selections.endDate.toISOString() +
       "&ind_type=" + ind_type + 
       "&source=" + sourceChosen + "&model=" + modelChosen
+    }
+
     let resp_num = await dispatch(getColNumericName(param_cols))
     if (resp_num.error){
       return

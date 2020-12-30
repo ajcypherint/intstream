@@ -1360,7 +1360,7 @@ class IndicatorMD5Filter(filters.FilterSet):
 
     class Meta:
         model = models.IndicatorMD5
-        fields = ('id', 'value', "value__in")
+        fields = ('id', 'value',  "articles", "value__in")
 
 
 class IndicatorSha1Filter(filters.FilterSet):
@@ -1372,7 +1372,7 @@ class IndicatorSha1Filter(filters.FilterSet):
 
     class Meta:
         model = models.IndicatorSha1
-        fields = ('id', 'value', "value__in")
+        fields = ('id', 'value', "articles", "value__in")
 
 
 class IndicatorSha256Filter(filters.FilterSet):
@@ -1384,7 +1384,7 @@ class IndicatorSha256Filter(filters.FilterSet):
 
     class Meta:
         model = models.IndicatorSha256
-        fields = ('id', 'value', "value__in")
+        fields = ('id', 'value',  "articles", "value__in")
 
 
 class IndicatorIPV4Filter(filters.FilterSet):
@@ -1393,10 +1393,11 @@ class IndicatorIPV4Filter(filters.FilterSet):
     end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
     source = filters.NumberFilter(field_name="articles__source", distinct=True)
     prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
+    article = filters.NumberFilter(field_name="articles__id", lookup_expr="exact")
 
     class Meta:
         model = models.IndicatorIPV4
-        fields = ('id', 'value', "value__in")
+        fields = ('id', 'value',  "article", "value__in")
 
 
 class IndicatorEmailFilter(filters.FilterSet):
@@ -1408,7 +1409,7 @@ class IndicatorEmailFilter(filters.FilterSet):
 
     class Meta:
         model = models.IndicatorEmail
-        fields = ('id', 'value', 'value__in')
+        fields = ('id', 'value',  "articles", 'value__in')
 
 
 class IndicatorIPV6Filter(filters.FilterSet):
@@ -1420,7 +1421,7 @@ class IndicatorIPV6Filter(filters.FilterSet):
 
     class Meta:
         model = models.IndicatorIPV6
-        fields = ('id', 'value', 'value__in')
+        fields = ('id', 'value',  "articles", 'value__in')
 
 
 class SuffixFilter(filters.FilterSet):

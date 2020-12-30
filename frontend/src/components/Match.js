@@ -1,10 +1,10 @@
 import React from 'react'
 import {createParent} from "../reducers/children"
 
-export default ({level,article,showChildren}) => {
+export default ({level,article,showChildren, field="match"}) => {
   //level: int
   //article: {title:str,id:int,match:list}
-  let match = article.match || [] //home page is the only page with match
+  let match = article[field]|| [] //home page is the only page with match
   let id = article.id
   let title = article.title
   if (level > 0){

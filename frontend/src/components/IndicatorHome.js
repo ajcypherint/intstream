@@ -5,6 +5,7 @@ import propTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import '../custom.css';
+import {Button} from 'reactstrap';
 import { getOpts, dateString } from '../util/util'
 import Choice from "./Choice"
 import {getUniqueModels, getIdsModels} from "../util/util"
@@ -84,12 +85,13 @@ export class Main extends React.Component{
     this.props.filterChange(selections,this.props.setQuery )
   }
   updateComponent(){
+      
     let START = new Date();
     START.setHours(0,0,0,0);
 
     let END= new Date();
     END.setHours(23,59,59,999);
-
+    let article = this.props.query.article || ""
     let ordering = this.props.query.ordering || "value"
     let page = this.props.query.page || 1
     let orderdir = this.props.query.orderdir || ""
@@ -109,6 +111,7 @@ export class Main extends React.Component{
     let numColsList = []
 
     let selections = {
+      article:article,
       ordering:ordering, 
       page:page, 
       orderdir:orderdir,
@@ -122,8 +125,8 @@ export class Main extends React.Component{
       selectedTabIndexNum:selectedTabIndexNum,
       numCols:numCols,
       textCols:textCols
-    }
-    this.props.filterChange(selections, this.props.setQuery )
+     }
+     this.props.filterChange(selections, this.props.setQuery )
  
   }
   componentDidMount() {
@@ -197,10 +200,18 @@ export class Main extends React.Component{
 
     let uniqueModels = getUniqueModels(this.props.sourcesList)
     let idsModels = getIdsModels(uniqueModels)
+    let articleErrors = this.props.articlesErrors || {}
+    let articles = this.props.articlesList || []
+    let articlesLen = articles.length
  
     return(
     <div className="container mt-2 col-sm-12" >
+
+    <Button onClick={this.props.history.goBack} className="button-brand-primary sb-1" size="sm">Back</Button>
     <Form onSubmit={this.onSubmit} >
+          {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
+          {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+ 
           {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
           {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
 
@@ -215,7 +226,7 @@ export class Main extends React.Component{
 
           {errorsColNumData.detail?<Alert color="danger">{errors.detail}</Alert>:""}
           {errorsColNumData.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
- 
+  { !this.props.query.article ?
        <FormGroup>
        <Row>
         <Col sm="2" md="2" lg="2">
@@ -256,7 +267,13 @@ export class Main extends React.Component{
         </div>
         </Col>
      </Row>
-  </FormGroup>
+   </FormGroup> :
+      <div>
+        <h3>Source: {articlesLen > 0 && articles[0].source.name}</h3> 
+        <h4>Title: {articlesLen > 0 && articles[0].title}</h4>
+    </div>
+
+  }
   </Form>
       <Indicators
         fetchit={this.fetch}
