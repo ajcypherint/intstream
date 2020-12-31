@@ -1357,10 +1357,11 @@ class IndicatorMD5Filter(filters.FilterSet):
     end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
     source = filters.NumberFilter(field_name="articles__source", distinct=True)
     prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
+    article = filters.NumberFilter(field_name="articles__id", lookup_expr="exact")
 
     class Meta:
         model = models.IndicatorMD5
-        fields = ('id', 'value',  "articles", "value__in")
+        fields = ('id', 'value',  "article", "value__in")
 
 
 class IndicatorSha1Filter(filters.FilterSet):
@@ -1369,10 +1370,11 @@ class IndicatorSha1Filter(filters.FilterSet):
     end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
     source = filters.NumberFilter(field_name="articles__source", distinct=True)
     prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
+    article = filters.NumberFilter(field_name="articles__id", lookup_expr="exact")
 
     class Meta:
         model = models.IndicatorSha1
-        fields = ('id', 'value', "articles", "value__in")
+        fields = ('id', 'value', "article", "value__in")
 
 
 class IndicatorSha256Filter(filters.FilterSet):
@@ -1381,10 +1383,11 @@ class IndicatorSha256Filter(filters.FilterSet):
     end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
     source = filters.NumberFilter(field_name="articles__source", distinct=True)
     prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
+    article = filters.NumberFilter(field_name="articles__id", lookup_expr="exact")
 
     class Meta:
         model = models.IndicatorSha256
-        fields = ('id', 'value',  "articles", "value__in")
+        fields = ('id', 'value',  "article", "value__in")
 
 
 class IndicatorIPV4Filter(filters.FilterSet):
@@ -1406,10 +1409,11 @@ class IndicatorEmailFilter(filters.FilterSet):
     end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
     source = filters.NumberFilter(field_name="articles__source", distinct=True)
     prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
+    article = filters.NumberFilter(field_name="articles__id", lookup_expr="exact")
 
     class Meta:
         model = models.IndicatorEmail
-        fields = ('id', 'value',  "articles", 'value__in')
+        fields = ('id', 'value',  "article", 'value__in')
 
 
 class IndicatorIPV6Filter(filters.FilterSet):
@@ -1418,10 +1422,11 @@ class IndicatorIPV6Filter(filters.FilterSet):
     end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
     source = filters.NumberFilter(field_name="articles__source", distinct=True)
     prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
+    article = filters.NumberFilter(field_name="articles__id", lookup_expr="exact")
 
     class Meta:
         model = models.IndicatorIPV6
-        fields = ('id', 'value',  "articles", 'value__in')
+        fields = ('id', 'value',  "article", 'value__in')
 
 
 class SuffixFilter(filters.FilterSet):
@@ -1499,10 +1504,19 @@ class NetLocFilter(filters.FilterSet):
     domain__in = CharInFilter(field_name="domain",lookup_expr="in")
     subdomain__in = CharInFilter(field_name="subdomain",lookup_expr="in")
     suffix__in = CharInFilter(field_name="suffix__value",lookup_expr="in")
+
+    article = filters.NumberFilter(field_name="articles__id", lookup_expr="exact")
     class Meta:
         model = models.IndicatorNetLoc
-        fields = ('id', 'domain', 'subdomain', 'suffix__value', 'suffix',
-                  "domain__in", "subdomain__in", "suffix__in")
+        fields = ('id',
+                  'article',
+                  'domain',
+                  'subdomain',
+                  'suffix__value',
+                  'suffix',
+                  "domain__in",
+                  "subdomain__in",
+                  "suffix__in")
 
 
 
