@@ -36,22 +36,23 @@ def setup_periodic_tasks(sender, **kwargs):
     # Calls test('hello') every 10 seconds.
     for i in ids:
         # test
-        sender.add_periodic_task(crontab(hour="*", minute="*/1"),
-                                 tasks.process_rss_sources.s(organization_id=i),
-                                 name='add every 1 process rss')
-        # prod
-        #sender.add_periodic_task(crontab(hour="*/1", minute="2"),
+        #sender.add_periodic_task(crontab(hour="*", minute="*/1"),
         #                         tasks.process_rss_sources.s(organization_id=i),
-        #                         name='every hour process rss')
+        #                         name='add every 1 process rss: ' + str(i))
+        # prod
+        sender.add_periodic_task(crontab(hour="*/1", minute="2"),
+                                 tasks.process_rss_sources.s(organization_id=i),
+                                 name='every hour process rss')
 
     for i in ids:
         sender.add_periodic_task(crontab(hour="1", minute="30"),
                                  tasks.remove_old_articles.s(organization_id=i),
-                                 name='clean history freemium')
+                                 name='clean history freemium:' + str(i))
 
-    for i in ids:
-        sender.add_periodic_task(crontab(day_of_week="0", hour="1", minute="30"),
-                                 tasks.update_suffixes.s(organization_id=i),
+    # no reason to run this task for each org.  it is the suffix list.  just use the first org;
+    # which will be the admin
+    sender.add_periodic_task(crontab(day_of_week="0", hour="1", minute="30"),
+                                 tasks.update_suffixes.s(organization_id=ids[0]),
                                  name='update tld')
 
 #celery_app.conf.beat_schedule = {

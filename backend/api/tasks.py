@@ -517,16 +517,17 @@ def model_dir(id):
 
 @shared_task()
 def process_rss_sources(organization_id):
-    _process_rss_sources()
+    _process_rss_sources(organization_id)
 
 
-def _process_rss_sources():
+def _process_rss_sources(organization_id):
 #todo unit test
    #generate
     # 1. model_version dir
     # 2. script dir
     # 3. venv dir
     active_model_versions = models.ModelVersion.objects.filter(model__active=True,
+                                                               organization_id=organization_id,
                                                                active=True)
     for version in active_model_versions:
         model_directory = model_dir(version.id)
@@ -539,10 +540,10 @@ def _process_rss_sources():
                 if os.path.exists(model_directory):
                     shutil.rmtree(model_directory)
                 raise e
-    script_versions = models.TrainingScriptVersion.objects.all()
+    script_versions = models.TrainingScriptVersion.objects.filter(organization_id=organization_id)
     for v in script_versions:
         create_dirs(v)
-    sources = models.RSSSource.objects.filter(active=True).all()
+    sources = models.RSSSource.objects.filter(active=True).filter(organization_id=organization_id)
     for source in sources:
         logger.info("source:" + source.name)
         process_rss_source.delay(
@@ -821,23 +822,27 @@ def _now(tz):
     return datetime.datetime.now(tz=tz)
 
 
-def _remove_old_articles():
+def _remove_old_articles(organization_id):
     startdate = _now(tz=datetime.timezone.utc)
     monthprior = startdate - datetime.timedelta(days=30)
     # delete articles not used for classifications for freemium accounts older than 1 month
     old_articles = models.RSSArticle.objects.filter(organization__freemium=True,
+                                                    organization_id=organization_id,
                                                  upload_date__lt=monthprior,
                                                  classification__isnull=True)
     old_articles.delete()
     old_articles = models.TxtArticle.objects.filter(organization__freemium=True,
+                                                    organization_id=organization_id,
                                                  upload_date__lt=monthprior,
                                                  classification__isnull=True)
     old_articles.delete()
     old_articles = models.HtmlArticle.objects.filter(organization__freemium=True,
+                                                     organization_id=organization_id,
                                                  upload_date__lt=monthprior,
                                                  classification__isnull=True)
     old_articles.delete()
     old_articles = models.PDFArticle.objects.filter(organization__freemium=True,
+                                                    organization_id=organization_id,
                                                  upload_date__lt=monthprior,
                                                  classification__isnull=True)
     old_articles.delete()
@@ -845,7 +850,7 @@ def _remove_old_articles():
 
 @shared_task(bind=True)
 def remove_old_articles(self, organization_id=None):
-    _remove_old_articles()
+    _remove_old_articles(organization_id)
 
 #todo refactor into one method for task and another for function to allow unit testing of function
 @shared_task(bind=True)
