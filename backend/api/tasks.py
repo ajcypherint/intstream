@@ -33,7 +33,7 @@ from shutil import copyfile
 import virtualenv
 import json
 import tarfile
-from utils.train import TrainResult
+from utils import train
 from celery.app.log import TaskFormatter
 from celery.signals import task_prerun, task_postrun
 import logging
@@ -101,7 +101,7 @@ class Create(Venv):
 class Pip(Venv):
     pass
 
-@shared_task
+@shared_task()
 def add(x,y):
     return x + y
 
@@ -141,11 +141,11 @@ def _update_suffixes():
 
 
 @shared_task()
-def update_suffixes():
+def update_suffixes(organization_id):
     _update_suffixes()
 
 
-def get_tokens_for_user(user):
+def get_tokens_for_user(user, organization_id):
     refresh = RefreshToken.for_user(user)
 
     return {
@@ -160,7 +160,7 @@ SCRIPT_JOB = "job.py"
 
 
 @shared_task()
-def indicatorjob(id, indicator):
+def indicatorjob(id, indicator, organization_id):
     _indicatorjob(id, indicator)
 
 
@@ -222,7 +222,7 @@ def _indicatorjob(id, indicator):
         raise IndicatorJobError("Timeout reached: " + str(job.timeout))
 
 @shared_task()
-def job(id):
+def job(id, organization_id):
     _job(id)
 
 def _job(id):
@@ -301,28 +301,39 @@ def _extract_indicators(text, article_id, organization_id):
     :param article: models.Article
     :return:
     """
-
     article = models.Article.objects.get(id=article_id)
     organization = models.Organization.objects.get(id=organization_id)
     ipv4s = iocextract.extract_ipv4s(text, refang=True)
     for i in ipv4s:
-        ip, _ = models.IndicatorIPV4.objects.get_or_create(value=i, organization=organization)
+        #todo(aj)
+        ind_type = models.IndicatorType.objects.get(name=settings.IPV4)
+        ip, _ = models.IndicatorIPV4.objects.get_or_create(
+            value=i,
+            organization=organization,
+            ind_type=ind_type)
         ip.articles.add(article)
-        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="IPV4",
+        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.IPV4,
                                                    organization=organization,
                                                    job__active=True)
         for job in jobs:
-            indicatorjob.delay(job.id, ip.value)
+            indicatorjob.delay(id=job.id,
+                               indicator=ip.value,
+                               organization_id=organization_id)
 
     ipv6s = iocextract.extract_ipv6s(text)
     for i in ipv6s:
-        ip, _ = models.IndicatorIPV6.objects.get_or_create(value=i, organization=organization)
+        ind_type = models.IndicatorType.objects.get(name=settings.IPV6)
+        ip, _ = models.IndicatorIPV6.objects.get_or_create(value=i,
+                                                           organization=organization,
+                                                           ind_type=ind_type)
         ip.articles.add(article)
-        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="IPV6",
+        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.IPV6,
                                                    organization=organization,
                                                    job__active=True)
         for job in jobs:
-            indicatorjob.delay(job.id, ip.value)
+            indicatorjob.delay(id=job.id,
+                               indicator=ip.value,
+                               organization_id=organization_id)
 
 
     urls = iocextract.extract_urls(text, refang=True)
@@ -330,52 +341,71 @@ def _extract_indicators(text, article_id, organization_id):
         # todo  load extra suffixes from models.suffixes
         subdomain, dom, suff = domain.extract(i)
         if suff != "":
+            ind_type = models.IndicatorType.objects.get(name=settings.NetLoc)
             suffix = models.Suffix.objects.get(value=suff)
             instance, _ = models.IndicatorNetLoc.objects.get_or_create(subdomain=subdomain,
                                         domain=domain,
                                         suffix=suffix,
+                                        ind_type=ind_type,
                                         organization=organization)
 
             instance.articles.add(article)
-            jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="NetLoc",
+            jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.NETLOC,
                                                        organization=organization,
                                                        job__active=True)
             serial_instance = serializers.IndicatorNetLocSerializer(instance)
             for job in jobs:
-                indicatorjob.delay(job.id, serial_instance.url)
+                indicatorjob.delay(id=job.id,
+                                   indicator=serial_instance.url,
+                                   organization_id=organization_id)
 
     md5s = iocextract.extract_md5_hashes(text)
     for i in md5s:
-        md5, _ = models.IndicatorMD5.objects.get_or_create(value=i, organization=organization)
+        ind_type = models.IndicatorType.objects.get(name=settings.MD5)
+        md5, _ = models.IndicatorMD5.objects.get_or_create(value=i,
+                                                           organization=organization,
+                                                           ind_type=ind_type)
         md5.articles.add(article)
-        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="MD5",
+
+        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.MD5,
                                                    organization=organization,
                                                    job__active=True)
         for job in jobs:
-            indicatorjob.delay(job.id, md5.value)
+            indicatorjob.delay(id=job.id,
+                               indicator=md5.value,
+                               organization_id=organization_id)
 
     sha1s = iocextract.extract_sha1_hashes(text)
     for i in sha1s:
-        sha1 = models.IndicatorSha1(value=i, organization=organization)
+        ind_type = models.IndicatorType.objects.get(name=settings.SHA1)
+        sha1 = models.IndicatorSha1(value=i,
+                                    organization=organization,
+                                    ind_type=ind_type)
         sha1.save()
         sha1.articles.add(article)
-        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="Sha1",
+        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.SHA1,
                                                    organization=organization,
                                                    job__active=True)
         for job in jobs:
-            indicatorjob.delay(job.id, sha1.value)
+            indicatorjob.delay(id=job.id,
+                               indicator=sha1.value,
+                               organization_id=organization_id)
 
     sha256s = iocextract.extract_sha256_hashes(text)
     for i in sha256s:
-        sha256 = models.IndicatorSha256(value=i, organization=organization)
+
+        ind_type = models.IndicatorType.objects.get(name=settings.SHA256)
+        sha256 = models.IndicatorSha256(value=i, organization=organization, ind_type=ind_type)
         sha256.save()
         sha256.articles.add(article)
         # todo(run indicatorJobs)
-        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name="Sha256",
+        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.SHA256,
                                                    organization=organization,
                                                    job__active=True)
         for job in jobs:
-            indicatorjob.delay(job.id, sha256.value)
+            indicatorjob.delay(id=job.id,
+                               indicator=sha256.value,
+                               organization_id=organization_id)
 
 @shared_task()
 def extract_indicators(text, article_id, organization_id):
@@ -443,13 +473,17 @@ def _process_rss_source(source_url, source_id, organization_id):
         ser = serializers.RSSSerializer(article)
         articles.append(article.pk)
         if source.extract_indicators:
-            extract_indicators.delay(ser.data["clean_text"], ser.instance.id, ser.instance.organization.id)
+            extract_indicators.delay(text=ser.data["clean_text"],
+                                     article_id=ser.instance.id,
+                                     organization_id=ser.instance.organization.id)
 
 
-    predict.delay(articles, source_id, organization_id)
+    predict.delay(article_ids=articles,
+                  source_id=source_id,
+                  organization_id=organization_id)
 
 
-def _predict(article_ids, source_id, organization_id):
+def _predict(article_ids=None, source_id=None, organization_id=None):
     # filter ModelVersion by model__source=source and model__active=True
     active_model_versions = models.ModelVersion.objects.filter(organization__id=organization_id,
                                                                model__sources__id=source_id,
@@ -482,7 +516,7 @@ def model_dir(id):
 
 
 @shared_task()
-def process_rss_sources():
+def process_rss_sources(organization_id):
     _process_rss_sources()
 
 
@@ -512,7 +546,9 @@ def _process_rss_sources():
     for source in sources:
         logger.info("source:" + source.name)
         process_rss_source.delay(
-            source.url, source.id, source.organization_id
+            source_url=source.url,
+            source_id=source.id,
+            organization_id=source.organization_id
         )
 
 
@@ -528,6 +564,7 @@ def upload_docs(self,
                 region,
                 aws_access_key_id,
                 aws_secret_access_key_id,
+                organization_id
                 ):
     trainer = train.DeployPySparkScriptOnAws(model=model,
                 s3_bucket_logs=s3_bucket_logs,
@@ -807,14 +844,14 @@ def _remove_old_articles():
 
 
 @shared_task(bind=True)
-def remove_old_articles(self):
+def remove_old_articles(self, organization_id=None):
     _remove_old_articles()
 
 #todo refactor into one method for task and another for function to allow unit testing of function
 @shared_task(bind=True)
 def train_model(self,
                 model,
-                organization,
+                organization_id,
                 metric,
                 s3_bucket_logs,
                 s3_bucket_temp_files,
@@ -859,7 +896,7 @@ def train_model(self,
                                              extra_kwargs=extra_kwargs
                                              )
     model = MLModel.objects.get(id=model)
-    org = Organization.objects.get(id=organization)
+    org = Organization.objects.get(id=organization_id)
     model_version = ModelVersion(organization=org,
                                      model=model,
                                      task=task,
@@ -874,7 +911,7 @@ def train_model(self,
         mversion = models.ModelVersion.objects.get(version=trainer.job_name)
         mversion.status = result.status
         mversion.save()
-        if result.status == TrainResult.SUCCESS:
+        if result.status == train.TrainResult.SUCCESS:
             temp_dir = tempfile.TemporaryDirectory()
 
             # download model

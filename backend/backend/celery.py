@@ -2,11 +2,14 @@ from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
 from celery.schedules import crontab
-from django.core.files import File
-
-# set the default Django settings module for the 'celery' program.
+import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
-celery_app = Celery('backend',include = ['api.tasks'])
+django.setup()
+# set the default Django settings module for the 'celery' program.
+from api import backend as back
+celery_app = Celery('backend',
+                    backend="api.backend.OrgDatabaseBackend",
+                    include = ['api.tasks'])
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.
@@ -29,15 +32,18 @@ celery_app.conf.beat_schedule = {
     # assign to single worker with concurrency = 1
     "rss_sources":{
         "task": "api.tasks.process_rss_sources",
-        "schedule": crontab(hour="*/1", minute="2") # every hour at 2 mins
-#       "schedule": crontab(hour="*", minute="*/1") # testing
+        "kwargs":{"organization_id":1},
+     #   "schedule": crontab(hour="*/1", minute="2") # every hour at 2 mins
+       "schedule": crontab(hour="*", minute="*/1") # testing
     },
     'clean_history_freemium': {
         "task": "api.tasks.remove_old_articles",
+        "kwargs":{"organization_id":1},
         "schedule": crontab(hour="1", minute="30") # every day at hour 1
     },
     'update_tld': {
         "task": "api.tasks.update_suffixes",
+        "kwargs":{"organization_id":1},
         "schedule": crontab(day_of_week="0", hour="1", minute="15")
     }
 }

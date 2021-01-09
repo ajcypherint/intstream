@@ -6,6 +6,9 @@ from django.db.models.constraints import UniqueConstraint, CheckConstraint
 from django.db.models import Q, F,Value
 from semantic_version.django_fields import VersionField
 from django.core import validators
+from django_celery_results.models import TaskResult as TaskResultMdl
+from django_celery_beat.models import PeriodicTask
+from django_celery_results import backends, managers
 
 import uuid
 import os
@@ -25,6 +28,74 @@ class Organization(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class OrgTaskResultManager(managers.TaskResultManager):
+
+    @managers.transaction_retry(max_retries=2)
+    def store_result_org(self, content_type, content_encoding,
+                     task_id, result, status,
+                     traceback=None, meta=None,
+                     task_name=None, task_args=None, task_kwargs=None,
+                     worker=None, using=None, organization_id=None):
+        """Store the result and status of a task.
+
+        Arguments:
+        ---------
+            content_type (str): Mime-type of result and meta content.
+            content_encoding (str): Type of encoding (e.g. binary/utf-8).
+            task_id (str): Id of task.
+            task_name (str): Celery task name.
+            task_args (str): Task arguments.
+            task_kwargs (str): Task kwargs.
+            result (str): The serialized return value of the task,
+                or an exception instance raised by the task.
+            status (str): Task status.  See :mod:`celery.states` for a list of
+                possible status values.
+            worker (str): Worker that executes the task.
+            using (str): Django database connection to use.
+
+        Keyword Arguments:
+        -----------------
+            traceback (str): The traceback string taken at the point of
+                exception (only passed if the task failed).
+            meta (str): Serialized result meta data (this contains e.g.
+                children).
+            exception_retry_count (int): How many times to retry by
+                transaction rollback on exception.  This could
+                happen in a race condition if another worker is trying to
+                create the same task.  The default is to retry twice.
+
+        """
+        fields = {
+            'status': status,
+            'result': result,
+            'traceback': traceback,
+            'meta': meta,
+            'content_encoding': content_encoding,
+            'content_type': content_type,
+            'task_name': task_name,
+            'task_args': task_args,
+            'task_kwargs': task_kwargs,
+            'organization_id': organization_id,
+            'worker': worker
+        }
+        obj, created = self.using(using).get_or_create(task_id=task_id,
+                                                       defaults=fields)
+        if not created:
+            for k, v in fields.items():
+                setattr(obj, k, v)
+            obj.save(using=using)
+        return obj
+
+
+class OrgTaskResultMdl(TaskResultMdl):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    objects = OrgTaskResultManager()
+
+
+class OrgPeriodicTask(PeriodicTask):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
 
 class UserIntStream(AbstractUser):

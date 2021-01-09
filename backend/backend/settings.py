@@ -13,6 +13,13 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+EMAIL = "Email"
+IPV4 = "IPV4"
+IPV6 = "IPV6"
+NETLOC = "NetLoc"
+SHA256 = "Sha256"
+SHA1 = "Sha1"
+MD5 = "MD5"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -272,8 +279,6 @@ AWS_S3_FILE_OVERWRITE = False if os.environ.get("AWS_S3_FILE_OVERWRITE","false")
 
 # celery
 CELERY_BROKER_URL = 'redis://localhost:6379'
-#CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'

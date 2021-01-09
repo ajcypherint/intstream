@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django_celery_beat.models import PeriodicTask, CrontabSchedule
+from django_celery_beat import models as beat_models
 from django_celery_results.models import TaskResult as TaskResultMdl
 from utils import read
 from django.conf import settings
@@ -126,17 +126,18 @@ class JobSerializer(serializers.ModelSerializer):
         model = models.Job
 
     def _create_schedule(self, job_id, *args, **kwargs):
-        schedule, created = CrontabSchedule.objects.get_or_create(
+        schedule, created = beat_models.CrontabSchedule.objects.get_or_create(
              day_of_week=kwargs.get("crontab_day_of_week", None),
              day_of_month=kwargs.get("crontab_day_of_month", None),
              month_of_year=kwargs.get("month_of_year", None),
              hour=kwargs.get("crontab_hour", None),
              minute=kwargs.get("crontab_minute", None))
 
-        task, _ = PeriodicTask.objects.get_or_create(
+        task, _ = beat_models.OrgPeriodicTask.objects.get_or_create(
             interval=schedule,
             name = kwargs.get("name", None),
             task='api.tasks.job',
+            organization=kwargs.get("organization", None),
             args={"id":job_id}
         )
 
