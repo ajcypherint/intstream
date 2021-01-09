@@ -341,7 +341,7 @@ def _extract_indicators(text, article_id, organization_id):
         # todo  load extra suffixes from models.suffixes
         subdomain, dom, suff = domain.extract(i)
         if suff != "":
-            ind_type = models.IndicatorType.objects.get(name=settings.NetLoc)
+            ind_type = models.IndicatorType.objects.get(name=settings.NETLOC)
             suffix = models.Suffix.objects.get(value=suff)
             instance, _ = models.IndicatorNetLoc.objects.get_or_create(subdomain=subdomain,
                                         domain=domain,

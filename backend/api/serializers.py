@@ -675,6 +675,7 @@ class ModelVersionSerializer(serializers.ModelSerializer):
 
 class IndicatorSerializer(serializers.ModelSerializer):
 
+    ind_type = serializers.PrimaryKeyRelatedField(queryset=models.IndicatorType.objects.all())
     class Meta:
         fields = [
             "id",
@@ -691,7 +692,6 @@ class IndicatorMD5Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
-            "ind_type",
             "articles",
             "organization",
             "value"
@@ -704,7 +704,6 @@ class IndicatorSha256Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
-            "ind_type",
             "articles",
             "organization",
             "value",
@@ -717,7 +716,6 @@ class IndicatorEmailSerializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
-            "ind_type",
             "articles",
             "organization",
             "value",
@@ -730,7 +728,6 @@ class IndicatorSha1Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
-            "ind_type",
             "articles",
             "organization",
             "value"
@@ -758,7 +755,6 @@ class IndicatorNetLocSerializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
-            "ind_type",
             "articles",
             "organization",
             "subdomain",
@@ -785,7 +781,6 @@ class IndicatorIPV6Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
-            "ind_type",
             "articles",
             "organization",
             "value"
@@ -797,7 +792,6 @@ class IndicatorIPV4Serializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
-            "ind_type",
             "articles",
             "organization",
             "value"

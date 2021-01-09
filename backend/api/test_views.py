@@ -37,7 +37,7 @@ class TestTasks(TestCase):
         data = {"value": "0800fc577294c34e0b28ad2839435945"}
         r = self.c.post("/api/indicatormd5/", data=data)
         id = r.json().get("id")
-        org = models.Organization.objects.all()[0]
+        org = models.Organization.objects.get(id=1)
         source = models.RSSSource(url="http://test.com", organization=org)
         source.save()
         article = models.RSSArticle(text="some article text",
@@ -55,10 +55,12 @@ class TestTasks(TestCase):
 
     def test_net_loc(self):
         suffix =  models.Suffix.objects.get(value="com").pk
+        ind_type = models.IndicatorType.objects.get(name="NetLoc")
         data = {
             "subdomain":"testing",
             "domain":"mycompany",
-            "suffix":suffix
+            "suffix":suffix,
+            "ind_type": ind_type
             }
         r = self.c.post("/api/indicatornetloc/", data=data)
         self.assertEqual(r.status_code, 201)
