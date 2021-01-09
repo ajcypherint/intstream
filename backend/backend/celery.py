@@ -44,7 +44,6 @@ def setup_periodic_tasks(sender, **kwargs):
                                  tasks.process_rss_sources.s(organization_id=i),
                                  name='every hour process rss')
 
-    for i in ids:
         sender.add_periodic_task(crontab(hour="1", minute="30"),
                                  tasks.remove_old_articles.s(organization_id=i),
                                  name='clean history freemium:' + str(i))
