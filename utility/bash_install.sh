@@ -1,5 +1,17 @@
 set -x
 set -e
+#!/usr/bin/env bash
+
+RELEASE=unknown
+
+version=$( lsb_release -r | grep -oP "[0-9]+" | head -1 )
+if lsb_release -d | grep -q "CentOS"; then
+    RELEASE=centos$version
+elif lsb_release -d | grep -q "Ubuntu"; then
+    RELEASE=ubuntu$version
+fi
+
+echo $RELEASE
 
 if [ -z "$1" ]
   then
@@ -20,14 +32,26 @@ sudo apt-get update
 #python
 echo "------"
 echo " install pipenv"
-sudo apt-get -qq install python
-sudo apt-get -qq install python3-pip
-sudo pip3 install pipenv
+if [ $RELEASE == "ubuntu20" ]; then
+  sudo add-apt-repository ppa:deadsnakes/ppa
+  sudo apt-get update
+  sudo apt-get install python3.6
+  sudo apt-get install python3.6-dev
+  sudo pip3 install pipenv
+elif [ $RELEASE == "ubuntu18" ]; then
+  sudo apt-get update
+  sudo apt-get install python3
+  sudo apt-get install python3-dev
+  sudo pip3 install pipenv 
+else
+  echo "invalid os"
+  exit 1
+fi
 
 echo "------"
 echo " install dependencies"
 cd "$base_dir/intstream/"
-pipenv install
+pipenv --python /usr/bin/python3.6 install
 venvpath="$(pipenv --venv)"
 
 echo "------"
@@ -112,19 +136,19 @@ echo "------"
 echo " create database"
 export PASSWORD="$password"
 cd "$base_dir/intstream/backend/"
-pipenv run python manage.py migrate
+pipenv --python /usr/bin/python3.6 run python manage.py migrate
 echo "------"
 echo " create celery cache backend"
-python manage.py migrate django_celery_results
-python manage.py createcachetable
+pipenv --python /usr/bin/python3.6 run manage.py migrate django_celery_results
+pipenv --python /usr/bin/python3.6 run manage.py createcachetable
 
 echo "------"
 echo " create secret key"
-pipenv run python manage.py generate_secret_key --replace 
+pipenv --python /usr/bin/python3.6 run python manage.py generate_secret_key --replace 
 
 echo "------"
 echo " collect static for backend to $base_dir/intstream/backend/"
-pipenv run python manage.py collectstatic
+pipenv --python /usr/bin/python3.6 run python manage.py collectstatic
 
 echo "------"
 echo " nvm install"
