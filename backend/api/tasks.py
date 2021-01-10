@@ -586,7 +586,6 @@ BASE_CLASSIFY_FILE = "base_classify_file.py"
 CUSTOM_CLASSIFY_FILE = "train_classify.py"
 INTSTREAM_PROXY_ENV = "INTSTREAM_PROXY"
 
-#todo unit test
 def classify(text_list, model_version_id):
     """
     :param text_list: list[str]

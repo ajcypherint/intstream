@@ -121,17 +121,17 @@ class TestTasks(TestCase):
         sha256 = models.IndicatorSha256.objects.all()
         self.assertEqual(len(sha256), 1)
 
-
+    @mock.patch("api.tasks.predict")
     @mock.patch("api.tasks.classify")
     @mock.patch("api.tasks.fetch")
     @mock.patch("feedparser.parse")
-    def disabled_test_process_rss_source(self,
+    def test_process_rss_source(self,
                                 feedparser_parse,
                                 mock_fetch,
-                                classify):
-        classify.return_value = [True, True, True]
+                                mock_classify,
+                                predict
+                                ):
         mock_fetch.side_effect = fetch
-
         class DictAttr(dict):
             def __getattr__(self, key):
                 if key not in self:
@@ -170,7 +170,8 @@ class TestTasks(TestCase):
         data = Data()
         feedparser_parse.return_value = data
         # todo(aj) need to mock embedded
-        #tasks._process_rss_source("http:/test", 1, 1)
+        mock_classify.return_value = [True, True, True]
+        tasks._process_rss_source("http:/test", 1, 1)
 
     @mock.patch("api.tasks.requests.get")
     def test_suffix_update(self, mock_get):
@@ -179,13 +180,14 @@ class TestTasks(TestCase):
         self.assertEqual(mock_get.called, True)
 
 
-    @mock.patch("api.tasks.process_rss_source.delay")
+    @mock.patch("api.tasks.process_rss_source")
     @mock.patch("api.tasks.create_dirs")
     @mock.patch("tarfile.open")
     @mock.patch("os.path.exists")
-    def disabled_test_process_rss_sources(self, exist, tar_open, create_dirs, process):
+    def test_process_rss_sources(self, exist, tar_open, create_dirs, process):
         exist.return_value = False
-        tasks._process_rss_sources()
+        ORG = 1
+        tasks._process_rss_sources(ORG)
 
         class MockTar(object):
             def __init__(self):
@@ -199,5 +201,5 @@ class TestTasks(TestCase):
         self.assertTrue(exist.called)
         self.assertTrue(tar_open.called)
         self.assertTrue(create_dirs.called)
-        self.assertTrue(process.called)
+        self.assertTrue(process.delay.called)
 
