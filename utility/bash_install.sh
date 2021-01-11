@@ -23,6 +23,9 @@ dns_name="$1"
 cd ../..
 #standalone installation script
 base_dir=$(pwd)
+echo "------"
+echo "create media dir"
+mkdir "$base_dir/media"
 
 # prep
 echo "------"
