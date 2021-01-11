@@ -51,7 +51,8 @@ fi
 echo "------"
 echo " install dependencies"
 cd "$base_dir/intstream/"
-pipenv --python /usr/bin/python3.6 install
+pipenv --python /usr/bin/python3.6 
+pipenv install
 venvpath="$(pipenv --venv)"
 
 echo "------"
@@ -136,19 +137,19 @@ echo "------"
 echo " create database"
 export PASSWORD="$password"
 cd "$base_dir/intstream/backend/"
-pipenv --python /usr/bin/python3.6 run python manage.py migrate
+pipenv run python manage.py migrate
 echo "------"
 echo " create celery cache backend"
-pipenv --python /usr/bin/python3.6 run manage.py migrate django_celery_results
-pipenv --python /usr/bin/python3.6 run manage.py createcachetable
+pipenv run python manage.py migrate django_celery_results
+pipenv run python manage.py createcachetable
 
 echo "------"
 echo " create secret key"
-pipenv --python /usr/bin/python3.6 run python manage.py generate_secret_key --replace 
+pipenv run python manage.py generate_secret_key --replace 
 
 echo "------"
 echo " collect static for backend to $base_dir/intstream/backend/"
-pipenv --python /usr/bin/python3.6 run python manage.py collectstatic
+pipenv run python manage.py collectstatic
 
 echo "------"
 echo " nvm install"
