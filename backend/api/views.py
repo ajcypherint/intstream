@@ -2,6 +2,7 @@ import math
 import iocextract
 from django.db import models as db_models
 from django.utils.encoding import force_bytes
+from django.utils import timezone
 from api.backend import DisabledHTMLFilterBackend
 from rest_framework import mixins
 from django.core.mail import EmailMessage
@@ -802,6 +803,14 @@ class OrgViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
 
+class ColumnViewSet(viewsets.ModelViewSet):
+
+    def perform_create(self, serializer):
+        serializer.save(update_date=timezone.now(), organization = self.request.user.organization)
+
+    def perform_update(self, serializer):
+        instance = serializer.save(update_date=timezone.now(), organization=self.request.user.organization)
+
 
 class TrainingScriptFilter(filters.FilterSet):
     class Meta:
@@ -962,9 +971,9 @@ class JobViewSet(OrgViewSet):
 
 class JobVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
-    serializer_class = serializers.JobSerializer
+    serializer_class = serializers.JobVersionSerializer
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('job', 'id','version')
+    filterset_fields = ('job', 'id','version',)
 
     def get_queryset(self):
         return models.JobVersion.objects.filter(organization=self.request.user.organization)
@@ -1811,7 +1820,7 @@ class IndicatorNumericFieldNameViewSet(viewsets.ReadOnlyModelViewSet):
             distinct("name").filter(organization=self.request.user.organization)
 
 
-class IndicatorTextFieldViewSet(OrgViewSet):
+class IndicatorTextFieldViewSet(ColumnViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorTextField
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
@@ -1863,7 +1872,7 @@ class IndicatorJobVersionViewSet(OrgViewSet):
         return models.IndicatorJobVersion.objects.filter(organization=self.request.user.organization)
 
 
-class IndicatorNumericFieldViewSet(OrgViewSet):
+class IndicatorNumericFieldViewSet(ColumnViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorNumericField
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)

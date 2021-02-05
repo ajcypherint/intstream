@@ -2,6 +2,8 @@ import React from 'react'
 import { Route,Switch } from 'react-router-dom'
 import Home from "../containers/Home"
 import IndicatorHome from "../containers/IndicatorHome"
+import SourcesIndJobList from "../containers/SourcesIndJobList"
+import SourcesIndJobEdit from "../containers/SourcesIndJobEdit"
 import SourcesJobList from "../containers/SourcesJobList"
 import SourcesJobEdit from "../containers/SourcesJobEdit"
 import SourcesUploadList from "../containers/SourcesUploadList"
@@ -29,6 +31,7 @@ import Edit from './SourceEditFormComp'
 import EditRSS from './SourceEditRSSFormComp'
 import EditModels from './ModelsEditFormComp'
 import EditJob from './SourceEditJobFormComp'
+import EditIndJob from './SourceEditIndJobFormComp'
 import Article from "../containers/Article"
 import Train from "../containers/Train"
 
@@ -41,6 +44,18 @@ import TrainList from "../containers/TrainList"
 import {ADD, EDIT} from "../util/util"
 import CreateMLVersion from "../containers/CreateMLVersion"
 import Ver from "../containers/ModelVersionList"
+import ModelVersionTable from "./ModelVersionTable"
+
+import JobVer from "../containers/JobVersionList"
+import JobVersionTable from "./JobVersionTable"
+import JobVersionEditForm from './JobVersionEditFormComp'
+import JobVersionEdit from "../containers/SourcesJobVersionEdit"
+
+import IndJobVer from "../containers/IndJobVersionList"
+import IndJobVersionTable from "./IndJobVersionTable"
+import IndJobVersionEditForm from './IndJobVersionEditFormComp'
+import IndJobVersionEdit from "../containers/SourcesIndJobVersionEdit"
+
 const Main = (props)=>(
   <Switch>
     <Route exact path="/" component={Home} />
@@ -49,7 +64,47 @@ const Main = (props)=>(
     <Route exact path="/article/:id" component={Article} />
     <Route exact path="/train/:id/:model" component={Train} />
     <Route exact path="/train_list" component={TrainList} />
-    <Route exact path="/versions" component={Ver} />
+    <Route exact path="/indjobversions" 
+      render={()=>
+          <IndJobVer
+            table={<IndJobVersionTable/>}
+          />
+      }
+      />
+    <Route exact path="/indjobversions_add" 
+          render={()=>
+          <IndJobVersionEdit 
+            form={<IndJobVersionEditForm/>}
+            state={ {
+              action:ADD,
+            }}
+            match={undefined}/>} 
+    />
+ 
+    <Route exact path="/jobversions" 
+      render={()=>
+          <JobVer
+            table={<JobVersionTable/>}
+          />
+      }
+      />
+    <Route exact path="/jobversions_add" 
+          render={()=>
+          <JobVersionEdit 
+            form={<JobVersionEditForm/>}
+            state={ {
+              action:ADD,
+            }}
+            match={undefined}/>} 
+    />
+ 
+    <Route exact path="/versions" 
+      render={()=>
+          <Ver
+            table={<ModelVersionTable/>}
+          />
+      }
+      />
   
     <Route exact path="/createmlversion/:id" component={CreateMLVersion} />
 
@@ -208,6 +263,28 @@ const Main = (props)=>(
         }}
         match={match}/>} 
       />
+
+    <Route exact path="/sources_indjob" component={SourcesIndJobList} />
+    <Route exact path="/sources_indjob_add" 
+      render={()=>
+      <SourcesIndJobEdit 
+        form={<EditIndJob/>}
+        state={ {
+          action:ADD,
+        }}
+        match={undefined}/>} 
+      />
+    <Route exact path="/sources_indjob/:id"       
+      render={({match})=>
+      <SourcesIndJobEdit 
+        form={<EditIndJob/>}
+        state={ {
+          action:EDIT,
+        
+        }}
+        match={match}/>} 
+      />
+
 
 
     <Route exact path="/sources_job" component={SourcesJobList} />

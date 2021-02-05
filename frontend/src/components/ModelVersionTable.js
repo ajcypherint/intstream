@@ -1,91 +1,33 @@
 import React, { Component } from 'react';
-import _ from 'lodash';
-import {filterChange} from '../actions/modelVersionFilter'
-import {Alert, Form, Row, Col, Button, FormGroup, Label, Input} from 'reactstrap';
-import Choice from "./Choice"
-import Paginate from './Paginate'
 import {ASC, DESC, ALL } from "../util/util"
-import {changesort} from './ChangeSort'
+import {Alert, Form, Row, Col, Button, FormGroup, Label, Input} from 'reactstrap';
 import propTypes from 'prop-types'
+import Choice from "./Choice"
+import _ from 'lodash';
 
-class ModelVersionList extends Component {
+class ModelVersionTable extends Component {
   constructor(props){
     super(props)
-    this.fetch = this.fetch.bind(this)
-    this.paginate = Paginate.bind(this)
-    this.handleActiveChange = this.handleActiveChange.bind(this)
-    this.onRefresh = this.onRefresh.bind(this)
-    this.changesort = changesort.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-  }
-  componentDidMount(){
-    let selections = this.props.query
-    let ordering = this.props.query.ordering || "name"
-    let page = this.props.query.page || 1
-    let orderdir = this.props.query.orderdir || ""
-    let mlmodelChosen = this.props.query.mlmodelChosen || ""
-    let newSel = {
-      ...selections,
-      ordering:ordering,
-      page:page,
-      orderdir:orderdir,
-      mlmodelChosen:mlmodelChosen
-    }
- 
-    this.props.filterChange(
-      newSel,this.props.setQuery
-    )
-  }  
-  handleChange(event){
-    let newSelections = {
-      ...this.props.query,
-      mlmodelChosen:event.target.value,
-      page:1
-    }
-    this.props.filterChange(newSelections,this.props.setQuery)
-  }
-  handleActiveChange(event){
-
-    let {model, id}= event.target.dataset
-    this.props.setActiveVersion(model,
-      id, 
-      this.props.query,
-      this.props.setQuery) 
-  }
-  onRefresh(event){
-    event.preventDefault()
-    this.props.filterChange(this.props.query, this.props.setQuery)
-  }
-  fetch(selections,page){
-    let newSelections = {
-      ...selections,
-      page:page
-    }
-    this.props.filterChange(newSelections, this.props.setQuery)
   }
  
   render(){
-    const totalcount = this.props.modelVersionTotalCount  
-    const idsModels = this.props.modelsList.map(a=>a.id.toString()) ||[]
-    const uniqueModels = _.uniqBy(this.props.modelsList,'id')
-    const errors = this.props.modelVersionErrors || {}
-    const next = this.props.modelVersionNext;
-    const previous = this.props.modelVersionPrevious;
-    const loading = typeof this.props.modelVersionLoading === 'undefined' ? true : this.props.modelVersionLoading;
-    const modelVersionList = this.props.modelVersionList || []
-    
+    const loading = typeof this.props.VersionLoading === 'undefined' ? true : this.props.VersionLoading;
+    const VersionList = this.props.VersionList || []
+    const ids = this.props.List.map(a=>a.id.toString()) ||[]
+    const unique = _.uniqBy(this.props.List,'id')
+ 
     return (
-      <div className="container mt-2 col-sm-12 " >
-          {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+      <div>
           <Form>
             <FormGroup>
-              <Row className={"col-sm-8 offset-sm-2"}>
+ 
+             <Row >
                 <Col  >
                    <Choice name={"Model"}
-                    value={this.props.query.mlmodelChosen || ''}
+                    value={this.props.query.chosen || ''}
                     onChange={this.handleChange}
-                    idList={idsModels}
-                    uniqueList={uniqueModels}
+                    idList={ids}
+                    uniqueList={unique}
                     disabled={false}
                    />
                 </Col>
@@ -103,24 +45,9 @@ class ModelVersionList extends Component {
                 </Col>
               </Row>
             </FormGroup>
-          </Form>
-        <Row className={"col-sm-8 offset-sm-2"}>
-        <table className={"table table-sm"}>
-          <tbody>
-            <tr>
-              <td>
-             {this.paginate(totalcount,
-               next,
-               previous,
-               this.fetch,
-               this.props.fetchModelVersions,
-               this.props.query,
-               this.props.setQuery)}
-             </td>
-           </tr>
-           <tr>
-             <td>
-             <table className={"table table-sm"}>
+            </Form>
+  
+            <table className={"table table-sm"}>
                <thead>
                  <tr>
                    <td className="hover" onClick={(event)=>{this.changesort("title", 
@@ -165,7 +92,7 @@ class ModelVersionList extends Component {
                  </tr>
                </thead>
                  { !loading ?
-                    modelVersionList.map((version)=>{
+                    VersionList.map((version)=>{
                       let metric_value = version.metric_value || 0
                       return (
                         <tbody key={version.id}>
@@ -191,7 +118,7 @@ class ModelVersionList extends Component {
                                 data-model={version.model.id}
                                 data-id={version.id}
                                 checked={version.active} 
-                                onChange={this.handleActiveChange}/>
+                                onChange={this.props.handleActiveChange}/>
                              </div>
                          </td>
                             </tr>
@@ -204,34 +131,20 @@ class ModelVersionList extends Component {
                  </tbody>
                  }
               </table> 
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        </Row>
-      </div>
+            </div>
     )
-
   }
-
 }
+ModelVersionTable.propTypes = {
+  VersionList:propTypes.arrayOf(propTypes.object),
+  VersionLoading:propTypes.bool,
+  query:propTypes.object,
+  List:propTypes.array,
 
-ModelVersionList.propTypes = {
-  modelsList:propTypes.arrayOf(propTypes.shape(
-
-  )),
-  modelVersionList:propTypes.arrayOf(propTypes.object),
-  modelVersionLoading:propTypes.bool,
-  modelVersionErrors:propTypes.object,
-  modelVersionTotalCount:propTypes.number,
-  modelVersionNext:propTypes.string,
-  modelVersionPrevious:propTypes.string,
-
-  filterChange:propTypes.func,
-  fetchModelVersions:propTypes.func,
+  setQuery:propTypes.func,
+  handleActiveChange:propTypes.func,
   setPage:propTypes.func,
-  setActiveVersion:propTypes.func
 
 };
 
-export default ModelVersionList;
+export default ModelVersionTable;

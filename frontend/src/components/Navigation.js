@@ -91,8 +91,12 @@ export default class Example extends React.Component {
                     RSS
                     </DropdownItem>
                    <DropdownItem tag={Link} to="/sources_job">
-                    Job 
+                    Scheduled Jobs
                     </DropdownItem>
+                    <DropdownItem tag={Link} to="/sources_indjob">
+                    Hunting Jobs
+                    </DropdownItem>
+ 
                  </DropdownMenu>
               </UncontrolledDropdown>:null}
 

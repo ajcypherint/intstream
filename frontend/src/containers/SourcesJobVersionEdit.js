@@ -12,37 +12,28 @@ import {
 } from 'use-query-params';
 
 
+
 // edit
-const API = '/api/job/'
-const HEADING = " Scheduled Job"
-const EMPTY = {name:"",
+const API = '/api/jobversion/'
+const HEADING = " Job Version "
+
+const EMPTY = {
       id:"", 
-      python_version:"",
-      arguments:"",
-      cron_day_of_week:"",
-      cron_day_of_month:"",
-      cron_month_of_year:"",
-      cron_hour:"",
-      cron_minute:"",
-      user:"",
-      password:"",
+      version:"",
+      zip:"",
       active:false}
-const FIELDS = ["name",
-  "python_version",
-  "arguments",
-  "last_run",
-  "arguments",
-   "cron_day_of_week",
-    "cron_day_of_month",
-    "cron_month_of_year",
-     "cron_hour",
-     "cron_minute",
-     "user",
-     "password",
+
+const FIELDS = [
+  "job",
+  "zip",
+  "version",
   "active"]
+
 const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
 const mapDispatchToProps = mapDispatchToPropsFunc(API)
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(  
- SourceEdit);
+export default connect(mapStateToProps, mapDispatchToProps)( withQueryParams( 
+  {
+    id: NumberParam,
+    name: StringParam,
+  },
+SourceEdit));

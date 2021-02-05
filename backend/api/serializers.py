@@ -125,34 +125,54 @@ class JobSerializer(serializers.ModelSerializer):
         ]
         model = models.Job
 
-    def _create_schedule(self, job_id, *args, **kwargs):
+    def _create_schedule(self, job_id, kwargs):
         schedule, created = beat_models.CrontabSchedule.objects.get_or_create(
-             day_of_week=kwargs.get("crontab_day_of_week", None),
-             day_of_month=kwargs.get("crontab_day_of_month", None),
-             month_of_year=kwargs.get("month_of_year", None),
-             hour=kwargs.get("crontab_hour", None),
-             minute=kwargs.get("crontab_minute", None))
+             day_of_week=kwargs.get("cron_day_of_week", None),
+             day_of_month=kwargs.get("cron_day_of_month", None),
+             month_of_year=kwargs.get("cron_month_of_year", None),
+             hour=kwargs.get("cron_hour", None),
+             minute=kwargs.get("cron_minute", None))
 
-        task, _ = beat_models.OrgPeriodicTask.objects.get_or_create(
-            interval=schedule,
+        task, _ = models.OrgPeriodicTask.objects.get_or_create(
+            crontab=schedule,
             name = kwargs.get("name", None),
             task='api.tasks.job',
             organization=kwargs.get("organization", None),
             args={"id":job_id}
         )
 
-    def create(self,*args,**kwargs):
-        job = super().create(*args,**kwargs)
-        self._create_schedule(job.id, *args, **kwargs)
+    def _update_schedule(self, job, kwargs):
+        schedule, created = beat_models.CrontabSchedule.objects.get_or_create(
+             day_of_week=kwargs.get("cron_day_of_week", None),
+             day_of_month=kwargs.get("cron_day_of_month", None),
+             month_of_year=kwargs.get("cron_month_of_year", None),
+             hour=kwargs.get("cron_hour", None),
+             minute=kwargs.get("cron_minute", None))
+
+        job = models.OrgPeriodicTask.objects.get(name=job.name)
+        job.crontab = schedule
+        job.task='api.tasks.job',
+        job.organization = kwargs.get("organization", None)
+        job.args = {"id": job.id}
+        job.save()
+
+    def create(self,validated_data):
+        job = super().create(validated_data)
+        self._create_schedule(job.id, validated_data)
         return job
 
-    def update(self, *args,**kwargs):
-        job = super().update(*args,**kwargs)
-        self._create_schedule(*args, **kwargs)
+    def update(self, instance, validated_data):
+        job = super().update(instance, validated_data)
+        self._update_schedule(instance, validated_data)
         return job
 
 
-class JobVersionSerlializer(serializers.ModelSerializer):
+class JobSerializerNested(serializers.Serializer):
+    name = serializers.CharField()
+    id = serializers.IntegerField()
+
+
+class JobVersionSerializer(serializers.ModelSerializer):
     job = serializers.PrimaryKeyRelatedField(queryset=models.Job.objects.all())
     class Meta:
         fields = [
@@ -160,7 +180,8 @@ class JobVersionSerlializer(serializers.ModelSerializer):
             "job",
             "organization",
             "zip",
-            "version"
+            "version",
+            "active"
         ]
         model = models.JobVersion
 
@@ -173,7 +194,6 @@ class IndicatorJobSerializer(serializers.ModelSerializer):
             "active",
             "organization",
             "indicator_types",
-            "python_version",
             "last_run",
             "last_status",
             "arguments",
@@ -201,7 +221,8 @@ class IndicatorJobVersionSerializer(serializers.ModelSerializer):
             "job",
             "organization",
             "zip",
-            "version"
+            "version",
+            "active",
         ]
         model = models.IndicatorJobVersion
 
@@ -682,6 +703,7 @@ class IndicatorSerializer(serializers.ModelSerializer):
             "ind_type",
             "articles",
             "organization",
+            "upload_date",
             "value"
         ]
         model = models.Indicator
@@ -694,6 +716,7 @@ class IndicatorMD5Serializer(serializers.ModelSerializer):
             "id",
             "articles",
             "organization",
+            "upload_date",
             "value"
         ]
         model = models.IndicatorMD5
@@ -706,6 +729,7 @@ class IndicatorSha256Serializer(serializers.ModelSerializer):
             "id",
             "articles",
             "organization",
+            "upload_date",
             "value",
         ]
         model = models.IndicatorSha256
@@ -718,6 +742,7 @@ class IndicatorEmailSerializer(serializers.ModelSerializer):
             "id",
             "articles",
             "organization",
+            "upload_date",
             "value",
         ]
         model = models.IndicatorEmail
@@ -730,6 +755,7 @@ class IndicatorSha1Serializer(serializers.ModelSerializer):
             "id",
             "articles",
             "organization",
+            "upload_date",
             "value"
         ]
         model = models.IndicatorSha1
@@ -762,6 +788,7 @@ class IndicatorNetLocSerializer(serializers.ModelSerializer):
             "suffix",
             "value",
             "url",
+            "upload_date",
             "registered"
         ]
         model = models.IndicatorNetLoc
@@ -783,6 +810,7 @@ class IndicatorIPV6Serializer(serializers.ModelSerializer):
             "id",
             "articles",
             "organization",
+            "upload_date",
             "value"
         ]
         model = models.IndicatorIPV6
@@ -794,6 +822,7 @@ class IndicatorIPV4Serializer(serializers.ModelSerializer):
             "id",
             "articles",
             "organization",
+            "upload_date",
             "value"
         ]
         model = models.IndicatorIPV4
@@ -806,6 +835,7 @@ class IndicatorNumericField(serializers.ModelSerializer):
             "name",
             "value",
             "organization",
+            "update_date",
             "indicator",
         ]
         model = models.IndicatorNumericField
@@ -836,6 +866,7 @@ class IndicatorTextField(serializers.ModelSerializer):
             "name",
             "value",
             "organization",
+            "update_date",
             "indicator",
         ]
         model = models.IndicatorTextField

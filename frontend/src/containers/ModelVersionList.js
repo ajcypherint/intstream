@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
-import Main from '../components/ModelVersionList'
+import Main from '../components/VersionList'
 import {getModelVersion, setPage, setActiveVersion} from '../actions/modelVersion'
 import {filterChange} from "../actions/modelVersionFilter"
 import {
@@ -13,19 +13,19 @@ import {
 } from 'use-query-params';
 
 const mapStateToProps = (state) => ({
-  modelsList:reducers.getModelVersionFilterMLModels(state),
-  modelVersionList:reducers.getModelVersion(state),
-  modelVersionLoading:reducers.getModelVersionLoading(state),
-  modelVersionErrors:reducers.getModelVersionErrors(state),
-  modelVersionTotalCount:reducers.getModelVersionTotalCount(state),
-  modelVersionNext:reducers.getModelVersionNextPage(state),
-  modelVersionPrevious:reducers.getModelVersionPreviousPage(state),
+  List:reducers.getModelVersionFilterMLModels(state),
+  VersionList:reducers.getModelVersion(state),
+  VersionLoading:reducers.getModelVersionLoading(state),
+  VersionErrors:reducers.getModelVersionErrors(state),
+  VersionTotalCount:reducers.getModelVersionTotalCount(state),
+  VersionNext:reducers.getModelVersionNextPage(state),
+  VersionPrevious:reducers.getModelVersionPreviousPage(state),
  
 })
 
 const mapDispatchToProps = (dispatch) => ({
   filterChange: (newSelections, setQuery) => dispatch(filterChange(newSelections, setQuery)),
-  fetchModelVersions: (params = undefined) => dispatch(getModelVersion(params)),
+  fetchVersions: (params = undefined) => dispatch(getModelVersion(params)),
   setPage:(page)=>dispatch(setPage(page)),
   setActiveVersion: (model, id,selections, setQuery)=>dispatch(setActiveVersion(model, id, selections, setQuery)),
 })
@@ -36,6 +36,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     ordering: StringParam,
     page: NumberParam,
     orderdir:StringParam,
-    mlmodelChosen:StringParam,
+    chosen:StringParam,
   },
   Main));

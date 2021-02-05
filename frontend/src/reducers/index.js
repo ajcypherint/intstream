@@ -14,17 +14,22 @@ import selectArticles, * as fromSelect from "./selectArticles"
 import classifications, * as fromClassif from "./classifications"
 import settings, * as fromSettings from "./settings"
 import modelVersions, * as fromModelVersions from "./modelVersions"
+import jobVersions, * as fromJobVersions from "./jobVersions"
 import filterModelVer, * as fromFilterModelVer from "./modelVersionFilter"
+import filterJobVer, * as fromFilterJobVer from "./jobVersionFilter"
 import forgotPassword, * as fromForgotPassword from "./forgotPassword"
 import trainingScripts, * as fromTrainingScripts from "./trainingScripts"
 import registration, * as fromRegistration from "./registration"
 import indicators, * as fromIndicators from "./indicators"
 import indicatorColumns, * as fromIndicatorColumns from "./indicatorColumns"
+import indicatorTypes, * as fromIndicatorTypes from "./indicatorTypes"
 
 export default combineReducers({
   modelVersions:modelVersions,
+  jobVersions:jobVersions,
   trainingScripts:trainingScripts,
   filterModelVer:filterModelVer,
+  filterJobVer:filterJobVer,
   auth: auth,
   filter:filter,
   password:password,
@@ -42,7 +47,8 @@ export default combineReducers({
   forgotPassword:forgotPassword,
   registration:registration,
   indicators:indicators,
-  indicatorColumns:indicatorColumns
+  indicatorColumns:indicatorColumns,
+  indicatorTypes:indicatorTypes
 })
 //fromAuth
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
@@ -56,6 +62,11 @@ export const isAccessTokenExpired = state => fromAuth.isAccessTokenExpired(state
 export const refreshToken = state => fromAuth.refreshToken(state.auth)
 export const isRefreshTokenExpired = state => fromAuth.isRefreshTokenExpired(state.auth)
 export const authErrors = state => fromAuth.errors(state.auth)
+
+//fromCategories
+export const indicatorTypesErrors = state => fromIndicatorTypes.errors(state.indicatorTypes)
+export const getIndicatorTypes = state => fromIndicatorTypes.indicatorTypes(state.indicatorTypes)
+
 
 //fromCategories
 export const catErrors = state => fromCategories.errors(state.categories)
@@ -147,8 +158,20 @@ export const getModelVersionTotalCount = state => fromModelVersions.totalcount(s
 export const getModelVersionNextPage = state => fromModelVersions.nextpage(state.modelVersions)
 export const getModelVersionPreviousPage = state => fromModelVersions.previouspage(state.modelVersions)
 
-//from modelVersions
+//from jobVersions
+export const getJobVersion = state => fromJobVersions.versions(state.jobVersions)
+export const getJobVersionErrors = state => fromJobVersions.errors(state.jobVersions)
+export const getJobVersionLoading = state => fromJobVersions.loading(state.jobVersions)
+export const getJobVersionTotalCount = state => fromJobVersions.totalcount(state.jobVersions)
+export const getJobVersionNextPage = state => fromJobVersions.nextpage(state.jobVersions)
+export const getJobVersionPreviousPage = state => fromJobVersions.previouspage(state.jobVersions)
+
+
+//from filterModelVersions
 export const getModelVersionFilterMLModels = state => fromFilterModelVer.mlmodels(state.filterModelVer)
+
+//from filterJobVersions
+export const getJobVersionFilterJobs = state => fromFilterJobVer.jobs(state.filterJobVer)
 
 //forgotPassword
 export const getFPassErrors = state => fromForgotPassword.errors(state.forgotPassword)

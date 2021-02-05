@@ -3,6 +3,9 @@ import {FormGroup, Col, Alert, Button, Jumbotron,  Form } from 'reactstrap';
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
+import _ from 'lodash';
+
+import Choice from "./MultiChoiceColIds"
 import FormButtons from './compFormButtons'
 
 export default class Edit extends Component {
@@ -14,7 +17,7 @@ export default class Edit extends Component {
     event.preventDefault() //prevent form submission
     let id = event.target.dataset.id
       let name = event.target.dataset.name
-    this.props.history.push("/jobversions/?id=" + id + "&name=" + name)
+    this.props.history.push("/indjobversions/?id=" + id + "&name=" + name)
 
   }
   render(){
@@ -22,26 +25,19 @@ export default class Edit extends Component {
     const err_name = errors.name
     const err_python_version = errors.python_version
     const err_arguments = errors.arguments 
-    const err_cron_day_of_week = errors.cron_day_of_week 
-    const err_cron_day_of_month = errors.cron_day_of_month 
-    const err_cron_month_of_year = errors.cron_month_of_year 
-    const err_cron_hour = errors.cron_hour 
-    const err_cron_minute = errors.cron_minute 
     const err_user = errors.user
     const err_password = errors.password 
+    const err_ind_types= errors.ind_types
     const err_timeout = errors.timeout 
     const object_id = this.props.object.id || ""
     const object_name = this.props.object.name || ""
     const object_arguments = this.props.object.arguments || ""
-    const object_cron_day_of_week = this.props.object.cron_day_of_week || ""
-    const object_cron_day_of_month = this.props.object.cron_day_of_month || ""
-    const object_cron_month_of_year= this.props.object.cron_month_of_year || ""
-    const object_cron_hour = this.props.object.cron_hour || ""
-    const object_cron_minute = this.props.object.cron_minute || ""
+    const object_indicator_types = this.props.object.indicator_types || []
     const object_user = this.props.object.user || ""
     const object_password = this.props.object.password || ""
     const object_timeout = this.props.object.timeout || ""
     const object_active = this.props.object.active || ""
+    const indicatorTypes = this.props.indicatorTypes || []
  
       return (
         <Form onSubmit={this.props.onSubmit} >
@@ -53,44 +49,23 @@ export default class Edit extends Component {
             label={'Name'}  
             value={object_name}  
             error={err_name} />
+          <Choice multiple={true}
+            id={'indtypes'}
+            label={'Indicator types'}
+            name={"indicator_types"}
+            error={err_ind_types}
+                    value={object_indicator_types}
+                    values={indicatorTypes}
+                    onChange={this.props.handleChange}
+                    disabled={false}
+                   />
+ 
           <TextInput   
             onChange={this.props.handleChange}
             name={'arguments'}  
             label={'arguments'}  
             value={object_arguments}  
             error={err_arguments} />
-            <TextInput   
-            onChange={this.props.handleChange}
-            name={'cron_day_of_week'}  
-            label={'cron_day_of_week'}  
-            value={object_cron_day_of_week}  
-            error={err_cron_day_of_week} />
-            <TextInput   
-            onChange={this.props.handleChange}
-            name={'cron_day_of_month'}  
-            label={'cron_day_of_month'}  
-            value={object_cron_day_of_month}  
-            error={err_cron_day_of_month} />
-            <TextInput   
-            onChange={this.props.handleChange}
-            name={'cron_month_of_year'}  
-            label={'cron_month_of_year'}  
-            value={object_cron_month_of_year}  
-            error={err_cron_month_of_year} />
- 
-            <TextInput   
-            onChange={this.props.handleChange}
-            name={'cron_hour'}  
-            label={'cron_hour'}  
-            value={object_cron_hour}  
-            error={this.props.err_cron_hour} />
-            <TextInput   
-            onChange={this.props.handleChange}
-            name={'cron_minute'}  
-            label={'cron_minute'}  
-            value={object_cron_minute}  
-            error={err_cron_minute} />
- 
            <TextInput   
             onChange={this.props.handleChange}
             name={'user'}  
@@ -136,6 +111,7 @@ Edit.propTypes = {
   saving:propTypes.bool,
   updating:propTypes.bool,
   object:propTypes.object,
+  indicatorTypes:propTypes.array,
   goBack:propTypes.func,
   onSubmit:propTypes.func
 }

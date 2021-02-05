@@ -13,15 +13,15 @@ import {
 
 
 // edit
-const API = '/api/job/'
+const API = '/api/indicatorjob/'
 const FIELDS = ["id",
   "name",
   "last_run",
   "last_run_status",
   "active"]
-const HEADING = "Scheduled Jobs"
-const EDITURI = "/sources_job/"
-const ADDURI = "/sources_job_add"
+const HEADING = "Hunting Jobs"
+const EDITURI = "/sources_indjob/"
+const ADDURI = "/sources_indjob_add"
 const ORDERSTARTCOL = "name"
 
 const mapStateToProps = mapStateToPropsFunc(ORDERSTARTCOL)(FIELDS)(HEADING)(EDITURI)(ADDURI)

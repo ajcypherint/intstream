@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Button} from 'reactstrap';
 import {FormGroup, Alert, Col,Row,  Form } from 'reactstrap';
-export default ({saving, goBack, onSubmit}) => {
+export default ({saving, goBack, onSubmit, ...submitRest}) => {
   return (     
     <div>
         {saving===true?
@@ -10,7 +10,7 @@ export default ({saving, goBack, onSubmit}) => {
                </span>:
                 <Row>    
                   <Col>
-                    <Button type="submit" onClick={onSubmit} className="button-brand-primary mb-1" size="lg">Save</Button>
+                    <Button {...submitRest} type="submit" onClick={onSubmit} className="button-brand-primary mb-1" size="lg">Save</Button>
                   </Col>
                   <Col>
                     <Button  onClick={goBack} className="button-brand-primary mb-1" size="lg">Back</Button>

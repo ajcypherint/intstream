@@ -1,4 +1,10 @@
 import {PAGINATION} from "../util/util"
+import { RSAA } from 'redux-api-middleware';
+import { withAuth } from '../reducers'
+
+export const MULTIPARTFORM = "multipart/form"
+export const JSONFORM= "application/json"
+
 
 export const setParamsParent = function(url, params, parent){
   url+="?article_match_id="+parent
@@ -14,6 +20,27 @@ export const setParams = function(url, params){
   }
   return url;
 }
+//todo move to util
+export const setActiveRequestTemplate = (ENDP)=>(REQUEST)=>(SUCCESS)=>(FAILURE)=> (id, trueFalse) =>{
+
+  let url = ENDP + id + "/"
+  return {
+  [RSAA]:{
+   endpoint: url,
+    fetch:fetch,
+      method: 'PATCH',
+      body: JSON.stringify({
+        active:trueFalse
+      }),
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+       REQUEST, SUCCESS, FAILURE
+      ]
+
+  }
+  }
+}
+
 
 export const  getAll = (get)=>(putAll)=>(url, params) =>{
   return async(dispatch, getState) => {
@@ -44,4 +71,43 @@ export const  getAll = (get)=>(putAll)=>(url, params) =>{
     }
 }
 
+//todo move to util
+export const getVersionTemplate = (ENDP)=>(REQUEST)=>(SUCCESS)=>(FAILURE)=>(params)=> {
+    let url = setParams(ENDP,params)
+    return {
+    [RSAA]:{
+     endpoint: url,
+      fetch:fetch,
+        method: 'GET',
+        body: '',
+        headers: withAuth({ 'Content-Type': 'application/json' }),
+        types: [
+         REQUEST, SUCCESS, FAILURE
+        ]
+    }
+  }
+}
+
+//todo create template function; job str is a param; funcs are params
+export const setActiveVersionTemplate = (getVersionNoRedux)=> (setActiveRequest)=>(filterChange)=>(model, id, selections, setQuery) =>{
+ return async (dispatch, getState)=>{
+   //get active
+   let getResp = await dispatch(getVersionNoRedux("job="+model+"&active=true"))
+   let len = getResp.payload.results.length
+   if(getResp.error) {
+     return
+   }
+   if (len > 0){
+     let updateResp = await dispatch(setActiveRequest(getResp.payload.results[0].id,false))
+      if(updateResp.error) {
+        return
+     }
+   }
+   let updateResp = await dispatch(setActiveRequest(id, true))
+   if(updateResp.error) {
+     return
+   }
+   await dispatch(filterChange(selections,setQuery))
+ }
+}
 

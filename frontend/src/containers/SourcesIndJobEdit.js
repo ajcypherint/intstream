@@ -13,17 +13,12 @@ import {
 
 
 // edit
-const API = '/api/job/'
-const HEADING = " Scheduled Job"
+const API = '/api/indicatorjob/'
+const HEADING = " Hunting Job"
 const EMPTY = {name:"",
       id:"", 
       python_version:"",
       arguments:"",
-      cron_day_of_week:"",
-      cron_day_of_month:"",
-      cron_month_of_year:"",
-      cron_hour:"",
-      cron_minute:"",
       user:"",
       password:"",
       active:false}
@@ -32,11 +27,6 @@ const FIELDS = ["name",
   "arguments",
   "last_run",
   "arguments",
-   "cron_day_of_week",
-    "cron_day_of_month",
-    "cron_month_of_year",
-     "cron_hour",
-     "cron_minute",
      "user",
      "password",
   "active"]

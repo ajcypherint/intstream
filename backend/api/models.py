@@ -159,7 +159,6 @@ class IndicatorJob(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     indicator_types = models.ManyToManyField(IndicatorType)
 
-    python_version = models.TextField(max_length=3)
     last_run = models.DateTimeField(blank=True, null=True)
     last_status = models.BooleanField(blank=True, null=True)
     arguments = models.TextField(max_length=1000, blank=True, default="")
@@ -185,6 +184,7 @@ class IndicatorJobVersion(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     zip = models.FileField(upload_to="job_scripts")
     version = VersionField()
+    active = models.BooleanField(default=False)
 
 
 class Job(models.Model):
@@ -197,15 +197,14 @@ class Job(models.Model):
     active = models.BooleanField(default=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
-    python_version = models.TextField(max_length=3)
     last_run = models.DateTimeField(blank=True, null=True)
     last_status = models.BooleanField(blank=True, null=True)
-    arguments = models.TextField(max_length=1000, default="")
-    cron_day_of_week = models.TextField(max_length=20)
-    cron_day_of_month = models.TextField(max_length=10)
-    cron_month_of_year = models.TextField(max_length=20)
-    cron_hour = models.TextField(max_length=10)
-    cron_minute = models.TextField(max_length=10)
+    arguments = models.TextField(max_length=1000, default="", blank=True)
+    cron_day_of_week = models.TextField(max_length=20, )
+    cron_day_of_month = models.TextField(max_length=10,)
+    cron_month_of_year = models.TextField(max_length=20, )
+    cron_hour = models.TextField(max_length=10, )
+    cron_minute = models.TextField(max_length=10, )
     user = models.TextField(max_length=250)
     password = EncryptedTextField()
     timeout = models.IntegerField(default=600) # seconds; default 10 mins
@@ -229,6 +228,7 @@ class JobVersion(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     zip = models.FileField(upload_to="job_scripts")
     version = VersionField()
+    active = models.BooleanField(default=False)
 
 
 class TrainingScript(models.Model):
@@ -405,6 +405,7 @@ class Indicator(PolymorphicModel):
     articles = models.ManyToManyField(Article, blank=True)
     organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
     ind_type = models.ForeignKey(IndicatorType, on_delete=models.CASCADE, editable=False)
+    upload_date = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
 
 
 class IndicatorMD5(Indicator):
@@ -497,6 +498,7 @@ class IndicatorNumericField(models.Model):
     name = models.CharField(max_length=100)
     organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
     indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
+    update_date = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
 
 
 class IndicatorTextField(models.Model):
@@ -509,4 +511,5 @@ class IndicatorTextField(models.Model):
     name = models.CharField(max_length=100)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
+    update_date = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
 

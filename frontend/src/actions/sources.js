@@ -3,7 +3,7 @@ import { withAuth } from '../reducers'
 import _ from 'lodash';
 import  URL  from  'url-parse'
 import {setParams,getAll} from './util'
-import {PAGINATION} from '../util/util'
+import {PAGINATION, MULTIPARTFORM, JSONFORM} from './util'
 
 export const GET_SOURCES_REQUEST = '@@sources/GET_SOURCES_REQUEST';
 export const GET_SOURCES_SUCCESS = '@@sources/GET_SOURCES_SUCCESS';
@@ -57,29 +57,52 @@ export const getSources = (url, params=undefined) =>{
 }
 }
 
-export const setSources= (url,data,method='PUT' )=>{
+export const setSources= (url,data,method='PUT', contentType=JSONFORM )=>{
   // filters - list[string]
-  return {
-  [RSAA]:{
-   endpoint: url,
-    fetch:fetch,
-      method: method,
-      body: JSON.stringify(data),
-      headers: withAuth({ 'Content-Type': 'application/json' }),
-      types: [
-       SET_SOURCES_REQUEST, SET_SOURCES_SUCCESS, SET_SOURCES_FAILURE
-      ]
+  if (contentType === JSONFORM){
+    return {
+    [RSAA]:{
+     endpoint: url,
+      fetch:fetch,
+        method: method,
+        body: JSON.stringify(data),
+        headers: withAuth({ 'Content-Type': contentType }),
+        types: [
+         SET_SOURCES_REQUEST, SET_SOURCES_SUCCESS, SET_SOURCES_FAILURE
+        ]
+
+    }
+    }
+  } else {
+    let formdata = new FormData()
+    for (const [key, value] of Object.entries(data)) {
+      formdata.append(key, value)
+    }
+    //for key in data
+    //data.append(key, value)
+    return {
+    [RSAA]:{
+     endpoint: url,
+      fetch:fetch,
+        method: method,
+        body: formdata,
+        headers: withAuth({}),
+        types: [
+         SET_SOURCES_REQUEST, SET_SOURCES_SUCCESS, SET_SOURCES_FAILURE
+        ]
+
+    }
+    }
 
   }
-}
 }
 
 export const getAllSources = getAll(getSources)(totalSources);
 
 
-export const  addSources = (url, data, method, goBack) =>{
+export const  addSources = (url, data, method, goBack, contentType=JSONFORM) =>{
   return async(dispatch, getState) => {
-      let totalresp = await dispatch(setSources(url, data, method))
+      let totalresp = await dispatch(setSources(url, data, method, contentType))
       if (!totalresp.error){
         goBack()
       }
