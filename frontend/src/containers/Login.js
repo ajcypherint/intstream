@@ -4,7 +4,7 @@ import { Redirect,Link } from 'react-router-dom'
 import intstream from './IntStreamwhite.png'
 
 import LoginForm from '../components/LoginForm'
-import {login, loginGroup} from  '../actions/auth'
+import {login, loginGroup} from  '../actions/userInfo'
 import {setUser} from  '../actions/auth'
 import {authErrors, getRegMessage,isAuthenticated,get_username} from '../reducers'
 import { clear } from '../actions/forgotPassword'

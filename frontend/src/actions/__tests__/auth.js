@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import * as actions from '../auth'
+import * as useractions from '../userInfo'
 import fetchMock from 'fetch-mock'
 
 import { apiMiddleware } from 'redux-api-middleware';
@@ -64,7 +65,7 @@ describe('auth actions', () => {
         { type: actions.LOGIN_SUCCESS, payload: {ok:"ok" } }
      ]
 
-    return store.dispatch(actions.login(name, password)).then(() => {
+    return store.dispatch(useractions.login(name, password)).then(() => {
         // return of async actions
         expect(store.getActions()).toEqual(expectedActions)
       })
@@ -83,7 +84,7 @@ describe('auth actions', () => {
         { type: actions.USERINFO_SUCCESS, payload: {username:name} }
      ]
 
-    return store.dispatch(actions.userInfo()).then(() => {
+    return store.dispatch(useractions.userInfo()).then(() => {
         // return of async actions
         expect(store.getActions()).toEqual(expectedActions)
       })

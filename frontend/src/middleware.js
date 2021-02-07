@@ -1,7 +1,8 @@
 import { isRSAA, apiMiddleware } from 'redux-api-middleware';
 import { RSAA } from 'redux-api-middleware';
 
-import { TOKEN_RECEIVED, refreshAccessToken ,LOGIN_REQUEST} from './actions/auth'
+import { TOKEN_RECEIVED, refreshAccessToken } from './actions/auth'
+import { LOGIN_REQUEST} from './actions/userInfo'
 import { refreshToken, isAccessTokenExpired } from './reducers'
 
 export function createApiMiddleware() {//capture rsaa middlware calls

@@ -1,5 +1,6 @@
 import jwtDecode from 'jwt-decode'
 import * as auth from '../actions/auth'
+import * as userInfo from '../actions/userInfo'
 
 
 export const initialState = {
@@ -14,7 +15,7 @@ export const initialState = {
 
 export default (state=initialState, action) => {
   switch(action.type) {
-    case auth.USERINFO_SUCCESS:
+    case userInfo.USERINFO_SUCCESS:
       {
         return {
           ...state,
@@ -34,7 +35,7 @@ export default (state=initialState, action) => {
       return {
         ...initialState
       }
-    case auth.LOGIN_SUCCESS:
+    case userInfo.LOGIN_SUCCESS:
       return {
         ...state,
         access: {
@@ -55,8 +56,8 @@ export default (state=initialState, action) => {
           ...jwtDecode(action.payload.access)
         }
       }
-    case auth.USERINFO_FAILURE:
-    case auth.LOGIN_FAILURE:
+    case userInfo.USERINFO_FAILURE:
+    case userInfo.LOGIN_FAILURE:
     case auth.TOKEN_FAILURE:
       return {
         ...state,
