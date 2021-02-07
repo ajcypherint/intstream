@@ -1,5 +1,5 @@
 import { RSAA } from 'redux-api-middleware';
-import { withAuth } from '../reducers'
+import { withAuth } from '../reducers/util'
 import  URL  from  'url-parse'
 import {PAGINATION} from "../util/util"
 import {setParams} from './util'

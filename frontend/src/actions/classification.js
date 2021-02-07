@@ -1,6 +1,6 @@
 import { RSAA } from 'redux-api-middleware';
 import {setParams,getAll} from './util'
-import { withAuth } from '../reducers'
+import { withAuth } from '../reducers/util'
 import {GET_ARTICLES_REQUEST, GET_ARTICLES_SUCCESS, GET_ARTICLES_FAILURE, getArticles} from "./articles"
 import  URL  from  'url-parse'
 import * as fromArticle from "./articles"

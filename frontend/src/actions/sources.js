@@ -1,5 +1,5 @@
 import { RSAA } from 'redux-api-middleware';
-import { withAuth } from '../reducers'
+import { withAuth } from '../reducers/util'
 import _ from 'lodash';
 import  URL  from  'url-parse'
 import {setParams,getAll} from './util'

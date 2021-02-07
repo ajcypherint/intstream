@@ -1,6 +1,6 @@
 import {PAGINATION} from "../util/util"
 import { RSAA } from 'redux-api-middleware';
-import { withAuth } from '../reducers'
+import { withAuth } from '../reducers/util'
 
 export const MULTIPARTFORM = "multipart/form"
 export const JSONFORM= "application/json"

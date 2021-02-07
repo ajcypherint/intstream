@@ -1,5 +1,5 @@
 import { RSAA } from 'redux-api-middleware';
-import { withAuth } from '../reducers'
+import { withAuth } from '../reducers/util'
 import {setOrgs, ORGAPI} from './organizations'
 
 export const POST_REGISTER_REQUEST = '@@registration/REGISTER_REQUEST';

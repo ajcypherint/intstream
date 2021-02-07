@@ -1,5 +1,5 @@
 import { RSAA } from 'redux-api-middleware';
-import { withAuth } from '../reducers'
+import { withAuth } from '../reducers/util'
 import {setParams,getAll} from './util'
 import {filterChange} from './modelVersionFilter'
 

@@ -1,5 +1,5 @@
 import { RSAA } from 'redux-api-middleware';
-import { withAuth } from '../reducers'
+import { withAuth } from '../reducers/util'
 
 export const INDTYPES_REQUEST = '@@indicatorTypes/INDTYPES_REQUEST';
 export const INDTYPES_SUCCESS = '@@indicatorTypes/INDTYPES_SUCCESS';

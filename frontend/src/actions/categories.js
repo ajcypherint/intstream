@@ -1,5 +1,5 @@
 import { RSAA } from 'redux-api-middleware';
-import { withAuth } from '../reducers'
+import { withAuth } from '../reducers/util'
 
 export const ADD_CATEGORIES_REQUEST = '@@categories/ADD_CATEGORIES_REQUEST';
 export const ADD_CATEGORIES_SUCCESS = '@@categories/ADD_CATEGORIES_SUCCESS';
