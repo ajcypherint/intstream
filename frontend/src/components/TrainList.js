@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
-import _ from 'lodash';
+import React, { Component } from 'react'
+import _ from 'lodash'
 import PropTypes from 'prop-types'
-import {Alert, Form, Row, Col, Button, FormGroup, Input} from 'reactstrap';
+import { Alert, Form, Row, Col, Button, FormGroup, Input } from 'reactstrap'
 import DatePicker from 'react-datepicker'
-import {dateString, } from '../util/util'
+import { dateString, NONE, NONEVAL, ASC, DESC, getUniqueTrainListTF } from '../util/util'
 import Paginate from './Paginate'
-import {NONE, NONEVAL} from "../util/util"
-import {changesort} from './ChangeSort'
-import {ASC, DESC, getUniqueTrainListTF} from "../util/util"
-import TrueFalse from "./TrueFalse" 
-import Choice from "./Choice"
+
+import { changesort } from './ChangeSort'
+
+import TrueFalse from './TrueFalse'
+import Choice from './Choice'
 
 export default class Train extends Component {
-  constructor(props){
+  constructor (props) {
     super(props)
     this.handleSourceChange = this.handleSourceChange.bind(this)
     this.handleModelChange = this.handleModelChange.bind(this)
@@ -27,277 +27,280 @@ export default class Train extends Component {
     this.handleClassifChange = this.handleClassifChange.bind(this)
     this.redirect = this.redirect.bind(this)
   }
-  handleTFChange(event){
-    let id = event.target.value
-    let newSelections = {
-        ...this.props.query,
-        trueFalse:id,
-        page:1
-      }
+
+  handleTFChange (event) {
+    const id = event.target.value
+    const newSelections = {
+      ...this.props.query,
+      trueFalse: id,
+      page: 1
+    }
     this.props.filterChange(newSelections, this.props.setQuery)
-    
   }
-  redirect(event){
-    this.props.history.push("/createmlversion/"+event.target.value)
+
+  redirect (event) {
+    this.props.history.push('/createmlversion/' + event.target.value)
   }
-  //todo remove classification
-  handleClassifChange(event){
-    let {articleid,mlmodel,truefalse,id}= event.target.dataset
+
+  // todo remove classification
+  handleClassifChange (event) {
+    const { articleid, mlmodel, truefalse, id } = event.target.dataset
     // if off then delete the classification
-    if (truefalse === "true"){
-      let target = event.target.checked 
-      if(target){
+    if (truefalse === 'true') {
+      const target = event.target.checked
+      if (target) {
         this.props.setClassif(mlmodel, articleid, true, mlmodel)
       } else {
-        //remove classification
-        this.props.deleteClassification(id, parseInt(articleid,10),
-          mlmodel 
+        // remove classification
+        this.props.deleteClassification(id, parseInt(articleid, 10),
+          mlmodel
         )
       }
     }
-    if (truefalse === "false"){
-      let target = event.target.checked 
-      if(target){
+    if (truefalse === 'false') {
+      const target = event.target.checked
+      if (target) {
         this.props.setClassif(mlmodel, articleid, false, mlmodel)
       } else {
-        //remove classification
-        this.props.deleteClassification(id, parseInt(articleid,10),
-          mlmodel 
+        // remove classification
+        this.props.deleteClassification(id, parseInt(articleid, 10),
+          mlmodel
         )
       }
     }
   }
-  handleModelChange(event){
+
+  handleModelChange (event) {
     event.preventDefault()
-    let id = event.target.value
+    const id = event.target.value
     this.props.clearClassif()
-    if(id!==NONEVAL){
-      let newSelections = {
+    if (id !== NONEVAL) {
+      const newSelections = {
         ...this.props.query,
-        mlmodelChosen:id,
-        page:1
+        mlmodelChosen: id,
+        page: 1
       }
       this.props.filterChange(newSelections, this.props.setQuery)
-      //todo() ordering add model
+      // todo() ordering add model
     } else {
-      this.props.clear() //selections
-      this.props.fetchAllMLModels("ordering=name&active=true")
+      this.props.clear() // selections
+      this.props.fetchAllMLModels('ordering=name&active=true')
       this.props.clearArticles()
-      let selections = {
+      const selections = {
         ...this.props.query,
-        mlmodelChosen:NONEVAL,
-       }
-    this.props.setQuery(selections)
- 
+        mlmodelChosen: NONEVAL
+      }
+      this.props.setQuery(selections)
     }
-
-  }
-  handleStartChange(date){
-    let selections = this.props.query
-    this.updateDate(date,selections.endDate, true)
-  }
-  handleEndChange(date){
-    let selections = this.props.query
-    this.updateDate(selections.startDate,date,false)
   }
 
-  updateDate(startDate,endDate,start_filter=true){
+  handleStartChange (date) {
+    const selections = this.props.query
+    this.updateDate(date, selections.endDate, true)
+  }
+
+  handleEndChange (date) {
+    const selections = this.props.query
+    this.updateDate(selections.startDate, date, false)
+  }
+
+  updateDate (startDate, endDate, start_filter = true) {
     // unset sourceChosen
     // fix start_date or end_date based on input
-    //startdate - date
-    //enddate - date
-    //start_end - bool
-    if (start_filter === true){
-      if(startDate > endDate){
+    // startdate - date
+    // enddate - date
+    // start_end - bool
+    if (start_filter === true) {
+      if (startDate > endDate) {
         endDate = new Date(startDate.getTime())
-        
       }
     } else {
-      if(endDate < startDate){
+      if (endDate < startDate) {
         startDate = new Date(endDate.getTime())
-        //fix start date
-        //fix end date
-
+        // fix start date
+        // fix end date
       }
     }
-    let newSelections = {
+    const newSelections = {
       ...this.props.query,
-      startDate:startDate,
-      endDate:endDate,
-      page:1
+      startDate: startDate,
+      endDate: endDate,
+      page: 1
     }
     this.props.filterChange(newSelections, this.props.setQuery)
   }
- 
-  handleSourceChange(event){
+
+  handleSourceChange (event) {
     event.preventDefault()
-    //last filter.  do not need to unset others
-    let newSelections = {
+    // last filter.  do not need to unset others
+    const newSelections = {
       ...this.props.query,
-      sourceChosen:event.target.value,
-      page:1
+      sourceChosen: event.target.value,
+      page: 1
     }
     this.props.filterChange(newSelections, this.props.setQuery)
   }
-  getArticle(event){
-    let {id}= event.target.dataset
+
+  getArticle (event) {
+    const { id } = event.target.dataset
     this.props.clearSelect()
     this.props.fetchSelect(id)
   }
-  fetchit(selections,page){
-    let newSelections = {
+
+  fetchit (selections, page) {
+    const newSelections = {
       ...selections,
-      page:page
+      page: page
     }
     this.props.filterChange(newSelections, this.props.setQuery)
   }
- 
-  componentDidMount(){
-    //action
-    let START = new Date();
-    START.setHours(0,0,0,0);
 
-    let END= new Date();
-    END.setHours(23,59,59,999);
+  componentDidMount () {
+    // action
+    const START = new Date()
+    START.setHours(0, 0, 0, 0)
 
-    let trueFalse = this.props.query.trueFalse || ''
-    let ordering = this.props.query.ordering || "title"
-    let page = this.props.query.page || 1
-    let orderdir = this.props.query.orderdir || ""
-    let sourceChosen =   this.props.query.sourceChosen || ""
-    let mlmodelChosen =   this.props.query.mlmodelChosen || ""
-    let startDate = this.props.query.startDate || START
-    let endDate = this.props.query.endDate || END
-    let parent_id = this.props.query.parent_id || ''
-    let selections = {
+    const END = new Date()
+    END.setHours(23, 59, 59, 999)
+
+    const trueFalse = this.props.query.trueFalse || ''
+    const ordering = this.props.query.ordering || 'title'
+    const page = this.props.query.page || 1
+    const orderdir = this.props.query.orderdir || ''
+    const sourceChosen = this.props.query.sourceChosen || ''
+    const mlmodelChosen = this.props.query.mlmodelChosen || ''
+    const startDate = this.props.query.startDate || START
+    const endDate = this.props.query.endDate || END
+    const parent_id = this.props.query.parent_id || ''
+    const selections = {
       ...this.props.query,
-      ordering:ordering,
-      page:page,
-      orderdir:orderdir,
-      sourceChosen:sourceChosen,
-      mlmodelChosen:mlmodelChosen,
-      startDate:startDate,
-      endDate:endDate,
-      parent_id:parent_id,
-      trueFalse:trueFalse
-      }
+      ordering: ordering,
+      page: page,
+      orderdir: orderdir,
+      sourceChosen: sourceChosen,
+      mlmodelChosen: mlmodelChosen,
+      startDate: startDate,
+      endDate: endDate,
+      parent_id: parent_id,
+      trueFalse: trueFalse
+    }
     this.props.setQuery(selections)
     this.props.clearClassif()
-    this.props.fetchAllMLModels("ordering=name&active=true")
-    if (selections.mlmodelChosen===NONEVAL){
+    this.props.fetchAllMLModels('ordering=name&active=true')
+    if (selections.mlmodelChosen === NONEVAL) {
       this.props.clearArticles()
     } else {
       this.props.fetchArticlesAndClassif(selections.mlmodelChosen,
         dateString(
-            selections.orderdir,
-            selections.ordering,
-            selections.sourceChosen,
-            selections.page,
-            selections.startDate,
-            selections.endDate,
-          )+"&source__mlmodel="+selections.mlmodelChosen+"&source__active=true")
+          selections.orderdir,
+          selections.ordering,
+          selections.sourceChosen,
+          selections.page,
+          selections.startDate,
+          selections.endDate
+        ) + '&source__mlmodel=' + selections.mlmodelChosen + '&source__active=true')
     }
   }
-  render(){
-    let articles = this.props.articlesList || [];
+
+  render () {
+    const articles = this.props.articlesList || []
     const errors = this.props.articlesErrors || {}
     const classifErrors = this.props.classifErrors || {}
-    let selections = this.props.query|| {}
-    let models = this.props.modelsList || []
-    const uniqueSources = _.uniqBy(this.props.sourcesList,'id')
-    const ids = uniqueSources.map(a=>a.id.toString()) ||[]
-    const totalcount= this.props.articlesTotalCount ||0;
-    const next = this.props.articleNext ;
-    const previous = this.props.articlePrevious;
+    const selections = this.props.query || {}
+    const models = this.props.modelsList || []
+    const uniqueSources = _.uniqBy(this.props.sourcesList, 'id')
+    const ids = uniqueSources.map(a => a.id.toString()) || []
+    const totalcount = this.props.articlesTotalCount || 0
+    const next = this.props.articleNext
+    const previous = this.props.articlePrevious
     const loading = this.props.articlesLoading
     const selectArticles = this.props.selectArticles || {}
-    const classifications = this.props.classif 
+    const classifications = this.props.classif
     const counts = this.props.classifCounts
     const true_pct = (counts.true_count / counts.total) * 100
     const false_pct = (counts.false_count / counts.total) * 100
     // todo; move this to the backend.
-    const create_disabled = selections.mlmodelChosen === NONEVAL || 
+    const create_disabled = selections.mlmodelChosen === NONEVAL ||
              true_pct < 20.0 || false_pct < 20.0 || counts.total < 10
-    //todo(aj) code uniqueTF, idsTF, filter out nulls just like  model
+    // todo(aj) code uniqueTF, idsTF, filter out nulls just like  model
     const uniqueTF = getUniqueTrainListTF(this.props.sourcesList)
-    const idsTF = uniqueTF.map(a=>a.id.toString()) ||[]
+    const idsTF = uniqueTF.map(a => a.id.toString()) || []
 
     return (
 
       <div className="container mt-2 col-sm-12 " >
 
-        {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
-        {classifErrors.non_field_errors?<Alert color="danger">{JSON.stringify(classifErrors.non_field_errors)}</Alert>:""}
+        {errors.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
+        {classifErrors.non_field_errors ? <Alert color="danger">{JSON.stringify(classifErrors.non_field_errors)}</Alert> : ''}
         <Form>
        <FormGroup>
          <Row>
         <Col sm="3" >
-          <label  htmlFor={"model_id"}>{"Model"}</label>
+          <label htmlFor={'model_id'}>{'Model'}</label>
            <Input type="select" name="Model" value={selections.mlmodelChosen} id="model_id" onChange={this.handleModelChange}>
                 <option value={NONEVAL}>{NONE}</option>
              {
-             models.map((model, index)=>{
-              return (
+             models.map((model, index) => {
+               return (
                 <option value={model.id} key={model.id}>{model.name}</option>
-              )
+               )
              })
              }
            </Input>
 
         </Col>
         <Col sm="2">
-          <label  htmlFor={"start_id"}>{"Start Date"}</label>
+          <label htmlFor={'start_id'}>{'Start Date'}</label>
           <div className = "mb-2 ">
-            <DatePicker style={{width:'100%'}} 
-              id={"startDate"} 
-              disabled={selections.mlmodelChosen===NONEVAL} 
-              selected={selections.startDate} 
+            <DatePicker style={{ width: '100%' }}
+              id={'startDate'}
+              disabled={selections.mlmodelChosen === NONEVAL}
+              selected={selections.startDate}
               onChange={this.handleStartChange} />
           </div>
         </Col>
         <Col sm="2">
-          <label  htmlFor={"end_id"}>{"End Date"}</label>
+          <label htmlFor={'end_id'}>{'End Date'}</label>
           <div className = "mb-2 ">
-            <DatePicker  style={{width:'100%'}}
-              id={"endDate"}  
-              selected={selections.endDate} 
-              disabled={selections.mlmodelChosen===NONEVAL}
+            <DatePicker style={{ width: '100%' }}
+              id={'endDate'}
+              selected={selections.endDate}
+              disabled={selections.mlmodelChosen === NONEVAL}
               onChange={this.handleEndChange}/>
           </div>
         </Col>
         <Col sm="2">
-          <label  htmlFor={"true_false"}>{"Classification"}</label>
+          <label htmlFor={'true_false'}>{'Classification'}</label>
           <div className = "mb-2 ">
-            <Choice name={"Classification"}
+            <Choice name={'Classification'}
               value={selections.trueFalse}
               onChange={this.handleTFChange}
               idList={idsTF}
               uniqueList={uniqueTF}
-              disabled={selections.mlmodelChosen===NONEVAL}
+              disabled={selections.mlmodelChosen === NONEVAL}
             />
           </div>
         </Col>
 
-
          <Col sm="3" >
-           <label  htmlFor={"source_id"}>{"Source"}</label> 
+           <label htmlFor={'source_id'}>{'Source'}</label>
           <div >
-            <Choice name={"Source"} 
+            <Choice name={'Source'}
               value={selections.sourceChosen}
               onChange={this.handleSourceChange}
               idList={ids}
               uniqueList={uniqueSources}
-              disabled={selections.mlmodelChosen===NONEVAL}
+              disabled={selections.mlmodelChosen === NONEVAL}
             />
            </div>
- 
+
         </Col>
- 
+
       </Row>
     </FormGroup>
-  </Form> {//this MUST be here.  the paginate function will cause page refreshes
+  </Form> {// this MUST be here.  the paginate function will cause page refreshes
   }
-    <Row className={"col-sm-8 offset-sm-2"}>
+    <Row className={'col-sm-8 offset-sm-2'}>
           <Col>
          {this.paginate(totalcount,
            next,
@@ -306,58 +309,64 @@ export default class Train extends Component {
            this.props.fetchArticlesFullUri,
            this.props.query,
            this.props.setQuery
-           )}
+         )}
          </Col>
          <Col align="left">
-           <font>True: {isFinite(true_pct) ? true_pct.toFixed(1): ""}%</font>
+           <font>True: {isFinite(true_pct) ? true_pct.toFixed(1) : ''}%</font>
 
          </Col>
          <Col align="left">
-           <font>False: {isFinite(false_pct) ? false_pct.toFixed(1): ""}%</font>
+           <font>False: {isFinite(false_pct) ? false_pct.toFixed(1) : ''}%</font>
          </Col>
          <Col align="left">
            <font>Count: {counts.total}</font>
          </Col>
- 
+
          <Col align="left">
            <Button className="button-brand-primary mb-1" size="md" value={selections.mlmodelChosen}
              onClick={this.redirect} disabled={create_disabled}>Create </Button>
          </Col>
        </Row>
-         <table className={"table table-sm col-sm-8 offset-sm-2"}>
+         <table className={'table table-sm col-sm-8 offset-sm-2'}>
          <thead>
            <tr>
-             <td className="hover" onClick={(event)=>{this.changesort("title", 
-               ASC, 
-               DESC, 
+             <td className="hover" onClick={(event) => {
+               this.changesort('title',
+                 ASC,
+                 DESC,
+                 selections,
+                 this.props.filterChange,
+                 this.props.setQuery,
+                 0
+               )
+             }}>Title</td>
+           <td className="hover" onClick={(event) => {
+             this.changesort('source__name',
+               ASC,
+               DESC,
                selections,
                this.props.filterChange,
                this.props.setQuery,
                0
-             )}}>Title</td>
-           <td className="hover" onClick={(event)=>{this.changesort("source__name", 
-             ASC, 
-             DESC, 
-             selections,
-             this.props.filterChange,
-             this.props.setQuery,
-             0,
-              )}}> Source </td>
-           <td className="hover" onClick={(event)=>{this.changesort("upload_date", 
-             ASC, 
-             DESC, 
-             selections,
-             this.props.filterChange,
-             this.props.setQuery,
-             0,
-           )}}>Date</td>
-             <td>True</td> 
-             <td>False</td> 
+             )
+           }}> Source </td>
+           <td className="hover" onClick={(event) => {
+             this.changesort('upload_date',
+               ASC,
+               DESC,
+               selections,
+               this.props.filterChange,
+               this.props.setQuery,
+               0
+             )
+           }}>Date</td>
+             <td>True</td>
+             <td>False</td>
            </tr>
          </thead>
-         { !loading ?
-             articles.map((article)=>{
-               return (
+         { !loading
+           ? articles.map((article) => {
+             return (
                 <tbody key={article.id}>
                 <tr key={article.id}>
                  <td className="hover" data-id={article.id} onClick={this.getArticle}>
@@ -367,42 +376,42 @@ export default class Train extends Component {
                     {article.source.name}
                   </td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
-                  <TrueFalse trueFalse={true} 
-                    articleId={article.id} 
+                  <TrueFalse trueFalse={true}
+                    articleId={article.id}
                     classif={classifications}
                     mlModel={selections.mlmodelChosen}
                     handleChange={this.handleClassifChange}/>
-                  <TrueFalse trueFalse={false} 
-                    articleId={article.id} 
+                  <TrueFalse trueFalse={false}
+                    articleId={article.id}
                     mlModel={selections.mlmodelChosen}
                     classif={classifications}
                     handleChange={this.handleClassifChange}/>
- 
+
                 </tr>
-               {//todo selected article
-                 article.id in selectArticles ?
-                  <tr>
-                    {selectArticles[article.id].loading===true?
-                        <td>
+               {// todo selected article
+                 article.id in selectArticles
+                   ? <tr>
+                    {selectArticles[article.id].loading === true
+                      ? <td>
                           <span className="spinner-border" role="status">
                             <span className="sr-only">Loading...</span>
                           </span>
-                        </td>: 
-                          <td colSpan="5">
-                            <Input type="textarea" className="bktextarea" 
-                              name="text" rows="15" id="Article" readOnly 
+                        </td>
+                      : <td colSpan="5">
+                            <Input type="textarea" className="bktextarea"
+                              name="text" rows="15" id="Article" readOnly
                               value={article.clean_text}/>
                           </td>
                     }
                   </tr>
                    : null
-                 //if article.id in this.props.selectArticles.keys()
+                 // if article.id in this.props.selectArticles.keys()
                }
 
                 </tbody>
-                 )
-             })
-             :<tbody><tr><td><span className="spinner-border" role="status">
+             )
+           })
+           : <tbody><tr><td><span className="spinner-border" role="status">
                <span className="sr-only">Loading...</span></span>
            </td>
            </tr>
@@ -416,61 +425,61 @@ export default class Train extends Component {
 }
 
 Train.propTypes = {
-  query:PropTypes.object,
-  setQuery:PropTypes.func,
+  query: PropTypes.object,
+  setQuery: PropTypes.func,
 
-  sourcesList:PropTypes.arrayOf(
+  sourcesList: PropTypes.arrayOf(
     PropTypes.shape({
-      id:PropTypes.number,
-      name:PropTypes.string,
-      target:PropTypes.boolean
+      id: PropTypes.number,
+      name: PropTypes.string,
+      target: PropTypes.boolean
     })
   ),
-  modelsList:PropTypes.arrayOf(
+  modelsList: PropTypes.arrayOf(
     PropTypes.shape({
-      id:PropTypes.number,
-      name:PropTypes.string,
+      id: PropTypes.number,
+      name: PropTypes.string
     })
   ),
-  articlesList:PropTypes.arrayOf(
+  articlesList: PropTypes.arrayOf(
     PropTypes.shape({
-      id:PropTypes.number,
-      text:PropTypes.string,
-      clean_text:PropTypes.string,
-      title:PropTypes.string,
-      source:PropTypes.shape({
-        name:PropTypes.string
+      id: PropTypes.number,
+      text: PropTypes.string,
+      clean_text: PropTypes.string,
+      title: PropTypes.string,
+      source: PropTypes.shape({
+        name: PropTypes.string
       })
 
     })
   ),
-  articlesLoading:PropTypes.bool,
-  articlesErrors:PropTypes.object,
-  articlesTotalCount:PropTypes.number,
-  articleNext:PropTypes.string,
-  articlePrevious:PropTypes.string,
-  articleuri:PropTypes.string,
-  selectArticles:PropTypes.object,
-  selectErrors:PropTypes.object,
-  classif:PropTypes.shape(
+  articlesLoading: PropTypes.bool,
+  articlesErrors: PropTypes.object,
+  articlesTotalCount: PropTypes.number,
+  articleNext: PropTypes.string,
+  articlePrevious: PropTypes.string,
+  articleuri: PropTypes.string,
+  selectArticles: PropTypes.object,
+  selectErrors: PropTypes.object,
+  classif: PropTypes.shape(
     {
-      id:PropTypes.bool,
+      id: PropTypes.bool
     }),
-  classifErrors:PropTypes.object,
-  classifCounts:PropTypes.object,
-  filterChange:PropTypes.func,
-  fetchAllSources:PropTypes.func,
-  fetchAllMLModels:PropTypes.func,
-  fetchArticlesFullUri:PropTypes.func,
-  fetchArticles:PropTypes.func,
-  clearArticles:PropTypes.func,
-  clear:PropTypes.func,
-  fetchSelect:PropTypes.func,
-  clearSelect:PropTypes.func,
-  fetchArticlesAndClassif:PropTypes.func,
+  classifErrors: PropTypes.object,
+  classifCounts: PropTypes.object,
+  filterChange: PropTypes.func,
+  fetchAllSources: PropTypes.func,
+  fetchAllMLModels: PropTypes.func,
+  fetchArticlesFullUri: PropTypes.func,
+  fetchArticles: PropTypes.func,
+  clearArticles: PropTypes.func,
+  clear: PropTypes.func,
+  fetchSelect: PropTypes.func,
+  clearSelect: PropTypes.func,
+  fetchArticlesAndClassif: PropTypes.func,
   deleteClassification: PropTypes.func,
-  setClassif:PropTypes.func,
-  fetchClassifCounts:PropTypes.func,
-  clearClassif:PropTypes.func,
+  setClassif: PropTypes.func,
+  fetchClassifCounts: PropTypes.func,
+  clearClassif: PropTypes.func
 
 }

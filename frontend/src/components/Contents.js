@@ -1,21 +1,20 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Navigation from '../containers/Navigation'
 import Main from './Main'
 
 export class AppContainer extends Component {
-  constructor(props){
+  constructor (props) {
     super(props)
   }
 
-  render() {
+  render () {
     return (
       <div>
       <Navigation/>
       <Main/>
     </div>
-    );
+    )
   }
 }
-

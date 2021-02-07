@@ -1,48 +1,45 @@
 // reducers/articles.js
 //
-import _ from 'lodash';
-import  URL  from  'url-parse'
-import {ASC, DESC} from "../util/util"
+import _ from 'lodash'
+import URL from 'url-parse'
+import { ASC, DESC } from '../util/util'
 import * as filter from '../actions/filter'
 
+const START = new Date()
+START.setHours(0, 0, 0, 0)
 
-let START = new Date();
-START.setHours(0,0,0,0);
+const END = new Date()
+END.setHours(23, 59, 59, 999)
 
-let END= new Date();
-END.setHours(23,59,59,999);
-
-export const initialState ={
+export const initialState = {
   sources: [],
-  models:[]
+  models: []
 }
 
-export default (state=initialState, action) => {
-  switch(action.type) {
+export default (state = initialState, action) => {
+  switch (action.type) {
     case filter.ALL_ACTIVE_MODELS:
-      {
-        return {
-          ...state,
-          models:action.payload,
-        }
+    {
+      return {
+        ...state,
+        models: action.payload
       }
-     case filter.ALL_SOURCES:
-      {
-        return {
-          ...state,
-          sources:action.payload,
-        }
+    }
+    case filter.ALL_SOURCES:
+    {
+      return {
+        ...state,
+        sources: action.payload
+      }
+    }
 
-      }
- 
-     default:
+    default:
       return state
-     }
-
+  }
 }
-export function sources(state){
+export function sources (state) {
   return state.sources
 }
-export function models(state){
+export function models (state) {
   return state.models
 }

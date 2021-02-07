@@ -1,9 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-const About = (props)=>(
+const About = (props) => (
   <div>
-    <div class="row">
+    <div className="row">
       <div className="col-sm-4 offset-sm-4" >
       <h1>About</h1>
       <hr/>
@@ -17,5 +17,4 @@ const About = (props)=>(
   </div>
 )
 
-export default About 
-
+export default About

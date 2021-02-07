@@ -1,23 +1,23 @@
 import { connect } from 'react-redux'
 import CreateMLVersion from '../components/CreateMLVersion'
 import * as reducers from '../reducers/'
-import {getModelVersion, trainRedirect} from "../actions/modelVersion"
-import {getModels,clearModels, API} from '../actions/models'
+import { getModelVersion, trainRedirect } from '../actions/modelVersion'
+import { getModels, clearModels, API } from '../actions/models'
 
 const mapStateToProps = (state) => {
   return {
-    modelList:reducers.getModels(state),
-    trainCreateErrors:reducers.getModelVersionErrors(state),
-  };
+    modelList: reducers.getModels(state),
+    trainCreateErrors: reducers.getModelVersionErrors(state)
+  }
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    trainRedirect: (model, 
-      history, 
-      uri, 
-      metric, 
-      extra)=>dispatch(trainRedirect(model, history, uri,  metric, extra)),
-    fetchModel: (params=undefined) => dispatch(getModels(API,params)),
-  };
+    trainRedirect: (model,
+      history,
+      uri,
+      metric,
+      extra) => dispatch(trainRedirect(model, history, uri, metric, extra)),
+    fetchModel: (params = undefined) => dispatch(getModels(API, params))
+  }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(CreateMLVersion);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateMLVersion)

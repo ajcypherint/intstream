@@ -1,125 +1,120 @@
-import reducer from '../auth'
-import {initialState} from "../auth"
+import reducer, { initialState } from '../auth'
+
 import * as actions from '../../actions/auth'
 
 describe('auth reducer', () => {
   it('initial state', () => {
     expect(reducer(undefined, {})).toEqual(
-			initialState
-      )
+      initialState
+    )
   })
-  it("set user", () => {
-    let res = {
-      username:"test"
+  it('set user', () => {
+    const res = {
+      username: 'test'
     }
     expect(
       reducer(actions.initialState, {
-        type:actions.SET_USER,
-        payload:res
+        type: actions.SET_USER,
+        payload: res
       }
       )).toEqual({
-        ...initialState,
-        ...res
-        }
-      )
-    
-  })
-  it("logout", () => {
-    let state = {
       ...initialState,
-      access:"test",
-      refresh:"test"
+      ...res
+    }
+    )
+  })
+  it('logout', () => {
+    const state = {
+      ...initialState,
+      access: 'test',
+      refresh: 'test'
     }
     expect(
       reducer(
         state,
         {
-          type:actions.LOGOUT,
-          payload:{}
+          type: actions.LOGOUT,
+          payload: {}
         }
       )).toEqual(
-        {
+      {
         ...initialState
-        }
-      )
-
+      }
+    )
   })
-  it("fail ", () => {
-    let state = {
+  it('fail ', () => {
+    const state = {
       ...initialState,
-      access:"test",
-      refresh:"test"
+      access: 'test',
+      refresh: 'test'
     }
- 
-    expect(
-      reducer(
-        state,
-        {
-          type:actions.USERINFO_FAILURE,
-          payload:{response:{test:"test"}}
-        }
-      )).toEqual(
-        {
-          ...initialState,
-          errors:{test:"test"}
-        }
-      )
 
     expect(
       reducer(
         state,
         {
-          type:actions.LOGIN_FAILURE,
-          payload:{response:{test:"test"}}
+          type: actions.USERINFO_FAILURE,
+          payload: { response: { test: 'test' } }
         }
       )).toEqual(
-        {
-          ...initialState,
-          errors:{test:"test"}
-        }
-      )
+      {
+        ...initialState,
+        errors: { test: 'test' }
+      }
+    )
 
     expect(
       reducer(
         state,
         {
-          type:actions.TOKEN_FAILURE,
-          payload:{response:{test:"test"}}
+          type: actions.LOGIN_FAILURE,
+          payload: { response: { test: 'test' } }
         }
       )).toEqual(
+      {
+        ...initialState,
+        errors: { test: 'test' }
+      }
+    )
+
+    expect(
+      reducer(
+        state,
         {
-          ...initialState,
-          errors:{test:"test"}
+          type: actions.TOKEN_FAILURE,
+          payload: { response: { test: 'test' } }
         }
-      )
-
-
-
+      )).toEqual(
+      {
+        ...initialState,
+        errors: { test: 'test' }
+      }
+    )
   })
   it('get user infosuccess', () => {
-    let res = {results:[
-      {
-        is_integrator:true,
-        is_superuser:true,
-        is_staff:true
-      }
+    const res = {
+      results: [
+        {
+          is_integrator: true,
+          is_superuser: true,
+          is_staff: true
+        }
 
-    ]
+      ]
 
     }
     expect(
       reducer(actions.initialState, {
         type: actions.USERINFO_SUCCESS,
-        payload:res
+        payload: res
       })
     ).toEqual(
       {
-			...initialState,
-        isIntegrator:true,
-        isSuperuser:true,
-        isStaff:true
+        ...initialState,
+        isIntegrator: true,
+        isSuperuser: true,
+        isStaff: true
       }
     )
   })
-
 })

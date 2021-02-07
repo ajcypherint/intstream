@@ -1,69 +1,70 @@
-import React, { Component } from 'react';
-import {FormGroup,FormFeedback, Alert, Button, Jumbotron,  Form } from 'reactstrap';
+import React, { Component } from 'react'
+import { FormGroup, FormFeedback, Alert, Button, Jumbotron, Form } from 'reactstrap'
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
 import FormButtons from './compFormButtons'
 
 export default class Edit extends Component {
-  constructor(props){
+  constructor (props) {
     super(props)
- }
-    render(){
-    const errors = this.props.errors || {}
-    const err_name = errors.name 
-    const err_url = errors.url 
+  }
 
-      return (
+  render () {
+    const errors = this.props.errors || {}
+    const err_name = errors.name
+    const err_url = errors.url
+
+    return (
         <Form onSubmit={this.props.onSubmit} >
-          <TextInput   
+          <TextInput
             onChange={this.props.handleChange}
-            name={'name'}  
-            label={'Name'}  
-            value={this.props.object.name}  
+            name={'name'}
+            label={'Name'}
+            value={this.props.object.name}
             error={err_name} />
-          <TextInput   
+          <TextInput
             onChange={this.props.handleChange}
-            name={'url'}  
-            label={'Url'}  
-            value={this.props.object.url}  
+            name={'url'}
+            label={'Url'}
+            value={this.props.object.url}
             error={err_url} />
- 
-          <CheckBoxInput    
+
+          <CheckBoxInput
             onChange={this.props.handleChange}
-            type={'checkbox'} 
-            name={'active'}  
-            label={'Active'}  
+            type={'checkbox'}
+            name={'active'}
+            label={'Active'}
             readOnly
-            checked={this.props.object.active}   />
-          <CheckBoxInput    
+            checked={this.props.object.active} />
+          <CheckBoxInput
             onChange={this.props.handleChange}
-            type={'checkbox'} 
-            name={'extract_indicators'}  
-            label={'Extract Indicators'}  
+            type={'checkbox'}
+            name={'extract_indicators'}
+            label={'Extract Indicators'}
             readOnly
-            checked={this.props.object.extract_indicators}   />
- 
+            checked={this.props.object.extract_indicators} />
+
           <FormButtons saving={this.props.saving}
                        goBack={this.props.goBack}/>
           </Form>
-      )
-    }
+    )
+  }
 };
- 
+
 Edit.propTypes = {
-  handleChange:propTypes.func,
-  error:propTypes.object,
-  saving:propTypes.bool,
-  updating:propTypes.bool,
-  object:propTypes.shape({
-    id:propTypes.number,
-    name:propTypes.string,
-    url:propTypes.string,
-    active:propTypes.bool,
+  handleChange: propTypes.func,
+  error: propTypes.object,
+  saving: propTypes.bool,
+  updating: propTypes.bool,
+  object: propTypes.shape({
+    id: propTypes.number,
+    name: propTypes.string,
+    url: propTypes.string,
+    active: propTypes.bool
   }
 
   ),
-  goBack:propTypes.func,
-  onSubmit:propTypes.func
+  goBack: propTypes.func,
+  onSubmit: propTypes.func
 }

@@ -1,60 +1,62 @@
-import React, { Component } from 'react';
-import _ from 'lodash';
-import {FormGroup, Alert, Button, Jumbotron,  Form } from 'reactstrap';
+import React, { Component } from 'react'
+import _ from 'lodash'
+import { FormGroup, Alert, Button, Jumbotron, Form } from 'reactstrap'
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
 import FormButtons from './compFormButtons'
-import Choice from "./Choice"
+import Choice from './Choice'
 
 export default class Edit extends Component {
-  constructor(props){
+  constructor (props) {
     super(props)
 
     const errors = this.props.errors || {}
     const err_name = errors.username || {}
-    const err_email = errors.email|| {}
- }
- componentDidMount(){
-   this.props.fetchOrgs("ordering=name")
- }
- render(){
-   // set idsList, uniqueIds
-   const uniqueOrgs = _.uniqBy(this.props.orgs,'id') || []
-   let ids = []
-   for (let i=0; i<uniqueOrgs.length;i++){
-      if(uniqueOrgs[i].id){
+    const err_email = errors.email || {}
+  }
+
+  componentDidMount () {
+    this.props.fetchOrgs('ordering=name')
+  }
+
+  render () {
+    // set idsList, uniqueIds
+    const uniqueOrgs = _.uniqBy(this.props.orgs, 'id') || []
+    const ids = []
+    for (let i = 0; i < uniqueOrgs.length; i++) {
+      if (uniqueOrgs[i].id) {
         ids.push(uniqueOrgs[i].id)
       }
     }
-  
-   return (
+
+    return (
         <Form onSubmit={this.props.onSubmit} >
-          <TextInput   
+          <TextInput
             disabled={true}
-            name={'username'}  
-            label={'Username'}  
-            value={this.props.object.username}  
+            name={'username'}
+            label={'Username'}
+            value={this.props.object.username}
             error={this.err_name} />
-          <TextInput   
+          <TextInput
             onChange={this.props.handleChange}
-            name={'email'}  
-            label={'Email'}  
-            value={this.props.object.email}  
+            name={'email'}
+            label={'Email'}
+            value={this.props.object.email}
             error={this.err_email} />
-          <TextInput   
+          <TextInput
             onChange={this.props.handleChange}
-            name={'firstname'}  
-            label={'First Name'}  
-            value={this.props.object.first_name}  
+            name={'firstname'}
+            label={'First Name'}
+            value={this.props.object.first_name}
             error={this.err_email} />
-           <TextInput   
+           <TextInput
             onChange={this.props.handleChange}
-            name={'lastname'}  
-            label={'Last Name'}  
-            value={this.props.object.last_name}  
+            name={'lastname'}
+            label={'Last Name'}
+            value={this.props.object.last_name}
             error={this.err_email} />
-            <Choice name={"Organization"} 
+            <Choice name={'Organization'}
               disabled={false}
               value={this.props.object.organization}
               onChange={this.handleSourceChange}
@@ -62,42 +64,42 @@ export default class Edit extends Component {
               idList={ids}
               uniqueList={uniqueOrgs}
             />
-          <CheckBoxInput    
+          <CheckBoxInput
             onChange={this.props.handleChange}
-            type={'checkbox'} 
-            name={'isStaff'}  
+            type={'checkbox'}
+            name={'isStaff'}
             readOnly
-            label={'Is Staff'}  
-            checked={this.props.object.is_staff}   />
-          <CheckBoxInput    
+            label={'Is Staff'}
+            checked={this.props.object.is_staff} />
+          <CheckBoxInput
             onChange={this.props.handleChange}
-            type={'checkbox'} 
-            name={'isIntegrator'}  
+            type={'checkbox'}
+            name={'isIntegrator'}
             readOnly
-            label={'Is Integrator'}  
-            checked={this.props.object.is_integrator}   />
- 
+            label={'Is Integrator'}
+            checked={this.props.object.is_integrator} />
+
           <FormButtons saving={this.props.saving}
                       onSubmit={this.props.onSubmit}
                        goBack={this.props.goBack}/>
 
          </Form>
-      )
-    }
+    )
+  }
 };
- 
+
 Edit.propTypes = {
-  handleChange:propTypes.func,
-  error:propTypes.object,
-  saving:propTypes.bool,
-  updating:propTypes.bool,
-  object:propTypes.shape({
-    id:propTypes.number,
-    name:propTypes.string,
-    active:propTypes.bool,
+  handleChange: propTypes.func,
+  error: propTypes.object,
+  saving: propTypes.bool,
+  updating: propTypes.bool,
+  object: propTypes.shape({
+    id: propTypes.number,
+    name: propTypes.string,
+    active: propTypes.bool
   }
 
   ),
-  goBack:propTypes.func,
-  onSubmit:propTypes.func
+  goBack: propTypes.func,
+  onSubmit: propTypes.func
 }

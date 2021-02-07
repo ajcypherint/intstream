@@ -1,5 +1,5 @@
-import React from 'react';
-import {Link} from 'react-router-dom'
+import React from 'react'
+import { Link } from 'react-router-dom'
 import {
   Collapse,
   Navbar,
@@ -11,26 +11,29 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem } from 'reactstrap';
+  DropdownItem
+} from 'reactstrap'
 
 export default class Example extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
 
-    this.toggle = this.toggle.bind(this);
+    this.toggle = this.toggle.bind(this)
     this.state = {
       isOpen: false
-    };
+    }
   }
-  toggle() {
+
+  toggle () {
     this.setState({
       isOpen: !this.state.isOpen
-    });
+    })
   }
-  render() {
+
+  render () {
     return (
       <div>
-        <Navbar className={"brand-primary"} dark expand="md">
+        <Navbar className={'brand-primary'} dark expand="md">
           <NavbarBrand tag={Link} to="/">IntStream</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
@@ -47,12 +50,12 @@ export default class Example extends React.Component {
               </NavItem>
               */}
 
-             { this.props.isSuperuser ?
-             <UncontrolledDropdown nav inNavbar >
+             { this.props.isSuperuser
+               ? <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
-                 Site Admin 
+                 Site Admin
                 </DropdownToggle>
-                <DropdownMenu right  >
+                <DropdownMenu right >
                    <DropdownItem tag={Link} to="/organization">
                     Organizations
                     </DropdownItem>
@@ -60,30 +63,32 @@ export default class Example extends React.Component {
                      Users
                     </DropdownItem>
                  </DropdownMenu>
-             </UncontrolledDropdown>: null}
+             </UncontrolledDropdown>
+               : null}
 
-             { this.props.isStaff?
-             <UncontrolledDropdown nav inNavbar >
+             { this.props.isStaff
+               ? <UncontrolledDropdown nav inNavbar >
                <DropdownToggle nav caret>
-                 Org Admin 
+                 Org Admin
                 </DropdownToggle>
 
-                <DropdownMenu right  >
+                <DropdownMenu right >
                   <DropdownItem tag={Link} to="/settings">
-                                 Settings 
+                                 Settings
                                   </DropdownItem>
                   <DropdownItem tag={Link} to="/orguserinfo">
                      Users
                     </DropdownItem>
                  </DropdownMenu>
-              </UncontrolledDropdown>: null}
+              </UncontrolledDropdown>
+               : null}
 
-             { this.props.isIntegrator?
-             <UncontrolledDropdown nav inNavbar >
+             { this.props.isIntegrator
+               ? <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
                   Sources
                 </DropdownToggle>
-                <DropdownMenu right  >
+                <DropdownMenu right >
                    <DropdownItem tag={Link} to="/sources_upload">
                     Upload
                     </DropdownItem>
@@ -96,52 +101,53 @@ export default class Example extends React.Component {
                     <DropdownItem tag={Link} to="/sources_indjob">
                     Hunting Jobs
                     </DropdownItem>
- 
-                 </DropdownMenu>
-              </UncontrolledDropdown>:null}
 
-             { this.props.isIntegrator?
-             <UncontrolledDropdown nav inNavbar >
+                 </DropdownMenu>
+              </UncontrolledDropdown>
+               : null}
+
+             { this.props.isIntegrator
+               ? <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
-                  Training 
+                  Training
                 </DropdownToggle>
-                <DropdownMenu right  >
+                <DropdownMenu right >
                  <DropdownItem tag={Link} to="/train_list">
                     History
                   </DropdownItem>
                   <DropdownItem tag={Link} to="/models">
-                   Models 
+                   Models
                   </DropdownItem>
                   <DropdownItem tag={Link} to="/versions">
                    Model Versions
                   </DropdownItem>
                   <DropdownItem tag={Link} to="/trainingscripts">
-                    Training Scripts 
+                    Training Scripts
                   </DropdownItem>
                   </DropdownMenu>
-              </UncontrolledDropdown>:null}
+              </UncontrolledDropdown>
+               : null}
 
               <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
                   Main
                 </DropdownToggle>
-                <DropdownMenu right  >
+                <DropdownMenu right >
                  <DropdownItem tag={Link} to="/">
-                   Articles 
+                   Articles
                   </DropdownItem>
                   <DropdownItem tag={Link} to="/indicatorhome">
                     Indicators
                   </DropdownItem>
- 
+
                </DropdownMenu>
               </UncontrolledDropdown>
-
 
              <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
                  Account
                 </DropdownToggle>
-                <DropdownMenu right  >
+                <DropdownMenu right >
                  <DropdownItem tag={Link} to="/password">
                    Change Password
                   </DropdownItem>
@@ -151,15 +157,14 @@ export default class Example extends React.Component {
                   <DropdownItem tag={Link} to="/about">
                     About
                   </DropdownItem>
- 
+
                </DropdownMenu>
               </UncontrolledDropdown>
-
 
             </Nav>
           </Collapse>
         </Navbar>
       </div>
-    );
+    )
   }
 }

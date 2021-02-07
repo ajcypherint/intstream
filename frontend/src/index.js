@@ -1,20 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react'
+import ReactDOM from 'react-dom'
 import createHistory from 'history/createBrowserHistory'
-import { BrowserRouter , Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import { QueryParamProvider } from 'use-query-params';
+import { QueryParamProvider } from 'use-query-params'
 
-import 'react-tabs/style/react-tabs.css';
-import 'bootstrap/dist/css/bootstrap.css';
-import './custom.css';
+import 'react-tabs/style/react-tabs.css'
+import 'bootstrap/dist/css/bootstrap.css'
+import './custom.css'
 import configureStore from './store'
 import App from './App'
-import {PersistGate} from 'redux-persist/integration/react'
+import { PersistGate } from 'redux-persist/integration/react'
 
 const history = createHistory()
 
-const {store,persistor} = configureStore(history)
+const { store, persistor } = configureStore(history)
 
 ReactDOM.render((
   <Provider store={store}>
@@ -26,4 +26,4 @@ ReactDOM.render((
       </BrowserRouter>
     </PersistGate>
   </Provider>
-), document.getElementById('root'));
+), document.getElementById('root'))

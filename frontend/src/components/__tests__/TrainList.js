@@ -1,59 +1,58 @@
-import Train from "../TrainList"
+import Train from '../TrainList'
 import React from 'react'
-import {shallow, mount, render} from 'enzyme';
-describe("create ", () => {
-  it("render ", () =>{
+import { shallow, mount, render } from 'enzyme'
+describe('create ', () => {
+  it('render ', () => {
+    const query = {}
+    const setQuery = jest.fn()
 
-  let query = {}
-  let setQuery = jest.fn()
+    const sourcesList = [
+      {
+        id: 1,
+        name: 'test',
+        target: true
+      }]
+    const modelsList = [
+      {
+        id: 1,
+        name: 'test'
+      }]
+    const articlesList = [{
+      id: 1,
+      title: 'test',
+      clean_text: 'text',
+      source: { name: 'test' }
+    }]
 
-  let sourcesList = [
-    {
-      id:1,
-      name:"test",
-      target:true
-    }]
-  let modelsList = [
-    {
-      id:1,
-      name:"test",
-    }]
-  let articlesList = [{
-      id:1,
-      title:"test",
-      clean_text:"text",
-      source:{name:"test"}
-    }]
-   
-  let articlesLoading = false
-  let articlesErrors = {}
-  let articlesTotalCount = 1
-  let articleNext = "link"
-  let articlePrevious = "link"
-  let articleuri  = "link"
-  let selectArticles = [1]
-  let selectErrors = {}
-  let classif = {
-      1:true
+    const articlesLoading = false
+    const articlesErrors = {}
+    const articlesTotalCount = 1
+    const articleNext = 'link'
+    const articlePrevious = 'link'
+    const articleuri = 'link'
+    const selectArticles = [1]
+    const selectErrors = {}
+    const classif = {
+      1: true
     }
-  let classifErrors = {}
-  let classifCounts = 1
-  let filterChange = jest.fn()
-  let fetchAllSources = jest.fn()
-  let fetchAllMLModels = jest.fn()
-  let fetchArticlesFullUri = jest.fn()
-  let fetchArticles = jest.fn()
-  let clearArticles = jest.fn()
-  let clear = jest.fn()
-  let fetchSelect = jest.fn()
-  let clearSelect = jest.fn()
-  let fetchArticlesAndClassif = jest.fn()
-  let deleteClassification = jest.fn()
-  let setClassif = jest.fn()
-  let fetchClassifCounts = jest.fn()
-  let clearClassif = jest.fn()
+    const classifErrors = {}
+    const classifCounts = 1
+    const filterChange = jest.fn()
+    const fetchAllSources = jest.fn()
+    const fetchAllMLModels = jest.fn()
+    const fetchArticlesFullUri = jest.fn()
+    const fetchArticles = jest.fn()
+    const clearArticles = jest.fn()
+    const clear = jest.fn()
+    const fetchSelect = jest.fn()
+    const clearSelect = jest.fn()
+    const fetchArticlesAndClassif = jest.fn()
+    const deleteClassification = jest.fn()
+    const setClassif = jest.fn()
+    const fetchClassifCounts = jest.fn()
+    const clearClassif = jest.fn()
 
-    let wrapper = shallow(
+    const wrapper = shallow(
       <Train
   query={query}
   setQuery={setQuery}
@@ -92,10 +91,6 @@ describe("create ", () => {
     expect(fetchAllMLModels.mock.calls.length).toBe(1)
     expect(clearClassif.mock.calls.length).toBe(1)
     expect(setQuery.mock.calls.length).toBe(1)
-    //todo add test for button and inputs
+    // todo add test for button and inputs
   })
-
-
-
 })
- 

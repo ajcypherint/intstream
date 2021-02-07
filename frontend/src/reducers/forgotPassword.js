@@ -1,50 +1,48 @@
-import * as forgot from '../actions/forgotPassword' 
+import * as forgot from '../actions/forgotPassword'
 export const initialState = {
-  message:"",
-  errors: {},
+  message: '',
+  errors: {}
 }
-export default (state=initialState, action) => {
-  switch(action.type) {
+export default (state = initialState, action) => {
+  switch (action.type) {
     case forgot.PASSWORDRESET_CLEAR:
-      {
-        return {
-          ...initialState,
-        }
-
+    {
+      return {
+        ...initialState
       }
- 
+    }
+
     case forgot.PASSWORDRESET_REQUEST:
-      {
-        return {
-          ...initialState,
-        }
-
+    {
+      return {
+        ...initialState
       }
+    }
     case forgot.PASSWORDRESET_SUCCESS:
-      {
-        return {
-          message:"email sent",
-          errors:{}
-        }
+    {
+      return {
+        message: 'email sent',
+        errors: {}
       }
-   case forgot.PASSWORDRESET_FAILURE:
-      {
-        return {
-          ...state,
-           errors: action.payload.response || {'non_field_errors': action.payload.statusText},
-        }
+    }
+    case forgot.PASSWORDRESET_FAILURE:
+    {
+      return {
+        ...state,
+        errors: action.payload.response || { non_field_errors: action.payload.statusText }
       }
+    }
     default:
-      {
-        return state
-      }
+    {
+      return state
+    }
   }
 }
 
-export const getFPMessage = (state)=>{
+export const getFPMessage = (state) => {
   return state.message
 }
 
-export const errors = (state)=>{
+export const errors = (state) => {
   return state.errors
 }

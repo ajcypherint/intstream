@@ -1,48 +1,48 @@
-import reducer from '../trainFilter'
-import {initialState} from "../trainFilter"
+import reducer, { initialState } from '../trainFilter'
+
 import * as actions from '../../actions/trainFilter'
 
 describe('filter reducer', () => {
   it('initial state', () => {
     expect(reducer(undefined, {})).toEqual(
-			initialState
-      )
+      initialState
+    )
   })
-  it("clear", () => {
+  it('clear', () => {
     expect(
       reducer({
         ...initialState,
-        sources:[1]
+        sources: [1]
       }, {
-        type:actions.CLEAR,
+        type: actions.CLEAR
       }
       )).toEqual({
-        ...initialState,
-        }
-      )
+      ...initialState
+    }
+    )
   })
-  it("all mlmodels", () => {
+  it('all mlmodels', () => {
     expect(
       reducer(initialState, {
-        type:actions.ALL_MLMODELS,
-        payload:[1,2]
+        type: actions.ALL_MLMODELS,
+        payload: [1, 2]
       }
       )).toEqual({
-        ...initialState,
-        mlmodels:[1,2]
-        }
-      )
+      ...initialState,
+      mlmodels: [1, 2]
+    }
+    )
   })
-  it("all sources", () => {
+  it('all sources', () => {
     expect(
       reducer(initialState, {
-        type:actions.ALL_SOURCES,
-        payload:[1,2]
+        type: actions.ALL_SOURCES,
+        payload: [1, 2]
       }
       )).toEqual({
-        ...initialState,
-        sources:[1,2]
-        }
-      )
+      ...initialState,
+      sources: [1, 2]
+    }
+    )
   })
 })

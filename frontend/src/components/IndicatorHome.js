@@ -1,23 +1,22 @@
 import React from 'react'
-import _ from 'lodash';
-import { Input,  Alert, Form, Row, Col, FormGroup,  } from 'reactstrap';
+import _ from 'lodash'
+import { Input, Alert, Form, Row, Col, FormGroup, Button } from 'reactstrap'
 import propTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css';
-import '../custom.css';
-import {Button} from 'reactstrap';
-import { getOpts, dateString } from '../util/util'
-import Choice from "./Choice"
-import {getUniqueModels, getIdsModels} from "../util/util"
-import {ASC, DESC, ALL} from "../util/util"
-import Indicators from "./Indicators"
+import 'react-datepicker/dist/react-datepicker.css'
+import '../custom.css'
+
+import { getOpts, dateString, getUniqueModels, getIdsModels, ASC, DESC, ALL } from '../util/util'
+import Choice from './Choice'
+
+import Indicators from './Indicators'
 import Paginate from './Paginate'
-export class Main extends React.Component{
-  constructor(props){
+export class Main extends React.Component {
+  constructor (props) {
     super(props)
     this.dateString = dateString.bind(this)
-    this.handleSourceChange = this.handleSourceChange.bind(this) 
-    this.handleModelChange = this.handleModelChange.bind(this) 
+    this.handleSourceChange = this.handleSourceChange.bind(this)
+    this.handleModelChange = this.handleModelChange.bind(this)
     this.handleStartChange = this.handleStartChange.bind(this)
     this.handleEndChange = this.handleEndChange.bind(this)
     this.updateDate = this.updateDate.bind(this)
@@ -26,168 +25,169 @@ export class Main extends React.Component{
     this.fetch = this.fetch.bind(this)
     this.changeColChoice = this.changeColChoice.bind(this)
   }
-  handleStartChange(date){
-    let selections = this.props.query
+
+  handleStartChange (date) {
+    const selections = this.props.query
     this.updateDate(date, selections.endDate, true)
   }
-  handleEndChange(date){
-    let selections = this.props.query
+
+  handleEndChange (date) {
+    const selections = this.props.query
     this.updateDate(selections.startDate, date, false)
   }
-  changeColChoice(event){
-    
-    let type = event.target.dataset.type
-    let selected = getOpts(event)
-	  let newSel = {
-      [type]:selected,
-      page:1
+
+  changeColChoice (event) {
+    const type = event.target.dataset.type
+    const selected = getOpts(event)
+    const newSel = {
+      [type]: selected,
+      page: 1
     }
-    let selections ={
+    const selections = {
       ...this.props.query,
       ...newSel
     }
-    //again here we set selections then fetch
+    // again here we set selections then fetch
     this.props.filterChange(selections, this.props.setQuery)
- 
   }
-  updateDate(startDate,endDate,start_filter=true){
+
+  updateDate (startDate, endDate, start_filter = true) {
     // fix start_date or end_date based on input
-    //startdate - date
-    //enddate - date
-    //start_end - bool
-    if (start_filter === true){
-      if(startDate > endDate){
+    // startdate - date
+    // enddate - date
+    // start_end - bool
+    if (start_filter === true) {
+      if (startDate > endDate) {
         endDate = new Date(startDate.getTime())
       }
     } else {
-      if(endDate < startDate){
+      if (endDate < startDate) {
         startDate = new Date(endDate.getTime())
-        //fix start date
-        //fix end date
+        // fix start date
+        // fix end date
       }
     }
-        
-    //Would be simpler to set selections first.
-    //then fetchallsources
-    //then fetchallarticles
-    //using a thunk
+
+    // Would be simpler to set selections first.
+    // then fetchallsources
+    // then fetchallarticles
+    // using a thunk
     //
-    //again here we set selections then fetchAllSources, fetchArticles
-    let newSel = {
-      page:1,
-      startDate:startDate,
-      endDate:endDate,
+    // again here we set selections then fetchAllSources, fetchArticles
+    const newSel = {
+      page: 1,
+      startDate: startDate,
+      endDate: endDate
     }
-    let selections = {
+    const selections = {
       ...this.props.query,
       ...newSel
-     }
-    this.props.filterChange(selections,this.props.setQuery )
+    }
+    this.props.filterChange(selections, this.props.setQuery)
   }
-  updateComponent(){
-      
-    let START = new Date();
-    START.setHours(0,0,0,0);
 
-    let END= new Date();
-    END.setHours(23,59,59,999);
-    let article = this.props.query.article || ""
-    let ordering = this.props.query.ordering || "value"
-    let page = this.props.query.page || 1
-    let orderdir = this.props.query.orderdir || ""
-    let sourceChosen =   this.props.query.sourceChosen || ""
-    let modelChosen =   this.props.query.modelChosen || ""
-    let startDate = this.props.query.startDate || START
-    let endDate = this.props.query.endDate || END
-    let next = this.props.query.next || ''
-    let previous = this.props.query.previous || ''
-    let selectedTabIndex = this.props.query.selectedTabIndex || "md5"
-    let selectedTabIndexNum = this.props.query.selectedTabIndexNum || 0 
-    let numCols = this.props.query.numCols || []
-    let textCols = this.props.query.textCols || []
-    //todo: check if intersection of selected cols and possible cols
-    let numColsObjs = this.props.numCols
-    let textColsObjs = this.props.textCols
-    let numColsList = []
+  updateComponent () {
+    const START = new Date()
+    START.setHours(0, 0, 0, 0)
 
-    let selections = {
-      article:article,
-      ordering:ordering, 
-      page:page, 
-      orderdir:orderdir,
-      sourceChosen:sourceChosen,
-      modelChosen:modelChosen,
-      startDate:startDate,
-      endDate:endDate,
-      next:next,
-      previous:previous,
-      selectedTabIndex:selectedTabIndex,
-      selectedTabIndexNum:selectedTabIndexNum,
-      numCols:numCols,
-      textCols:textCols
-     }
-     this.props.filterChange(selections, this.props.setQuery )
- 
+    const END = new Date()
+    END.setHours(23, 59, 59, 999)
+    const article = this.props.query.article || ''
+    const ordering = this.props.query.ordering || 'value'
+    const page = this.props.query.page || 1
+    const orderdir = this.props.query.orderdir || ''
+    const sourceChosen = this.props.query.sourceChosen || ''
+    const modelChosen = this.props.query.modelChosen || ''
+    const startDate = this.props.query.startDate || START
+    const endDate = this.props.query.endDate || END
+    const next = this.props.query.next || ''
+    const previous = this.props.query.previous || ''
+    const selectedTabIndex = this.props.query.selectedTabIndex || 'md5'
+    const selectedTabIndexNum = this.props.query.selectedTabIndexNum || 0
+    const numCols = this.props.query.numCols || []
+    const textCols = this.props.query.textCols || []
+    // todo: check if intersection of selected cols and possible cols
+    const numColsObjs = this.props.numCols
+    const textColsObjs = this.props.textCols
+    const numColsList = []
+
+    const selections = {
+      article: article,
+      ordering: ordering,
+      page: page,
+      orderdir: orderdir,
+      sourceChosen: sourceChosen,
+      modelChosen: modelChosen,
+      startDate: startDate,
+      endDate: endDate,
+      next: next,
+      previous: previous,
+      selectedTabIndex: selectedTabIndex,
+      selectedTabIndexNum: selectedTabIndexNum,
+      numCols: numCols,
+      textCols: textCols
+    }
+    this.props.filterChange(selections, this.props.setQuery)
   }
-  componentDidMount() {
+
+  componentDidMount () {
     this.updateComponent()
   }
-  componentDidUpdate(prevProps) {
+
+  componentDidUpdate (prevProps) {
     // Typical usage (don't forget to compare props):
     if (typeof this.props.query.page === 'undefined' && typeof prevProps.query.page !== 'undefined') {
-      this.updateComponent();
+      this.updateComponent()
     }
   }
- 
-  handleModelChange(event){
-    let newSel = {
-      modelChosen:event.target.value,
-      page:1
+
+  handleModelChange (event) {
+    const newSel = {
+      modelChosen: event.target.value,
+      page: 1
     }
-    let selections ={
+    const selections = {
       ...this.props.query,
       ...newSel
     }
-    //again here we set selections then fetch
-    this.props.filterChange(selections, this.props.setQuery )
+    // again here we set selections then fetch
+    this.props.filterChange(selections, this.props.setQuery)
   }
 
-  handleSourceChange(event){
-    //again we set selections then fetchArticles
-    let newSel = {
-      sourceChosen:event.target.value,
-      page:1
+  handleSourceChange (event) {
+    // again we set selections then fetchArticles
+    const newSel = {
+      sourceChosen: event.target.value,
+      page: 1
     }
-    let selections = {
+    const selections = {
       ...this.props.query,
       ...newSel
     }
     this.props.filterChange(selections, this.props.setQuery)
   }
 
-  tabUpdate(index, lastIndex, event) {
-    let newSel = {
-      selectedTabIndex:event.target.dataset.value,
-      selectedTabIndexNum:index,
-      page:1
+  tabUpdate (index, lastIndex, event) {
+    const newSel = {
+      selectedTabIndex: event.target.dataset.value,
+      selectedTabIndexNum: index,
+      page: 1
     }
-    let selections = {
+    const selections = {
       ...this.props.query,
       ...newSel
     }
-    this.props.filterChange(selections, 
-      this.props.setQuery, 
-      )
- 
+    this.props.filterChange(selections,
+      this.props.setQuery
+    )
   }
- 
-  //parent for paginate
-  fetch(selections,page){
+
+  // parent for paginate
+  fetch (selections, page) {
     this.props.filterChange(selections, this.props.setQuery)
   }
- 
-  render(){
 
+  render () {
     const selections = this.props.query
     const errors = this.props.indicatorsErrors || {}
     const errorsColText = this.props.indicatorColTextaErrors || {}
@@ -195,57 +195,57 @@ export class Main extends React.Component{
     const errorsColNum = this.props.indicatorColNumErrors || {}
     const errorsColNumData = this.props.indicatorColNumDataErrors || {}
 
-    const uniqueSources = _.uniqBy(this.props.sourcesList,'id')
-    const ids = uniqueSources.map(a=>a.id.toString()) ||[]
+    const uniqueSources = _.uniqBy(this.props.sourcesList, 'id')
+    const ids = uniqueSources.map(a => a.id.toString()) || []
 
-    let uniqueModels = getUniqueModels(this.props.sourcesList)
-    let idsModels = getIdsModels(uniqueModels)
-    let articleErrors = this.props.articlesErrors || {}
-    let articles = this.props.articlesList || []
-    let articlesLen = articles.length
- 
-    return(
+    const uniqueModels = getUniqueModels(this.props.sourcesList)
+    const idsModels = getIdsModels(uniqueModels)
+    const articleErrors = this.props.articlesErrors || {}
+    const articles = this.props.articlesList || []
+    const articlesLen = articles.length
+
+    return (
     <div className="container mt-2 col-sm-12" >
 
     <Button onClick={this.props.history.goBack} className="button-brand-primary sb-1" size="sm">Back</Button>
     <Form onSubmit={this.onSubmit} >
-          {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
-          {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
- 
-          {errors.detail?<Alert color="danger">{errors.detail}</Alert>:""}
-          {errors.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+          {errors.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
+          {errors.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
 
-          {errorsColText.detail?<Alert color="danger">{errors.detail}</Alert>:""}
-          {errorsColText.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+          {errors.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
+          {errors.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
 
-          {errorsColTextData.detail?<Alert color="danger">{errors.detail}</Alert>:""}
-          {errorsColTextData.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+          {errorsColText.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
+          {errorsColText.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
 
-          {errorsColNum.detail?<Alert color="danger">{errors.detail}</Alert>:""}
-          {errorsColNum.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
+          {errorsColTextData.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
+          {errorsColTextData.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
 
-          {errorsColNumData.detail?<Alert color="danger">{errors.detail}</Alert>:""}
-          {errorsColNumData.non_field_errors?<Alert color="danger">{errors.non_field_errors}</Alert>:""}
-  { !this.props.query.article ?
-       <FormGroup>
+          {errorsColNum.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
+          {errorsColNum.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
+
+          {errorsColNumData.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
+          {errorsColNumData.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
+  { !this.props.query.article
+    ? <FormGroup>
        <Row>
         <Col sm="2" md="2" lg="2">
-          <label  htmlFor={"start_id"}>{"Start Date"}</label>
+          <label htmlFor={'start_id'}>{'Start Date'}</label>
           <div className = "mb-2 ">
-          <DatePicker style={{width:'100%'}} id={"startDate"}  selected={selections.startDate} onChange={this.handleStartChange} />
+          <DatePicker style={{ width: '100%' }} id={'startDate'} selected={selections.startDate} onChange={this.handleStartChange} />
           </div>
         </Col>
         <Col sm="2" md="2" lg="2">
-          <label  htmlFor={"end_id"}>{"End Date"}</label>
+          <label htmlFor={'end_id'}>{'End Date'}</label>
           <div className = "mb-2 ">
-          <DatePicker  id={"endDate"}  selected={selections.endDate} onChange={this.handleEndChange}/>
+          <DatePicker id={'endDate'} selected={selections.endDate} onChange={this.handleEndChange}/>
           </div>
         </Col>
 
          <Col sm="2" md="2" lg="3">
-           <label  htmlFor={"source_id"}>{"Source"}</label> 
+           <label htmlFor={'source_id'}>{'Source'}</label>
           <div >
-            <Choice name={"Source"} 
+            <Choice name={'Source'}
               disabled={false}
               value={selections.sourceChosen}
               onChange={this.handleSourceChange}
@@ -255,9 +255,9 @@ export class Main extends React.Component{
            </div>
         </Col>
         <Col sm="2" md="2" lg="2">
-           <label  htmlFor={"model_id"}>{"Model"}</label> 
+           <label htmlFor={'model_id'}>{'Model'}</label>
            <div>
-             <Choice name={"Model"}
+             <Choice name={'Model'}
                disabled={false}
                value={selections.modelChosen}
                onChange={this.handleModelChange}
@@ -267,9 +267,9 @@ export class Main extends React.Component{
         </div>
         </Col>
      </Row>
-   </FormGroup> :
-      <div>
-        <h3>Source: {articlesLen > 0 && articles[0].source.name}</h3> 
+   </FormGroup>
+    : <div>
+        <h3>Source: {articlesLen > 0 && articles[0].source.name}</h3>
         <h4>Title: {articlesLen > 0 && articles[0].title}</h4>
     </div>
 
@@ -304,23 +304,22 @@ export class Main extends React.Component{
       />
   </div>
     )
- 
- }
+  }
 };
 
 Main.propTypes = {
-  sourcesList:propTypes.array,
-  indicatorsList:propTypes.array,
-  indicatorsLoading:propTypes.bool,
-  indicatorsTotalCount:propTypes.number,
-  indicatorsNext:propTypes.string,
-  indicatorsPrevious:propTypes.string,
+  sourcesList: propTypes.array,
+  indicatorsList: propTypes.array,
+  indicatorsLoading: propTypes.bool,
+  indicatorsTotalCount: propTypes.number,
+  indicatorsNext: propTypes.string,
+  indicatorsPrevious: propTypes.string,
   fetchAllSources: propTypes.func,
-  filterChange:propTypes.func,
-  fetchIndicatorsFullUri:propTypes.func,
-  fetchIndicators:propTypes.func,
-  md5:propTypes.object,
-  sha1:propTypes.object,
-  sha256:propTypes.object
+  filterChange: propTypes.func,
+  fetchIndicatorsFullUri: propTypes.func,
+  fetchIndicators: propTypes.func,
+  md5: propTypes.object,
+  sha1: propTypes.object,
+  sha256: propTypes.object
 
-};
+}
