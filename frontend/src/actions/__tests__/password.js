@@ -2,7 +2,7 @@ import * as actions from "../password.js"
 import configureMockStore from 'redux-mock-store'
 import fetchMock from 'fetch-mock'
 
-import { apiMiddleware } from 'redux-api-middleware';
+import { apiMiddleware } from 'redux-api-middleware'
 import thunk from 'redux-thunk'
 const middlewares = [thunk, apiMiddleware]
 const mockStore = configureMockStore(middlewares)
@@ -28,14 +28,14 @@ describe('password', () => {
         { type: actions.PASSWORD_SUCCESS, payload: resp }
      ]
 
-    return store.dispatch(actions.set_password(user,"xxx")).then(() => {
+    return store.dispatch(actions.setPassword(user,"xxx")).then(() => {
         // return of async actions
         expect(store.getActions()).toEqual(expectedActions)
       })
   })
 
 
-  it('get_user', () => {
+  it('getUser', () => {
     const store = mockStore({auth:{access:"xxx"}})
     let resp = {test:1}
     let endpoint = '/api/usersingle/'
@@ -49,7 +49,7 @@ describe('password', () => {
         { type: actions.USER_SUCCESS, payload: resp }
      ]
 
-    return store.dispatch(actions.get_user()).then(() => {
+    return store.dispatch(actions.getUser()).then(() => {
         // return of async actions
         expect(store.getActions()).toEqual(expectedActions)
       })
@@ -58,7 +58,7 @@ describe('password', () => {
 
 
   it('setpassredirect', () => {
-    jest.spyOn(actions, 'set_password').mockReturnValue({})
+    jest.spyOn(actions, 'setPassword').mockReturnValue({})
     const dispatch = jest.fn()
     dispatch.mockReturnValueOnce({})
     const goBack = jest.fn()

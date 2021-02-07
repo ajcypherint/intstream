@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux'
 import { useHistory } from "react-router-dom";
-import { set_password,setPasswordChanged, setPassRedirect} from '../actions/password'
+import { setPasswordChanged, setPassRedirect} from '../actions/password'
 import {get_username,getPasswordChanged} from '../reducers/'
 import TextInput from '../components/TextInput'
 import {errors} from '../reducers/password'
