@@ -3,7 +3,7 @@ import SourceEdit from '../components/SourcesEdit'
 import { getSources, sourceFormUpdate, addSources, setSources, clearSources } from '../actions/sources'
 import { mapStateToPropsFunc, mapDispatchToPropsFunc } from './EditTemplate.js'
 import * as reducers from '../reducers/'
-import { JOB_API } from '../actions/indJobVersionFilter'
+import { INDJOB_VERSION_API } from './api'
 import {
   withQueryParams,
   useQueryParams,
@@ -29,7 +29,7 @@ const FIELDS = [
   'active']
 
 const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
-const mapDispatchToProps = mapDispatchToPropsFunc(JOB_API)
+const mapDispatchToProps = mapDispatchToPropsFunc(INDJOB_VERSION_API)
 export default connect(mapStateToProps, mapDispatchToProps)(withQueryParams(
   {
     id: NumberParam,

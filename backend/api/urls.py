@@ -22,13 +22,13 @@ router.register('mlmodels',views.MLModelViewSet, basename="mlmodels")
 # articles
 router.register('articletypes',views.ArticleTypeViewSet)
 
-router.register('articles',views.ArticleViewSet, basename="articles")
-router.register(TXTARTICLES,views.TxtArticleViewSet, basename="txtarticles")
-router.register(HTMLARTICLES,views.HtmlArticleViewSet, basename="htmlarticles")
-router.register(PDFARTICLES,views.PDFArticleViewSet, basename="pdfarticles")
-router.register(DOCXARTICLES,views.WordDocxArticleViewSet, basename="docxarticles")
-router.register(RSSARTICLES,views.RSSArticleViewSet, basename="rssarticles")
-router.register(RAWRTICLES,views.RawArticleViewSet, basename="rawarticles")
+router.register('articles', views.ArticleViewSet, basename="articles")
+router.register(TXTARTICLES, views.TxtArticleViewSet, basename="txtarticles")
+router.register(HTMLARTICLES, views.HtmlArticleViewSet, basename="htmlarticles")
+router.register(PDFARTICLES, views.PDFArticleViewSet, basename="pdfarticles")
+router.register(DOCXARTICLES, views.WordDocxArticleViewSet, basename="docxarticles")
+router.register(RSSARTICLES, views.RSSArticleViewSet, basename="rssarticles")
+router.register(RAWRTICLES, views.RawArticleViewSet, basename="rawarticles")
 
 # sources
 router.register('sourcetypes',views.SourceTypeViewSet)
@@ -40,6 +40,9 @@ SOURCE = 'sources'
 router.register("indicatortype", views.IndicatorTypeViewSet, basename="indicatotype")
 router.register(UPLOADSOURCE, views.UploadSourceViewSet, basename="uploadsource")
 router.register(RSSSOURCE, views.RssSourceViewSet, basename="rsssource")
+
+router.register("indicatorjoblog", views.IndicatorJobLogViewSet, basename="indicatorjoblog")
+router.register("joblog", views.JobLogViewSet, basename="joblog")
 router.register("job", views.JobViewSet, basename="job")
 router.register("jobversion", views.JobVersionViewSet, basename="jobversion")
 router.register("indicatorjob", views.IndicatorJobViewSet, basename="indicatorjob")

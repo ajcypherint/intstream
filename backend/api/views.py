@@ -958,6 +958,40 @@ class JobFilter(filters.FilterSet):
         fields = jobcols
 
 
+class JobLogFilter(filters.FilterSet):
+    class Meta:
+        model = models.JobLog
+        fields = ["organization", "job", "id"]
+
+
+class JobLogViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.JobLogSerializer
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ["organization", "job", "id"]
+    filterset_class = JobLogFilter
+
+    def get_queryset(self):
+        return models.JobLog.objects.filter(organization=self.request.user.organization)
+
+
+class IndicatorJobLogFilter(filters.FilterSet):
+    class Meta:
+        model = models.IndicatorJobLog
+        fields = ["organization", "job", "id"]
+
+
+class IndicatorJobLogViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorJobLogSerializer
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ["organization", "job", "id"]
+    filterset_class = IndicatorJobLogFilter
+
+    def get_queryset(self):
+        return models.IndicatorJobLog.objects.filter(organization=self.request.user.organization)
+
+
 class JobViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.JobSerializer
@@ -973,7 +1007,7 @@ class JobVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.JobVersionSerializer
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('job', 'id','version',)
+    filterset_fields = ('job', 'id','version','active','job__active')
 
     def get_queryset(self):
         return models.JobVersion.objects.filter(organization=self.request.user.organization)
@@ -1866,7 +1900,7 @@ class IndicatorJobVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.IndicatorJobVersionSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
-    filterset_fields = ('id', 'job', 'version')
+    filterset_fields = ('id', 'job', 'version', 'active', 'job__active')
 
     def get_queryset(self):
         return models.IndicatorJobVersion.objects.filter(organization=self.request.user.organization)

@@ -19,12 +19,12 @@ module.exports = {
     'react'
   ],
   rules: {
-    'no-unused-vars': 'warn',
-    'no-import-assign': 'warn',
-    camelcase: 'warn',
+    'no-unused-vars': 'warn', // todo(aj) fix
+    'no-import-assign': 'warn', // jest
+    camelcase: 'warn', // todo(aj) fix
     'react/prop-types': 'warn',
     'react/display-name': 'warn',
     'no-prototype-builtins': 'warn',
-    'no-useless-constructor': 'warn'
+    'no-useless-constructor': 'warn' // todo(aj) fix
   }
 }

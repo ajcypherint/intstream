@@ -13,8 +13,8 @@ class JobVersionTable extends Component {
   add (event) {
     event.preventDefault()
     const name = this.props.query.name
-    const id = this.props.query.id
-    this.props.history.push('/jobversions_add/?name=' + name + '&id=' + id)
+    const job = this.props.query.job
+    this.props.history.push('/jobversions_add/?name=' + name + '&job=' + job)
   }
 
   jobs (event) {
@@ -31,7 +31,7 @@ class JobVersionTable extends Component {
             <FormGroup>
              <Row >
                 <Col >
-                  <Button data-id={this.props.query.id} data-name={this.props.query.name}
+                  <Button data-job={this.props.query.job} data-name={this.props.query.name}
                     disabled={loading} type="submit" onClick={this.add} className="button-brand-primary mb-1" size="md">
                    Add
                  </Button>
@@ -82,13 +82,13 @@ class JobVersionTable extends Component {
                           <td>
                             <div className="custom-control custom-checkbox">
                               <Input type="checkbox"
-                                data-model={this.props.query.id}
+                                data-model={this.props.query.job}
                                 data-id={version.id}
                                 checked={version.active}
                                 onChange={this.props.handleActiveChange}/>
                              </div>
                          </td>
-                            </tr>
+                           </tr>
                         </tbody>)
                    })
                    : <tbody><tr><td><span className="spinner-border" role="status">

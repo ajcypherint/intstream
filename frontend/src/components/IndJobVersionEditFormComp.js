@@ -56,15 +56,6 @@ export default class Edit extends Component {
             </FormGroup>
             : null}
             <FormGroup>
-          <CheckBoxInput
-            onChange={this.props.handleChange}
-            type={'checkbox'}
-            data-job={id}
-            name={'active'}
-            readOnly
-            label={'active'}
-            checked={this.props.object.active || false} />
-
         </FormGroup>
           <FormGroup>
          <FormButtons data-contenttype={MULTIPARTFORM} saving={this.props.saving}

@@ -84,7 +84,7 @@ export default (state = initialState, action) => {
         previouspage: null,
         saving: false
       }
-      return setArticle(entry, state, action.meta.parent)
+      return setArticle(entry, state)
     }
 
     case articlesData.GET_ARTICLES_REQUEST:

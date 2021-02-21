@@ -145,7 +145,7 @@ def update_suffixes(organization_id):
     _update_suffixes()
 
 
-def get_tokens_for_user(user, organization_id):
+def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
 
     return {
@@ -190,7 +190,7 @@ def _indicatorjob(id, indicator):
             args.extend(job_args.split(" "))
         proc = subprocess.run(args,
             env={
-                "JOB_SERVER_URL": os.environ.get("INSTREAM_URL","http://127.0.0.1:8000"),
+                "JOB_SERVER_URL": job_version.job.server_url,
                 "JOB_REFRESH": tokens["refresh"],
                 "JOB_ACCESS": tokens["access"],
                 "VIRTUAL_ENV": venv_directory,
@@ -202,53 +202,55 @@ def _indicatorjob(id, indicator):
             timeout=job.timeout)
 
         if proc.returncode != 0:
-            raise IndicatorJobError("ErrorCode: "+ str(proc.returncode) +
-                                "\nstdout: " + proc.stdout +
-                                "\nstderr: " + proc.stderr)
+            logger.info("job :" + job.name + " failed; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
+                        "; stdout: " + proc.stdout.replace('\n', ' ').replace('\r', ' '))
 
-        log = models.IndicatorJobLog(organization=job_version.organization,
+        log = models.JobLog(organization=job_version.organization,
                                      job=job_version.job,
+                                     return_status_code=proc.returncode,
                                      stdout=proc.stdout,
                                      stderr=proc.stderr)
-        log.save()
+
     except TimeoutError:
         proc.kill()
         outs, errs = proc.communicate()
         log = models.IndicatorJobLog(organization=job_version.organization,
                                      job=job_version.job,
+                                     return_status_code=proc.returncode,
                                      stdout=outs,
                                      stderr=errs)
         log.save()
-        raise IndicatorJobError("Timeout reached: " + str(job.timeout))
+        logger.info("job :" + job.name + " timeout; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
+                        "; stdout: " + proc.stdout.replace('\n', ' ').replace('\r', ' '))
 
 @shared_task()
-def job(id, organization_id):
-    _job(id)
+def job(id=None, organization_id=None):
+    _job(id, organization_id)
 
-def _job(id):
+def _job(id, organization_id):
     job = models.Job.objects.get(id=id)
-    user = models.UserIntStream.objects.get(username=job.username)
+    user = models.UserIntStream.objects.get(username=job.user)
     job_version = models.JobVersion.objects.get(active=True, job=job)
     tokens = get_tokens_for_user(user)
     directory = get_script_directory_script_version_id(job_version.id)
-    create_job_script_directory(job_version, directory)
+    create_job_script_directory(job_version, directory, SCRIPT_JOB)
     create_virtual_env(job_version, aws_req=False, job=JOB_PREFIX)
 
     job_version = models.JobVersion.objects.get(id=job_version.id)
     job_args = job_version.job.arguments
     script_directory = get_script_directory_script_version_id(job_version.id)
-    venv_directory = get_venv_directory_script_version(job.id, JOB_PREFIX)
+    venv_directory = get_venv_directory_script_version(job_version.id, JOB_PREFIX)
     path_python = os.path.join(venv_directory,"bin","python")
-    script = os.path.join(script_directory, SCRIPT)
+    script = os.path.join(script_directory, SCRIPT_JOB)
     proc = None
+    script = [path_python, script]
+    script.extend(job_args.split(" "))
     try:
-        proc = subprocess.run([
-            path_python,
-            script,
-            ].extend(job_args.split(" ")),
+        proc = subprocess.run(script,
             env={
                 "JOB_REFRESH": tokens["refresh"],
                 "JOB_ACCESS": tokens["access"],
+                "JOB_SERVER_URL": job_version.job.server_url,
                 "VIRTUAL_ENV": venv_directory,
                 "PATH": os.path.join(venv_directory, "bin") + ":" + os.environ["PATH"],
                  },
@@ -258,12 +260,13 @@ def _job(id):
             timeout=job.timeout)
 
         if proc.returncode != 0:
-            raise IndicatorJobError("ErrorCode: "+ str(proc.returncode) +
-                                "\nstdout: " + proc.stdout +
-                                "\nstderr: " + proc.stderr)
+            logger.info("job :" + job.name + " failed; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
+                        "; stdout: " + proc.stdout.replace('\n', ' ').replace('\r', ' '))
+
 
         log = models.JobLog(organization=job_version.organization,
                                      job=job_version.job,
+                                     return_status_code=proc.returncode,
                                      stdout=proc.stdout,
                                      stderr=proc.stderr)
         log.save()
@@ -272,10 +275,12 @@ def _job(id):
         outs, errs = proc.communicate()
         log = models.JobLog(organization=job_version.organization,
                                      job=job_version.job,
+                                     return_status_code=proc.returncode,
                                      stdout=outs,
                                      stderr=errs)
         log.save()
-        raise JobError("Timeout reached: " + str(job.timeout))
+        logger.info("job :" + job.name + " timeout; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
+                        "; stdout: " + proc.stdout.replace('\n', ' ').replace('\r', ' '))
 
 
 CUSTOM_TRAIN_FILE = "train_classify.py"
@@ -754,6 +759,7 @@ def create_virtual_env(training_script_version, aws_req=True, job=None):
                               "pip",
                               "install",
                               "cython",
+                              "--no-cache-dir"
                               ],
                            env=env,
                            stdout=subprocess.PIPE,
@@ -767,6 +773,7 @@ def create_virtual_env(training_script_version, aws_req=True, job=None):
                                   "-m",
                                   "pip",
                                   "install",
+                                  "--no-cache-dir"
                                   "-r",
                                   os.path.join(settings.AWS_TRAIN_FILES,"requirements.txt")],
                                env=env,

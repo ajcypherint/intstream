@@ -85,24 +85,27 @@ export const getVersionTemplate = (ENDP) => (REQUEST) => (SUCCESS) => (FAILURE) 
 }
 
 // todo create template function; job str is a param; funcs are params
-export const setActiveVersionTemplate = (getVersionNoRedux) => (setActiveRequest) => (filterChange) => (model, id, selections, setQuery) => {
+export const setActiveVersionTemplate = (getNoRedux) => (setActiveRequest) => (filterChange) => (current, id, selections, setQuery) => {
   return async (dispatch, getState) => {
     // get active
-    const getResp = await dispatch(getVersionNoRedux('job=' + model + '&active=true'))
+    const getResp = await dispatch(getNoRedux('job=' + current + '&active=true'))
     const len = getResp.payload.results.length
     if (getResp.error) {
       return
     }
+    // set currently active to false
     if (len > 0) {
       const updateResp = await dispatch(setActiveRequest(getResp.payload.results[0].id, false))
       if (updateResp.error) {
         return
       }
     }
+    // set new active to true
     const updateResp = await dispatch(setActiveRequest(id, true))
     if (updateResp.error) {
       return
     }
+    // update page
     await dispatch(filterChange(selections, setQuery))
   }
 }

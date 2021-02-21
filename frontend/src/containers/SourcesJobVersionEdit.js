@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import SourceEdit from '../components/SourcesEdit'
 import { getSources, sourceFormUpdate, addSources, setSources, clearSources } from '../actions/sources'
 import { mapStateToPropsFunc, mapDispatchToPropsFunc } from './EditTemplate.js'
+import { JOB_VERSION_API } from './api'
 import * as reducers from '../reducers/'
 import {
   withQueryParams,
@@ -12,11 +13,10 @@ import {
 } from 'use-query-params'
 
 // edit
-const API = '/api/jobversion/'
 const HEADING = ' Job Version '
 
 const EMPTY = {
-  id: '',
+  job: '',
   version: '',
   zip: '',
   active: false
@@ -29,10 +29,10 @@ const FIELDS = [
   'active']
 
 const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
-const mapDispatchToProps = mapDispatchToPropsFunc(API)
+const mapDispatchToProps = mapDispatchToPropsFunc(JOB_VERSION_API)
 export default connect(mapStateToProps, mapDispatchToProps)(withQueryParams(
   {
-    id: NumberParam,
+    job: NumberParam,
     name: StringParam
   },
   SourceEdit))

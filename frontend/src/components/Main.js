@@ -41,6 +41,7 @@ import EditTrainingScripts from './TrainingScriptsEditFormComp'
 
 import Registration from '../containers/Registration'
 import TrainList from '../containers/TrainList'
+import LogList from '../containers/LogList'
 import { ADD, EDIT } from '../util/util'
 import CreateMLVersion from '../containers/CreateMLVersion'
 import Ver from '../containers/ModelVersionList'
@@ -64,6 +65,7 @@ const Main = (props) => (
     <Route exact path="/article/:id" component={Article} />
     <Route exact path="/train/:id/:model" component={Train} />
     <Route exact path="/train_list" component={TrainList} />
+    <Route exact path="/jobloglist/" component={LogList} />
     <Route exact path="/indjobversions"
       render={() =>
           <IndJobVer

@@ -3,6 +3,7 @@ import SourceEdit from '../components/SourcesEdit'
 import { getSources, sourceFormUpdate, addSources, setSources, clearSources } from '../actions/sources'
 import { mapStateToPropsFunc, mapDispatchToPropsFunc } from './EditTemplate.js'
 import * as reducers from '../reducers/'
+import { JOB_API } from './api'
 import {
   withQueryParams,
   useQueryParams,
@@ -12,7 +13,6 @@ import {
 } from 'use-query-params'
 
 // edit
-const API = '/api/job/'
 const HEADING = ' Scheduled Job'
 const EMPTY = {
   name: '',
@@ -42,7 +42,7 @@ const FIELDS = ['name',
   'password',
   'active']
 const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
-const mapDispatchToProps = mapDispatchToPropsFunc(API)
+const mapDispatchToProps = mapDispatchToPropsFunc(JOB_API)
 
 export default connect(mapStateToProps, mapDispatchToProps)(
   SourceEdit)

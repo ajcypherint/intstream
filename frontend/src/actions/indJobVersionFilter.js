@@ -7,6 +7,8 @@ import { PAGINATION, dateString } from '../util/util'
 import { getSources } from './sources'
 import { getIndJobVersion } from './indJobVersion'
 
+import { INDJOB_API } from '../containers/api'
+
 export const ALL_JOBS = '@@indjobversionfilter/TOTALJOBS'
 
 export const CLEAR = '@@indjobversionfilter/CLEAR'
@@ -16,7 +18,6 @@ export const PAGE = '@@indjobversionfilter/PAGE'
 export const GET_FILTER_REQUEST = '@@indjobversionfilter/GET_FILTER_REQUEST'
 export const GET_FILTER_SUCCESS = '@@indjobversionfilter/GET_FILTER_SUCCESS'
 export const GET_FILTER_FAILURE = '@@indjobversionfilter/GET_FILTER_FAILURE'
-export const JOB_API = '/api/indicatorjobversion'
 export const clear = () => {
   return {
     type: CLEAR
@@ -57,17 +58,16 @@ export const filterChange = (newSelections, setQuery) => {
 
     // fetch sources and jobs; * not just sources but all filters not inc dates *
     // could ignore this for child
-    const resp = await dispatch(getAllJobs(JOB_API, jobStr))
+    const resp = await dispatch(getAllJobs(INDJOB_API, jobStr))
     if (resp.error) {
       return
     }
 
     const mvStr = 'ordering=' + orderdir + newSelections.ordering +
       '&job=' + jobChosen +
-      '&page=' + newSelections.page +
-      '&job__active=true'
+      '&page=' + newSelections.page
 
     // todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
-    return await dispatch(getIndJobVersion(mvStr))
+    await dispatch(getIndJobVersion(mvStr))
   }
 }

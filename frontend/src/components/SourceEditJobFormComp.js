@@ -1,21 +1,30 @@
 import React, { Component } from 'react'
-import { FormGroup, Col, Alert, Button, Jumbotron, Form } from 'reactstrap'
+import { FormGroup, Col, Row, Alert, Button, Jumbotron, Form } from 'reactstrap'
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
 import FormButtons from './compFormButtons'
+import { ADD, EDIT } from '../util/util'
 
 export default class Edit extends Component {
   constructor (props) {
     super(props)
     this.versions = this.versions.bind(this)
+    this.logs = this.logs.bind(this)
+  }
+
+  logs (event) {
+    event.preventDefault() // prevent form submission
+    const job = event.target.dataset.job
+    const name = event.target.dataset.name
+    this.props.history.push('/jobloglist/?job=' + job + '&name=' + name)
   }
 
   versions (event) {
     event.preventDefault() // prevent form submission
-    const id = event.target.dataset.id
+    const job = event.target.dataset.job
     const name = event.target.dataset.name
-    this.props.history.push('/jobversions/?id=' + id + '&name=' + name)
+    this.props.history.push('/jobversions/?job=' + job + '&name=' + name)
   }
 
   render () {
@@ -29,9 +38,10 @@ export default class Edit extends Component {
     const err_cron_hour = errors.cron_hour
     const err_cron_minute = errors.cron_minute
     const err_user = errors.user
+    const err_server_url = errors.server_url
     const err_password = errors.password
     const err_timeout = errors.timeout
-    const object_id = this.props.object.id || ''
+    const object_job = this.props.object.id || ''
     const object_name = this.props.object.name || ''
     const object_arguments = this.props.object.arguments || ''
     const object_cron_day_of_week = this.props.object.cron_day_of_week || ''
@@ -43,6 +53,7 @@ export default class Edit extends Component {
     const object_password = this.props.object.password || ''
     const object_timeout = this.props.object.timeout || ''
     const object_active = this.props.object.active || ''
+    const object_server_url = this.props.object.server_url || 'http://127.0.0.1:8000/'
 
     return (
         <Form onSubmit={this.props.onSubmit} >
@@ -112,6 +123,13 @@ export default class Edit extends Component {
             value={object_timeout}
             error={err_timeout} />
 
+           <TextInput
+            onChange={this.props.handleChange}
+            name={'server_url'}
+            label={'server_url'}
+            value={object_server_url}
+            error={err_server_url} />
+
           <CheckBoxInput
             onChange={this.props.handleChange}
             type={'checkbox'}
@@ -119,10 +137,18 @@ export default class Edit extends Component {
             label={'active'}
             readOnly
             checked={object_active} />
-          <FormGroup>
-            <Button data-id={object_id} data-name={object_name}
-              onClick={this.versions} className="button-brand-primary mb-1" size="lg">Versions</Button>
-          </FormGroup>
+              {this.props.state.action === EDIT &&
+          <Row>
+            <Col>
+                <Button data-job={object_job} data-name={object_name}
+                  onClick={this.versions} className="button-brand-primary mb-1" size="lg">Versions</Button>
+          </Col>
+            <Col>
+            <Button data-job={object_job} data-name={object_name}
+              onClick={this.logs} className="button-brand-primary mb-1" size="lg">Logs</Button>
+          </Col>
+          </Row>
+              }
 
           <FormButtons saving={this.props.saving}
                        goBack={this.props.goBack}/>

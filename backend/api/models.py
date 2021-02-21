@@ -164,6 +164,7 @@ class IndicatorJob(models.Model):
     arguments = models.TextField(max_length=1000, blank=True, default="")
     user = models.TextField(max_length=250)
     timeout = models.IntegerField(default=600) # seconds; default 10 mins
+    server_url = models.TextField(max_length=300, default="http://127.0.0.1:8000/")
 
 
 class IndicatorJobLog(models.Model):
@@ -172,6 +173,7 @@ class IndicatorJobLog(models.Model):
     stderr = models.TextField()
     stdout = models.TextField()
     job = models.ForeignKey(IndicatorJob, on_delete=models.CASCADE)
+    return_status_code = models.IntegerField()
 
 
 class IndicatorJobVersion(models.Model):
@@ -208,6 +210,7 @@ class Job(models.Model):
     user = models.TextField(max_length=250)
     password = EncryptedTextField()
     timeout = models.IntegerField(default=600) # seconds; default 10 mins
+    server_url = models.TextField(max_length=300, default="http://127.0.0.1:8000/")
 
 
 class JobLog(models.Model):
@@ -216,6 +219,7 @@ class JobLog(models.Model):
     stderr = models.TextField()
     stdout = models.TextField()
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    return_status_code = models.IntegerField()
 
 
 class JobVersion(models.Model):

@@ -27,7 +27,6 @@ class OrgDatabaseBackend(backends.DatabaseBackend):
         task_kwargs_dict = getattr(request, "kwargs", {})
         worker = getattr(request, 'hostname', None)
 
-        # todo fix json.loads deseriaalize
         organization_id = task_kwargs_dict.get("organization_id", None)
 
         self.TaskModel._default_manager.store_result_org(
@@ -92,7 +91,7 @@ class OrgTaskManager(managers.TaskResultManager):
             'task_name': task_name,
             'task_args': task_args,
             'task_kwargs': task_kwargs,
-            'organization': organization,
+            'organization_id': organization,
             'worker': worker
         }
         obj, created = self.using(using).get_or_create(task_id=task_id,

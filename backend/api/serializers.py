@@ -5,6 +5,7 @@ from utils import read
 from django.conf import settings
 from api import tasks
 from api import models
+import json
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -121,6 +122,7 @@ class JobSerializer(serializers.ModelSerializer):
             'cron_hour',
             'cron_minute',
             'user',
+            'server_url',
 
         ]
         model = models.Job
@@ -133,13 +135,15 @@ class JobSerializer(serializers.ModelSerializer):
              hour=kwargs.get("cron_hour", None),
              minute=kwargs.get("cron_minute", None))
 
+        org = kwargs.get("organization", None)
         task, _ = models.OrgPeriodicTask.objects.get_or_create(
             crontab=schedule,
             name = kwargs.get("name", None),
             task='api.tasks.job',
-            organization=kwargs.get("organization", None),
-            args={"id":job_id}
+            organization=org,
+            kwargs=json.dumps({"id": job_id, "organization_id":org.pk})
         )
+        #todo add enabled; add enabled to gui
 
     def _update_schedule(self, job, kwargs):
         schedule, created = beat_models.CrontabSchedule.objects.get_or_create(
@@ -151,9 +155,7 @@ class JobSerializer(serializers.ModelSerializer):
 
         job = models.OrgPeriodicTask.objects.get(name=job.name)
         job.crontab = schedule
-        job.task='api.tasks.job',
-        job.organization = kwargs.get("organization", None)
-        job.args = {"id": job.id}
+        #todo add enabled; add enabled to gui
         job.save()
 
     def create(self,validated_data):
@@ -199,9 +201,37 @@ class IndicatorJobSerializer(serializers.ModelSerializer):
             "arguments",
             "user",
             "timeout",
+            'server_url',
         ]
         model = models.IndicatorJob
 
+
+class JobLogSerializer(serializers.ModelSerializer):
+    job = serializers.PrimaryKeyRelatedField(queryset=models.Job.objects.all())
+    class Meta:
+        fields = [
+            "date",
+            "stderr",
+            "stdout",
+            "organization",
+            "job",
+        ]
+        model = models.JobLog
+
+
+class IndicatorJobLogSerializer(serializers.ModelSerializer):
+    job = serializers.PrimaryKeyRelatedField(queryset=models.IndicatorJob.objects.all())
+    class Meta:
+        fields = [
+            "date",
+            "stderr",
+            "stdout",
+            "organization",
+            "job",
+
+
+        ]
+        model = models.IndicatorJobLog
 
 class IndicatorType(serializers.ModelSerializer):
     class Meta:

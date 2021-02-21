@@ -1,7 +1,8 @@
 import { RSAA } from 'redux-api-middleware'
 import { withAuth } from '../reducers/util'
 import { setParams, getAll, setActiveVersionTemplate, getVersionTemplate, setActiveRequestTemplate } from './util'
-import { filterChange, JOB_API } from './indJobVersionFilter'
+import { filterChange } from './indJobVersionFilter'
+import { INDJOB_VERSION_API } from '../containers/api'
 
 export const GETNO_INDJOBVERSION_REQUEST = '@@indJobVersion/GETNO_INDJOBVERSION_REQUEST'
 export const GETNO_INDJOBVERSION_SUCCESS = '@@indJobVersion/GETNO_INDJOBVERSION_SUCCESS'
@@ -24,15 +25,15 @@ export const setPage = (data) => {
   }
 }
 
-export const getIndJobVersionNoRedux = getVersionTemplate(JOB_API)(GETNO_INDJOBVERSION_REQUEST)(
+export const getIndJobVersionNoRedux = getVersionTemplate(INDJOB_VERSION_API)(GETNO_INDJOBVERSION_REQUEST)(
   GETNO_INDJOBVERSION_SUCCESS)(
   GETNO_INDJOBVERSION_FAILURE)
 
-export const getIndJobVersion = getVersionTemplate(JOB_API)(GET_INDJOBVERSION_REQUEST)(
+export const getIndJobVersion = getVersionTemplate(INDJOB_VERSION_API)(GET_INDJOBVERSION_REQUEST)(
   GET_INDJOBVERSION_SUCCESS)(
   GET_INDJOBVERSION_FAILURE)
 
-export const setActiveRequest = setActiveRequestTemplate(JOB_API)(
+export const setActiveRequest = setActiveRequestTemplate(INDJOB_VERSION_API)(
   UPDATE_INDJOBVERSION_REQUEST)(
   UPDATE_INDJOBVERSION_SUCCESS)(
   UPDATE_INDJOBVERSION_FAILURE)
