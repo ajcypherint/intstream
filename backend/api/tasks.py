@@ -3,7 +3,6 @@ import feedparser
 import asyncio
 from utils import domain
 import aiohttp
-import tarfile
 import re
 
 from celery.utils.log import get_task_logger
@@ -233,7 +232,18 @@ def _job(id, organization_id):
     job_version = models.JobVersion.objects.get(active=True, job=job)
     tokens = get_tokens_for_user(user)
     directory = get_script_directory_script_version_id(job_version.id)
-    create_job_script_directory(job_version, directory, SCRIPT_JOB)
+    try:
+        create_job_script_directory(job_version, directory, SCRIPT_JOB)
+    except tarfile.ReadError as e:
+        logger.error("job :" + job.name + " failed; " + str(e).replace('\n', ' ').replace('\r', ' '))
+        log = models.JobLog(organization=job_version.organization,
+                                     job=job_version.job,
+                                     return_status_code=1,
+                                     stdout='',
+                                     stderr=str(e))
+        log.save()
+        raise e
+
     create_virtual_env(job_version, aws_req=False, job=JOB_PREFIX)
 
     job_version = models.JobVersion.objects.get(id=job_version.id)
@@ -260,7 +270,7 @@ def _job(id, organization_id):
             timeout=job.timeout)
 
         if proc.returncode != 0:
-            logger.info("job :" + job.name + " failed; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
+            logger.error("job :" + job.name + " failed; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
                         "; stdout: " + proc.stdout.replace('\n', ' ').replace('\r', ' '))
 
 
@@ -279,7 +289,7 @@ def _job(id, organization_id):
                                      stdout=outs,
                                      stderr=errs)
         log.save()
-        logger.info("job :" + job.name + " timeout; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
+        logger.error("job :" + job.name + " timeout; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
                         "; stdout: " + proc.stdout.replace('\n', ' ').replace('\r', ' '))
 
 
@@ -519,10 +529,16 @@ def model_dir(id):
     model_directory = os.path.join(settings.VENV_DIR, MODEL+str(id))
     return model_directory
 
-
 @shared_task()
 def process_rss_sources(organization_id):
     _process_rss_sources(organization_id)
+
+@shared_task()
+def process_rss_sources_all():
+    orgs = models.Organization.objects.all()
+    ids = [i.id for i in orgs]
+    for i in ids:
+        process_rss_source.delay(i)
 
 
 def _process_rss_sources(organization_id):
@@ -857,6 +873,13 @@ def _remove_old_articles(organization_id):
 @shared_task(bind=True)
 def remove_old_articles(self, organization_id=None):
     _remove_old_articles(organization_id)
+
+@shared_task(bind=True)
+def remove_old_articles_all(self):
+    orgs = models.Organization.objects.filter(freemium=True)
+    ids = [i.id for i in orgs]
+    for i in ids:
+        remove_old_articles.delay(i)
 
 #todo refactor into one method for task and another for function to allow unit testing of function
 @shared_task(bind=True)

@@ -1136,7 +1136,7 @@ class RawArticleViewSet(viewsets.ModelViewSet):
         instance = serializer.save(organization=self.request.user.organization)
 
     def get_queryset(self):
-        return models.HtmlArticle.objects.filter(organization=self.request.user.organization)
+        return models.RawArticle.objects.filter(organization=self.request.user.organization)
 
 
 class HtmlArticleFilter(filters.FilterSet):
@@ -1176,7 +1176,10 @@ def create_predict(source, text, organization, serializer):
     source = models.Source.objects.get(id=source)
     serializer.save(source=source, text=text, organization=organization)
     clean_text = serializer.get_clean_text(serializer.instance)
-    tasks.predict.delay([serializer.instance.pk], serializer.instance.source.id, serializer.instance.organization.id)
+    article_ids = [serializer.instance.pk]
+    source_id = serializer.instance.source.id
+    org_id = serializer.instance.organization.id
+    tasks.predict.delay(article_ids, source_id, org_id)
     if serializer.instance.source.extract_indicators:
         tasks.extract_indicators.delay(clean_text, serializer.instance.id, serializer.instance.organization.id)
 
@@ -1377,9 +1380,9 @@ class IndicatorBaseViewSet(viewsets.ModelViewSet):
         for j in jobs:
             if isinstance(instance, list):
                 for i in instance:
-                    tasks.indicatorjob.delay(id=j.id, indicator=i.value)
+                    tasks.indicatorjob.delay(j.id, i.value, i.organization.id)
             else:
-                tasks.indicatorjob.delay(id=j.id, indicator=instance.value)
+                tasks.indicatorjob.delay(j.id, instance.value, instance.organization.id)
 
 
 class CharInFilter(filters.BaseInFilter, filters.CharFilter):
@@ -1499,12 +1502,12 @@ class IndicatorSha1ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.SHA1)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.SHA1).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA1).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.SHA1).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA1).all()
         self.tasks(instance, jobs)
 
 
@@ -1529,12 +1532,12 @@ class IndicatorSha256ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.SHA256)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.SHA256).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA256).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.SHA256).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA256).all()
         self.tasks(instance, jobs)
 
 
@@ -1582,12 +1585,12 @@ class IndicatorNetLocViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.NETLOC)
         instance = serializer.save(ind_type=ind_type, organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.NETLOC).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.NETLOC).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.NETLOC).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.NETLOC).all()
         self.tasks(instance, jobs)
 
 class SuffixViewSet(OrgViewSet):
@@ -1626,12 +1629,12 @@ class IndicatorEmailViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.EMAIL)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.EMAIL).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.EMAIL).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.EMAIL).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.EMAIL).all()
         self.tasks(instance, jobs)
 
 
@@ -1655,13 +1658,13 @@ class IndicatorIPV4ViewSet(IndicatorBaseViewSet):
 
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.IPV4)
-        instance = serializer.save(organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(ind_type=ind_type, indicator_types__name=settings.IPV4).all()
+        instance = serializer.save(organization = self.request.user.organization, ind_type=ind_type)
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV4).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.IPV4).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV4).all()
         self.tasks(instance, jobs)
 
 
@@ -1686,12 +1689,12 @@ class IndicatorIPV6ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.IPV6)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.IPV6).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV6).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.IPV6).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV6).all()
         self.tasks(instance, jobs)
 
 
@@ -1737,12 +1740,12 @@ class IndicatorMD5ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.MD5)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.MD5).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.MD5).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(name=settings.MD5).all()
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.MD5).all()
         self.tasks(instance, jobs)
 
         # todo(aj) run jobs

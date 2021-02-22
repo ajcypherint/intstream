@@ -745,6 +745,7 @@ class IndicatorMD5Serializer(serializers.ModelSerializer):
         fields = [
             "id",
             "articles",
+            "ind_type",
             "organization",
             "upload_date",
             "value"
@@ -758,6 +759,7 @@ class IndicatorSha256Serializer(serializers.ModelSerializer):
         fields = [
             "id",
             "articles",
+            "ind_type",
             "organization",
             "upload_date",
             "value",
@@ -771,6 +773,7 @@ class IndicatorEmailSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "articles",
+            "ind_type",
             "organization",
             "upload_date",
             "value",
@@ -784,6 +787,7 @@ class IndicatorSha1Serializer(serializers.ModelSerializer):
         fields = [
             "id",
             "articles",
+            "ind_type",
             "organization",
             "upload_date",
             "value"
@@ -812,6 +816,7 @@ class IndicatorNetLocSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "articles",
+            "ind_type",
             "organization",
             "subdomain",
             "domain",
@@ -839,6 +844,7 @@ class IndicatorIPV6Serializer(serializers.ModelSerializer):
         fields = [
             "id",
             "articles",
+            "ind_type",
             "organization",
             "upload_date",
             "value"
@@ -851,6 +857,7 @@ class IndicatorIPV4Serializer(serializers.ModelSerializer):
         fields = [
             "id",
             "articles",
+            "ind_type",
             "organization",
             "upload_date",
             "value"
