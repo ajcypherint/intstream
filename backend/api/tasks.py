@@ -4,6 +4,7 @@ import asyncio
 from utils import domain
 import aiohttp
 import re
+import pathlib
 
 from celery.utils.log import get_task_logger
 
@@ -73,6 +74,30 @@ def close_logging(signal=None, sender=None, task_id=None, task=None, args=None, 
         version.celery_log.save(task_id + ".log",File(f))
         version.save()
 """
+# Venv dirs
+DIRVENV = os.path.join(settings.TMP_DIR, "venv")
+
+DIRCLASSIFVENV  = os.path.join(DIRVENV, "classif")
+DIRJOBVENV    = os.path.join(DIRVENV, "job")
+DIRINDJOBVENV = os.path.join(DIRVENV, "indjob")
+
+# script dirs
+DIRSCRIPT = os.path.join(settings.TMP_DIR, "script")
+
+DIRJOBSCRIPT = os.path.join(DIRSCRIPT, "jobscript")
+DIRINDSCRIPT = os.path.join(DIRSCRIPT,"indscript")
+DIRCLASSIFSCRIPT = os.path.join(DIRSCRIPT,"classifscript")
+
+#model dir
+MODEL = os.path.join(settings.TMP_DIR,"model")
+
+#python script constants
+BASE_CLASSIFY_FILE = "base_classify_file.py"
+CUSTOM_CLASSIFY_FILE = "train_classify.py"
+SCRIPT_INDICATOR_JOB = "indicatorjob.py"
+SCRIPT_JOB = "job.py"
+
+INTSTREAM_PROXY_ENV = "INTSTREAM_PROXY"
 
 class IntstreamException(Exception):
     pass
@@ -101,7 +126,7 @@ class Pip(Venv):
     pass
 
 @shared_task()
-def add(x,y):
+def add(x,y, organization_id):
     return x + y
 
 
@@ -152,14 +177,10 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
 
-INDICATOR_JOB_PREFIX = "indicator"
-JOB_PREFIX = "standard"
-SCRIPT_INDICATOR_JOB = "indicatorjob.py"
-SCRIPT_JOB = "job.py"
 
 
 @shared_task()
-def indicatorjob(id, indicator, organization_id):
+def indicatorjob(id, indicator, organization_id=None):
     _indicatorjob(id, indicator)
 
 
@@ -168,15 +189,11 @@ def _indicatorjob(id, indicator):
     user = models.UserIntStream.objects.get(username=job.user)
     job_version = models.IndicatorJobVersion.objects.get(job=job)
     tokens = get_tokens_for_user(user)
-    directory = get_script_directory_indicator_script_version_id(job_version.id)
-    create_job_script_directory(job_version, directory, SCRIPT_INDICATOR_JOB)
-    create_virtual_env(job_version, aws_req=False, job=INDICATOR_JOB_PREFIX)
+    script = create_job_script_path(job_version, DIRINDSCRIPT, SCRIPT_INDICATOR_JOB)
+    venv_directory = create_virtual_env(job_version, DIRINDJOBVENV, aws_req=False)
 
     job_args = "" if job_version.job.arguments is None else job_version.job.arguments
-    script_directory = get_script_directory_indicator_script_version_id(job_version.id)
-    venv_directory = get_venv_directory_script_version(job_version.id, INDICATOR_JOB_PREFIX)
     path_python = os.path.join(venv_directory,"bin","python")
-    script = os.path.join(script_directory, SCRIPT_INDICATOR_JOB)
     proc = None
     try:
         args = [
@@ -231,27 +248,13 @@ def _job(id, organization_id):
     user = models.UserIntStream.objects.get(username=job.user)
     job_version = models.JobVersion.objects.get(active=True, job=job)
     tokens = get_tokens_for_user(user)
-    directory = get_script_directory_script_version_id(job_version.id)
-    try:
-        create_job_script_directory(job_version, directory, SCRIPT_JOB)
-    except tarfile.ReadError as e:
-        logger.error("job :" + job.name + " failed; " + str(e).replace('\n', ' ').replace('\r', ' '))
-        log = models.JobLog(organization=job_version.organization,
-                                     job=job_version.job,
-                                     return_status_code=1,
-                                     stdout='',
-                                     stderr=str(e))
-        log.save()
-        raise e
+    script = create_job_script_path(job_version, DIRJOBSCRIPT, SCRIPT_JOB)
 
-    create_virtual_env(job_version, aws_req=False, job=JOB_PREFIX)
+    venv_directory = create_virtual_env(job_version, DIRJOBVENV, aws_req=False)
 
     job_version = models.JobVersion.objects.get(id=job_version.id)
     job_args = job_version.job.arguments
-    script_directory = get_script_directory_script_version_id(job_version.id)
-    venv_directory = get_venv_directory_script_version(job_version.id, JOB_PREFIX)
     path_python = os.path.join(venv_directory,"bin","python")
-    script = os.path.join(script_directory, SCRIPT_JOB)
     proc = None
     script = [path_python, script]
     script.extend(job_args.split(" "))
@@ -296,10 +299,12 @@ def _job(id, organization_id):
 CUSTOM_TRAIN_FILE = "train_classify.py"
 
 
-def create_job_script_directory(jobversion, directory, file=CUSTOM_TRAIN_FILE):
+def create_job_script_path(jobversion, dir, file):
+
+    directory = os.path.join(dir, str(jobversion.id))
     if not os.path.exists(directory):
         try:
-            os.mkdir(directory)
+            pathlib.Path(directory).mkdir(parents=True)
             archive = tarfile.open(jobversion.zip.path, 'r:gz')
             tmp = archive.extractfile(file)
             with open(os.path.join(directory, file), "wb") as f:
@@ -308,6 +313,16 @@ def create_job_script_directory(jobversion, directory, file=CUSTOM_TRAIN_FILE):
         except Exception as e:
             shutil.rmtree(directory)
             raise e
+        except tarfile.ReadError as e:
+            logger.error("job :" + job.name + " failed; " + str(e).replace('\n', ' ').replace('\r', ' '))
+            log = models.JobLog(organization=jobversion.organization,
+                                         job=jobversion.job,
+                                         return_status_code=1,
+                                         stdout='',
+                                         stderr=str(e))
+            log.save()
+            raise e
+    return os.path.join(directory, file)
 
 
 def _extract_indicators(text, article_id, organization_id):
@@ -331,8 +346,8 @@ def _extract_indicators(text, article_id, organization_id):
                                                    organization=organization,
                                                    job__active=True)
         for job in jobs:
-            indicatorjob.delay(id=job.id,
-                               indicator=ip.value,
+            indicatorjob.delay(job.id,
+                               ip.value,
                                organization_id=organization_id)
 
     ipv6s = iocextract.extract_ipv6s(text)
@@ -346,8 +361,8 @@ def _extract_indicators(text, article_id, organization_id):
                                                    organization=organization,
                                                    job__active=True)
         for job in jobs:
-            indicatorjob.delay(id=job.id,
-                               indicator=ip.value,
+            indicatorjob.delay(job.id,
+                               ip.value,
                                organization_id=organization_id)
 
 
@@ -370,8 +385,8 @@ def _extract_indicators(text, article_id, organization_id):
                                                        job__active=True)
             serial_instance = serializers.IndicatorNetLocSerializer(instance)
             for job in jobs:
-                indicatorjob.delay(id=job.id,
-                                   indicator=serial_instance.url,
+                indicatorjob.delay(job.id,
+                                   serial_instance.url,
                                    organization_id=organization_id)
 
     md5s = iocextract.extract_md5_hashes(text)
@@ -386,8 +401,8 @@ def _extract_indicators(text, article_id, organization_id):
                                                    organization=organization,
                                                    job__active=True)
         for job in jobs:
-            indicatorjob.delay(id=job.id,
-                               indicator=md5.value,
+            indicatorjob.delay(job.id,
+                               md5.value,
                                organization_id=organization_id)
 
     sha1s = iocextract.extract_sha1_hashes(text)
@@ -402,8 +417,8 @@ def _extract_indicators(text, article_id, organization_id):
                                                    organization=organization,
                                                    job__active=True)
         for job in jobs:
-            indicatorjob.delay(id=job.id,
-                               indicator=sha1.value,
+            indicatorjob.delay(job.id,
+                               sha1.value,
                                organization_id=organization_id)
 
     sha256s = iocextract.extract_sha256_hashes(text)
@@ -418,8 +433,8 @@ def _extract_indicators(text, article_id, organization_id):
                                                    organization=organization,
                                                    job__active=True)
         for job in jobs:
-            indicatorjob.delay(id=job.id,
-                               indicator=sha256.value,
+            indicatorjob.delay(job.id,
+                               sha256.value,
                                organization_id=organization_id)
 
 @shared_task()
@@ -521,13 +536,9 @@ def _predict(article_ids=None, source_id=None, organization_id=None):
             prediction.save()
 
 @shared_task()
-def predict(article_ids, source_id, organization_id):
+def predict(article_ids, source_id, organization_id=None):
     _predict(article_ids, source_id, organization_id)
 
-#unit test
-def model_dir(id):
-    model_directory = os.path.join(settings.VENV_DIR, MODEL+str(id))
-    return model_directory
 
 @shared_task()
 def process_rss_sources(organization_id):
@@ -547,23 +558,7 @@ def _process_rss_sources(organization_id):
     # 1. model_version dir
     # 2. script dir
     # 3. venv dir
-    active_model_versions = models.ModelVersion.objects.filter(model__active=True,
-                                                               organization_id=organization_id,
-                                                               active=True)
-    for version in active_model_versions:
-        model_directory = model_dir(version.id)
-        # create model dir
-        if not os.path.exists(model_directory):
-            model_tar = tarfile.open(mode="r:gz", fileobj=version.file)
-            try:
-                model_tar.extractall(path=model_directory)
-            except Exception as e:
-                if os.path.exists(model_directory):
-                    shutil.rmtree(model_directory)
-                raise e
-    script_versions = models.TrainingScriptVersion.objects.filter(organization_id=organization_id)
-    for v in script_versions:
-        create_dirs(v)
+
     sources = models.RSSSource.objects.filter(active=True).filter(organization_id=organization_id)
     for source in sources:
         logger.info("source:" + source.name)
@@ -599,13 +594,6 @@ def upload_docs(self,
     trainer.upload()
 
 
-SCRIPT = "script_"
-DIRINDSCRIPT = "indscript_"
-VENV = "venv_"
-MODEL = "model_"
-BASE_CLASSIFY_FILE = "base_classify_file.py"
-CUSTOM_CLASSIFY_FILE = "train_classify.py"
-INTSTREAM_PROXY_ENV = "INTSTREAM_PROXY"
 
 def classify(text_list, model_version_id):
     """
@@ -613,15 +601,25 @@ def classify(text_list, model_version_id):
     :param model_version_id: int
     :return:
     """
-    model = ModelVersion.objects.get(id=model_version_id)
-    model_directory = model_dir(model.id)
+    model_directory = os.path.join(MODEL, str(model_version_id))
+    model_version = models.ModelVersion.objects.get(id=model_version_id)
+    # create model dir
+    if not os.path.exists(model_directory):
+        model_tar = tarfile.open(mode="r:gz", fileobj=model_version.file)
+        try:
+            model_tar.extractall(path=model_directory)
+        except Exception as e:
+            if os.path.exists(model_directory):
+                shutil.rmtree(model_directory)
+            raise e
+
     full_model_dir = os.path.join(model_directory,settings.MODEL_FOLDER)
 
-    script_directory = get_script_directory_model_version_id(model_version_id)
-    venv_directory = get_venv_directory_model_version_id(model_version_id)
-    json_data = {"classifier":full_model_dir, "text":text_list}
-    path_python = os.path.join(venv_directory,"bin","python")
-    script = os.path.join(script_directory,BASE_CLASSIFY_FILE)
+    script_directory, venv_directory = create_dirs(model_version.training_script_version)
+
+    json_data = {"classifier":full_model_dir, "text": text_list}
+    path_python = os.path.join(venv_directory, "bin", "python")
+    script = os.path.join(script_directory, BASE_CLASSIFY_FILE)
     proc = None
     timeout = 530
     try:
@@ -657,51 +655,22 @@ def create_dirs(training_script_version):
     :param training_script_version: models.TrainingScriptVersion
     :return:
     """
-    create_script_directory(training_script_version)
-    create_virtual_env(training_script_version)
+    script_dir = create_classif_script_directory(training_script_version)
+    virtualenv_dir = create_virtual_env(training_script_version, DIRCLASSIFVENV, aws_req=True)
+    return script_dir, virtualenv_dir
 
-
-def get_script_directory_indicator_script_version_id(id):
-    """
-    :param id: int script id
-    :return:
-    """
-    directory = os.path.join(settings.VENV_DIR, DIRINDSCRIPT + str(id))
-    return  directory
-
-
-def get_script_directory_script_version_id(id):
-    """
-
-    :param id: int script id
-    :return:
-    """
-    directory = os.path.join(settings.VENV_DIR, SCRIPT + str(id))
-    return  directory
-
-
-def get_script_directory_model_version_id(id):
-    """
-
-    :param id: int model id
-    :return:
-    """
-    model_version = models.ModelVersion.objects.get(id=id)
-    script_id = model_version.training_script_version.id
-    directory = os.path.join(settings.VENV_DIR, SCRIPT + str(script_id))
-    return  directory
 
 
 #todo unit test
-def create_script_directory(training_script_version):
+def create_classif_script_directory(training_script_version):
     """
     :param training_script_version: models.TrainingScriptVersion
     :return:
     """
-    directory = get_script_directory_script_version_id(training_script_version.id)
+    directory = os.path.join(DIRCLASSIFSCRIPT, str(training_script_version.id))
     if not os.path.exists(directory):
         try:
-            os.mkdir(directory)
+            pathlib.Path(directory).mkdir(parents=True)
             base_script = os.path.join(settings.AWS_TRAIN_FILES, BASE_CLASSIFY_FILE)
             copyfile(base_script,os.path.join(directory,BASE_CLASSIFY_FILE))
             # todo(aj) open tar file
@@ -714,39 +683,18 @@ def create_script_directory(training_script_version):
         except Exception as e:
             shutil.rmtree(directory)
             raise e
-
-
-def get_venv_directory_model_version_id(id):
-    """
-    :param id: int
-    :return:
-    """
-    model_version = models.ModelVersion.objects.get(id=id)
-    script_id = model_version.training_script_version.id
-
-    directory = os.path.join(settings.VENV_DIR, VENV + str(script_id))
     return directory
 
 
-def get_venv_directory_script_version(id, job=None):
-    """
-    :param id: int
-    :return:
-    """
-    if job is not None:
-        return os.path.join(settings.VENV_DIR , VENV + "_" + job + str(id))
-
-    return os.path.join(settings.VENV_DIR , VENV + str(id))
-
-
-def create_virtual_env(training_script_version, aws_req=True, job=None):
+def create_virtual_env(version, base_dir, aws_req=False):
     """
     generate virtual env in dir for models
     :param training_script_version: models.TrainingScriptVersion
     :return:
     """
     proxy = os.environ.get(INTSTREAM_PROXY_ENV, None)
-    directory = get_venv_directory_script_version(training_script_version.id, job)
+    directory = os.path.join(base_dir, str(version.id))
+
     if not os.path.exists(directory):
         try:
             # todo causes error isADirectory when running virtualenv
@@ -775,7 +723,6 @@ def create_virtual_env(training_script_version, aws_req=True, job=None):
                               "pip",
                               "install",
                               "cython",
-                              "--no-cache-dir"
                               ],
                            env=env,
                            stdout=subprocess.PIPE,
@@ -784,14 +731,13 @@ def create_virtual_env(training_script_version, aws_req=True, job=None):
             logger.info("pip stdout: " + str(respip.stdout))
             if res.returncode != 0:
                 raise Pip
-            if aws_req:
+            if aws_req: #install extra requirements
                 respip = subprocess.run([os.path.join(directory,"bin/python"),
                                   "-m",
                                   "pip",
                                   "install",
-                                  "--no-cache-dir"
                                   "-r",
-                                  os.path.join(settings.AWS_TRAIN_FILES,"requirements.txt")],
+                                  os.path.join(settings.AWS_TRAIN_FILES, "requirements.txt")],
                                env=env,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
@@ -801,7 +747,7 @@ def create_virtual_env(training_script_version, aws_req=True, job=None):
                 raise Pip
 
             REQ = "requirements.txt"
-            archive = tarfile.open(training_script_version.zip.path, 'r:gz')
+            archive = tarfile.open(version.zip.path, 'r:gz')
             with tempfile.NamedTemporaryFile() as req:
                 tmpreq = archive.extractfile(REQ)
                 req.write(tmpreq.read())
@@ -823,6 +769,7 @@ def create_virtual_env(training_script_version, aws_req=True, job=None):
         except Exception as e:
             shutil.rmtree(directory)
             raise e
+    return directory
 
 
 def update_status(job_name, status):

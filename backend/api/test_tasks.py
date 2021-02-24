@@ -181,11 +181,7 @@ class TestTasks(TestCase):
 
 
     @mock.patch("api.tasks.process_rss_source")
-    @mock.patch("api.tasks.create_dirs")
-    @mock.patch("tarfile.open")
-    @mock.patch("os.path.exists")
-    def test_process_rss_sources(self, exist, tar_open, create_dirs, process):
-        exist.return_value = False
+    def test_process_rss_sources(self, process):
         ORG = 1
         tasks._process_rss_sources(ORG)
 
@@ -196,10 +192,5 @@ class TestTasks(TestCase):
             def extractall(self):
                 pass
 
-        m_open = MockTar()
-        tar_open.return_value = m_open
-        self.assertTrue(exist.called)
-        self.assertTrue(tar_open.called)
-        self.assertTrue(create_dirs.called)
         self.assertTrue(process.delay.called)
 

@@ -28,7 +28,6 @@ class OrgDatabaseBackend(backends.DatabaseBackend):
         worker = getattr(request, 'hostname', None)
 
         organization_id = task_kwargs_dict.get("organization_id", None)
-
         self.TaskModel._default_manager.store_result_org(
             content_type, content_encoding,
             task_id, result, status,

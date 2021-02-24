@@ -28,18 +28,20 @@ def debug_task(self):
 
 
 
-#todo(this is causing a hang for some reason in tasks.add.delay()
 # you MUST use args with args params tasks and kwargs with Kwarg params with tasks or bugs galore
+# using .connect here for some reason causes a hang
 
 celery_app.conf.beat_schedule = {
     # assign to single worker with concurrency = 1
     "rss_sources":{
         "task": "api.tasks.process_rss_sources_all",
+        "kwargs":{"organization_id":1},
         "schedule": crontab(hour="*/1", minute="2") # every hour at 2 mins
      #  "schedule": crontab(hour="*", minute="*/1") # testing
     },
     'clean_history_freemium': {
         "task": "api.tasks.remove_old_articles_all",
+        "kwargs":{"organization_id":1},
         "schedule": crontab(hour="1", minute="30") # every day at hour 1
     },
     'update_tld': {

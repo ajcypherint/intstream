@@ -1179,7 +1179,7 @@ def create_predict(source, text, organization, serializer):
     article_ids = [serializer.instance.pk]
     source_id = serializer.instance.source.id
     org_id = serializer.instance.organization.id
-    tasks.predict.delay(article_ids, source_id, org_id)
+    tasks.predict.delay(article_ids, source_id, organization_id=org_id)
     if serializer.instance.source.extract_indicators:
         tasks.extract_indicators.delay(clean_text, serializer.instance.id, serializer.instance.organization.id)
 
@@ -1380,9 +1380,9 @@ class IndicatorBaseViewSet(viewsets.ModelViewSet):
         for j in jobs:
             if isinstance(instance, list):
                 for i in instance:
-                    tasks.indicatorjob.delay(j.id, i.value, i.organization.id)
+                    tasks.indicatorjob.delay(j.id, i.value, organization_id=i.organization.id)
             else:
-                tasks.indicatorjob.delay(j.id, instance.value, instance.organization.id)
+                tasks.indicatorjob.delay(j.id, instance.value, organization_id=instance.organization.id)
 
 
 class CharInFilter(filters.BaseInFilter, filters.CharFilter):
