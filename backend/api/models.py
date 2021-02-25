@@ -208,7 +208,6 @@ class Job(models.Model):
     cron_hour = models.TextField(max_length=10, )
     cron_minute = models.TextField(max_length=10, )
     user = models.TextField(max_length=250)
-    password = EncryptedTextField()
     timeout = models.IntegerField(default=600) # seconds; default 10 mins
     server_url = models.TextField(max_length=300, default="http://127.0.0.1:8000/")
 

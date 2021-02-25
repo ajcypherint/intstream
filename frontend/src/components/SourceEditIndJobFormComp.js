@@ -35,7 +35,6 @@ export default class Edit extends Component {
     const err_python_version = errors.python_version
     const err_arguments = errors.arguments
     const err_user = errors.user
-    const err_password = errors.password
     const err_ind_types = errors.ind_types
     const err_timeout = errors.timeout
     const object_job = this.props.object.id || ''
@@ -43,7 +42,6 @@ export default class Edit extends Component {
     const object_arguments = this.props.object.arguments || ''
     const object_indicator_types = this.props.object.indicator_types || []
     const object_user = this.props.object.user || ''
-    const object_password = this.props.object.password || ''
     const object_timeout = this.props.object.timeout || ''
     const object_active = this.props.object.active || ''
     const indicatorTypes = this.props.indicatorTypes || []
@@ -82,13 +80,6 @@ export default class Edit extends Component {
             label={'user'}
             value={object_user}
             error={err_user} />
-           <TextInput
-            onChange={this.props.handleChange}
-            name={'password'}
-            type={'password'}
-            label={'password'}
-            value={object_password}
-            error={err_password} />
            <TextInput
             onChange={this.props.handleChange}
             name={'timeout'}

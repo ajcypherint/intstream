@@ -41,7 +41,6 @@ with open(os.path.join(BASE_DIR, 'secretkey.txt')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
 #default to false
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ['true','yes']
 ALLOWED_HOSTS = ['*']

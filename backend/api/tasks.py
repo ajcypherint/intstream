@@ -6,39 +6,27 @@ import aiohttp
 import re
 import pathlib
 
-from celery.utils.log import get_task_logger
 
 import datetime
-from . import models
 import requests
-from django.utils import timezone
-from celery_singleton import Singleton
 from celery.utils.log import get_task_logger
-import numpy as np
 logger = get_task_logger(__name__)
-from utils import vector, read, train
 import shutil
 from rest_framework_simplejwt.tokens import RefreshToken
 import iocextract
-import venv
 from api.models import ModelVersion, MLModel, Organization
 from api import serializers
 from django.core.files import File
 from django.conf import settings
-from celery import group
 import os
 import subprocess
 import tempfile
 from shutil import copyfile
-import virtualenv
 import json
 import tarfile
 from utils import train
-from celery.app.log import TaskFormatter
-from celery.signals import task_prerun, task_postrun
 import logging
 # to control the tasks that required logging mechanism
-from celery import signals
 TASK_WITH_LOGGING = ['api.tasks.train_model']
 from celery.app.log import TaskFormatter
 
@@ -187,7 +175,7 @@ def indicatorjob(id, indicator, organization_id=None):
 def _indicatorjob(id, indicator):
     job = models.IndicatorJob.objects.get(id=id)
     user = models.UserIntStream.objects.get(username=job.user)
-    job_version = models.IndicatorJobVersion.objects.get(job=job)
+    job_version = models.IndicatorJobVersion.objects.get(job=job, active=True)
     tokens = get_tokens_for_user(user)
     script = create_job_script_path(job_version, DIRINDSCRIPT, SCRIPT_INDICATOR_JOB)
     venv_directory = create_virtual_env(job_version, DIRINDJOBVENV, aws_req=False)
@@ -218,11 +206,10 @@ def _indicatorjob(id, indicator):
             timeout=job.timeout)
 
         if proc.returncode != 0:
-            logger.info("job :" + job.name + " failed; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
-                        "; stdout: " + proc.stdout.replace('\n', ' ').replace('\r', ' '))
-
-        log = models.JobLog(organization=job_version.organization,
-                                     job=job_version.job,
+            logger.info("indicator job: " + job.name + " failed; stderr: " + proc.stderr.replace('\n', ';').replace('\r', '') +
+                        "; stdout: " + proc.stdout.replace('\n', ';').replace('\r', ''))
+        log = models.IndicatorJobLog(organization=job_version.organization,
+                                     job=job,
                                      return_status_code=proc.returncode,
                                      stdout=proc.stdout,
                                      stderr=proc.stderr)
@@ -231,13 +218,13 @@ def _indicatorjob(id, indicator):
         proc.kill()
         outs, errs = proc.communicate()
         log = models.IndicatorJobLog(organization=job_version.organization,
-                                     job=job_version.job,
+                                     job=job,
                                      return_status_code=proc.returncode,
                                      stdout=outs,
                                      stderr=errs)
         log.save()
-        logger.info("job :" + job.name + " timeout; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
-                        "; stdout: " + proc.stdout.replace('\n', ' ').replace('\r', ' '))
+        logger.info("indicator job: " + job.name + " timeout; stderr: " + proc.stderr.replace('\n', ';').replace('\r', '') +
+                        "; stdout: " + proc.stdout.replace('\n', ';').replace('\r', ''))
 
 @shared_task()
 def job(id=None, organization_id=None):
@@ -273,8 +260,8 @@ def _job(id, organization_id):
             timeout=job.timeout)
 
         if proc.returncode != 0:
-            logger.error("job :" + job.name + " failed; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
-                        "; stdout: " + proc.stdout.replace('\n', ' ').replace('\r', ' '))
+            logger.error("job: " + job.name + " failed; stderr: " + proc.stderr.replace('\n', ';').replace('\r', '') +
+                        "; stdout: " + proc.stdout.replace('\n', ';').replace('\r', ''))
 
 
         log = models.JobLog(organization=job_version.organization,
@@ -292,8 +279,8 @@ def _job(id, organization_id):
                                      stdout=outs,
                                      stderr=errs)
         log.save()
-        logger.error("job :" + job.name + " timeout; stderr: " + proc.stderr.replace('\n', ' ').replace('\r', ' ') +
-                        "; stdout: " + proc.stdout.replace('\n', ' ').replace('\r', ' '))
+        logger.error("job: " + job.name + " timeout; stderr: " + proc.stderr.replace('\n', ';').replace('\r', '') +
+                        "; stdout: " + proc.stdout.replace('\n', ';').replace('\r', ''))
 
 
 CUSTOM_TRAIN_FILE = "train_classify.py"
@@ -314,7 +301,7 @@ def create_job_script_path(jobversion, dir, file):
             shutil.rmtree(directory)
             raise e
         except tarfile.ReadError as e:
-            logger.error("job :" + job.name + " failed; " + str(e).replace('\n', ' ').replace('\r', ' '))
+            logger.error("create job script path failed:" + job.name + " failed; " + str(e).replace('\n', ';').replace('\r', ''))
             log = models.JobLog(organization=jobversion.organization,
                                          job=jobversion.job,
                                          return_status_code=1,

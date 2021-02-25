@@ -22,6 +22,11 @@ from api import tasks
 celery_app.autodiscover_tasks()
 
 
+@celery_app.task()
+def add(x, y, organization_id=None):
+    print(x + y)
+
+
 @celery_app.task(bind=True)
 def debug_task(self):
     print('Request: {0!r}'.format(self.request))

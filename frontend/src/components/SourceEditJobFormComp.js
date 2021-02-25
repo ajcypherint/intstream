@@ -39,7 +39,6 @@ export default class Edit extends Component {
     const err_cron_minute = errors.cron_minute
     const err_user = errors.user
     const err_server_url = errors.server_url
-    const err_password = errors.password
     const err_timeout = errors.timeout
     const object_job = this.props.object.id || ''
     const object_name = this.props.object.name || ''
@@ -50,7 +49,6 @@ export default class Edit extends Component {
     const object_cron_hour = this.props.object.cron_hour || ''
     const object_cron_minute = this.props.object.cron_minute || ''
     const object_user = this.props.object.user || ''
-    const object_password = this.props.object.password || ''
     const object_timeout = this.props.object.timeout || ''
     const object_active = this.props.object.active || ''
     const object_server_url = this.props.object.server_url || 'http://127.0.0.1:8000/'
@@ -109,13 +107,6 @@ export default class Edit extends Component {
             label={'user'}
             value={object_user}
             error={err_user} />
-           <TextInput
-            onChange={this.props.handleChange}
-            name={'password'}
-            type={'password'}
-            label={'password'}
-            value={object_password}
-            error={err_password} />
            <TextInput
             onChange={this.props.handleChange}
             name={'timeout'}
