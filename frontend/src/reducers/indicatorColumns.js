@@ -122,7 +122,7 @@ export function getText (state) {
 }
 
 export function getTextErrors (state) {
-  return state.TextErrors
+  return state.textErrors
 }
 
 export function getTextData (state) {
@@ -130,12 +130,12 @@ export function getTextData (state) {
 }
 
 export function getTextDataErrors (state) {
-  return state.TextDataErrors
+  return state.textDataErrors
 }
-export function getNumData (state) {
-  return state.textData
+export function getNumDataInfo (state) {
+  return state.numData
 }
 
 export function getNumDataErrors (state) {
-  return state.TextDataErrors
+  return state.numDataErrors
 }

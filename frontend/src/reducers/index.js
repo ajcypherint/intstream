@@ -208,7 +208,7 @@ export const getIndicatorColText = state => fromIndicatorColumns.getText(state.i
 export const getIndicatorColTextErrors = state => fromIndicatorColumns.getTextErrors(state.indicatorColumns)
 export const getIndicatorColNum = state => fromIndicatorColumns.getNum(state.indicatorColumns)
 export const getIndicatorColNumErrors = state => fromIndicatorColumns.getNumErrors(state.indicatorColumns)
-export const getIndicatorColNumData = state => fromIndicatorColumns.getNumData(state.indicatorColumns)
+export const getIndicatorColNumData = state => fromIndicatorColumns.getNumDataInfo(state.indicatorColumns)
 export const getIndicatorColNumDataErrors = state => fromIndicatorColumns.getNumDataErrors(state.indicatorColumns)
 export const getIndicatorColTextData = state => fromIndicatorColumns.getTextData(state.indicatorColumns)
 export const getIndicatorColTextDataErrors = state => fromIndicatorColumns.getTextDataErrors(state.indicatorColumns)

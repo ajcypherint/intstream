@@ -320,6 +320,8 @@ Main.propTypes = {
   fetchIndicators: propTypes.func,
   md5: propTypes.object,
   sha1: propTypes.object,
-  sha256: propTypes.object
+  sha256: propTypes.object,
+  numColsData: propTypes.array,
+  textColsData: propTypes.array
 
 }

@@ -1753,6 +1753,14 @@ class IndicatorMD5ViewSet(IndicatorBaseViewSet):
 
 class IndicatorTextFilter(filters.FilterSet):
     indicator__in = NumberInFilter(field_name="indicator", lookup_expr="in")
+    ind_type = filters.CharFilter(field_name="indicator__ind_type__name", lookup_expr="exact")
+    start_upload_date = filters.IsoDateTimeFilter(field_name='indicator__articles__upload_date',
+                                                  lookup_expr='gte' )
+    end_upload_date = filters.IsoDateTimeFilter(field_name='indicator__articles__upload_date',
+                                                lookup_expr='lte', )
+    source = filters.NumberFilter(field_name="indicator__articles__source", lookup_expr="exact", )
+    model = filters.NumberFilter(field_name="indicator__articles__prediction__mlmodel",
+                                 lookup_expr="exact")
 
     class Meta:
         model = models.IndicatorTextField
@@ -1762,6 +1770,11 @@ class IndicatorTextFilter(filters.FilterSet):
                   "name",
                   "indicator",
                   "indicator__in"
+                  "ind_type"
+                  "start_upload_date",
+                  "end_upload_date",
+                  "source",
+                  "model"
                   )
 
 
@@ -1783,8 +1796,12 @@ class IndicatorNumericFilter(filters.FilterSet):
                   "name",
                   "organization",
                   "indicator",
-                  "ind_type",
                   "indicator__in"
+                  "ind_type",
+                  "start_upload_date",
+                  "end_upload_date",
+                  "source",
+                  "model"
                   )
 
 
@@ -1831,6 +1848,7 @@ class IndicatorNumericFilterName(filters.FilterSet):
     end_upload_date = filters.IsoDateTimeFilter(field_name='indicator__articles__upload_date', lookup_expr='lte', )
     source = filters.NumberFilter(field_name="indicator__articles__source", lookup_expr="exact", )
     model = filters.NumberFilter(field_name="indicator__articles__prediction__mlmodel", lookup_expr="exact", )
+    ind_type = filters.CharFilter(field_name="indicator__ind_type__name", lookup_expr="exact")
 
     class Meta:
         model = models.IndicatorNumericField
@@ -1839,7 +1857,8 @@ class IndicatorNumericFilterName(filters.FilterSet):
                   "start_upload_date",
                   "end_upload_date",
                   "source",
-                  "model"
+                  "model",
+                  "ind_type"
                   )
 
 

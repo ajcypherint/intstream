@@ -91,6 +91,7 @@ function intersect (selectedCols, allColsObjs) {
   return cols
 }
 
+// todo(aj) add active filter
 export const filterIndChange = (selections,
   setQuery
 ) => {
@@ -129,8 +130,7 @@ export const filterIndChange = (selections,
 
       const sourceStr = 'start_upload_date=' + selections.startDate.toISOString() +
         '&end_upload_date=' + selections.endDate.toISOString() +
-        '&source=' + sourceChosen +
-        '&source__active=true' + predictionStr
+        '&source=' + sourceChosen + predictionStr
 
       // fetch sources and models; * not just sources but all filters not inc dates *
       // could ignore this for child
@@ -142,8 +142,7 @@ export const filterIndChange = (selections,
         '&orderdir=' + orderdir +
         '&source=' + sourceChosen +
         '&start_upload_date=' + selections.startDate.toISOString() +
-        '&end_upload_date=' + selections.endDate.toISOString() +
-        '&source__active=true' + predictionStr
+        '&end_upload_date=' + selections.endDate.toISOString() + predictionStr
     }
     const indicatorStrPage = indicatorStr + '&page=' + selections.page
     // get counts for each indicator tab
@@ -198,6 +197,7 @@ export const filterIndChange = (selections,
     // todo get selected column data for indicators in ids
   }
 }
+// todo(aj) add active filter
 export const filterChange = (selections, setQuery, parent) => {
   return async (dispatch, getState) => {
     const modelChosen = selections.modelChosen || ''
@@ -219,7 +219,7 @@ export const filterChange = (selections, setQuery, parent) => {
     const sourceStr = 'start_upload_date=' + selections.startDate.toISOString() +
       '&end_upload_date=' + selections.endDate.toISOString() +
       '&source=' + sourceChosen +
-      '&source__active=true' + predictionStr
+      predictionStr
 
     // fetch sources and models; * not just sources but all filters not inc dates *
     // could ignore this for child
@@ -237,7 +237,6 @@ export const filterChange = (selections, setQuery, parent) => {
       selections.startDate,
       selections.endDate,
       selections.threshold) +
-      '&source__active=true' +
       (selections.maxDf ? '&max_df=' + selections.maxDf : '') +
       (selections.MinDf ? '&min_df=' + selections.minDf : '') + predictionStr
 
