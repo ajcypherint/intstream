@@ -1769,8 +1769,8 @@ class IndicatorTextFilter(filters.FilterSet):
                   "organization",
                   "name",
                   "indicator",
-                  "indicator__in"
-                  "ind_type"
+                  "indicator__in",
+                  "ind_type",
                   "start_upload_date",
                   "end_upload_date",
                   "source",
@@ -1796,7 +1796,7 @@ class IndicatorNumericFilter(filters.FilterSet):
                   "name",
                   "organization",
                   "indicator",
-                  "indicator__in"
+                  "indicator__in",
                   "ind_type",
                   "start_upload_date",
                   "end_upload_date",

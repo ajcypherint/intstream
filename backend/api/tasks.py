@@ -5,6 +5,7 @@ from utils import domain
 import aiohttp
 import re
 import pathlib
+from django.core import exceptions
 
 
 import datetime
@@ -153,7 +154,7 @@ def _update_suffixes():
 
 
 @shared_task()
-def update_suffixes(organization_id):
+def update_suffixes(organization_id=None):
     _update_suffixes()
 
 
@@ -175,7 +176,13 @@ def indicatorjob(id, indicator, organization_id=None):
 def _indicatorjob(id, indicator):
     job = models.IndicatorJob.objects.get(id=id)
     user = models.UserIntStream.objects.get(username=job.user)
-    job_version = models.IndicatorJobVersion.objects.get(job=job, active=True)
+    job_version = None
+    try:
+        job_version = models.IndicatorJobVersion.objects.get(job=job, active=True)
+    except exceptions.ObjectDoesNotExist as e:
+        logger.warning("no active version for job: " + str(id) + "; " + str(e))
+        return
+
     tokens = get_tokens_for_user(user)
     script = create_job_script_path(job_version, DIRINDSCRIPT, SCRIPT_INDICATOR_JOB)
     venv_directory = create_virtual_env(job_version, DIRINDJOBVENV, aws_req=False)
@@ -329,9 +336,9 @@ def _extract_indicators(text, article_id, organization_id):
             organization=organization,
             ind_type=ind_type)
         ip.articles.add(article)
-        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.IPV4,
-                                                   organization=organization,
-                                                   job__active=True)
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV4,
+                                                  organization=organization,
+                                                  active=True)
         for job in jobs:
             indicatorjob.delay(job.id,
                                ip.value,
@@ -344,9 +351,9 @@ def _extract_indicators(text, article_id, organization_id):
                                                            organization=organization,
                                                            ind_type=ind_type)
         ip.articles.add(article)
-        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.IPV6,
-                                                   organization=organization,
-                                                   job__active=True)
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV6,
+                                                  organization=organization,
+                                                  active=True)
         for job in jobs:
             indicatorjob.delay(job.id,
                                ip.value,
@@ -367,9 +374,9 @@ def _extract_indicators(text, article_id, organization_id):
                                         organization=organization)
 
             instance.articles.add(article)
-            jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.NETLOC,
-                                                       organization=organization,
-                                                       job__active=True)
+            jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.NETLOC,
+                                                      organization=organization,
+                                                      active=True)
             serial_instance = serializers.IndicatorNetLocSerializer(instance)
             for job in jobs:
                 indicatorjob.delay(job.id,
@@ -384,9 +391,9 @@ def _extract_indicators(text, article_id, organization_id):
                                                            ind_type=ind_type)
         md5.articles.add(article)
 
-        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.MD5,
-                                                   organization=organization,
-                                                   job__active=True)
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.MD5,
+                                                  organization=organization,
+                                                  active=True)
         for job in jobs:
             indicatorjob.delay(job.id,
                                md5.value,
@@ -400,9 +407,9 @@ def _extract_indicators(text, article_id, organization_id):
                                     ind_type=ind_type)
         sha1.save()
         sha1.articles.add(article)
-        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.SHA1,
-                                                   organization=organization,
-                                                   job__active=True)
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA1,
+                                                  organization=organization,
+                                                  active=True)
         for job in jobs:
             indicatorjob.delay(job.id,
                                sha1.value,
@@ -416,9 +423,9 @@ def _extract_indicators(text, article_id, organization_id):
         sha256.save()
         sha256.articles.add(article)
         # todo(run indicatorJobs)
-        jobs = models.IndicatorJobVersion.objects.filter(job__indicator_types__name=settings.SHA256,
-                                                   organization=organization,
-                                                   job__active=True)
+        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA256,
+                                                  organization=organization,
+                                                  active=True)
         for job in jobs:
             indicatorjob.delay(job.id,
                                sha256.value,
@@ -532,11 +539,11 @@ def process_rss_sources(organization_id):
     _process_rss_sources(organization_id)
 
 @shared_task()
-def process_rss_sources_all():
+def process_rss_sources_all(organization_id=None):
     orgs = models.Organization.objects.all()
     ids = [i.id for i in orgs]
     for i in ids:
-        process_rss_source.delay(i)
+        process_rss_sources.delay(i)
 
 
 def _process_rss_sources(organization_id):
@@ -778,7 +785,7 @@ def _now(tz):
     return datetime.datetime.now(tz=tz)
 
 
-def _remove_old_articles(organization_id):
+def _remove_old_articles(organization_id=None):
     startdate = _now(tz=datetime.timezone.utc)
     monthprior = startdate - datetime.timedelta(days=30)
     # delete articles not used for classifications for freemium accounts older than 1 month

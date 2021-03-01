@@ -39,6 +39,8 @@ export class Main extends React.Component {
   changeColChoice (event) {
     const type = event.target.dataset.type
     const selected = getOpts(event)
+    // if this.props.query.selectedTabIndex != selected.selectedTabIndex:
+    // clear numCols, textCols
     const newSel = {
       [type]: selected,
       page: 1

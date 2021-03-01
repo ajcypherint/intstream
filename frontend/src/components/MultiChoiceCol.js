@@ -12,11 +12,17 @@ export default ({ name, valueList, value, onChange, disabled, type, incMitigated
     inList.push(valueList[i].name)
   }
   const extra = _.difference(value, inList)
-  if (incMitigated) {
-    valueList = _.concat(mitigated, extra, valueList)
-  } else {
-    valueList = _.concat(extra, valueList)
+  const extraObjs = []
+  for (let i = 0; i < extra.length; i++) {
+    const e = { name: extra[i] }
+    extraObjs.unshift(e)
   }
+  // possibly mitigated can be a required column?
+  //  if (incMitigated) {
+  // valueList = _.concat(extraObjs, mitigated, valueList)
+  // } else {
+  valueList = _.concat(extraObjs, valueList)
+  // }
   return (
     <Input type="select" name={name} multiple
       data-type={type}
