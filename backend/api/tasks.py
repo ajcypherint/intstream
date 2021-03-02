@@ -115,7 +115,7 @@ class Pip(Venv):
     pass
 
 @shared_task()
-def add(x,y, organization_id):
+def add(x,y, organization_id=None):
     return x + y
 
 
@@ -432,7 +432,7 @@ def _extract_indicators(text, article_id, organization_id):
                                organization_id=organization_id)
 
 @shared_task()
-def extract_indicators(text, article_id, organization_id):
+def extract_indicators(text, article_id, organization_id=None):
     """
 
     :param text: str
@@ -444,7 +444,7 @@ def extract_indicators(text, article_id, organization_id):
 
 
 @shared_task()
-def process_rss_source(source_url, source_id, organization_id):
+def process_rss_source(source_url, source_id, organization_id=None):
     _process_rss_source(source_url, source_id, organization_id)
 
 
@@ -535,7 +535,7 @@ def predict(article_ids, source_id, organization_id=None):
 
 
 @shared_task()
-def process_rss_sources(organization_id):
+def process_rss_sources(organization_id=None):
     _process_rss_sources(organization_id)
 
 @shared_task()
@@ -543,7 +543,7 @@ def process_rss_sources_all(organization_id=None):
     orgs = models.Organization.objects.all()
     ids = [i.id for i in orgs]
     for i in ids:
-        process_rss_sources.delay(i)
+        process_rss_sources.delay(organization_id=i)
 
 
 def _process_rss_sources(organization_id):
@@ -575,7 +575,7 @@ def upload_docs(self,
                 region,
                 aws_access_key_id,
                 aws_secret_access_key_id,
-                organization_id
+                organization_id=None
                 ):
     trainer = train.DeployPySparkScriptOnAws(model=model,
                 s3_bucket_logs=s3_bucket_logs,
@@ -609,6 +609,7 @@ def classify(text_list, model_version_id):
 
     full_model_dir = os.path.join(model_directory,settings.MODEL_FOLDER)
 
+    # check if dirs exist if not create them.  someone deleted them
     script_directory, venv_directory = create_dirs(model_version.training_script_version)
 
     json_data = {"classifier":full_model_dir, "text": text_list}
@@ -816,17 +817,47 @@ def remove_old_articles(self, organization_id=None):
     _remove_old_articles(organization_id)
 
 @shared_task(bind=True)
-def remove_old_articles_all(self):
+def remove_old_articles_all(self, organization_id=None):
     orgs = models.Organization.objects.filter(freemium=True)
     ids = [i.id for i in orgs]
     for i in ids:
         remove_old_articles.delay(i)
 
 #todo refactor into one method for task and another for function to allow unit testing of function
+
 @shared_task(bind=True)
-def train_model(self,
+def train_model(
+        self,
+        model,
+        metric,
+        s3_bucket_logs,
+        s3_bucket_temp_files,
+        region,
+        aws_access_key_id,
+        aws_secret_access_key_id,
+        training_script_folder,
+        ec2_key_name,
+        logging_level=logging.DEBUG,
+        extra_kwargs='',
+        organization_id=None
+        ):
+    _train_model(
+                self=self,
+                model=model,
+                metric=metric,
+                s3_bucket_logs=s3_bucket_logs,
+                s3_bucket_temp_files=s3_bucket_temp_files,
+                region=region,
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key_id=aws_secret_access_key_id,
+                training_script_folder=training_script_folder,
+                ec2_key_name=ec2_key_name,
+                logging_level=logging_level,
+                extra_kwargs=extra_kwargs,
+                organization_id=organization_id)
+
+def _train_model(self,
                 model,
-                organization_id,
                 metric,
                 s3_bucket_logs,
                 s3_bucket_temp_files,
@@ -836,7 +867,8 @@ def train_model(self,
                 training_script_folder,
                 ec2_key_name,
                 logging_level=logging.DEBUG,
-                extra_kwargs=''
+                extra_kwargs='',
+                organization_id=None
                 ):
     task = self.request.id.__str__()
     # todo(aj) could be a function
@@ -886,6 +918,7 @@ def train_model(self,
         mversion = models.ModelVersion.objects.get(version=trainer.job_name)
         mversion.status = result.status
         mversion.save()
+        script_directory, venv_directory = create_dirs(model_version.training_script_version)
         if result.status == train.TrainResult.SUCCESS:
             temp_dir = tempfile.TemporaryDirectory()
 

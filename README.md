@@ -23,13 +23,13 @@ initial password: changeme@
 2. `npm start`
 
 ## celery worker - development
-`celery worker -A backend.celery:celery_app -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler`
+`celery -A backend.celery:celery_app worker -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler`
 
 ## beat scheduler 
-`celery beat -A backend.celery:celery_app -l info `
+`celery -A backend.celery:celery_app beat -l info `
 
 ## worker only
-`celery worker -A backend.celery:celery_app -l info`
+`celery  -A backend.celery:celery_app worker -l info`
 
 ## backend
 1. dump data `python manage.py dumpdata app.model_name --indent 4 > fixtures/file_name.json``

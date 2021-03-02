@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=${user}
 Environment=PASSWORD=${postgres_pw}
-ExecStart=${venvpath}/bin/celery  --workdir=${cwd} worker -A backend.celery:celery_app -l info
+ExecStart=${venvpath}/bin/celery  --workdir=${cwd} -A backend.celery:celery_app worker -l info
 
 [Install]
 WantedBy=multi-user.target
