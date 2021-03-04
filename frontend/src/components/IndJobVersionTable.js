@@ -2,19 +2,21 @@ import React, { Component } from 'react'
 import { ASC, DESC, ALL } from '../util/util'
 import { Alert, Form, Row, Col, Button, FormGroup, Label, Input } from 'reactstrap'
 import propTypes from 'prop-types'
+import { changesort } from './ChangeSort'
 
 class JobVersionTable extends Component {
   constructor (props) {
     super(props)
     this.add = this.add.bind(this)
     this.jobs = this.jobs.bind(this)
+    this.changesort = changesort.bind(this)
   }
 
   add (event) {
     event.preventDefault()
     const name = this.props.query.name
-    const id = this.props.query.id
-    this.props.history.push('/indjobversions_add/?name=' + name + '&id=' + id)
+    const job = this.props.query.job
+    this.props.history.push('/indjobversions_add/?name=' + name + '&job=' + job)
   }
 
   jobs (event) {
@@ -82,7 +84,7 @@ class JobVersionTable extends Component {
                           <td>
                             <div className="custom-control custom-checkbox">
                               <Input type="checkbox"
-                                data-model={this.props.query.id}
+                                data-model={this.props.query.job}
                                 data-id={version.id}
                                 checked={version.active}
                                 onChange={this.props.handleActiveChange}/>

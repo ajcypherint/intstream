@@ -1012,6 +1012,12 @@ class JobVersionViewSet(OrgViewSet):
     def get_queryset(self):
         return models.JobVersion.objects.filter(organization=self.request.user.organization)
 
+    def perform_create(self, serializer):
+        instance = serializer.save(organization = self.request.user.organization)
+        # todo(aj) add job id as part of the model to track the job that created the virtual env and script path
+        tasks.task_create_job_script_path.delay(instance.id, create=True, organization_id=self.request.user.organization.id)
+        tasks.task_create_job_virtual_env.delay(instance.id, aws_req=False, create=True, organization_id = self.request.user.organization.id)
+
 
 class MLModelViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
@@ -1926,6 +1932,13 @@ class IndicatorJobVersionViewSet(OrgViewSet):
 
     def get_queryset(self):
         return models.IndicatorJobVersion.objects.filter(organization=self.request.user.organization)
+
+    def perform_create(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        # todo(aj) add task id as part of the model to track the job that created the virtual env and script path
+        tasks.task_create_indicator_job_script_path.delay(instance.id, create=True, organization_id=self.request.user.organization.id)
+        tasks.task_create_indicator_job_virtual_env.delay(instance.id, aws_req=False, create=True, organization_id=self.request.user.organization.id)
+
 
 
 class IndicatorNumericFieldViewSet(ColumnViewSet):

@@ -2,12 +2,14 @@ import React, { Component } from 'react'
 import { ASC, DESC, ALL } from '../util/util'
 import { Alert, Form, Row, Col, Button, FormGroup, Label, Input } from 'reactstrap'
 import propTypes from 'prop-types'
+import { changesort } from './ChangeSort'
 
 class JobVersionTable extends Component {
   constructor (props) {
     super(props)
     this.add = this.add.bind(this)
     this.jobs = this.jobs.bind(this)
+    this.changesort = changesort.bind(this)
   }
 
   add (event) {

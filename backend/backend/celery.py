@@ -41,8 +41,8 @@ celery_app.conf.beat_schedule = {
     "rss_sources":{
         "task": "api.tasks.process_rss_sources_all",
         "kwargs":{"organization_id":1},
-        "schedule": crontab(hour="*/1", minute="2") # every hour at 2 mins
-     #  "schedule": crontab(hour="*", minute="*/1") # testing
+     #   "schedule": crontab(hour="*/1", minute="2") # every hour at 2 mins
+       "schedule": crontab(hour="*", minute="*/1") # testing
     },
     'clean_history_freemium': {
         "task": "api.tasks.remove_old_articles_all",

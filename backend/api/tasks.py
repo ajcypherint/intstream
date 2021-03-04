@@ -6,6 +6,7 @@ import aiohttp
 import re
 import pathlib
 from django.core import exceptions
+from django import db
 
 
 import datetime
@@ -184,8 +185,9 @@ def _indicatorjob(id, indicator):
         return
 
     tokens = get_tokens_for_user(user)
-    script = create_job_script_path(job_version, DIRINDSCRIPT, SCRIPT_INDICATOR_JOB)
-    venv_directory = create_virtual_env(job_version, DIRINDJOBVENV, aws_req=False)
+    # can't create dirs here.  race conditions
+    script = _create_job_script_path(job_version, DIRINDSCRIPT, SCRIPT_INDICATOR_JOB, create=False)
+    venv_directory = _create_virtual_env(job_version, DIRINDJOBVENV, aws_req=False, create=False)
 
     job_args = "" if job_version.job.arguments is None else job_version.job.arguments
     path_python = os.path.join(venv_directory,"bin","python")
@@ -237,14 +239,21 @@ def _indicatorjob(id, indicator):
 def job(id=None, organization_id=None):
     _job(id, organization_id)
 
+def get_expire(refresh_token):
+    refresh_parts = refresh_token.split(".")
+    refresh_header=base64.urlsafe_b64decode(refresh_parts[0].encode('ascii')+b'===')
+    refresh_payload=base64.urlsafe_b64decode(refresh_parts[1].encode('ascii')+b'===')
+    refresh_sig=base64.urlsafe_b64decode(refresh_parts[2].encode('ascii')+b'===')
+    return json.loads(refresh_payload)['exp']
+
 def _job(id, organization_id):
     job = models.Job.objects.get(id=id)
     user = models.UserIntStream.objects.get(username=job.user)
     job_version = models.JobVersion.objects.get(active=True, job=job)
     tokens = get_tokens_for_user(user)
-    script = create_job_script_path(job_version, DIRJOBSCRIPT, SCRIPT_JOB)
-
-    venv_directory = create_virtual_env(job_version, DIRJOBVENV, aws_req=False)
+    # can't  create virtual env here. race conditions
+    script = _create_job_script_path(job_version, DIRJOBSCRIPT, SCRIPT_JOB, create=False)
+    venv_directory = _create_virtual_env(job_version, DIRJOBVENV, aws_req=False, create=False)
 
     job_version = models.JobVersion.objects.get(id=job_version.id)
     job_args = job_version.job.arguments
@@ -293,10 +302,20 @@ def _job(id, organization_id):
 CUSTOM_TRAIN_FILE = "train_classify.py"
 
 
-def create_job_script_path(jobversion, dir, file):
+@shared_task()
+def task_create_job_script_path(jobversion_id, create=True, organization_id=None):
+    jobversion = models.JobVersion.objects.get(id=jobversion_id)
+    _create_job_script_path(jobversion, DIRJOBSCRIPT, SCRIPT_JOB, create=create)
+
+@shared_task()
+def task_create_indicator_job_script_path(jobversion_id, create=True, organization_id=None):
+    jobversion = models.IndicatorJobVersion.objects.get(id=jobversion_id)
+    _create_job_script_path(jobversion, DIRINDSCRIPT, SCRIPT_INDICATOR_JOB, create=create)
+
+def _create_job_script_path(jobversion, dir, file, create=True):
 
     directory = os.path.join(dir, str(jobversion.id))
-    if not os.path.exists(directory):
+    if not os.path.exists(directory) and create:
         try:
             pathlib.Path(directory).mkdir(parents=True)
             archive = tarfile.open(jobversion.zip.path, 'r:gz')
@@ -346,42 +365,48 @@ def _extract_indicators(text, article_id, organization_id):
 
     ipv6s = iocextract.extract_ipv6s(text)
     for i in ipv6s:
-        ind_type = models.IndicatorType.objects.get(name=settings.IPV6)
-        ip, _ = models.IndicatorIPV6.objects.get_or_create(value=i,
-                                                           organization=organization,
-                                                           ind_type=ind_type)
-        ip.articles.add(article)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV6,
-                                                  organization=organization,
-                                                  active=True)
-        for job in jobs:
-            indicatorjob.delay(job.id,
-                               ip.value,
-                               organization_id=organization_id)
+        try:
+            ind_type = models.IndicatorType.objects.get(name=settings.IPV6)
+            ip, _ = models.IndicatorIPV6.objects.get_or_create(value=i,
+                                                               organization=organization,
+                                                               ind_type=ind_type)
+            ip.articles.add(article)
+            jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV6,
+                                                      organization=organization,
+                                                      active=True)
+            for job in jobs:
+                indicatorjob.delay(job.id,
+                                   ip.value,
+                                   organization_id=organization_id)
+        except db.DataError as e:
+            logger.error("ip: " + str(i) + "; " + str(e))
 
 
     urls = iocextract.extract_urls(text, refang=True)
     for i in urls:
         # todo  load extra suffixes from models.suffixes
         subdomain, dom, suff = domain.extract(i)
-        if suff != "":
-            ind_type = models.IndicatorType.objects.get(name=settings.NETLOC)
-            suffix = models.Suffix.objects.get(value=suff)
-            instance, _ = models.IndicatorNetLoc.objects.get_or_create(subdomain=subdomain,
-                                        domain=domain,
-                                        suffix=suffix,
-                                        ind_type=ind_type,
-                                        organization=organization)
+        try:
+            if suff != "":
+                ind_type = models.IndicatorType.objects.get(name=settings.NETLOC)
+                suffix = models.Suffix.objects.get(value=suff)
+                instance, _ = models.IndicatorNetLoc.objects.get_or_create(subdomain=subdomain,
+                                            domain=dom,
+                                            suffix=suffix,
+                                            ind_type=ind_type,
+                                            organization=organization)
 
-            instance.articles.add(article)
-            jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.NETLOC,
-                                                      organization=organization,
-                                                      active=True)
-            serial_instance = serializers.IndicatorNetLocSerializer(instance)
-            for job in jobs:
-                indicatorjob.delay(job.id,
-                                   serial_instance.url,
-                                   organization_id=organization_id)
+                instance.articles.add(article)
+                jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.NETLOC,
+                                                          organization=organization,
+                                                          active=True)
+                serial_instance = serializers.IndicatorNetLocSerializer(instance)
+                for job in jobs:
+                    indicatorjob.delay(job.id,
+                                       serial_instance.data["url"],
+                                       organization_id=organization_id)
+        except exceptions.ObjectDoesNotExist as e:
+            logger.error("domain: " + i + "; " + str(e))
 
     md5s = iocextract.extract_md5_hashes(text)
     for i in md5s:
@@ -402,7 +427,7 @@ def _extract_indicators(text, article_id, organization_id):
     sha1s = iocextract.extract_sha1_hashes(text)
     for i in sha1s:
         ind_type = models.IndicatorType.objects.get(name=settings.SHA1)
-        sha1 = models.IndicatorSha1(value=i,
+        sha1, _= models.IndicatorSha1.objects.get_or_create(value=i,
                                     organization=organization,
                                     ind_type=ind_type)
         sha1.save()
@@ -419,7 +444,7 @@ def _extract_indicators(text, article_id, organization_id):
     for i in sha256s:
 
         ind_type = models.IndicatorType.objects.get(name=settings.SHA256)
-        sha256 = models.IndicatorSha256(value=i, organization=organization, ind_type=ind_type)
+        sha256, _ = models.IndicatorSha256.objects.get_or_create(value=i, organization=organization, ind_type=ind_type)
         sha256.save()
         sha256.articles.add(article)
         # todo(run indicatorJobs)
@@ -609,8 +634,10 @@ def classify(text_list, model_version_id):
 
     full_model_dir = os.path.join(model_directory,settings.MODEL_FOLDER)
 
-    # check if dirs exist if not create them.  someone deleted them
-    script_directory, venv_directory = create_dirs(model_version.training_script_version)
+    # check if dirs exist if not create them.
+    # There are race condition problems with doing this here.  multiple classify calls clobber each other.
+    # will need to rely on training creating directory
+    script_directory, venv_directory = create_classify_dirs(model_version.training_script_version, create=False)
 
     json_data = {"classifier":full_model_dir, "text": text_list}
     path_python = os.path.join(venv_directory, "bin", "python")
@@ -644,26 +671,25 @@ def classify(text_list, model_version_id):
     classifications = json.loads(proc.stdout)
     return classifications
 
-
-def create_dirs(training_script_version):
+def create_classify_dirs(training_script_version, create=True):
     """
     :param training_script_version: models.TrainingScriptVersion
     :return:
     """
-    script_dir = create_classif_script_directory(training_script_version)
-    virtualenv_dir = create_virtual_env(training_script_version, DIRCLASSIFVENV, aws_req=True)
+    script_dir = create_classif_script_directory(training_script_version, create=create)
+    virtualenv_dir = _create_virtual_env(training_script_version, DIRCLASSIFVENV, aws_req=True, create=create)
     return script_dir, virtualenv_dir
 
 
 
 #todo unit test
-def create_classif_script_directory(training_script_version):
+def create_classif_script_directory(training_script_version, create=True):
     """
     :param training_script_version: models.TrainingScriptVersion
     :return:
     """
     directory = os.path.join(DIRCLASSIFSCRIPT, str(training_script_version.id))
-    if not os.path.exists(directory):
+    if not os.path.exists(directory) and create:
         try:
             pathlib.Path(directory).mkdir(parents=True)
             base_script = os.path.join(settings.AWS_TRAIN_FILES, BASE_CLASSIFY_FILE)
@@ -680,8 +706,17 @@ def create_classif_script_directory(training_script_version):
             raise e
     return directory
 
+@shared_task()
+def task_create_job_virtual_env(version_id, aws_req=False, create=True, organization_id=None):
+    version = models.JobVersion.objects.get(id=version_id)
+    _create_virtual_env(version, DIRJOBVENV, aws_req=aws_req, create=create)
 
-def create_virtual_env(version, base_dir, aws_req=False):
+@shared_task()
+def task_create_indicator_job_virtual_env(version_id, aws_req=False, create=True, organization_id=None):
+    version = models.IndicatorJobVersion.objects.get(id=version_id)
+    _create_virtual_env(version, DIRINDJOBVENV, aws_req=aws_req, create=create)
+
+def _create_virtual_env(version, base_dir, aws_req=False, create=True):
     """
     generate virtual env in dir for models
     :param training_script_version: models.TrainingScriptVersion
@@ -690,7 +725,7 @@ def create_virtual_env(version, base_dir, aws_req=False):
     proxy = os.environ.get(INTSTREAM_PROXY_ENV, None)
     directory = os.path.join(base_dir, str(version.id))
 
-    if not os.path.exists(directory):
+    if not os.path.exists(directory) and create:
         try:
             # todo causes error isADirectory when running virtualenv
             env = {**os.environ,"test":"test"}
@@ -918,7 +953,7 @@ def _train_model(self,
         mversion = models.ModelVersion.objects.get(version=trainer.job_name)
         mversion.status = result.status
         mversion.save()
-        script_directory, venv_directory = create_dirs(model_version.training_script_version)
+        script_directory, venv_directory = create_classify_dirs(model_version.training_script_version, create=True)
         if result.status == train.TrainResult.SUCCESS:
             temp_dir = tempfile.TemporaryDirectory()
 

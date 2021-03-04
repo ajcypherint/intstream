@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
-import { filterChange } from '../actions/modelVersionFilter'
 import { Alert, Form, Row, Col, Button, FormGroup, Label, Input } from 'reactstrap'
 import Choice from './Choice'
 import { withRouter } from 'react-router-dom'
@@ -115,7 +114,7 @@ class VersionList extends Component {
                    query: this.props.query,
                    history: this.props.history,
                    List: this.props.List,
-
+                   filterChange: this.props.filterChange,
                    setQuery: this.props.setQuery,
                    handleActiveChange: this.handleActiveChange,
                    setPage: this.props.setPage

@@ -16,7 +16,7 @@ import {
 const HEADING = ' Hunting Job Version '
 
 const EMPTY = {
-  id: '',
+  job: '',
   version: '',
   zip: '',
   active: false
@@ -32,7 +32,7 @@ const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
 const mapDispatchToProps = mapDispatchToPropsFunc(INDJOB_VERSION_API)
 export default connect(mapStateToProps, mapDispatchToProps)(withQueryParams(
   {
-    id: NumberParam,
+    job: NumberParam,
     name: StringParam
   },
   SourceEdit))

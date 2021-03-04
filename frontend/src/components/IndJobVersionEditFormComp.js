@@ -20,7 +20,7 @@ export default class Edit extends Component {
     const err_zip = errors.zip || []
 
     const name = this.props.query.name || undefined
-    const id = this.props.query.id || undefined
+    const job = this.props.query.job || undefined
     return (
         <Form onSubmit={this.props.onSubmit} >
 
@@ -28,7 +28,7 @@ export default class Edit extends Component {
 
           <TextInput
             disabled={true}
-            data-job={id}
+            data-job={job}
             name={'job_name'}
             label={'Job'}
             value={name}
@@ -36,7 +36,7 @@ export default class Edit extends Component {
 
           <TextInput
             onChange={this.props.handleChange}
-            data-job={id}
+            data-job={job}
             name={'version'}
             label={'Version'}
             value={this.props.object.version}
@@ -49,7 +49,7 @@ export default class Edit extends Component {
               {err_zip.length > 0 && <Alert color="danger">{err_zip[0]}</Alert>}
               <Input
                 onChange={this.props.handleChange}
-                data-job={id}
+                data-job={job}
                 label={'Job Tar File'}
                 type="file" name="zip" id="FileInput"
               />

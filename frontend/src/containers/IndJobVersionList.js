@@ -27,13 +27,13 @@ const mapDispatchToProps = (dispatch) => ({
   filterChange: (newSelections, setQuery) => dispatch(filterChange(newSelections, setQuery)),
   fetchVersions: (params = undefined) => dispatch(getIndJobVersion(params)),
   setPage: (page) => dispatch(setPage(page)),
-  setActiveVersion: (model, id, selections, setQuery) => dispatch(setActiveIndJobVersion(model, id, selections, setQuery))
+  setActiveVersion: (job, id, selections, setQuery) => dispatch(setActiveIndJobVersion(job, id, selections, setQuery))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(
   withQueryParams(
     {
-      id: StringParam,
+      job: StringParam,
       name: StringParam,
       ordering: StringParam,
       page: NumberParam,
