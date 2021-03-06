@@ -451,6 +451,8 @@ class IndicatorNetLoc(Indicator):
                               max_length=63)
     suffix = models.ForeignKey(Suffix, on_delete=models.CASCADE)
 
+    value = models.TextField(max_length=200)
+
     def __str__(self):
         total = ""
         if self.subdomain != "":

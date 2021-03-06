@@ -191,6 +191,7 @@ export class Main extends React.Component {
 
   render () {
     const selections = this.props.query
+    // todo md5, sha1, sha256, ipv4, netloc, ipv6 errors
     const errors = this.props.indicatorsErrors || {}
     const errorsColText = this.props.indicatorColTextaErrors || {}
     const errorsColTextData = this.props.indicatorColTextDataErrors || {}
@@ -211,9 +212,6 @@ export class Main extends React.Component {
 
     <Button onClick={this.props.history.goBack} className="button-brand-primary sb-1" size="sm">Back</Button>
     <Form onSubmit={this.onSubmit} >
-          {errors.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
-          {errors.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
-
           {errors.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
           {errors.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
 

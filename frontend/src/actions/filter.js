@@ -146,20 +146,6 @@ export const filterIndChange = (selections,
     }
     const indicatorStrPage = indicatorStr + '&page=' + selections.page
     // get counts for each indicator tab
-    const all_resp = await Promise.all([
-      dispatch(getIPV4(indicatorStr)),
-      dispatch(getIPV6(indicatorStr)),
-      dispatch(getEMAIL(indicatorStr)),
-      dispatch(getNETLOC(indicatorStr)),
-      dispatch(getMD5(indicatorStr)),
-      dispatch(getSHA1(indicatorStr)),
-      dispatch(getSHA256(indicatorStr))
-    ])
-    for (let i = 0; i < all_resp.length; i++) {
-      if (all_resp[i].error) {
-        return
-      }
-    }
     const resp_ind = await dispatch(getIndicators(INDICATOR_URL, selections.selectedTabIndex, indicatorStrPage))
     if (resp_ind.error) {
       return
@@ -170,6 +156,7 @@ export const filterIndChange = (selections,
     for (let i = 0; i < indicators.length; i++) {
       ids.push(indicators[i].id)
     }
+    const indInStr = 'indicator__in=' + ids.join(',')
     // get columns available to choose from
     const ind_type = MAP_IND[selections.selectedTabIndex]
     let param_cols
@@ -182,19 +169,19 @@ export const filterIndChange = (selections,
       '&source=' + sourceChosen + '&model=' + modelChosen
     }
 
-    const resp_num = await dispatch(getColNumericName(param_cols))
-    if (resp_num.error) {
-      return
-    }
-    const resp_text = await dispatch(getColTextName(param_cols))
-    if (resp_text.error) {
-      return
-    }
-    const indInStr = 'indicator__in=' + ids.join(',')
-    const respTextColData = await dispatch(getColText(indInStr))
-    const respNumColData = await dispatch(getColNumeric(indInStr))
-
-    // todo get selected column data for indicators in ids
+    const all_resp = await Promise.all([
+      dispatch(getColTextName(param_cols)),
+      dispatch(getColNumericName(param_cols)),
+      dispatch(getIPV4(indicatorStr)),
+      dispatch(getIPV6(indicatorStr)),
+      dispatch(getEMAIL(indicatorStr)),
+      dispatch(getNETLOC(indicatorStr)),
+      dispatch(getMD5(indicatorStr)),
+      dispatch(getSHA1(indicatorStr)),
+      dispatch(getSHA256(indicatorStr)),
+      dispatch(getColText(indInStr)),
+      dispatch(getColNumeric(indInStr))
+    ])
   }
 }
 // todo(aj) add active filter

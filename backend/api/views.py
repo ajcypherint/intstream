@@ -1550,6 +1550,8 @@ class IndicatorSha256ViewSet(IndicatorBaseViewSet):
 class NetLocFilter(filters.FilterSet):
     start_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='gte', distinct=True)
     end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
+    source = filters.NumberFilter(field_name="articles__source", distinct=True)
+    prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
 
     domain__in = CharInFilter(field_name="domain",lookup_expr="in")
     subdomain__in = CharInFilter(field_name="subdomain",lookup_expr="in")
@@ -1560,10 +1562,13 @@ class NetLocFilter(filters.FilterSet):
         model = models.IndicatorNetLoc
         fields = ('id',
                   'article',
+                  'source',
+                  'prediction__mlmodel',
                   'domain',
                   'subdomain',
                   'suffix__value',
                   'suffix',
+                  'value',
                   "domain__in",
                   "subdomain__in",
                   "suffix__in")
@@ -1588,14 +1593,31 @@ class IndicatorNetLocViewSet(IndicatorBaseViewSet):
             kwargs["many"] = True  # bulk
         return super(IndicatorNetLocViewSet, self).get_serializer(*args, **kwargs)
 
+    def get_value(self):
+        suffix = models.Suffix.get(id=self.request.POST["suffix"])
+        subdomain = self.request.POST["subdomain"]
+        subdomain = subdomain + "." if subdomain != "" else ""
+        domain = self.request.POST["domain"]
+        value = subdomain + domain + "." + suffix.value
+        return value
+
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.NETLOC)
-        instance = serializer.save(ind_type=ind_type, organization=self.request.user.organization)
+        value = self.get_value()
+
+        instance = serializer.save(ind_type=ind_type,
+                                   value=value,
+                                   organization=self.request.user.organization)
         jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.NETLOC).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
-        instance = serializer.save(organization=self.request.user.organization)
+        ind_type = models.IndicatorType.objects.get(name=settings.NETLOC)
+        value = self.get_value()
+        instance = serializer.save(ind_type=ind_type,
+                                   value=value,
+                                   organization=self.request.user.organization)
+
         jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.NETLOC).all()
         self.tasks(instance, jobs)
 

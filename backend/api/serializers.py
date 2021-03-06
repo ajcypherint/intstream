@@ -798,16 +798,11 @@ class IndicatorSha1Serializer(serializers.ModelSerializer):
 class IndicatorNetLocSerializer(serializers.ModelSerializer):
 
     url = serializers.SerializerMethodField()
-    value = serializers.SerializerMethodField()
     registered = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         subdomain = obj.subdomain + "." if obj.subdomain != "" else ""
         return "http://" + subdomain + obj.domain + "." + obj.suffix.value
-
-    def get_value(self, obj):
-        subdomain = obj.subdomain + "." if obj.subdomain != "" else ""
-        return subdomain + obj.domain + "." + obj.suffix.value
 
     def get_registered(self, obj):
         return obj.domain + "." + obj.suffix.value
