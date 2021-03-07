@@ -3,6 +3,7 @@ import { FormGroup, FormFeedback, Label, Input } from 'reactstrap'
 import { ASC, DESC, ALL } from '../util/util'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import propTypes from 'prop-types'
+import { MD5, IPV4, IPV6, SHA1, SHA256, EMAIL, NETLOC } from '../reducers/tab'
 import Choice from './MultiChoiceCol'
 import _ from 'lodash'
 import { changesort } from './ChangeSort'
@@ -24,13 +25,58 @@ export class Main extends React.Component {
     return (
     <Tabs selectedIndex={selected} onSelect={this.props.tabUpdate}>
         <TabList>
-          <Tab data-value="md5" >MD5 ({this.props.md5.totalcount})</Tab>
-          <Tab data-value="sha1">SHA1 ({this.props.sha1.totalcount})</Tab>
-          <Tab data-value="sha256">SHA256 ({this.props.sha256.totalcount})</Tab>
-          <Tab data-value="netloc">NetLoc ({this.props.netloc.totalcount})</Tab>
-          <Tab data-value="email">Email ({this.props.email.totalcount})</Tab>
-          <Tab data-value="ipv4">IPV4 ({this.props.ipv4.totalcount})</Tab>
-          <Tab data-value="ipv6">IPV6 ({this.props.ipv6.totalcount})</Tab>
+          <Tab data-value={MD5}>{MD5.toUpperCase() + ' '}
+
+            {this.props.md5.loading
+              ? <span className="spinner-border spinner-border-sm" role="status">
+                  <span className="sr-only">Loading...</span>
+                </span>
+              : '(' + this.props.md5.totalcount + ')'}
+          </Tab>
+          <Tab data-value={SHA1}>{SHA1.toUpperCase() + ' '}
+
+            {this.props.sha1.loading
+              ? <span className="spinner-border spinner-border-sm" role="status">
+                  <span className="sr-only">Loading...</span>
+                </span>
+              : '(' + this.props.sha1.totalcount + ')'}
+          </Tab>
+          <Tab data-value={SHA256}>{SHA256.toUpperCase() + ' '}
+
+            {this.props.sha256.loading
+              ? <span className="spinner-border spinner-border-sm" role="status">
+                  <span className="sr-only">Loading...</span>
+                </span>
+              : '(' + this.props.sha256.totalcount + ')'}
+          </Tab>
+          <Tab data-value={NETLOC}>{NETLOC.toUpperCase() + ' '}
+            {this.props.netloc.loading
+              ? <span className="spinner-border spinner-border-sm" role="status">
+                  <span className="sr-only">Loading...</span>
+                </span>
+              : '(' + this.props.netloc.totalcount + ')'}
+          </Tab>
+          <Tab data-value={EMAIL}>{EMAIL.toUpperCase() + ' '}
+            {this.props.email.loading
+              ? <span className="spinner-border spinner-border-sm" role="status">
+                  <span className="sr-only">Loading...</span>
+                </span>
+              : '(' + this.props.email.totalcount + ')'}
+          </Tab>
+          <Tab data-value={IPV4}>{IPV4.toUpperCase() + ' '}
+            {this.props.ipv4.loading
+              ? <span className="spinner-border spinner-border-sm" role="status">
+                  <span className="sr-only">Loading...</span>
+                </span>
+              : '(' + this.props.ipv4.totalcount + ')'}
+          </Tab>
+          <Tab data-value={IPV6}>{IPV6.toUpperCase() + ' '}
+            {this.props.ipv6.loading
+              ? <span className="spinner-border spinner-border-sm" role="status">
+                  <span className="sr-only">Loading...</span>
+                </span>
+              : '(' + this.props.ipv6.totalcount + ')'}
+          </Tab>
         </TabList>
           {tabs.map((value, index) => {
             return (

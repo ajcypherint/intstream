@@ -193,6 +193,12 @@ export class Main extends React.Component {
     const selections = this.props.query
     // todo md5, sha1, sha256, ipv4, netloc, ipv6 errors
     const errors = this.props.indicatorsErrors || {}
+    const errorsMd5 = this.props.md5Errors || {}
+    const errorsSha1 = this.props.sha1Errors || {}
+    const errorsSha256 = this.props.sha256Errors || {}
+    const errorsIpv4 = this.props.Ipv4Errors || {}
+    const errorsNetLoc = this.props.NetLocErrors || {}
+    const errorsIpv6 = this.props.Ipv6Errors || {}
     const errorsColText = this.props.indicatorColTextaErrors || {}
     const errorsColTextData = this.props.indicatorColTextDataErrors || {}
     const errorsColNum = this.props.indicatorColNumErrors || {}
@@ -206,26 +212,33 @@ export class Main extends React.Component {
     const articleErrors = this.props.articlesErrors || {}
     const articles = this.props.articlesList || []
     const articlesLen = articles.length
+    const errorsTotal = [
+      errors,
+      errorsMd5,
+      errorsSha1,
+      errorsSha256,
+      errorsIpv4,
+      errorsNetLoc,
+      errorsIpv6,
+      errorsColText,
+      errorsColTextData,
+      errorsColNum,
+      errorsColNumData,
+      articleErrors
+    ]
 
     return (
     <div className="container mt-2 col-sm-12" >
 
     <Button onClick={this.props.history.goBack} className="button-brand-primary sb-1" size="sm">Back</Button>
     <Form onSubmit={this.onSubmit} >
-          {errors.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
-          {errors.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
+      { errorsTotal.map((i, index) => {
+        return (i.detail && <Alert color="danger">{i.detail}</Alert>)
+      })}
+      { errorsTotal.map((i, index) => {
+        return (i.non_field_errors && <Alert color="danger">{i.non_field_errors}</Alert>)
+      })}
 
-          {errorsColText.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
-          {errorsColText.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
-
-          {errorsColTextData.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
-          {errorsColTextData.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
-
-          {errorsColNum.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
-          {errorsColNum.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
-
-          {errorsColNumData.detail ? <Alert color="danger">{errors.detail}</Alert> : ''}
-          {errorsColNumData.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
   { !this.props.query.article
     ? <FormGroup>
        <Row>

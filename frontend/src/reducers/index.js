@@ -188,13 +188,8 @@ export const getRegSaving = state => fromRegistration.saving(state.registration)
 export const getRegMessage = state => fromRegistration.getRegMessage(state.registration)
 
 // fromIndicators
-export const getIPV6 = state => fromIndicators.ipv6(state.indicators)
-export const getIPV4 = state => fromIndicators.ipv4(state.indicators)
-export const getEMAIL = state => fromIndicators.email(state.indicators)
-export const getNETLOC = state => fromIndicators.netloc(state.indicators)
-export const getMD5 = state => fromIndicators.md5(state.indicators)
-export const getSHA1 = state => fromIndicators.sha1(state.indicators)
-export const getSHA256 = state => fromIndicators.sha256(state.indicators)
+export const getInd = (state, type) => fromIndicators.ind(state.indicators, type)
+
 export const getIndicators = state => fromIndicators.indicators(state.indicators)
 export const getIndicatorErrors = state => fromIndicators.errors(state.indicators)
 export const getIndicatorLoading = state => fromIndicators.loading(state.indicators)

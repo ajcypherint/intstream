@@ -4,16 +4,17 @@ import _ from 'lodash'
 import * as indicatorsData from '../actions/indicators'
 import URL from 'url-parse'
 import { ASC, DESC } from '../util/util'
+import { listActions, TAB_MAP, REQ, FAIL, SUCCESS, mapActions } from './tab'
 
 const START = new Date()
 START.setHours(0, 0, 0, 0)
 
 const END = new Date()
 END.setHours(23, 59, 59, 999)
-
 // use indicatorstmp to load pages and retrieve data
-export const initialState = {
-  ipv4: {
+
+function tabInit (key) {
+  return {
     indicators: [],
     loading: false,
     totalcount: 0,
@@ -21,61 +22,18 @@ export const initialState = {
     nextpage: null,
     previouspage: null,
     saving: false
-  },
-  sha1: {
-    indicators: [],
-    loading: false,
-    totalcount: 0,
-    errors: {},
-    nextpage: null,
-    previouspage: null,
-    saving: false
-  },
-  sha256: {
-    indicators: [],
-    loading: false,
-    totalcount: 0,
-    errors: {},
-    nextpage: null,
-    previouspage: null,
-    saving: false
-  },
-  md5: {
-    indicators: [],
-    loading: false,
-    totalcount: 0,
-    errors: {},
-    nextpage: null,
-    previouspage: null,
-    saving: false
-  },
-  netloc: {
-    indicators: [],
-    loading: false,
-    totalcount: 0,
-    errors: {},
-    nextpage: null,
-    previouspage: null,
-    saving: false
-  },
-  email: {
-    indicators: [],
-    loading: false,
-    totalcount: 0,
-    errors: {},
-    nextpage: null,
-    previouspage: null,
-    saving: false
-  },
-  ipv6: {
-    indicators: [],
-    loading: false,
-    totalcount: 0,
-    errors: {},
-    nextpage: null,
-    previouspage: null,
-    saving: false
-  },
+  }
+}
+
+function tabSet (key, state, newValues) {
+  return {
+    [key]: {
+      ...state[key],
+      ...newValues
+    }
+  }
+}
+export const initialStateDict = {
   indicators: [],
   loading: false,
   totalcount: 0,
@@ -85,7 +43,83 @@ export const initialState = {
   saving: false
 }
 
-export default (state = initialState, action) => {
+export function tabMap () {
+  const initialState = {}
+  for (const item in TAB_MAP) {
+    initialState[item] = {
+      ...initialStateDict
+    }
+  }
+  return initialState
+}
+
+const initialState = () => {
+  const tab = tabMap()
+  return {
+    ...tab,
+    indicators: [],
+    loading: false,
+    totalcount: 0,
+    errors: {},
+    nextpage: null,
+    previouspage: null,
+    saving: false
+  }
+}
+
+const initState = initialState()
+const tabReqActions = listActions(REQ)
+const tabFailActions = listActions(FAIL)
+const tabSuccessActions = listActions(SUCCESS)
+const mapAct = mapActions()
+
+export default (state = initState, action) => {
+  if (tabReqActions.includes(action.type)) {
+    const key = mapAct[action.type]
+    return {
+      ...state,
+      [key]: {
+        ...state[key],
+        loading: true,
+        errors: {}
+      }
+    }
+  }
+
+  if (tabSuccessActions.includes(action.type)) {
+    const key = mapAct[action.type]
+
+    return {
+      ...state,
+      [key]: {
+        ...state[key],
+        indicators: action.payload.results,
+        totalcount: action.payload.count,
+        loading: false,
+        nextpage: action.payload.next,
+        previouspage: action.payload.previous,
+        errors: {}
+      }
+    }
+  }
+
+  if (tabFailActions.includes(action.type)) {
+    const key = mapAct[action.type]
+    return {
+      ...state,
+      [key]: {
+        ...state[key],
+        indicators: [],
+        totalcount: 0,
+        loading: false,
+        nextpage: null,
+        previouspage: null,
+        errors: action.payload.response || { non_field_errors: action.payload.statusText }
+      }
+
+    }
+  }
+
   switch (action.type) {
     // used for edit
     case indicatorsData.SET_INDICATORS_REQUEST:
@@ -123,318 +157,6 @@ export default (state = initialState, action) => {
         nextpage: null,
         previouspage: null,
         saving: false
-      }
-    }
-
-    case indicatorsData.GET_IPV4_REQUEST:
-    {
-      return {
-        ...state,
-        ipv4: {
-          ...state.ipv4,
-          loading: true,
-          errors: {}
-        }
-      }
-    }
-
-    case indicatorsData.GET_IPV4_SUCCESS:
-    {
-      // let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
-      // #let newindicatorsourcesData= {...result}
-      return {
-        ...state,
-        ipv4: {
-          ...state.ipv4,
-          indicators: action.payload.results,
-          totalcount: action.payload.count,
-          loading: false,
-          nextpage: action.payload.next,
-          previouspage: action.payload.previous,
-          errors: {}
-        }
-      }
-    }
-    case indicatorsData.GET_IPV4_FAILURE:
-    {
-      return {
-        ...state,
-        ipv4: {
-          ...state.ipv4,
-          indicators: [],
-          totalcount: 0,
-          loading: false,
-          nextpage: null,
-          previouspage: null,
-          errors: action.payload.response || { non_field_errors: action.payload.statusText }
-        }
-      }
-    }
-
-    case indicatorsData.GET_SHA256_REQUEST:
-    {
-      return {
-        ...state,
-        sha256: {
-          ...state.sha256,
-          loading: true,
-          errors: {}
-        }
-      }
-    }
-
-    case indicatorsData.GET_SHA256_SUCCESS:
-    {
-      // let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
-      // #let newindicatorsourcesData= {...result}
-      return {
-        ...state,
-        sha256: {
-          ...state.sha256,
-          indicators: action.payload.results,
-          totalcount: action.payload.count,
-          loading: false,
-          nextpage: action.payload.next,
-          previouspage: action.payload.previous,
-          errors: {}
-        }
-      }
-    }
-    case indicatorsData.GET_SHA256_FAILURE:
-    {
-      return {
-        ...state,
-        sha256: {
-          ...state.sha256,
-          indicators: [],
-          totalcount: 0,
-          loading: false,
-          nextpage: null,
-          previouspage: null,
-          errors: action.payload.response || { non_field_errors: action.payload.statusText }
-        }
-      }
-    }
-
-    case indicatorsData.GET_SHA1_REQUEST:
-    {
-      return {
-        ...state,
-        sha1: {
-          ...state.sha1,
-          loading: true,
-          errors: {}
-        }
-      }
-    }
-
-    case indicatorsData.GET_SHA1_SUCCESS:
-    {
-      // let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
-      // #let newindicatorsourcesData= {...result}
-      return {
-        ...state,
-        sha1: {
-          ...state.sha1,
-          indicators: action.payload.results,
-          totalcount: action.payload.count,
-          loading: false,
-          nextpage: action.payload.next,
-          previouspage: action.payload.previous,
-          errors: {}
-        }
-      }
-    }
-    case indicatorsData.GET_SHA1_FAILURE:
-    {
-      return {
-        ...state,
-        sha1: {
-          ...state.sha1,
-          indicators: [],
-          totalcount: 0,
-          loading: false,
-          nextpage: null,
-          previouspage: null,
-          errors: action.payload.response || { non_field_errors: action.payload.statusText }
-        }
-      }
-    }
-    case indicatorsData.GET_IPV6_REQUEST:
-    {
-      return {
-        ...state,
-        ipv6: {
-          ...state.ipv6,
-          loading: true,
-          errors: {}
-        }
-      }
-    }
-
-    case indicatorsData.GET_IPV6_SUCCESS:
-    {
-      // let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
-      // #let newindicatorsourcesData= {...result}
-      return {
-        ...state,
-        ipv6: {
-          ...state.ipv6,
-          indicators: action.payload.results,
-          totalcount: action.payload.count,
-          loading: false,
-          nextpage: action.payload.next,
-          previouspage: action.payload.previous,
-          errors: {}
-        }
-      }
-    }
-    case indicatorsData.GET_IPV6_FAILURE:
-    {
-      return {
-        ...state,
-        ipv6: {
-          ...state.ipv6,
-          indicators: [],
-          totalcount: 0,
-          loading: false,
-          nextpage: null,
-          previouspage: null,
-          errors: action.payload.response || { non_field_errors: action.payload.statusText }
-        }
-      }
-    }
-    case indicatorsData.GET_NETLOC_REQUEST:
-    {
-      return {
-        ...state,
-        netloc: {
-          ...state.netloc,
-          loading: true,
-          errors: {}
-        }
-      }
-    }
-    case indicatorsData.GET_NETLOC_SUCCESS:
-    {
-      // let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
-      // #let newindicatorsourcesData= {...result}
-      return {
-        ...state,
-        netloc: {
-          ...state.netloc,
-          indicators: action.payload.results,
-          totalcount: action.payload.count,
-          loading: false,
-          nextpage: action.payload.next,
-          previouspage: action.payload.previous,
-          errors: {}
-        }
-      }
-    }
-    case indicatorsData.GET_NETLOC_FAILURE:
-    {
-      return {
-        ...state,
-        netloc: {
-          ...state.netloc,
-          indicators: [],
-          totalcount: 0,
-          loading: false,
-          nextpage: null,
-          previouspage: null,
-          errors: action.payload.response || { non_field_errors: action.payload.statusText }
-        }
-      }
-    }
-
-    case indicatorsData.GET_EMAIL_REQUEST:
-    {
-      return {
-        ...state,
-        email: {
-          ...state.email,
-          loading: true,
-          errors: {}
-        }
-      }
-    }
-
-    case indicatorsData.GET_EMAIL_SUCCESS:
-    {
-      // let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
-      // #let newindicatorsourcesData= {...result}
-      return {
-        ...state,
-        email: {
-          ...state.email,
-          indicators: action.payload.results,
-          totalcount: action.payload.count,
-          loading: false,
-          nextpage: action.payload.next,
-          previouspage: action.payload.previous,
-          errors: {}
-        }
-      }
-    }
-    case indicatorsData.GET_EMAIL_FAILURE:
-    {
-      return {
-        ...state,
-        email: {
-          ...state.email,
-          indicators: [],
-          totalcount: 0,
-          loading: false,
-          nextpage: null,
-          previouspage: null,
-          errors: action.payload.response || { non_field_errors: action.payload.statusText }
-        }
-      }
-    }
-
-    case indicatorsData.GET_MD5_REQUEST:
-    {
-      return {
-        ...state,
-        md5: {
-          ...state.md5,
-          loading: true,
-          errors: {}
-        }
-      }
-    }
-
-    case indicatorsData.GET_MD5_SUCCESS:
-    {
-      // let result = _.mapKeys(action.payload.results, 'id'); // maps id field from array to a property name
-      // #let newindicatorsourcesData= {...result}
-      return {
-        ...state,
-        md5: {
-          ...state.md5,
-          indicators: action.payload.results,
-          totalcount: action.payload.count,
-          loading: false,
-          nextpage: action.payload.next,
-          previouspage: action.payload.previous,
-          errors: {}
-        }
-      }
-    }
-    case indicatorsData.GET_MD5_FAILURE:
-    {
-      return {
-        ...state,
-        md5: {
-          ...state.md5,
-          indicators: [],
-          totalcount: 0,
-          loading: false,
-          nextpage: null,
-          previouspage: null,
-          errors: action.payload.response || { non_field_errors: action.payload.statusText }
-        }
       }
     }
 
@@ -488,42 +210,8 @@ export function indicators (state) {
   }
 }
 
-export function netloc (state) {
-  if (state.netloc) {
-    return state.netloc
-  }
-}
-
-export function email (state) {
-  if (state.email) {
-    return state.email
-  }
-}
-
-export function ipv6 (state) {
-  if (state.ipv6) {
-    return state.ipv6
-  }
-}
-export function ipv4 (state) {
-  if (state.ipv4) {
-    return state.ipv4
-  }
-}
-export function sha1 (state) {
-  if (state.sha1) {
-    return state.sha1
-  }
-}
-export function sha256 (state) {
-  if (state.sha256) {
-    return state.sha256
-  }
-}
-export function md5 (state) {
-  if (state.md5) {
-    return state.md5
-  }
+export function ind (state, type) {
+  return state[type]
 }
 
 export function nextPage (state) {

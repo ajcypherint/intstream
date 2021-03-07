@@ -17,6 +17,8 @@ import {
   DateParam
 } from 'use-query-params'
 
+import { MD5, SHA1, SHA256, IPV4, EMAIL, IPV6, NETLOC } from '../reducers/tab'
+
 const API_SOURCES = '/api/homefilter/'
 const mapStateToProps = (state) => ({
   sourcesList: reducers.getFilterSources(state),
@@ -32,13 +34,13 @@ const mapStateToProps = (state) => ({
   indicatorsNext: reducers.getIndicatorNextPage(state),
   indicatorsPrevious: reducers.getIndicatorPreviousPage(state),
 
-  md5: reducers.getMD5(state),
-  sha1: reducers.getSHA1(state),
-  sha256: reducers.getSHA256(state),
-  ipv4: reducers.getIPV4(state),
-  netloc: reducers.getNETLOC(state),
-  email: reducers.getEMAIL(state),
-  ipv6: reducers.getIPV6(state),
+  md5: reducers.getInd(state, MD5),
+  sha1: reducers.getInd(state, SHA1),
+  sha256: reducers.getInd(state, SHA256),
+  ipv4: reducers.getInd(state, IPV4),
+  ipv6: reducers.getInd(state, IPV6),
+  netloc: reducers.getInd(state, NETLOC),
+  email: reducers.getInd(state, EMAIL),
 
   numCols: reducers.getIndicatorColNum(state),
   textCols: reducers.getIndicatorColText(state),
