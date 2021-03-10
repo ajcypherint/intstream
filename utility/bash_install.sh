@@ -2,6 +2,8 @@ set -x
 set -e
 #!/usr/bin/env bash
 
+#todo create system instream user
+
 RELEASE=unknown
 
 version=$( lsb_release -r | grep -oP "[0-9]+" | head -1 )
@@ -25,7 +27,7 @@ cd ../..
 base_dir=$(pwd)
 echo "------"
 echo "create media dir"
-mkdir "$base_dir/media"
+mkdir "$base_dir/intstream/media"
 
 # prep
 echo "------"
@@ -70,12 +72,16 @@ echo " postgres setup"
 sudo apt-get -qq install postgresql
 sudo systemctl restart postgresql 
 password=$(trap - PIPE ; cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1) 
+#todo(aj) dump password to environment file;
+
+# Don't change if user exists will break packaging
 # if user exists just change the password
 res=`sudo -u postgres psql -U postgres -d postgres -tc "SELECT 1 FROM pg_user WHERE usename = 'intstream'" | grep -q 1;echo $?`
 if [ "$res" -eq "0" ]; then
     echo "updating intstream user password"
     sudo -u postgres psql -U postgres -d postgres -c "alter user intstream with password '$password';"
 else
+# ONLY create first time. 
     echo "creating intstream user"
     sudo -u postgres psql -U postgres -d postgres -c "CREATE ROLE intstream LOGIN PASSWORD '$password';"
 fi
@@ -88,6 +94,7 @@ else
     sudo -u postgres psql -U postgres -c "create database intstream";
 fi
 
+# conf file in deb; to avoid rewriting
 echo "------"
 echo " gunicorn setup"
 #gunicorn
@@ -97,6 +104,8 @@ email_host=${EMAIL_HOST:=""}
 email_port=${EMAIL_PORT:=""}
 email_host_user=${EMAIL_HOST_USER:=""}
 email_host_password=${EMAIL_HOST_PASSWORD:=""}
+#change to use a single environment file instead; that way this won't get stomped.
+#change $USER to a specific user we create; like intstream
 sed -e "s/\${postgres_pw}/$password/g" \
     -e "s/\${user}/$USER/g" \
     -e "s/\${email_host}/$email_host/g"  \
@@ -110,6 +119,9 @@ sudo systemctl daemon-reload
 sudo systemctl restart gunicorn
 sudo systemctl enable gunicorn
 
+#change to use an configuration file instead; that way this won't get stomped.
+#change cwd to a static dir
+#change $USER to a specific user we create; like intstream
 echo "------"
 echo " celery beat setup"
 sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${curdir//\//\\/}\/backend\//g" -e "s/\${venvpath}/${venvpath//\//\\/}/g" ./utility/celerybeat > ./utility/celerybeat_new
@@ -118,6 +130,9 @@ sudo systemctl daemon-reload
 sudo systemctl restart celerybeat
 sudo systemctl enable celerybeat
 
+#change to use an configuration file instead; that way this won't get stomped.
+#change cwd to a static dir
+#change $USER to a specific user we create; like intstream
 echo "------"
 echo " celery worker setup"
 sed -e  "s/\${postgres_pw}/$password/g" -e "s/\${user}/$USER/g" -e "s/\${cwd}/${curdir//\//\\/}\/backend\//g" -e "s/\${venvpath}/${venvpath//\//\\/}/g" ./utility/celeryworker > ./utility/celeryworker_new
@@ -126,6 +141,9 @@ sudo systemctl daemon-reload
 sudo systemctl restart celeryworker
 sudo systemctl enable celeryworker
 
+#change to use an configuration file instead; that way this won't get stomped.
+#change cwd to a static dir
+#change $USER to a specific user we create; like intstream
 echo "------"
 echo " nginx setup"
 #nginx
