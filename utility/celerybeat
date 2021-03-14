@@ -7,7 +7,7 @@ User=${user}
 Environment=PASSWORD=${postgres_pw}
 Group=www-data
 WorkingDirectory=${cwd}
-ExecStart=${venvpath}/bin/celery  --workdir=${cwd}  beat  -A backend.celery:celery_app -l info
+ExecStart=${venvpath}/bin/celery  --workdir=${cwd}  -A backend.celery:celery_app beat -l info
 
 [Install]
 WantedBy=multi-user.target
