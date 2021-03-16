@@ -856,7 +856,7 @@ def remove_old_articles_all(self, organization_id=None):
     orgs = models.Organization.objects.filter(freemium=True)
     ids = [i.id for i in orgs]
     for i in ids:
-        remove_old_articles.delay(i)
+        remove_old_articles.delay(i, organization_id=organization_id)
 
 #todo refactor into one method for task and another for function to allow unit testing of function
 

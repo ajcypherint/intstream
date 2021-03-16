@@ -57,7 +57,7 @@ echo "------"
 echo " install dependencies"
 cd "$base_dir/intstream/"
 pipenv --python /usr/bin/python3.6 
-pipenv install
+pipenv install --sequential
 venvpath="$(pipenv --venv)"
 
 echo "------"
