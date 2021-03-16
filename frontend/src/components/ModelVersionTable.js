@@ -25,7 +25,7 @@ class ModelVersionTable extends Component {
                 <Col >
                    <Choice name={'Model'}
                     value={this.props.query.chosen || ''}
-                    onChange={this.handleChange}
+                    onChange={this.props.handleChange}
                     idList={ids}
                     uniqueList={unique}
                     disabled={false}
@@ -51,7 +51,7 @@ class ModelVersionTable extends Component {
                <thead>
                  <tr>
                    <td className="hover" onClick={(event) => {
-                     this.changesort('title',
+                     this.props.changesort('title',
                        ASC,
                        DESC,
                        this.props.query,
@@ -63,7 +63,7 @@ class ModelVersionTable extends Component {
                      Model
                    </td>
                    <td className="hover" onClick={(event) => {
-                     this.changesort('version',
+                     this.props.changesort('version',
                        ASC,
                        DESC,
                        this.props.query,
@@ -149,7 +149,9 @@ ModelVersionTable.propTypes = {
 
   setQuery: propTypes.func,
   handleActiveChange: propTypes.func,
-  setPage: propTypes.func
+  setPage: propTypes.func,
+  handleChange: propTypes.func,
+  changesort: propTypes.func
 
 }
 

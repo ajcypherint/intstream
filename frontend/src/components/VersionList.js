@@ -116,8 +116,10 @@ class VersionList extends Component {
                    List: this.props.List,
                    filterChange: this.props.filterChange,
                    setQuery: this.props.setQuery,
+                   handleChange: this.handleChange,
                    handleActiveChange: this.handleActiveChange,
-                   setPage: this.props.setPage
+                   setPage: this.props.setPage,
+                   changesort: this.changesort
 
                  }
                )

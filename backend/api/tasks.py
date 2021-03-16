@@ -828,22 +828,22 @@ def _remove_old_articles(organization_id=None):
     old_articles = models.RSSArticle.objects.filter(organization__freemium=True,
                                                     organization_id=organization_id,
                                                  upload_date__lt=monthprior,
-                                                 classification__isnull=True)
+                                                 classification__isnull=True).iterator()
     old_articles.delete()
     old_articles = models.TxtArticle.objects.filter(organization__freemium=True,
                                                     organization_id=organization_id,
                                                  upload_date__lt=monthprior,
-                                                 classification__isnull=True)
+                                                 classification__isnull=True).iterator()
     old_articles.delete()
     old_articles = models.HtmlArticle.objects.filter(organization__freemium=True,
                                                      organization_id=organization_id,
                                                  upload_date__lt=monthprior,
-                                                 classification__isnull=True)
+                                                 classification__isnull=True).iterator()
     old_articles.delete()
     old_articles = models.PDFArticle.objects.filter(organization__freemium=True,
                                                     organization_id=organization_id,
                                                  upload_date__lt=monthprior,
-                                                 classification__isnull=True)
+                                                 classification__isnull=True).iterator()
     old_articles.delete()
 
 
@@ -852,11 +852,16 @@ def remove_old_articles(self, organization_id=None):
     _remove_old_articles(organization_id)
 
 @shared_task(bind=True)
-def remove_old_articles_all(self, organization_id=None):
+def remove_old_articles_all(self, organization_id=1):
+    """
+    :param self:
+    :param organization_id: this is set to 1 so results can be saved
+    :return:
+    """
     orgs = models.Organization.objects.filter(freemium=True)
     ids = [i.id for i in orgs]
     for i in ids:
-        remove_old_articles.delay(i, organization_id=organization_id)
+        remove_old_articles.delay(i, organization_id=i)
 
 #todo refactor into one method for task and another for function to allow unit testing of function
 
