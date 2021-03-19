@@ -447,7 +447,6 @@ def _extract_indicators(text, article_id, organization_id):
         sha256, _ = models.IndicatorSha256.objects.get_or_create(value=i, organization=organization, ind_type=ind_type)
         sha256.save()
         sha256.articles.add(article)
-        # todo(run indicatorJobs)
         jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA256,
                                                   organization=organization,
                                                   active=True)
@@ -694,7 +693,6 @@ def create_classif_script_directory(training_script_version, create=True):
             pathlib.Path(directory).mkdir(parents=True)
             base_script = os.path.join(settings.AWS_TRAIN_FILES, BASE_CLASSIFY_FILE)
             copyfile(base_script,os.path.join(directory,BASE_CLASSIFY_FILE))
-            # todo(aj) open tar file
             archive = tarfile.open(training_script_version.zip.path, 'r:gz')
 
             tmp = archive.extractfile(CUSTOM_CLASSIFY_FILE)
@@ -727,7 +725,6 @@ def _create_virtual_env(version, base_dir, aws_req=False, create=True):
 
     if not os.path.exists(directory) and create:
         try:
-            # todo causes error isADirectory when running virtualenv
             env = {**os.environ,"test":"test"}
             if proxy is not None:
                 env={**env, "http_proxy":proxy,"https_proxy":proxy}
@@ -847,12 +844,12 @@ def _remove_old_articles(organization_id=None):
     old_articles.delete()
 
 
-@shared_task(bind=True)
-def remove_old_articles(self, organization_id=None):
-    _remove_old_articles(organization_id)
+@shared_task()
+def remove_old_articles(organization_id=None):
+    _remove_old_articles(organization_id=organization_id)
 
-@shared_task(bind=True)
-def remove_old_articles_all(self, organization_id=1):
+@shared_task()
+def remove_old_articles_all(organization_id=None):
     """
     :param self:
     :param organization_id: this is set to 1 so results can be saved
@@ -864,7 +861,6 @@ def remove_old_articles_all(self, organization_id=1):
         remove_old_articles.delay(i, organization_id=i)
 
 #todo refactor into one method for task and another for function to allow unit testing of function
-
 @shared_task(bind=True)
 def train_model(
         self,
@@ -911,7 +907,6 @@ def _train_model(self,
                 organization_id=None
                 ):
     task = self.request.id.__str__()
-    # todo(aj) could be a function
     logger = get_task_logger(task)
     logger.setLevel(logging.DEBUG)
     formatter = TaskFormatter('%(asctime)s - %(task_id)s - %(task_name)s - %(name)s - %(levelname)s - %(message)s')
@@ -919,16 +914,15 @@ def _train_model(self,
     # optionally logging on the Console as well as file
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
-    stream_handler.setLevel(logging_level) #todo(aj) hardcoded for now
+    stream_handler.setLevel(logging_level)
     # Adding File Handle with file path. Filename is task_id
     log_name = os.path.join('/tmp/', task+'.log')
     task_handler = logging.FileHandler(log_name)
     task_handler.setFormatter(formatter)
-    task_handler.setLevel(logging_level) #todo(aj) hardcoded for now
+    task_handler.setLevel(logging_level)
     logger.addHandler(stream_handler)
     logger.addHandler(task_handler)
     logger.info("test this is the message")
-    #todo(aj) pass logger into trainer so it can log to this logger instead of default one
     trainer = train.DeployPySparkScriptOnAws(model=model,
                                              s3_bucket_logs=s3_bucket_logs,
                                              s3_bucket_temp_files=s3_bucket_temp_files,
@@ -953,7 +947,6 @@ def _train_model(self,
     try:
         # insert job_id into model version
         # model, version, organization
-        # todo(aj) pass in callback callback(job_name, status)
         result = trainer.run(delete=False, status_callback=update_status)
         mversion = models.ModelVersion.objects.get(version=trainer.job_name)
         mversion.status = result.status

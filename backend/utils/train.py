@@ -123,11 +123,15 @@ class DeployPySparkScriptOnAws(object):
                                     aws_secret_access_key=self.aws_secret_access_key)        # Select AWS IAM profileboto
         self.s3 = self.session.resource('s3')                         # Open S3 connection
         self.sync_s3 = self.sync_session.resource("s3")
-
+        mdl = models.MLModel.objects.get(id=self.app_name)
+        org_id = mdl.organization.id
         #retrieve training script
         self.training_script_object = models.TrainingScriptVersion.objects.filter(
-            script__mlmodel__id=self.app_name
-            ).order_by("-script__mlmodel__training_script__trainingscriptversion")[0]
+            script__active=True,
+            script__version__active=True,
+            script__mlmodel__id=self.app_name,
+            organization__id=org_id
+            )
 
         self.training_script_filename = self.training_script_object.zip.path
 

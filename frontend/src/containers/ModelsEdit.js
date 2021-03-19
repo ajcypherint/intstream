@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import SourceEdit from '../components/SourcesEdit'
 import { getModels, modelFormUpdate, addModels, setModels, clearModels } from '../actions/models'
 import { mapStateToPropsFunc, mapDispatchToPropsFunc } from './EditTemplate.js'
+import { getIndicatorTypes } from '../actions/indicatorTypes'
 import { getAllSources } from '../actions/sources'
 import * as reducers from '../reducers/'
 
@@ -21,8 +22,8 @@ const mapStateToProps = (state) => {
     // all sources
     allSources: reducers.getSources(state),
     allSrcLoaded: reducers.getAllLoaded(state),
-    // models
 
+    // models
     sources: reducers.getModels(state),
     loading: reducers.getModelLoading(state),
     saving: reducers.getModelSaving(state),
@@ -39,6 +40,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     // all sources
     fetchAllSources: (params = undefined) => dispatch(getAllSources(SOURCES_API, params)),
+    fetchIndicatorTypes: () => dispatch(getIndicatorTypes()),
     // models
     fetchSources: (params = undefined) => dispatch(getModels(API, params)),
     setSources: (url, data, method = 'PUT') => dispatch(setModels(API + url, data, method)),

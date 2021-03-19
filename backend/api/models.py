@@ -152,7 +152,11 @@ class IndicatorType(models.Model):
 class IndicatorJob(models.Model):
     class Meta:
         constraints = [
-                UniqueConstraint(fields=['name', 'organization'], name='unique_indicatorjob'),
+                UniqueConstraint(fields=['name', 'organization'],
+                                 name='unique_indicatorjob'),
+                UniqueConstraint(fields=['name', 'organization'],
+                                 condition=Q(active=True),
+                                 name='unique_indicatorjob_active'),
                 ]
     name = models.CharField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
@@ -179,7 +183,11 @@ class IndicatorJobLog(models.Model):
 class IndicatorJobVersion(models.Model):
     class Meta:
         constraints = [
-            UniqueConstraint(fields=['job', 'version', 'organization'], name='indicator_unique_job_version'),
+            UniqueConstraint(fields=['job', 'version', 'organization'],
+                             name='indicator_unique_job_version'),
+            UniqueConstraint(fields=['job', 'version', 'organization'],
+                             condition=Q(active=True),
+                             name='indicator_unique_job_version_active'),
             ]
 
     job = models.ForeignKey(IndicatorJob, on_delete=models.CASCADE, editable=False)
@@ -192,7 +200,11 @@ class IndicatorJobVersion(models.Model):
 class Job(models.Model):
     class Meta:
         constraints = [
-                UniqueConstraint(fields=['name',  'organization'], name='unique_job'),
+                UniqueConstraint(fields=['name',  'organization'],
+                                 name='unique_job'),
+                UniqueConstraint(fields=['name',  'organization'],
+                                 condition=Q(active=True),
+                                 name='unique_job_active'),
                 ]
 
     name = models.CharField(max_length=100, )
@@ -225,6 +237,9 @@ class JobVersion(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(fields=['job', 'version', 'organization'], name='unique_job_version'),
+            UniqueConstraint(fields=['job', 'version', 'organization'],
+                             condition=Q(active=True),
+                             name='unique_job_version_active'),
             ]
 
     job = models.ForeignKey(Job, on_delete=models.CASCADE, editable=False)
@@ -237,22 +252,36 @@ class JobVersion(models.Model):
 class TrainingScript(models.Model):
     class Meta:
         constraints = [
-            UniqueConstraint(fields=['name', 'organization'], name='unique_script'),
+            UniqueConstraint(
+               fields=['name', 'organization'],
+               name='unique_script'),
+            UniqueConstraint(
+               condition=Q(active=True),
+               fields=['name', 'organization'],
+               name='unique_script_active'),
             ]
 
     name = models.TextField(max_length=300)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    active = models.BooleanField(default=False)
 
 
 class TrainingScriptVersion(models.Model):
     class Meta:
         constraints = [
-            UniqueConstraint(fields=['script', 'version', 'organization'], name='unique_script_version'),
+            UniqueConstraint(
+                fields=['script', 'version', 'organization'],
+                name='unique_script_version'),
+            UniqueConstraint(
+                condition=Q(active=True),
+                fields=['script', 'version', 'organization'],
+                name='unique_script_version_active'),
             ]
     script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=False)
     zip = models.FileField(upload_to="train_scripts")
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     version = VersionField()
+    active = models.BooleanField(default=False)
 
 
 class ModelVersion(models.Model):

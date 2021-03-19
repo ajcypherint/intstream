@@ -337,7 +337,6 @@ class Train(APIView):
             return Response({"detail":"no aws settings configured"}, status=status.HTTP_400_BAD_REQUEST)
         result = tasks.train_model.delay(
                               model=self.request.data["mlmodel"],
-                              organization=org.id,
                               metric=self.request.data["metric_name"],
                               s3_bucket_logs=aws_settings.aws_s3_log_base,
                               s3_bucket_temp_files=aws_settings.aws_s3_upload_base,
@@ -346,7 +345,8 @@ class Train(APIView):
                               aws_secret_access_key_id=aws_settings.aws_secret,
                               training_script_folder=self.request.data["script_directory"],
                               ec2_key_name=aws_settings.ec2_key_name,
-                              extra_kwargs=self.request.data["extra_kwargs"]
+                              extra_kwargs=self.request.data["extra_kwargs"],
+                              organization_id=org.id
                               )
         return Response({"job_id":result.id},status.HTTP_200_OK)
 
