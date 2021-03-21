@@ -2,8 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import Main from '../components/VersionList'
-import { getTrainVersion, setPage, setActiveTrainVersion } from '../actions/trainVersion'
-import { filterChange } from '../actions/jobVersionFilter'
+import { getJobVersion, setPage, setActiveJobVersion } from '../actions/jobVersion'
+import { filterChangeTrain } from '../actions/jobVersionFilter'
 import {
   withQueryParams,
   useQueryParams,
@@ -24,10 +24,10 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  filterChange: (newSelections, setQuery) => dispatch(filterChange(newSelections, setQuery)),
-  fetchVersions: (params = undefined) => dispatch(getTrainVersion(params)),
+  filterChange: (newSelections, setQuery) => dispatch(filterChangeTrain(newSelections, setQuery)),
+  fetchVersions: (params = undefined) => dispatch(getJobVersion(params)),
   setPage: (page) => dispatch(setPage(page)),
-  setActiveVersion: (job, id, selections, setQuery) => dispatch(setActiveTrainVersion(job, id, selections, setQuery))
+  setActiveVersion: (job, id, selections, setQuery) => dispatch(setActiveJobVersion(job, id, selections, setQuery))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(

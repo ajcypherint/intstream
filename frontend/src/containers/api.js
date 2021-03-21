@@ -1,4 +1,7 @@
 
+export const TRAIN_VERSION_API = '/api/trainingscriptversion/'
+export const TRAIN_API = '/api/trainingscriptversion/'
+
 export const JOB_VERSION_API = '/api/jobversion/'
 export const JOB_API = '/api/job/'
 

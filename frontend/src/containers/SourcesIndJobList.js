@@ -1,6 +1,5 @@
 import { connect } from 'react-redux'
 import SourcesList from '../components/SourcesList'
-import { getSources, clearSources } from '../actions/sources'
 import * as reducers from '../reducers/'
 import { mapStateToPropsFuncExtra, mapDispatchToPropsFunc, connectFunc } from './ListTemplate.js'
 import {

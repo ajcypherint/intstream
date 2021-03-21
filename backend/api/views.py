@@ -815,14 +815,14 @@ class ColumnViewSet(viewsets.ModelViewSet):
 class TrainingScriptFilter(filters.FilterSet):
     class Meta:
         model = models.TrainingScript
-        fields = ("id", "name")
+        fields = ("id", "name", 'active')
 
 
 class TrainingScriptViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyOrIsAdminIntegratorSameOrg,)
     serializer_class = serializers.TrainingScriptSerializer
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','name')
+    filterset_fields = ('id','name', 'active')
     filterset_class = TrainingScriptFilter
 
     def get_queryset(self):
@@ -832,20 +832,19 @@ class TrainingScriptViewSet(OrgViewSet):
 class TrainingScriptVersionFilter(filters.FilterSet):
     class Meta:
         model = models.TrainingScriptVersion
-        fields = ("id", "version")
+        fields = ("id", "version", 'active')
 
 
 class TrainingScriptVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyOrIsAdminIntegratorSameOrg,)
     serializer_class = serializers.TrainingScriptVersionSerializer
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','version')
+    filterset_fields = ('id','version', 'active')
     filterset_class = TrainingScriptVersionFilter
 
     def get_queryset(self):
         # return scripts for org or where org is SYSTEM
-        return models.TrainingScriptVersion.objects.filter(Q(organization=self.request.user.organization)
-                                                           | Q(organization__name=settings.SYSTEM_ORG))
+        return models.TrainingScriptVersion.objects.filter(organization=self.request.user.organization)
 
 
 class SourceViewSet(OrgViewSet):

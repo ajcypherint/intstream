@@ -19,7 +19,7 @@ export default class Edit extends Component {
   versions (event) {
     const script = event.target.dataset.script
     const name = event.target.dataset.name
-    this.props.history.push('/trainversions/?job=' + script + '&name=' + name)
+    this.props.history.push('/trainingscriptversions/?job=' + script + '&name=' + name)
   }
 
   render () {

@@ -47,26 +47,20 @@ export const getfilter = (url, params = undefined) => {
 
 export const getAllJobs = getAll(getfilter)(totalJobs)
 
-export const filterChange = (newSelections, setQuery) => {
+export const filterChangeTemplate = (parentField) => (newSelections, setQuery) => {
   return async (dispatch, getState) => {
     const orderdir = newSelections.orderdir || ''
     const jobChosen = newSelections.jobChosen || ''
     setQuery(newSelections)
-    const jobStr = 'ordering=version&id=' + jobChosen +
-      '&jobversion__isnull=false'
-
-    // fetch sources and jobs; * not just sources but all filters not inc dates *
-    // could ignore this for child
-    const resp = await dispatch(getAllJobs(JOB_API, jobStr))
-    if (resp.error) {
-      return
-    }
 
     const mvStr = 'ordering=' + orderdir + newSelections.ordering +
-      '&job=' + jobChosen +
+      '&' + parentField + '=' + jobChosen +
       '&page=' + newSelections.page
 
     // todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
     return await dispatch(getJobVersion(mvStr))
   }
 }
+
+export const filterChange = filterChangeTemplate('job')
+export const filterChangeTrain = filterChangeTemplate('script')
