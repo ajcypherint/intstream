@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Input, FormGroup, Alert, Button, Jumbotron, Form } from 'reactstrap'
+import { Row, Col, Input, FormGroup, Alert, Button, Jumbotron, Form } from 'reactstrap'
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
@@ -13,14 +13,21 @@ export default class Edit extends Component {
 
     const errors = this.props.errors || {}
     const err_name = errors.name || {}
-    this.goVersions = this.goVersions.bind(this)
+    this.versions = this.versions.bind(this)
   }
 
-  goVersions (event) {
-    this.props.history.push('/train/' + this.props.match.params.id + '/' + this.props.object.name)
+  versions (event) {
+    const script = event.target.dataset.script
+    const name = event.target.dataset.name
+    this.props.history.push('/trainversions/?job=' + script + '&name=' + name)
   }
 
   render () {
+    const errors = this.props.errors || {}
+    const err_name = errors.name || {}
+    const object_script = this.props.object.id || ''
+    const object_name = this.props.object.name || ''
+    const object_active = this.props.object.active || ''
     return (
         <Form onSubmit={this.props.onSubmit} >
           <FormGroup>
@@ -36,8 +43,27 @@ export default class Edit extends Component {
               <Input type="file" name="filein" id="FileInput" />
             </FormGroup>
             : null}
-
+          <CheckBoxInput
+            onChange={this.props.handleChange}
+            type={'checkbox'}
+            name={'active'}
+            label={'active'}
+            readOnly
+            checked={object_active} />
           <FormGroup>
+              {this.props.state.action === EDIT &&
+          <Row>
+            <Col>
+                <Button data-script={object_script} data-name={object_name}
+                  onClick={this.versions} className="button-brand-primary mb-1" size="lg">Versions</Button>
+          </Col>
+            <Col>
+            <Button data-script={object_script} data-name={object_name}
+              onClick={this.logs} className="button-brand-primary mb-1" size="lg">Logs</Button>
+          </Col>
+          </Row>
+              }
+
          <FormButtons saving={this.props.saving}
                       onSubmit={this.props.onSubmit}
                        goBack={this.props.goBack}/>

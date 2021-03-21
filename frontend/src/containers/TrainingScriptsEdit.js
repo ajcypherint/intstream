@@ -9,9 +9,10 @@ const HEADING = ' Training Scripts'
 const API = '/api/trainingscript/'
 const EMPTY = {
   name: '',
+  active: false,
   id: ''
 }
-const FIELDS = ['name']
+const FIELDS = ['name', 'active']
 
 const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
 const mapDispatchToProps = mapDispatchToPropsFunc(API)

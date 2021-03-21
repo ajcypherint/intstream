@@ -13,7 +13,7 @@ import {
 
 // edit
 const API = '/api/trainingscript/'
-const FIELDS = ['id', 'name']
+const FIELDS = ['id', 'name', 'active']
 const HEADING = 'TrainingScripts'
 const EDITURI = /trainingscripts/
 const ADDURI = '/trainingscripts_add'

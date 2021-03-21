@@ -826,8 +826,7 @@ class TrainingScriptViewSet(OrgViewSet):
     filterset_class = TrainingScriptFilter
 
     def get_queryset(self):
-        return models.TrainingScript.objects.filter(Q(organization=self.request.user.organization)
-                                                           | Q(organization__name=settings.SYSTEM_ORG))
+        return models.TrainingScript.objects.filter(organization=self.request.user.organization)
 
 
 class TrainingScriptVersionFilter(filters.FilterSet):

@@ -15,12 +15,12 @@ class JobVersionTable extends Component {
   add (event) {
     event.preventDefault()
     const name = this.props.query.name
-    const job = this.props.query.job
-    this.props.history.push('/indjobversions_add/?name=' + name + '&job=' + job)
+    const parent = this.props.query[this.props.parentIdentifier]
+    this.props.history.push(this.props.addUri + '/?name=' + name + '&' + this.props.parentIdentifier + '=' + parent)
   }
 
   jobs (event) {
-    this.props.history.push('/sources_indjob')
+    this.props.history.push(this.props.parentUri)
   }
 
   render () {
@@ -33,7 +33,7 @@ class JobVersionTable extends Component {
             <FormGroup>
              <Row >
                 <Col >
-                  <Button data-id={this.props.query.id} data-name={this.props.query.name}
+                  <Button data-job={this.props.query.job} data-name={this.props.query.name}
                     disabled={loading} type="submit" onClick={this.add} className="button-brand-primary mb-1" size="md">
                    Add
                  </Button>
@@ -90,7 +90,7 @@ class JobVersionTable extends Component {
                                 onChange={this.props.handleActiveChange}/>
                              </div>
                          </td>
-                            </tr>
+                           </tr>
                         </tbody>)
                    })
                    : <tbody><tr><td><span className="spinner-border" role="status">
@@ -106,6 +106,9 @@ class JobVersionTable extends Component {
 }
 
 JobVersionTable.propTypes = {
+  addUri: propTypes.String,
+  parentUri: propTypes.String,
+  parentIdentifier: propTypes.String,
   VersionList: propTypes.arrayOf(propTypes.object),
   VersionLoading: propTypes.bool,
   query: propTypes.object,

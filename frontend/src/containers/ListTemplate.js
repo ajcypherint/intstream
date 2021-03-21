@@ -11,6 +11,24 @@ import {
 } from 'use-query-params'
 
 // do not edit
+export const mapStateToPropsFuncExtra = (EXTRA) => (ORDERSTARTCOL) => (FIELDS) => (HEADING) => (EDITURI) => (ADDURI) => (state) => {
+  return {
+    ...EXTRA,
+    orderStartCol: ORDERSTARTCOL,
+
+    sourcesList: reducers.getSources(state),
+    sourcesLoading: reducers.getLoading(state),
+    sourcesErrors: reducers.getErrors(state),
+    fields: FIELDS,
+    heading: HEADING,
+    totalCount: reducers.getTotalCount(state),
+    edituri: EDITURI,
+    next: reducers.getNextPage(state),
+    previous: reducers.getPreviousPage(state),
+    addUri: ADDURI
+  }
+}
+// do not edit
 export const mapStateToPropsFunc = (ORDERSTARTCOL) => (FIELDS) => (HEADING) => (EDITURI) => (ADDURI) => (state) => {
   return {
     orderStartCol: ORDERSTARTCOL,

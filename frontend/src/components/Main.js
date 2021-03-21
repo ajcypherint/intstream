@@ -53,6 +53,7 @@ import JobVersionEditForm from './JobVersionEditFormComp'
 import JobVersionEdit from '../containers/SourcesJobVersionEdit'
 
 import IndJobVer from '../containers/IndJobVersionList'
+import VersionTable from './VersionTable'
 import IndJobVersionTable from './IndJobVersionTable'
 import IndJobVersionEditForm from './IndJobVersionEditFormComp'
 import IndJobVersionEdit from '../containers/SourcesIndJobVersionEdit'
@@ -69,7 +70,7 @@ const Main = (props) => (
     <Route exact path="/indjobversions"
       render={() =>
           <IndJobVer
-            table={<IndJobVersionTable/>}
+            table={<VersionTable/>}
           />
       }
       />
@@ -86,7 +87,7 @@ const Main = (props) => (
     <Route exact path="/jobversions"
       render={() =>
           <JobVer
-            table={<JobVersionTable/>}
+            table={<VersionTable/>}
           />
       }
       />

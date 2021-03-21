@@ -623,6 +623,7 @@ class TrainingScriptSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
+            "active",
             "organization"
         )
         model = models.TrainingScript
@@ -633,6 +634,7 @@ class TrainingScriptVersionSerializer(serializers.ModelSerializer):
         fields=(
             "id",
             "version",
+            "active",
             "script",
             "zip"
         )

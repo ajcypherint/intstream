@@ -119,7 +119,9 @@ class VersionList extends Component {
                    handleChange: this.handleChange,
                    handleActiveChange: this.handleActiveChange,
                    setPage: this.props.setPage,
-                   changesort: this.changesort
+                   changesort: this.changesort,
+                   parentIdentifier: this.props.parentIdentifier,
+                   parentUri: this.props.parentUri
 
                  }
                )
@@ -149,7 +151,9 @@ VersionList.propTypes = {
   filterChange: propTypes.func,
   fetchVersions: propTypes.func,
   setPage: propTypes.func,
-  setActiveVersion: propTypes.func
+  setActiveVersion: propTypes.func,
+  parentIdentifier: propTypes.string,
+  parentUri: propTypes.string
 
 }
 
