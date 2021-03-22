@@ -15,8 +15,8 @@ class JobVersionTable extends Component {
   add (event) {
     event.preventDefault()
     const name = this.props.query.name
-    const parent = this.props.query[this.props.parentIdentifier]
-    this.props.history.push(this.props.addUri + '/?name=' + name + '&' + this.props.parentIdentifier + '=' + parent)
+    const parent = this.props.query.job
+    this.props.history.push(this.props.addUri + '/?name=' + name + '&job=' + parent)
   }
 
   jobs (event) {

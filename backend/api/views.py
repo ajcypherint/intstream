@@ -832,14 +832,14 @@ class TrainingScriptViewSet(OrgViewSet):
 class TrainingScriptVersionFilter(filters.FilterSet):
     class Meta:
         model = models.TrainingScriptVersion
-        fields = ("id", "version", 'active')
+        fields = ("id", 'script', "version", 'active')
 
 
 class TrainingScriptVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyOrIsAdminIntegratorSameOrg,)
     serializer_class = serializers.TrainingScriptVersionSerializer
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','version', 'active')
+    filterset_fields = ('id', 'script', 'version', 'active')
     filterset_class = TrainingScriptVersionFilter
 
     def get_queryset(self):

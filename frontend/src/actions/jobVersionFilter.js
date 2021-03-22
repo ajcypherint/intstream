@@ -47,20 +47,17 @@ export const getfilter = (url, params = undefined) => {
 
 export const getAllJobs = getAll(getfilter)(totalJobs)
 
-export const filterChangeTemplate = (parentField) => (newSelections, setQuery) => {
+export const filterChangeTemplate = (api) => (parentField) => (newSelections, setQuery) => {
   return async (dispatch, getState) => {
     const orderdir = newSelections.orderdir || ''
-    const jobChosen = newSelections.jobChosen || ''
+    const job = newSelections.job || ''
     setQuery(newSelections)
 
     const mvStr = 'ordering=' + orderdir + newSelections.ordering +
-      '&' + parentField + '=' + jobChosen +
+      '&' + parentField + '=' + job +
       '&page=' + newSelections.page
 
     // todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
-    return await dispatch(getJobVersion(mvStr))
+    return await dispatch(getJobVersion(api)(mvStr))
   }
 }
-
-export const filterChange = filterChangeTemplate('job')
-export const filterChangeTrain = filterChangeTemplate('script')

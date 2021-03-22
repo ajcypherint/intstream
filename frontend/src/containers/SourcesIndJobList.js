@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import SourcesList from '../components/SourcesList'
 import * as reducers from '../reducers/'
-import { mapStateToPropsFuncExtra, mapDispatchToPropsFunc, connectFunc } from './ListTemplate.js'
+import { mapStateToPropsFunc, mapDispatchToPropsFunc, connectFunc } from './ListTemplate.js'
 import {
   withQueryParams,
   useQueryParams,
@@ -21,11 +21,7 @@ const HEADING = 'Hunting Jobs'
 const EDITURI = '/sources_indjob/'
 const ADDURI = '/sources_indjob_add'
 const ORDERSTARTCOL = 'name'
-const EXTRA = {
-  parentIdentifier: 'job',
-  parentUri: '/sources_indjob'
-}
 
-const mapStateToProps = mapStateToPropsFuncExtra(EXTRA)(ORDERSTARTCOL)(FIELDS)(HEADING)(EDITURI)(ADDURI)
+const mapStateToProps = mapStateToPropsFunc(ORDERSTARTCOL)(FIELDS)(HEADING)(EDITURI)(ADDURI)
 const mapDispatchToProps = mapDispatchToPropsFunc(API)
 export default connectFunc(mapStateToProps)(mapDispatchToProps)

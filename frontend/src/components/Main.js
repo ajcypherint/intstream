@@ -39,8 +39,6 @@ import TrainingScriptsList from '../containers/TrainingScriptsList'
 import TrainingScriptsEdit from '../containers/TrainingScriptsEdit'
 import EditTrainingScripts from './TrainingScriptsEditFormComp'
 
-import TrainingScriptsVer from '../containers/TrainVersionList'
-
 import Registration from '../containers/Registration'
 import TrainList from '../containers/TrainList'
 import LogList from '../containers/LogList'
@@ -54,9 +52,14 @@ import JobVersionEditForm from './JobVersionEditFormComp'
 import JobVersionEdit from '../containers/SourcesJobVersionEdit'
 
 import IndJobVer from '../containers/IndJobVersionList'
-import VersionTable from './VersionTable'
 import IndJobVersionEditForm from './IndJobVersionEditFormComp'
 import IndJobVersionEdit from '../containers/SourcesIndJobVersionEdit'
+
+import TrainingScriptsVer from '../containers/TrainVersionList'
+// import TrainingScriptsVersionEditForm from './TrainingScriptsVersionEditFormComp'
+// import TrainingScriptsVersionEdit from '../containers/TrainingScriptsVersionEdit'
+
+import VersionTable from './VersionTable'
 
 const Main = (props) => (
   <Switch>
@@ -199,6 +202,16 @@ const Main = (props) => (
           />
       }
       />
+    <Route exact path="/trainingscriptversions_add"
+          render={() =>
+          <IndJobVersionEdit
+            form={<IndJobVersionEditForm/>}
+            state={ {
+              action: ADD
+            }}
+            match={undefined}/>}
+    />
+
    <Route exact path="/trainingscripts" component={TrainingScriptsList} />
    <Route exact path="/trainingscripts_add"
       render={() =>

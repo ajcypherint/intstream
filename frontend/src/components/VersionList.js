@@ -21,16 +21,16 @@ class VersionList extends Component {
 
   componentDidMount () {
     const selections = this.props.query
+    const job = this.props.query.job || ''
     const ordering = this.props.query.ordering || 'id'
     const page = this.props.query.page || 1
     const orderdir = this.props.query.orderdir || ''
-    const chosen = this.props.query.chosen || ''
     const newSel = {
       ...selections,
+      job: job,
       ordering: ordering,
       page: page,
-      orderdir: orderdir,
-      chosen: chosen
+      orderdir: orderdir
     }
 
     this.props.filterChange(
@@ -120,8 +120,8 @@ class VersionList extends Component {
                    handleActiveChange: this.handleActiveChange,
                    setPage: this.props.setPage,
                    changesort: this.changesort,
-                   parentIdentifier: this.props.parentIdentifier,
-                   parentUri: this.props.parentUri
+                   parentUri: this.props.parentUri,
+                   addUri: this.props.addUri
 
                  }
                )

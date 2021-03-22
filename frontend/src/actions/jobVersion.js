@@ -1,8 +1,7 @@
 import { RSAA } from 'redux-api-middleware'
 import { withAuth } from '../reducers/util'
 import { setParams, getAll, setActiveVersionTemplate, getVersionTemplate, setActiveRequestTemplate } from './util'
-import { filterChange } from './jobVersionFilter'
-import { JOB_VERSION_API } from '../containers/api'
+import { filterChangeTemplate } from './jobVersionFilter'
 
 export const GETNO_JOBVERSION_REQUEST = '@@jobVersion/GETNO_JOBVERSION_REQUEST'
 export const GETNO_JOBVERSION_SUCCESS = '@@jobVersion/GETNO_JOBVERSION_SUCCESS'
@@ -25,19 +24,18 @@ export const setPage = (data) => {
   }
 }
 
-export const getJobVersionNoRedux = getVersionTemplate(JOB_VERSION_API)(GETNO_JOBVERSION_REQUEST)(
+export const getJobVersionNoRedux = (api) => getVersionTemplate(api)(GETNO_JOBVERSION_REQUEST)(
   GETNO_JOBVERSION_SUCCESS)(
   GETNO_JOBVERSION_FAILURE)
 
-export const getJobVersion = getVersionTemplate(JOB_VERSION_API)(GET_JOBVERSION_REQUEST)(
+export const getJobVersion = (api) => getVersionTemplate(api)(GET_JOBVERSION_REQUEST)(
   GET_JOBVERSION_SUCCESS)(
   GET_JOBVERSION_FAILURE)
 
-export const setActiveRequest = setActiveRequestTemplate(JOB_VERSION_API)(
+export const setActiveRequest = (api) => setActiveRequestTemplate(api)(
   UPDATE_JOBVERSION_REQUEST)(
   UPDATE_JOBVERSION_SUCCESS)(
   UPDATE_JOBVERSION_FAILURE)
 
-export const setActiveJobVersion = setActiveVersionTemplate(getJobVersionNoRedux)(
-  setActiveRequest)(
-  filterChange)
+export const setActiveJobVersion = (api) => (parentField) => setActiveVersionTemplate(getJobVersionNoRedux(api))(
+  setActiveRequest)(filterChangeTemplate(api)(parentField))

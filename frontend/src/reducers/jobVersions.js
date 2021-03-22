@@ -1,5 +1,4 @@
 import * as jobVersionData from '../actions/jobVersion'
-import * as indJobVersionData from '../actions/indJobVersion'
 
 export const initialState = {
   versions: [],
@@ -12,7 +11,6 @@ export const initialState = {
 }
 export default (state = initialState, action) => {
   switch (action.type) {
-    case indJobVersionData.GET_INDJOBVERSION_REQUEST:
     case jobVersionData.GET_JOBVERSION_REQUEST:
     {
       return {
@@ -21,7 +19,6 @@ export default (state = initialState, action) => {
         errors: {}
       }
     }
-    case indJobVersionData.GET_INDJOBVERSION_SUCCESS:
     case jobVersionData.GET_JOBVERSION_SUCCESS:
     {
       return {
@@ -33,9 +30,6 @@ export default (state = initialState, action) => {
         previouspage: action.payload.previous
       }
     }
-    case indJobVersionData.GETNO_INDJOBVERSION_FAILURE:
-    case indJobVersionData.UPDATE_INDJOBVERSION_FAILURE:
-    case indJobVersionData.GET_INDJOBVERSION_FAILURE:
     case jobVersionData.GETNO_JOBVERSION_FAILURE:
     case jobVersionData.UPDATE_JOBVERSION_FAILURE:
     case jobVersionData.GET_JOBVERSION_FAILURE:
