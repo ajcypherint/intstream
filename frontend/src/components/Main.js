@@ -56,6 +56,9 @@ import IndJobVersionEditForm from './IndJobVersionEditFormComp'
 import IndJobVersionEdit from '../containers/SourcesIndJobVersionEdit'
 
 import TrainingScriptsVer from '../containers/TrainVersionList'
+import TrainingScriptVersionEditForm from './TrainingScriptVersionEditFormComp'
+import TrainingScriptVersionEdit from '../containers/SourcesTrainingScriptVersionEdit'
+
 // import TrainingScriptsVersionEditForm from './TrainingScriptsVersionEditFormComp'
 // import TrainingScriptsVersionEdit from '../containers/TrainingScriptsVersionEdit'
 
@@ -204,8 +207,8 @@ const Main = (props) => (
       />
     <Route exact path="/trainingscriptversions_add"
           render={() =>
-          <IndJobVersionEdit
-            form={<IndJobVersionEditForm/>}
+          <TrainingScriptVersionEdit
+            form={<TrainingScriptVersionEditForm/>}
             state={ {
               action: ADD
             }}

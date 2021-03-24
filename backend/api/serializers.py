@@ -630,6 +630,7 @@ class TrainingScriptSerializer(serializers.ModelSerializer):
 
 
 class TrainingScriptVersionSerializer(serializers.ModelSerializer):
+    script = serializers.PrimaryKeyRelatedField(queryset=models.TrainingScript.objects.all())
     class Meta:
         fields=(
             "id",
