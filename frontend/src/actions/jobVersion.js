@@ -37,7 +37,7 @@ export const setActiveRequest = (api) => setActiveRequestTemplate(api)(
   UPDATE_JOBVERSION_SUCCESS)(
   UPDATE_JOBVERSION_FAILURE)
 
-export const setActiveJobVersion = (api) => (parentField) => setActiveVersionTemplate(
+export const setActiveJobVersion = (api) => (parentField) => setActiveVersionTemplate(parentField)(
   getJobVersionNoRedux(api))(
   setActiveRequest(api))(
   filterChangeTemplate(api)(parentField))
