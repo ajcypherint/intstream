@@ -178,19 +178,23 @@ class ClassifPageFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class HomeFilterSetting(filters.FilterSet):
-    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte')
-    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte')
+    start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte', distinct=True)
+    end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte', distinct=True)
+    source = filters.CharFilter(field_name="source", distinct=True)
+    prediction__mlmodel = filters.NumberFilter(field_name="prediction__mlmodel", distinct=True)
+    prediction__target = filters.BooleanFilter(field_name="source", distinct=True)
     class Meta:
+        fields = (
+            "start_upload_date",
+            "end_upload_date",
+            "source",
+            "prediction__mlmodel",
+            "prediction__target"
+        )
         model = models.Article
-        fields = ("source","source__active",
-                  "prediction__mlmodel__modelversion__active",
-                  "prediction__mlmodel",
-                  "prediction__target",
-                  "prediction__mlmodel__active"
-                  )
         groups = [
                 # many to many: must be grouped to work
-                CombinedGroup(["prediction__mlmodel", "prediction__target","prediction__mlmodel__active"])
+                CombinedGroup(["prediction__mlmodel", "prediction__target"])
         ]
 
 
@@ -202,25 +206,18 @@ class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return models.Article.objects.filter(organization=self.request.user.organization).\
-            order_by("source__id",
-                     "prediction__mlmodel__id",
-                     "prediction__target",
-                     "prediction__mlmodel__active",
-                    ).\
-            distinct("source__id",
-                    "prediction__mlmodel__id",
-                    "prediction__target",
-                    "prediction__mlmodel__active",
-                     ).\
             values("source__name",
                    "source__id",
                    "source__active",
+                   "upload_date",
                    "prediction__mlmodel__name",
                    "prediction__mlmodel__id",
                    "prediction__target",
                    "prediction__mlmodel__active",
                    ).\
-            annotate(name=F("source__name"),
+            annotate(
+                upload_date=F("upload_date"),
+                name=F("source__name"),
                  id=F("source__id"),
                  active=F("source__active"),
                   mlmodel = F("prediction__mlmodel__name"),

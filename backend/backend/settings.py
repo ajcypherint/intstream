@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_celery_beat',
     'django_celery_results',
-    #'debug_toolbar',
+    'debug_toolbar',
     'django_rest_passwordreset',
     #'django_s3_storage'
 ]
@@ -102,7 +102,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 INTERNAL_IPS = [
