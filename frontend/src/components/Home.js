@@ -5,7 +5,7 @@ import propTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import '../custom.css'
-import { dateString, getUniqueModels } from '../util/util'
+import { dateString, getUniqueSources, getIds, getUniqueModels } from '../util/util'
 import { Children } from './Children'
 import Choice from './Choice'
 
@@ -167,20 +167,12 @@ export class Main extends React.Component {
     const previous = this.props.articlePrevious
     const errors = this.props.articlesErrors || {}
 
-    /// ///////
-    // todo(aj) should be a method to be used elsewhere
-    // setup model filter
-    const uniqueModels = getUniqueModels(this.props.sourcesList)
-    const idsModels = []
-    for (let i = 0; i < uniqueModels.length; i++) {
-      if (uniqueModels[i].id) {
-        idsModels.push(uniqueModels[i].id.toString())
-      }
-    }
-    /// ///////
+    const uniqueSources = getUniqueSources(this.props.sourcesList)
+    const ids = getIds(uniqueSources)
 
-    const uniqueSources = _.uniqBy(this.props.sourcesList, 'id')
-    const ids = uniqueSources.map(a => a.id.toString()) || []
+    const uniqueModels = getUniqueModels(this.props.sourcesList)
+    const idsModels = getIds(uniqueModels)
+
     const threshold_values = []
     for (let i = 100; i >= 0; i -= 5) {
       threshold_values.push(i)

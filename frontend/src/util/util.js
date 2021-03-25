@@ -24,7 +24,8 @@ export function getOpts (event) {
 function ucFirst (string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
-export function getIdsModels (uniqueModels) {
+
+export function getIds (uniqueModels) {
   // uniqueModels: [{ id:int}]
   const idsModels = []
   for (let i = 0; i < uniqueModels.length; i++) {
@@ -42,7 +43,7 @@ export function getUniqueTrainListTF (filterArray) {
     } else {
       return false
     }
-  }) // need to also filter out target=true, mlmodel_active=true
+  }) // need to also filter out target=true
   const uniqueModels = []
   for (let i = 0; i < uniqueTFPre2.length; i++) {
     const newObj = {
@@ -54,23 +55,37 @@ export function getUniqueTrainListTF (filterArray) {
 
   return uniqueModels
 }
+export function getUniqueSources (filterArray) {
+  // may want to filter by active in the future
+  const uniqueModelsPre = _.uniqBy(filterArray, v => [v.source__id, v.source__active].join())
+  const uniqueModels = []
+  for (let i = 0; i < uniqueModelsPre.length; i++) {
+    const newObj = {
+      id: uniqueModelsPre[i].source__id,
+      name: uniqueModelsPre[i].source__name
+    }
+    uniqueModels.push(newObj)
+  }
+
+  return uniqueModels
+}
 
 export function getUniqueModels (filterArray) {
-  const uniqueModelsPre = _.uniqBy(filterArray, v => [v.mlmodel_id, v.mlmodel_active, v.target].join())
+  // may want to filter by active in the future
+  const uniqueModelsPre = _.uniqBy(filterArray, v => [v.prediction__mlmodel__id, v.prediction__mlmodel__active, v.prediction__target].join())
   const uniqueModelsPre2 = uniqueModelsPre.filter((object) => {
-    if (object.mlmodel !== null &&
-      object.mlmodel_active === true &&
-      object.target === true) {
+    if (object.prediction__mlmodel__id !== null &&
+      object.prediction__target === true) {
       return true
     } else {
       return false
     }
-  }) // need to also filter out target=true, mlmodel_active=true
+  }) // need to also filter out target=true,
   const uniqueModels = []
   for (let i = 0; i < uniqueModelsPre2.length; i++) {
     const newObj = {
-      id: uniqueModelsPre2[i].mlmodel_id,
-      name: uniqueModelsPre2[i].mlmodel
+      id: uniqueModelsPre2[i].prediction__mlmodel__id,
+      name: uniqueModelsPre2[i].prediction__mlmodel__name
     }
     uniqueModels.push(newObj)
   }

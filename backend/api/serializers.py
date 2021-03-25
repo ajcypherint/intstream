@@ -370,23 +370,25 @@ class ClassifFilterSerializer(serializers.Serializer):
 
 
 class HomeFilterSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(max_length=100,read_only=True)
-    active = serializers.BooleanField(read_only=True)
-    mlmodel = serializers.CharField(max_length=1000,read_only=True)
-    mlmodel_id = serializers.IntegerField(read_only=True)
-    mlmodel_active = serializers.BooleanField(read_only=True)
-    target = serializers.BooleanField(read_only=True)
+    source__id = serializers.IntegerField(read_only=True)
+    source__name = serializers.CharField(max_length=100,read_only=True)
+    source__active = serializers.BooleanField(read_only=True)
+    prediction__mlmodel__name = serializers.CharField(max_length=1000,read_only=True)
+    prediction__mlmodel__id = serializers.IntegerField(read_only=True)
+    prediction__mlmodel__active = serializers.BooleanField(read_only=True)
+    prediction__target = serializers.BooleanField(read_only=True)
+    upload_dt = serializers.DateTimeField(read_only=True)
 
     def to_representation(self, instance):
         return {
-            "id": instance["id"],
-            "name": instance["name"],
-            "active": instance["active"],
-            "mlmodel": instance["mlmodel"],
-            "mlmodel_id": instance["mlmodel_id"],
-            "mlmodel_active": instance["mlmodel_active"],
-            "target": instance["target"]
+            "upload_dt":    instance["upload_dt"],
+            "source__id":     instance["source__id"],
+            "source__name":   instance["source__name"],
+            "source__active": instance["source__active"],
+            "prediction__mlmodel__name":   instance["prediction__mlmodel__name"],
+            "prediction__mlmodel__id":     instance["prediction__mlmodel__id"],
+            "prediction__mlmodel__active": instance["prediction__mlmodel__active"],
+            "prediction__target":          instance["prediction__target"]
 
         }
 

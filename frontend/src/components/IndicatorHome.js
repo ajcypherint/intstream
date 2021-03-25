@@ -6,7 +6,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import '../custom.css'
 
-import { getOpts, dateString, getUniqueModels, getIdsModels, ASC, DESC, ALL } from '../util/util'
+import { getOpts, getUniqueSources, getIds, dateString, getUniqueModels, ASC, DESC, ALL } from '../util/util'
 import Choice from './Choice'
 
 import Indicators from './Indicators'
@@ -204,11 +204,12 @@ export class Main extends React.Component {
     const errorsColNum = this.props.indicatorColNumErrors || {}
     const errorsColNumData = this.props.indicatorColNumDataErrors || {}
 
-    const uniqueSources = _.uniqBy(this.props.sourcesList, 'id')
-    const ids = uniqueSources.map(a => a.id.toString()) || []
+    const uniqueSources = getUniqueSources(this.props.sourcesList)
+    const ids = getIds(uniqueSources)
 
     const uniqueModels = getUniqueModels(this.props.sourcesList)
-    const idsModels = getIdsModels(uniqueModels)
+    const idsModels = getIds(uniqueModels)
+
     const articleErrors = this.props.articlesErrors || {}
     const articles = this.props.articlesList || []
     const articlesLen = articles.length

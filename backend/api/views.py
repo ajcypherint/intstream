@@ -13,6 +13,7 @@ from django_filters.widgets import CSVWidget
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.db.models.functions import Trunc
 from django.template.loader import render_to_string
 from django_rest_passwordreset import views as drpr_views
 import urllib.parse as urlparse
@@ -180,9 +181,9 @@ class ClassifPageFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
 class HomeFilterSetting(filters.FilterSet):
     start_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='gte', distinct=True)
     end_upload_date = filters.IsoDateTimeFilter(field_name='upload_date', lookup_expr='lte', distinct=True)
-    source = filters.CharFilter(field_name="source", distinct=True)
+    source = filters.NumberFilter(field_name="source", distinct=True)
     prediction__mlmodel = filters.NumberFilter(field_name="prediction__mlmodel", distinct=True)
-    prediction__target = filters.BooleanFilter(field_name="source", distinct=True)
+    prediction__target = filters.BooleanFilter(field_name="prediction__target", distinct=True)
     class Meta:
         fields = (
             "start_upload_date",
@@ -206,25 +207,18 @@ class HomeFilter(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return models.Article.objects.filter(organization=self.request.user.organization).\
+            annotate(
+                      upload_dt=Trunc("upload_date", "hour"),
+                      ).\
             values("source__name",
                    "source__id",
                    "source__active",
-                   "upload_date",
+                   "upload_dt",
                    "prediction__mlmodel__name",
                    "prediction__mlmodel__id",
                    "prediction__target",
                    "prediction__mlmodel__active",
-                   ).\
-            annotate(
-                upload_date=F("upload_date"),
-                name=F("source__name"),
-                 id=F("source__id"),
-                 active=F("source__active"),
-                  mlmodel = F("prediction__mlmodel__name"),
-                  mlmodel_id=F("prediction__mlmodel__id"),
-                  mlmodel_active=F("prediction__mlmodel__active"),
-                  target=F("prediction__target")
-                    )
+                   ).distinct()
 
 
 def set_query_params(url, page):
