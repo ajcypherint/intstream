@@ -57,7 +57,6 @@ from django_rest_passwordreset.signals import reset_password_token_created
 
 from django.conf import settings
 
-MAX_CLUSTER = 200
 
 class MLModelFilter(filters.FilterSet):
     modelversion__isnull = filters.BooleanFilter(field_name="modelversion",
@@ -615,7 +614,6 @@ class HomePage(APIView):
         max_df = int(self.request.query_params.get("max_df",80)) / 100.0
         min_df = int(self.request.query_params.get("min_df",0)) / 100.0
         source_id = self.request.query_params.get("source","")
-        source__active = self.request.query_params.get("source__active",True)
         start_date = self.request.query_params.get("start_upload_date","")
         end_date = self.request.query_params.get("end_upload_date","")
         order_by = self.request.query_params.get("ordering","id")
@@ -624,9 +622,9 @@ class HomePage(APIView):
         page = 1 if page == "" else page
         match_id = self.request.query_params.getlist("match")
         threshold = int(self.request.query_params.get("threshold",0))
-        if not isinstance(threshold,int) :
+        if not isinstance(threshold, int):
             return Response({"detail":"threshold must be and integer"}, status=status.HTTP_400_BAD_REQUEST)
-        if threshold > 100 or threshold < 0 :
+        if threshold > 100 or threshold < 0:
             return Response({"detail":"threshold must between 0 and 100"}, status=status.HTTP_400_BAD_REQUEST)
         threshold = threshold / 100.0
         filter_kwargs = {}
@@ -683,9 +681,9 @@ class HomePage(APIView):
 
         if len(sql_no_cummulate) > 1:
             if threshold != 0:
-                if len(sql_no_cummulate) > MAX_CLUSTER:
+                if len(sql_no_cummulate) > settings.MAX_CLUSTER:
                     return Response({"detail":"Set MAX_DIFF to 0 or filter results; Max number of articles for clustering is " +
-                                              str(MAX_CLUSTER)}, status=status.HTTP_400_BAD_REQUEST)
+                                              str(settings.MAX_CLUSTER)}, status=status.HTTP_400_BAD_REQUEST)
                 tfidf = vectorizer.fit_transform([i["text"] for i in sql_no_cummulate])
                 tfidf = tfidf.todense()
                 Z = hierarchy.linkage(tfidf, "average", metric="cosine")
@@ -712,6 +710,10 @@ class HomePage(APIView):
                         matched_id = sql_no_cummulate[index]["id"]
                         all_results[all_result_index]["match"].append(matched_id)
             else:
+                if len(sql_no_cummulate) > settings.MAX_NON_CLUSTER:
+                    return Response({"detail":"Filter Results further; Max number of returned articles is " +
+                                              str(settings.MAX_NON_CLUSTER)}, status=status.HTTP_400_BAD_REQUEST)
+
                 for i,value in enumerate(sql_no_cummulate):
                      element = {"id": sql_no_cummulate[i]["id"],
                                 "upload_date": sql_no_cummulate[i]["upload_date"],

@@ -42,6 +42,9 @@ with open(os.path.join(BASE_DIR, 'secretkey.txt')) as f:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #default to false
+MAX_CLUSTER = os.environ.get("MAX_CLUSTER", 200)
+MAX_NON_CLUSTER = os.environ.get("MAX_NON_CLUSTER", 900)
+
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ['true','yes']
 ALLOWED_HOSTS = ['*']
 PROXY=os.environ.get("INSTREAM_PRXOY", None)
