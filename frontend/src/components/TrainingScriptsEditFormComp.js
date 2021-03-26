@@ -38,12 +38,7 @@ export default class Edit extends Component {
             value={this.props.object.name}
             error={this.err_name} />
          </FormGroup>
-          { this.props.state.action !== EDIT
-            ? <FormGroup>
-              <Input type="file" name="filein" id="FileInput" />
-            </FormGroup>
-            : null}
-          <CheckBoxInput
+         <CheckBoxInput
             onChange={this.props.handleChange}
             type={'checkbox'}
             name={'active'}
