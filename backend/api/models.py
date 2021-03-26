@@ -154,9 +154,6 @@ class IndicatorJob(models.Model):
         constraints = [
                 UniqueConstraint(fields=['name', 'organization'],
                                  name='unique_indicatorjob'),
-                UniqueConstraint(fields=['name', 'organization'],
-                                 condition=Q(active=True),
-                                 name='unique_indicatorjob_active'),
                 ]
     name = models.CharField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
@@ -185,7 +182,7 @@ class IndicatorJobVersion(models.Model):
         constraints = [
             UniqueConstraint(fields=['job', 'version', 'organization'],
                              name='indicator_unique_job_version'),
-            UniqueConstraint(fields=['job', 'version', 'organization'],
+            UniqueConstraint(fields=['job', 'organization'],
                              condition=Q(active=True),
                              name='indicator_unique_job_version_active'),
             ]
@@ -202,9 +199,6 @@ class Job(models.Model):
         constraints = [
                 UniqueConstraint(fields=['name',  'organization'],
                                  name='unique_job'),
-                UniqueConstraint(fields=['name',  'organization'],
-                                 condition=Q(active=True),
-                                 name='unique_job_active'),
                 ]
 
     name = models.CharField(max_length=100, )
@@ -237,7 +231,7 @@ class JobVersion(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(fields=['job', 'version', 'organization'], name='unique_job_version'),
-            UniqueConstraint(fields=['job', 'version', 'organization'],
+            UniqueConstraint(fields=['job', 'organization'],
                              condition=Q(active=True),
                              name='unique_job_version_active'),
             ]
@@ -257,7 +251,7 @@ class TrainingScript(models.Model):
                name='unique_script'),
             UniqueConstraint(
                condition=Q(active=True),
-               fields=['name', 'organization'],
+               fields=['organization', ],
                name='unique_script_active'),
             ]
 
@@ -274,7 +268,7 @@ class TrainingScriptVersion(models.Model):
                 name='unique_script_version'),
             UniqueConstraint(
                 condition=Q(active=True),
-                fields=['script', 'version', 'organization'],
+                fields=['script', 'organization'],
                 name='unique_script_version_active'),
             ]
     script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=False)
