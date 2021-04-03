@@ -190,7 +190,11 @@ class IndicatorJobVersion(models.Model):
     job = models.ForeignKey(IndicatorJob, on_delete=models.CASCADE, editable=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     zip = models.FileField(upload_to="job_scripts")
-    version = VersionField()
+    version = VersionField(
+                                     validators=[validators.RegexValidator(regex=r"\d\.\d\.\d",
+                                                                   message="must be valid versionString")],
+
+    )
     active = models.BooleanField(default=False)
 
 
@@ -239,7 +243,11 @@ class JobVersion(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, editable=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     zip = models.FileField(upload_to="job_scripts")
-    version = VersionField()
+    version = VersionField(
+                                             validators=[validators.RegexValidator(regex=r"\d\.\d\.\d",
+                                                                   message="must be valid versionString")],
+
+    )
     active = models.BooleanField(default=False)
 
 
@@ -274,7 +282,11 @@ class TrainingScriptVersion(models.Model):
     script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=False)
     zip = models.FileField(upload_to="train_scripts")
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    version = VersionField()
+    version = VersionField(
+                                             validators=[validators.RegexValidator(regex=r"\d\.\d\.\d",
+                                                                   message="must be valid versionString")],
+
+    )
     active = models.BooleanField(default=False)
 
 
