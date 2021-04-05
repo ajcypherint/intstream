@@ -938,11 +938,18 @@ def _train_model(self,
                                              )
     model = MLModel.objects.get(id=model)
     org = Organization.objects.get(id=organization_id)
+    training_script_object = models.TrainingScriptVersion.objects.get(
+            script__active=True,
+            active=True,
+            organization__id=organization_id
+            )
+
     model_version = ModelVersion(organization=org,
                                      model=model,
                                      task=task,
-                                     version=trainer.job_name,
-                                     metric_name=metric)
+                                     version=trainer.job_name, # unique
+                                     metric_name=metric,
+                                     training_script_version=training_script_object)
     model_version.save()
     try:
         # insert job_id into model version

@@ -126,10 +126,9 @@ class DeployPySparkScriptOnAws(object):
         mdl = models.MLModel.objects.get(id=self.app_name)
         org_id = mdl.organization.id
         #retrieve training script
-        self.training_script_object = models.TrainingScriptVersion.objects.filter(
+        self.training_script_object = models.TrainingScriptVersion.objects.get(
             script__active=True,
-            script__version__active=True,
-            script__mlmodel__id=self.app_name,
+            active=True,
             organization__id=org_id
             )
 
@@ -176,11 +175,16 @@ class DeployPySparkScriptOnAws(object):
                                               )
         if len(files) == 0:
             return False
+        results_upload = []
         for chunk in self.chunks(files, 20):
             pool = asyncio_pool.AioPool(4)
-            loop.run_until_complete(pool.map(self.upload_article, chunk))
-        res = loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
-        return res
+            results_upload.extend(loop.run_until_complete(pool.map(self.upload_article, chunk)))
+        all_responses = [i["ResponseMetadata"]["HTTPStatusCode"] == 200 for i in results_upload]
+        if all(all_responses):
+            res = loop.run_until_complete(self.upload_temp_files(self.s3)) # Move the Spark files to a S3 bucket for temporary files
+            return res
+        else:
+            return False
 
     def locked(self):
         return False
@@ -272,8 +276,9 @@ class DeployPySparkScriptOnAws(object):
                 t_file.close()
 
     async def upload_article(self, article):
-        await self.s3.Object(self.s3_bucket_temp_files, self.UPLOAD_DIR+str(article.id))\
-                .put(Body=article.text, ContentType='text/plain')
+        res = await self.s3.Object(self.s3_bucket_temp_files, self.UPLOAD_DIR+str(article.id))\
+                .put(Body=article.text)
+        return res
 
     async def upload_temp_files(self, s3):
         """

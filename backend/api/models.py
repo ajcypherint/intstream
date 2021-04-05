@@ -314,7 +314,7 @@ class ModelVersion(models.Model):
     # set on classify history
     virtual_env_loc = models.CharField(max_length=1000, null=True, blank=True)
 
-    training_script_version = models.ForeignKey(TrainingScriptVersion, on_delete=models.CASCADE, editable=True)
+    training_script_version = models.ForeignKey(TrainingScriptVersion, on_delete=models.CASCADE, editable=False)
 
 
 class ClassifyHistory(models.Model):
