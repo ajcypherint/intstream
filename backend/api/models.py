@@ -315,6 +315,7 @@ class ModelVersion(models.Model):
     virtual_env_loc = models.CharField(max_length=1000, null=True, blank=True)
 
     training_script_version = models.ForeignKey(TrainingScriptVersion, on_delete=models.CASCADE, editable=False)
+    train_start_date = models.DateTimeField(default=timezone.now)
 
 
 class ClassifyHistory(models.Model):
@@ -341,7 +342,6 @@ class MLModel(models.Model):
     active = models.BooleanField(default=False) # allow to show in gui
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     training_script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=True)
-    train_start_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return str(self.id)

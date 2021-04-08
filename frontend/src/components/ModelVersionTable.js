@@ -8,6 +8,16 @@ import _ from 'lodash'
 class ModelVersionTable extends Component {
   constructor (props) {
     super(props)
+    this.handleChange = this.handleChange.bind(this)
+  }
+
+  handleChange (event) {
+    const newSelections = {
+      ...this.props.query,
+      chosen: event.target.value,
+      page: 1
+    }
+    this.props.filterChange(newSelections, this.props.setQuery)
   }
 
   render () {
@@ -25,7 +35,7 @@ class ModelVersionTable extends Component {
                 <Col >
                    <Choice name={'Model'}
                     value={this.props.query.chosen || ''}
-                    onChange={this.props.handleChange}
+                    onChange={this.handleChange}
                     idList={ids}
                     uniqueList={unique}
                     disabled={false}
@@ -51,7 +61,7 @@ class ModelVersionTable extends Component {
                <thead>
                  <tr>
                    <td className="hover" onClick={(event) => {
-                     this.props.changesort('title',
+                     this.props.changesort('model__name',
                        ASC,
                        DESC,
                        this.props.query,

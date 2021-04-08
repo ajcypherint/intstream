@@ -16,7 +16,6 @@ class VersionList extends Component {
     this.handleActiveChange = this.handleActiveChange.bind(this)
     this.onRefresh = this.onRefresh.bind(this)
     this.changesort = changesort.bind(this)
-    this.handleChange = this.handleChange.bind(this)
   }
 
   componentDidMount () {
@@ -36,15 +35,6 @@ class VersionList extends Component {
     this.props.filterChange(
       newSel, this.props.setQuery
     )
-  }
-
-  handleChange (event) {
-    const newSelections = {
-      ...this.props.query,
-      chosen: event.target.value,
-      page: 1
-    }
-    this.props.filterChange(newSelections, this.props.setQuery)
   }
 
   handleActiveChange (event) {
@@ -116,7 +106,6 @@ class VersionList extends Component {
                    List: this.props.List,
                    filterChange: this.props.filterChange,
                    setQuery: this.props.setQuery,
-                   handleChange: this.handleChange,
                    handleActiveChange: this.handleActiveChange,
                    setPage: this.props.setPage,
                    changesort: this.changesort,

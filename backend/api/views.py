@@ -876,6 +876,7 @@ class PredictionViewSet(OrgViewSet):
 class ClassificationFilter(filters.FilterSet):
     article_id_in = NumberInFilter(field_name="article_id", lookup_expr="in")
     article_id = filters.NumberFilter(field_name="article_id")
+    mlmodel_id = filters.NumberFilter(field_name="mlmodel_id")
 
     class Meta:
         model = models.Classification
@@ -885,6 +886,7 @@ class ClassificationFilter(filters.FilterSet):
 class ClassificationViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.ClassificationSerializer
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_class = ClassificationFilter
 
     def get_queryset(self):
@@ -1721,19 +1723,20 @@ class ModelVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.ModelVersionSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ("id", "version","model__active", "model", "active")
+    filterset_fields = ("id", "version","model__name", "model__active", "model", "active")
 
     def get_queryset(self):
         return models.ModelVersion.objects.filter(model__organization=self.request.user.organization)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        if instance.active:
-            articles = models.Article.objects.filter(upload_date_gte=instance.train_start_date).all()
-            for article in articles:
-                tasks.predict.delay(articles=[article.id],
-                                    organization=article.organization.id,
-                                    source_id=article.source.id)
+        # todo(aj) do we really need to go back and fix historical?
+        #if instance.active:
+        #    articles = models.Article.objects.filter(upload_date__gte=instance.train_start_date).all()
+        #    for article in articles:
+        #        tasks.predict.delay(articles=[article.id],
+        #                            organization=article.organization.id,
+        #                            source_id=article.source.id)
 
 
 
