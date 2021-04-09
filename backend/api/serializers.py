@@ -739,7 +739,10 @@ class IndicatorSerializer(serializers.ModelSerializer):
             "articles",
             "organization",
             "upload_date",
-            "value"
+            "value",
+            "reviewed",
+            "allowed",
+            "mitigated"
         ]
         model = models.Indicator
 
@@ -753,7 +756,11 @@ class IndicatorMD5Serializer(serializers.ModelSerializer):
             "ind_type",
             "organization",
             "upload_date",
-            "value"
+            "value",
+            "reviewed",
+            "allowed",
+            "mitigated"
+
         ]
         model = models.IndicatorMD5
 
@@ -768,6 +775,10 @@ class IndicatorSha256Serializer(serializers.ModelSerializer):
             "organization",
             "upload_date",
             "value",
+            "reviewed",
+            "allowed",
+            "mitigated"
+
         ]
         model = models.IndicatorSha256
 
@@ -782,6 +793,10 @@ class IndicatorEmailSerializer(serializers.ModelSerializer):
             "organization",
             "upload_date",
             "value",
+            "reviewed",
+            "allowed",
+            "mitigated"
+
         ]
         model = models.IndicatorEmail
 
@@ -795,7 +810,11 @@ class IndicatorSha1Serializer(serializers.ModelSerializer):
             "ind_type",
             "organization",
             "upload_date",
-            "value"
+            "value",
+            "reviewed",
+            "allowed",
+            "mitigated"
+
         ]
         model = models.IndicatorSha1
 
@@ -847,7 +866,11 @@ class IndicatorIPV6Serializer(serializers.ModelSerializer):
             "ind_type",
             "organization",
             "upload_date",
-            "value"
+            "value",
+            "reviewed",
+            "allowed",
+            "mitigated"
+
         ]
         model = models.IndicatorIPV6
 
@@ -860,7 +883,11 @@ class IndicatorIPV4Serializer(serializers.ModelSerializer):
             "ind_type",
             "organization",
             "upload_date",
-            "value"
+            "value",
+            "reviewed",
+            "allowed",
+            "mitigated"
+
         ]
         model = models.IndicatorIPV4
 

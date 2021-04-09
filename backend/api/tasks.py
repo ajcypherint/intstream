@@ -32,6 +32,9 @@ import logging
 TASK_WITH_LOGGING = ['api.tasks.train_model']
 from celery.app.log import TaskFormatter
 
+MITIGATE = "mitigate"
+UNMITIGATE = "unmitigate"
+
 from api import models
 """
 @signals.task_prerun.connect(sender=TASK_WITH_LOGGING)

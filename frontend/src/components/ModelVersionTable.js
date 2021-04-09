@@ -9,6 +9,7 @@ class ModelVersionTable extends Component {
   constructor (props) {
     super(props)
     this.handleChange = this.handleChange.bind(this)
+    this.onRefresh = this.onRefresh.bind(this)
   }
 
   handleChange (event) {
@@ -18,6 +19,11 @@ class ModelVersionTable extends Component {
       page: 1
     }
     this.props.filterChange(newSelections, this.props.setQuery)
+  }
+
+  onRefresh (event) {
+    event.preventDefault()
+    this.props.filterChange(this.props.query, this.props.setQuery)
   }
 
   render () {

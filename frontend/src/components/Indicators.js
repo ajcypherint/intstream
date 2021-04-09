@@ -133,6 +133,7 @@ export class Main extends React.Component {
                                 0
                               )
                             }}>Value</td>
+                          <td>M</td>
                           {
                             selectedTxtCols.map((name, index) => {
                               return (
@@ -160,6 +161,14 @@ export class Main extends React.Component {
                                 return (
                                    <tr key={index}>
                                      <td>{indicator.value} </td>
+                                     <td>
+                                      <div className="custom-control custom-checkbox">
+                                        <Input type="checkbox"
+                                          data-id={indicator.id}
+                                          checked={indicator.mitigated}
+                                          onChange={this.handleMitigate}/>
+                                       </div>
+                                     </td>
                                         {
                                           selectedTxtCols.map((name, index) => {
                                             // todo get value of column name for id of indicator

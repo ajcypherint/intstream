@@ -14,7 +14,6 @@ class VersionList extends Component {
     this.fetch = this.fetch.bind(this)
     this.paginate = Paginate.bind(this)
     this.handleActiveChange = this.handleActiveChange.bind(this)
-    this.onRefresh = this.onRefresh.bind(this)
     this.changesort = changesort.bind(this)
   }
 
@@ -43,11 +42,6 @@ class VersionList extends Component {
       id,
       this.props.query,
       this.props.setQuery)
-  }
-
-  onRefresh (event) {
-    event.preventDefault()
-    this.props.filterChange(this.props.query, this.props.setQuery)
   }
 
   fetch (selections, page) {

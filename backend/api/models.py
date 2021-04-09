@@ -444,6 +444,9 @@ class Indicator(PolymorphicModel):
     organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
     ind_type = models.ForeignKey(IndicatorType, on_delete=models.CASCADE, editable=False)
     upload_date = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
+    reviewed = models.BooleanField(default=False)
+    allowed = models.BooleanField(default=False)
+    mitigated = models.BooleanField(default=False)
 
 
 class IndicatorMD5(Indicator):
