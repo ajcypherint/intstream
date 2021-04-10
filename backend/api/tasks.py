@@ -28,10 +28,11 @@ import json
 import tarfile
 from utils import train
 import logging
+from celery import group
 # to control the tasks that required logging mechanism
 TASK_WITH_LOGGING = ['api.tasks.train_model']
 from celery.app.log import TaskFormatter
-
+import base64
 MITIGATE = "mitigate"
 UNMITIGATE = "unmitigate"
 
@@ -170,16 +171,39 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
 
-
+@shared_task()
+def runjobs_mitigate(indicator_ids, organization_id=None):
+    for i in indicator_ids:
+        instance  = models.Indicator.objects.get(pk=i)
+        all_jobs = models.StandardIndicatorJob.objects.filter(indicator_types=instance.ind_type).all()
+        tasks = []
+        for j in all_jobs:
+            tasks.append(indicatorjob.s(args=(j.id, i.id), kwargs={"organization_id":organization_id}))
+        # run all jobs
+        job_group = group(tasks)
+        result = job_group.get() #join
+        # run mitigation on success
+        mitigate_jobs = models.MitigateIndicatorJob.objects.filter(organization_id=organization_id,
+                                                        ind_type=instance.ind_type).all()
+        for m in mitigate_jobs:
+            indicatorjob.delay(m.id, i.id, organization_id=organization_id)
 
 @shared_task()
-def indicatorjob(id, indicator, organization_id=None):
-    _indicatorjob(id, indicator)
+def indicatorjob(id, indicator_id, organization_id=None):
+    """
+
+    :param id:
+    :param indicator: str - value field
+    :param organization_id:
+    :return:
+    """
+    _indicatorjob(id, indicator_id)
 
 
-def _indicatorjob(id, indicator):
+def _indicatorjob(id, indicator_id):
     job = models.IndicatorJob.objects.get(id=id)
-    user = models.UserIntStream.objects.get(username=job.user)
+    indicator = models.Indicator.objects.get(id=indicator_id)
+    user = models.UserIntStream.objects.get(pk=job.user)
     job_version = None
     try:
         job_version = models.IndicatorJobVersion.objects.get(job=job, active=True)
@@ -200,7 +224,7 @@ def _indicatorjob(id, indicator):
             path_python,
             script,
             "--indicator",
-            indicator,
+            indicator.value,
             ]
         if len(job_args) > 0:
             args.extend(job_args.split(" "))
@@ -251,7 +275,7 @@ def get_expire(refresh_token):
 
 def _job(id, organization_id):
     job = models.Job.objects.get(id=id)
-    user = models.UserIntStream.objects.get(username=job.user)
+    user = models.UserIntStream.objects.get(pk=job.user)
     job_version = models.JobVersion.objects.get(active=True, job=job)
     tokens = get_tokens_for_user(user)
     # can't  create virtual env here. race conditions
@@ -358,12 +382,12 @@ def _extract_indicators(text, article_id, organization_id):
             organization=organization,
             ind_type=ind_type)
         ip.articles.add(article)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV4,
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.IPV4,
                                                   organization=organization,
                                                   active=True)
         for job in jobs:
             indicatorjob.delay(job.id,
-                               ip.value,
+                               ip.id,
                                organization_id=organization_id)
 
     ipv6s = iocextract.extract_ipv6s(text)
@@ -374,12 +398,12 @@ def _extract_indicators(text, article_id, organization_id):
                                                                organization=organization,
                                                                ind_type=ind_type)
             ip.articles.add(article)
-            jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV6,
+            jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.IPV6,
                                                       organization=organization,
                                                       active=True)
             for job in jobs:
                 indicatorjob.delay(job.id,
-                                   ip.value,
+                                   ip.id,
                                    organization_id=organization_id)
         except db.DataError as e:
             logger.error("ip: " + str(i) + "; " + str(e))
@@ -400,13 +424,12 @@ def _extract_indicators(text, article_id, organization_id):
                                             organization=organization)
 
                 instance.articles.add(article)
-                jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.NETLOC,
+                jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.NETLOC,
                                                           organization=organization,
                                                           active=True)
-                serial_instance = serializers.IndicatorNetLocSerializer(instance)
                 for job in jobs:
                     indicatorjob.delay(job.id,
-                                       serial_instance.data["url"],
+                                       instance.id,
                                        organization_id=organization_id)
         except exceptions.ObjectDoesNotExist as e:
             logger.error("domain: " + i + "; " + str(e))
@@ -419,12 +442,12 @@ def _extract_indicators(text, article_id, organization_id):
                                                            ind_type=ind_type)
         md5.articles.add(article)
 
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.MD5,
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.MD5,
                                                   organization=organization,
                                                   active=True)
         for job in jobs:
             indicatorjob.delay(job.id,
-                               md5.value,
+                               md5.id,
                                organization_id=organization_id)
 
     sha1s = iocextract.extract_sha1_hashes(text)
@@ -435,12 +458,12 @@ def _extract_indicators(text, article_id, organization_id):
                                     ind_type=ind_type)
         sha1.save()
         sha1.articles.add(article)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA1,
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.SHA1,
                                                   organization=organization,
                                                   active=True)
         for job in jobs:
             indicatorjob.delay(job.id,
-                               sha1.value,
+                               sha1.id,
                                organization_id=organization_id)
 
     sha256s = iocextract.extract_sha256_hashes(text)
@@ -450,12 +473,12 @@ def _extract_indicators(text, article_id, organization_id):
         sha256, _ = models.IndicatorSha256.objects.get_or_create(value=i, organization=organization, ind_type=ind_type)
         sha256.save()
         sha256.articles.add(article)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA256,
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.SHA256,
                                                   organization=organization,
                                                   active=True)
         for job in jobs:
             indicatorjob.delay(job.id,
-                               sha256.value,
+                               sha256.id,
                                organization_id=organization_id)
 
 @shared_task()

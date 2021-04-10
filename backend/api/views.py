@@ -1376,12 +1376,14 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
 class IndicatorBaseViewSet(viewsets.ModelViewSet):
 
     def tasks(self, instance, jobs):
-        for j in jobs:
-            if isinstance(instance, list):
-                for i in instance:
-                    tasks.indicatorjob.delay(j.id, i.value, organization_id=i.organization.id)
-            else:
-                tasks.indicatorjob.delay(j.id, instance.value, organization_id=instance.organization.id)
+        # todo(aj) instead send list of jobs to one task
+        # filter out mitigation jobs.
+        # run mitigation jobs after other tasks finish
+        if isinstance(instance, list):
+            for i in instance:
+                tasks.runjobs_mitigate.delay(i.id, organization_id=i.organization.id)
+        else:
+            tasks.indicatorjob.delay(instance.id, organization_id=instance.organization.id)
 
 
 class CharInFilter(filters.BaseInFilter, filters.CharFilter):
@@ -1501,12 +1503,12 @@ class IndicatorSha1ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.SHA1)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA1).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.SHA1).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA1).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.SHA1).all()
         self.tasks(instance, jobs)
 
 
@@ -1531,12 +1533,12 @@ class IndicatorSha256ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.SHA256)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA256).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.SHA256).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.SHA256).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.SHA256).all()
         self.tasks(instance, jobs)
 
 
@@ -1601,7 +1603,7 @@ class IndicatorNetLocViewSet(IndicatorBaseViewSet):
         instance = serializer.save(ind_type=ind_type,
                                    value=value,
                                    organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.NETLOC).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.NETLOC).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
@@ -1611,7 +1613,7 @@ class IndicatorNetLocViewSet(IndicatorBaseViewSet):
                                    value=value,
                                    organization=self.request.user.organization)
 
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.NETLOC).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.NETLOC).all()
         self.tasks(instance, jobs)
 
 class SuffixViewSet(OrgViewSet):
@@ -1650,12 +1652,12 @@ class IndicatorEmailViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.EMAIL)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.EMAIL).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.EMAIL).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.EMAIL).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.EMAIL).all()
         self.tasks(instance, jobs)
 
 
@@ -1680,12 +1682,12 @@ class IndicatorIPV4ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.IPV4)
         instance = serializer.save(organization = self.request.user.organization, ind_type=ind_type)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV4).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.IPV4).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV4).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.IPV4).all()
         self.tasks(instance, jobs)
 
 
@@ -1710,12 +1712,12 @@ class IndicatorIPV6ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.IPV6)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV6).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.IPV6).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.IPV6).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.IPV6).all()
         self.tasks(instance, jobs)
 
 
@@ -1762,12 +1764,12 @@ class IndicatorMD5ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.MD5)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.MD5).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.MD5).all()
         self.tasks(instance, jobs)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.IndicatorJob.objects.filter(indicator_types__name=settings.MD5).all()
+        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.MD5).all()
         self.tasks(instance, jobs)
 
         # todo(aj) run jobs
@@ -1914,15 +1916,34 @@ class IndicatorTextFieldViewSet(ColumnViewSet):
         return super(IndicatorTextFieldViewSet, self).get_serializer(*args, **kwargs)
 
 
-class IndicatorJobViewSet(OrgViewSet):
+class StandardIndicatorJobViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
-    serializer_class = serializers.IndicatorJobSerializer
+    serializer_class = serializers.StandardIndicatorJobSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
     filterset_fields = ('id','name', 'active')
 
     def get_queryset(self):
-        return models.IndicatorJob.objects.filter(organization=self.request.user.organization)
+        return models.StandardIndicatorJob.objects.filter(organization=self.request.user.organization)
 
+
+class UnmitigateIndicatorJobViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.UnmitigateIndicatorJobSerializer
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_fields = ('id','name', 'active')
+
+    def get_queryset(self):
+        return models.MitigateIndicatorJob.objects.filter(organization=self.request.user.organization)
+
+
+class MitigateIndicatorJobViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.MitigateIndicatorJobSerializer
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_fields = ('id','name', 'active')
+
+    def get_queryset(self):
+        return models.MitigateIndicatorJob.objects.filter(organization=self.request.user.organization)
 
 class IndicatorType(filters.FilterSet):
     class Meta:
@@ -1940,14 +1961,14 @@ class IndicatorTypeViewSet(viewsets.ModelViewSet):
         return models.IndicatorType.objects.all()
 
 
-class IndicatorJobVersionViewSet(OrgViewSet):
+class StandardIndicatorJobVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
-    serializer_class = serializers.IndicatorJobVersionSerializer
+    serializer_class = serializers.StandardIndicatorJobVersionSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
     filterset_fields = ('id', 'job', 'version', 'active', 'job__active')
 
     def get_queryset(self):
-        return models.IndicatorJobVersion.objects.filter(organization=self.request.user.organization)
+        return models.StandardIndicatorJobVersion.objects.filter(organization=self.request.user.organization)
 
     def perform_create(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
@@ -1956,6 +1977,36 @@ class IndicatorJobVersionViewSet(OrgViewSet):
         tasks.task_create_indicator_job_virtual_env.delay(instance.id, aws_req=False, create=True, organization_id=self.request.user.organization.id)
 
 
+class MitigateIndicatorJobVersionViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.MitigateIndicatorJobVersionSerializer
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_fields = ('id', 'job', 'version', 'active', 'job__active')
+
+    def get_queryset(self):
+        return models.MitigateIndicatorJobVersion.objects.filter(organization=self.request.user.organization)
+
+    def perform_create(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        # todo(aj) add task id as part of the model to track the job that created the virtual env and script path
+        tasks.task_create_indicator_job_script_path.delay(instance.id, create=True, organization_id=self.request.user.organization.id)
+        tasks.task_create_indicator_job_virtual_env.delay(instance.id, aws_req=False, create=True, organization_id=self.request.user.organization.id)
+
+
+class UnmitigateIndicatorJobVersionViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.UnmitigateIndicatorJobVersionSerializer
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_fields = ('id', 'job', 'version', 'active', 'job__active')
+
+    def get_queryset(self):
+        return models.UnmitigateIndicatorJobVersion.objects.filter(organization=self.request.user.organization)
+
+    def perform_create(self, serializer):
+        instance = serializer.save(organization=self.request.user.organization)
+        # todo(aj) add task id as part of the model to track the job that created the virtual env and script path
+        tasks.task_create_indicator_job_script_path.delay(instance.id, create=True, organization_id=self.request.user.organization.id)
+        tasks.task_create_indicator_job_virtual_env.delay(instance.id, aws_req=False, create=True, organization_id=self.request.user.organization.id)
 
 class IndicatorNumericFieldViewSet(ColumnViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)

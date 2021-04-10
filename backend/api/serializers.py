@@ -188,7 +188,7 @@ class JobVersionSerializer(serializers.ModelSerializer):
         model = models.JobVersion
 
 
-class IndicatorJobSerializer(serializers.ModelSerializer):
+class StandardIndicatorJobSerializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
@@ -203,7 +203,43 @@ class IndicatorJobSerializer(serializers.ModelSerializer):
             "timeout",
             'server_url',
         ]
-        model = models.IndicatorJob
+        model = models.StandardIndicatorJob
+
+
+class UnmitigateIndicatorJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            "name",
+            "active",
+            "organization",
+            "indicator_type",
+            "last_run",
+            "last_status",
+            "arguments",
+            "user",
+            "timeout",
+            'server_url',
+        ]
+        model = models.UnmitigateIndicatorJob
+
+
+class MitigateIndicatorJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            "name",
+            "active",
+            "organization",
+            "indicator_type",
+            "last_run",
+            "last_status",
+            "arguments",
+            "user",
+            "timeout",
+            'server_url',
+        ]
+        model = models.MitigateIndicatorJob
 
 
 class JobLogSerializer(serializers.ModelSerializer):
@@ -220,7 +256,7 @@ class JobLogSerializer(serializers.ModelSerializer):
 
 
 class IndicatorJobLogSerializer(serializers.ModelSerializer):
-    job = serializers.PrimaryKeyRelatedField(queryset=models.IndicatorJob.objects.all())
+    job = serializers.PrimaryKeyRelatedField(queryset=models.BaseIndicatorJob.objects.all())
     class Meta:
         fields = [
             "date",
@@ -243,8 +279,8 @@ class IndicatorType(serializers.ModelSerializer):
         model = models.IndicatorType
 
 
-class IndicatorJobVersionSerializer(serializers.ModelSerializer):
-    job = serializers.PrimaryKeyRelatedField(queryset=models.IndicatorJob.objects.all())
+class StandardIndicatorJobVersionSerializer(serializers.ModelSerializer):
+    job = serializers.PrimaryKeyRelatedField(queryset=models.StandardIndicatorJob.objects.all())
     class Meta:
         fields = [
             "id",
@@ -254,8 +290,35 @@ class IndicatorJobVersionSerializer(serializers.ModelSerializer):
             "version",
             "active",
         ]
-        model = models.IndicatorJobVersion
+        model = models.StandardIndicatorJobVersion
 
+
+class MitigateIndicatorJobVersionSerializer(serializers.ModelSerializer):
+    job = serializers.PrimaryKeyRelatedField(queryset=models.MitigateIndicatorJob.objects.all())
+    class Meta:
+        fields = [
+            "id",
+            "job",
+            "organization",
+            "zip",
+            "version",
+            "active",
+        ]
+        model = models.MitigateIndicatorJobVersion
+
+
+class UnmitigateIndicatorJobVersionSerializer(serializers.ModelSerializer):
+    job = serializers.PrimaryKeyRelatedField(queryset=models.UnmitigateIndicatorJob.objects.all())
+    class Meta:
+        fields = [
+            "id",
+            "job",
+            "organization",
+            "zip",
+            "version",
+            "active",
+        ]
+        model = models.UnmitigateIndicatorJobVersion
 
 class UploadSourceSerializer(serializers.ModelSerializer):
     class Meta:

@@ -148,36 +148,85 @@ class RSSSource(Source):
 class IndicatorType(models.Model):
     name = models.CharField(max_length=20, unique=True)
 
-
-class IndicatorJob(models.Model):
+class BaseIndicatorJob(PolymorphicModel):
     class Meta:
         constraints = [
                 UniqueConstraint(fields=['name', 'organization'],
                                  name='unique_indicatorjob'),
+                # cannot have multiple indicator types for mitigation or unmitigation
                 ]
+
     name = models.CharField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    indicator_types = models.ManyToManyField(IndicatorType)
 
     last_run = models.DateTimeField(blank=True, null=True)
     last_status = models.BooleanField(blank=True, null=True)
     arguments = models.TextField(max_length=1000, blank=True, default="")
-    user = models.TextField(max_length=250)
+    # todo(aj) only allow org users to be set in view
+    user = models.ForeignKey(UserIntStream, on_delete=models.CASCADE)
     timeout = models.IntegerField(default=600) # seconds; default 10 mins
     server_url = models.TextField(max_length=300, default="http://127.0.0.1:8000/")
 
+class StandardIndicatorJob(BaseIndicatorJob):
+
+    indicator_types = models.ManyToManyField(IndicatorType)
+
+class MitigateIndicatorJob(BaseIndicatorJob):
+    indicator_type = models.ForeignKey(IndicatorType, on_delete=models.CASCADE)
+
+class UnmitigateIndicatorJob(BaseIndicatorJob):
+    indicator_type = models.ForeignKey(IndicatorType, on_delete=models.CASCADE)
 
 class IndicatorJobLog(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     date = models.DateTimeField(default=timezone.now)
     stderr = models.TextField()
     stdout = models.TextField()
-    job = models.ForeignKey(IndicatorJob, on_delete=models.CASCADE)
+    job = models.ForeignKey(BaseIndicatorJob, on_delete=models.CASCADE)
     return_status_code = models.IntegerField()
 
 
-class IndicatorJobVersion(models.Model):
+class MitigateIndicatorJobVersion(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['job', 'version', 'organization'],
+                             name='indicator_unique_mitigate_job_version'),
+            UniqueConstraint(fields=['job', 'organization'],
+                             condition=Q(active=True),
+                             name='indicator_unique_mitigate_job_version_active'),
+            ]
+
+    job = models.ForeignKey(MitigateIndicatorJob, on_delete=models.CASCADE, editable=False)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    zip = models.FileField(upload_to="mitigate_job_scripts")
+    version = VersionField(validators=[validators.RegexValidator(regex=r"\d\.\d\.\d",
+                                                                   message="must be valid versionString")],
+
+    )
+    active = models.BooleanField(default=False)
+
+
+class UnmitigateIndicatorJobVersion(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['job', 'version', 'organization'],
+                             name='indicator_unique_mitigate_job_version'),
+            UniqueConstraint(fields=['job', 'organization'],
+                             condition=Q(active=True),
+                             name='indicator_unique_unmitigate_job_version_active'),
+            ]
+
+    job = models.ForeignKey(UnmitigateIndicatorJob, on_delete=models.CASCADE, editable=False)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+    zip = models.FileField(upload_to="unmitigate_job_scripts")
+    version = VersionField(validators=[validators.RegexValidator(regex=r"\d\.\d\.\d",
+                                                                   message="must be valid versionString")],
+
+    )
+    active = models.BooleanField(default=False)
+
+class StandardIndicatorJobVersion(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(fields=['job', 'version', 'organization'],
@@ -187,7 +236,7 @@ class IndicatorJobVersion(models.Model):
                              name='indicator_unique_job_version_active'),
             ]
 
-    job = models.ForeignKey(IndicatorJob, on_delete=models.CASCADE, editable=False)
+    job = models.ForeignKey(StandardIndicatorJob, on_delete=models.CASCADE, editable=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     zip = models.FileField(upload_to="job_scripts")
     version = VersionField(
@@ -217,7 +266,7 @@ class Job(models.Model):
     cron_month_of_year = models.TextField(max_length=20, )
     cron_hour = models.TextField(max_length=10, )
     cron_minute = models.TextField(max_length=10, )
-    user = models.TextField(max_length=250)
+    user = models.ForeignKey(UserIntStream, on_delete=models.CASCADE)
     timeout = models.IntegerField(default=600) # seconds; default 10 mins
     server_url = models.TextField(max_length=300, default="http://127.0.0.1:8000/")
 
