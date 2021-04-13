@@ -1,5 +1,6 @@
 import { RSAA } from 'redux-api-middleware'
 import { withAuth } from '../reducers/util'
+import { USER_INFO_API } from '../containers/api'
 
 export const USERINFO_REQUEST = '@@jwt/USERINFO_REQUEST'
 export const USERINFO_SUCCESS = '@@jwt/USERINFO_SUCCESS'
@@ -21,10 +22,11 @@ export const login = (username, password) => ({
     ]
   }
 })
+
 export const userInfo = () => {
   return {
     [RSAA]: {
-      endpoint: '/api/userinfo/',
+      endpoint: USER_INFO_API,
       method: 'GET',
       fetch: fetch,
       body: '',
@@ -35,6 +37,7 @@ export const userInfo = () => {
     }
   }
 }
+
 export const loginGroup = (username, password) => {
   return async (dispatch, getState) => {
     const resp = await dispatch(login(username, password))

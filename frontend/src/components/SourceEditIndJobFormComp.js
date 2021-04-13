@@ -1,17 +1,41 @@
 import React, { Component } from 'react'
-import { Row, FormGroup, Col, Alert, Button, Jumbotron, Form } from 'reactstrap'
+import { Label, FormFeedback, Row, FormGroup, Col, Alert, Button, Jumbotron, Form } from 'reactstrap'
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
 import propTypes from 'prop-types'
 import _ from 'lodash'
+import { getIds } from '../util/util'
 
 import Choice from './MultiChoiceColIds'
+import DropDown from './Choice'
 import FormButtons from './compFormButtons'
+import { ORG_USER_INFO_API, ORG_USER_INFO_KEY } from '../containers/api'
 
 export default class Edit extends Component {
   constructor (props) {
     super(props)
     this.versions = this.versions.bind(this)
+    this.updateComponent = this.updateComponent.bind(this)
+  }
+
+  updateComponent () {
+    const user = this.props.query.user || ''
+    const selections = {
+      user: user
+    }
+    this.props.setQuery(selections)
+    this.props.fetchOrgUserInfo(ORG_USER_INFO_API, '', ORG_USER_INFO_KEY)
+  }
+
+  componentDidMount () {
+    this.updateComponent()
+  }
+
+  componentDidUpdate (prevProps) {
+    // Typical usage (don't forget to compare props):
+    if (typeof this.props.query.page === 'undefined' && typeof prevProps.query.page !== 'undefined') {
+      this.updateComponent()
+    }
   }
 
   versions (event) {
@@ -35,17 +59,23 @@ export default class Edit extends Component {
     const err_python_version = errors.python_version
     const err_arguments = errors.arguments
     const err_user = errors.user
-    const err_ind_types = errors.ind_types
+    const err_ind_types = errors.indicator_types
     const err_timeout = errors.timeout
     const object_job = this.props.object.id || ''
     const object_name = this.props.object.name || ''
     const object_arguments = this.props.object.arguments || ''
     const object_indicator_types = this.props.object.indicator_types || []
-    const object_user = this.props.object.user || ''
     const object_timeout = this.props.object.timeout || ''
     const object_active = this.props.object.active || ''
     const indicatorTypes = this.props.indicatorTypes || []
     const object_server_url = this.props.object.server_url || 'http://127.0.0.1:8000/'
+    const userDropDownInfo = this.props.dropDown[ORG_USER_INFO_KEY] || {}
+    const userDropDownResults = userDropDownInfo.results || []
+    const object_user = _.filter(userDropDownResults, { id: this.props.object.user })
+    const user_id = object_user.length > 0 ? object_user[0].id : 0
+
+    const userDropDownError = errors.user
+    const user_id_list = getIds(userDropDownResults)
 
     return (
         <Form onSubmit={this.props.onSubmit} >
@@ -60,26 +90,34 @@ export default class Edit extends Component {
           <Choice multiple={true}
             id={'indtypes'}
             label={'Indicator types'}
-            name={'indicator_types'}
             error={err_ind_types}
+            name={'indicator_types'}
                     value={object_indicator_types}
                     values={indicatorTypes}
                     onChange={this.props.handleChange}
                     disabled={false}
                    />
-
           <TextInput
             onChange={this.props.handleChange}
             name={'arguments'}
             label={'arguments'}
             value={object_arguments}
             error={err_arguments} />
-           <TextInput
-            onChange={this.props.handleChange}
+          <FormGroup>
+          <Label htmlFor={'username'}>{'username'}</Label>
+           <DropDown
             name={'user'}
-            label={'user'}
-            value={object_user}
-            error={err_user} />
+            error={userDropDownError}
+            value={user_id.toString()}
+            onChange={this.props.handleChange}
+            idList={user_id_list}
+            prop={'username'}
+            uniqueList={userDropDownResults}
+            disabled={false}
+          />
+          { userDropDownError && <FormFeedback className="invalid-feedback">{userDropDownError}</FormFeedback>
+          }
+          </FormGroup>
            <TextInput
             onChange={this.props.handleChange}
             name={'timeout'}

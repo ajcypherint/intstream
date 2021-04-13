@@ -15,6 +15,7 @@ export default ({ name, values, label, id, value, onChange, disabled, type, erro
       data-type={type}
       value={value}
       id={name + '_id'}
+      className={error ? 'is-invalid' : ''}
       disabled={disabled}
       onChange={onChange}>
 
@@ -27,7 +28,7 @@ export default ({ name, values, label, id, value, onChange, disabled, type, erro
             }
 
            </Input>
-      { error ? <FormFeedback className="invalid-feedback">{error}</FormFeedback> : '' }
+           { error && <FormFeedback className="invalid-feedback">{error}</FormFeedback> }
     </FormGroup>
 
   )

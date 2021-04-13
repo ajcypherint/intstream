@@ -184,6 +184,7 @@ export const filterIndChange = (selections,
     ])
   }
 }
+
 // todo(aj) add active filter
 export const filterChange = (selections, setQuery, parent) => {
   return async (dispatch, getState) => {

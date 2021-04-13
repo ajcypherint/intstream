@@ -39,10 +39,10 @@ export const setActiveRequestTemplate = (ENDP) => (REQUEST) => (SUCCESS) => (FAI
   }
 }
 
-export const getAll = (get) => (putAll) => (url, params) => {
+export const getAll = (get) => (putAll) => (url, params, key) => {
   return async (dispatch, getState) => {
     const extraParams = params || ''
-    const totalresp = await dispatch(get(url, extraParams))
+    const totalresp = await dispatch(get(url, extraParams, key))
     if (totalresp.error) {
       //  // the last dispatched action has errored, break out of the promise chain.
       return
@@ -52,7 +52,7 @@ export const getAll = (get) => (putAll) => (url, params) => {
     const pages = Math.ceil(total / PAGINATION)
     // ACTIVE, duh time for bed.
     for (let i = 1; i <= pages; i++) {
-      const actionResponse = await dispatch(get(url, extraParams + '&page=' + i))
+      const actionResponse = await dispatch(get(url, extraParams + '&page=' + i, key))
       //
       if (actionResponse.error) {
         // the last dispatched action has errored, break out of the promise chain.
@@ -63,7 +63,7 @@ export const getAll = (get) => (putAll) => (url, params) => {
     }
 
     // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
-    return await dispatch(putAll(allModels, total))
+    return await dispatch(putAll(allModels, total, key))
   }
 }
 

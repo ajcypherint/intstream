@@ -35,4 +35,4 @@ const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
 const mapDispatchToProps = mapDispatchToPropsFunc(API)
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-  SourceEdit)
+  withQueryParams({ user: NumberParam }, SourceEdit))

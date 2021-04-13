@@ -44,9 +44,8 @@ class UserSerializerUpdate(serializers.ModelSerializer):
     """
     class Meta:
         model = models.UserIntStream
-        fields = ('username', 'password')
-
-        write_only_fields=["password"]
+        fields = ('username', "password")
+        extra_kwargs = {"password": {"write_only": True}}
 
     def create(self,*args,**kwargs):
         user = super().create(*args,**kwargs)
@@ -76,16 +75,16 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "username",
             "email",
-            "password",
             "is_integrator",
             "is_staff",
-            "is_superuser"
+            "is_superuser",
+            "password",
         ]
         read_only_fields = [
             "id",
             "is_superuser"
         ]
-        write_only_fields = ["password"]
+        extra_kwargs = {"password": {"write_only": True}}
 
         model = models.UserIntStream
 

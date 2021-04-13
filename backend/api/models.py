@@ -162,7 +162,7 @@ class BaseIndicatorJob(PolymorphicModel):
 
     last_run = models.DateTimeField(blank=True, null=True)
     last_status = models.BooleanField(blank=True, null=True)
-    arguments = models.TextField(max_length=1000, blank=True, default="")
+    arguments = EncryptedTextField(max_length=1000, blank=True, default="")
     # todo(aj) only allow org users to be set in view
     user = models.ForeignKey(UserIntStream, on_delete=models.CASCADE)
     timeout = models.IntegerField(default=600) # seconds; default 10 mins
@@ -211,7 +211,7 @@ class UnmitigateIndicatorJobVersion(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(fields=['job', 'version', 'organization'],
-                             name='indicator_unique_mitigate_job_version'),
+                             name='indicator_unique_unmitigate_job_version'),
             UniqueConstraint(fields=['job', 'organization'],
                              condition=Q(active=True),
                              name='indicator_unique_unmitigate_job_version_active'),
@@ -260,7 +260,7 @@ class Job(models.Model):
 
     last_run = models.DateTimeField(blank=True, null=True)
     last_status = models.BooleanField(blank=True, null=True)
-    arguments = models.TextField(max_length=1000, default="", blank=True)
+    arguments = EncryptedTextField(max_length=1000, default="", blank=True)
     cron_day_of_week = models.TextField(max_length=20, )
     cron_day_of_month = models.TextField(max_length=10,)
     cron_month_of_year = models.TextField(max_length=20, )

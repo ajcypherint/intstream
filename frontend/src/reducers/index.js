@@ -23,6 +23,7 @@ import registration, * as fromRegistration from './registration'
 import indicators, * as fromIndicators from './indicators'
 import indicatorColumns, * as fromIndicatorColumns from './indicatorColumns'
 import indicatorTypes, * as fromIndicatorTypes from './indicatorTypes'
+import dropDown, * as fromDropDown from './dropDown'
 
 export default combineReducers({
   modelVersions: modelVersions,
@@ -48,7 +49,8 @@ export default combineReducers({
   registration: registration,
   indicators: indicators,
   indicatorColumns: indicatorColumns,
-  indicatorTypes: indicatorTypes
+  indicatorTypes: indicatorTypes,
+  dropDown: dropDown
 })
 // fromAuth
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth)
@@ -207,3 +209,6 @@ export const getIndicatorColNumData = state => fromIndicatorColumns.getNumDataIn
 export const getIndicatorColNumDataErrors = state => fromIndicatorColumns.getNumDataErrors(state.indicatorColumns)
 export const getIndicatorColTextData = state => fromIndicatorColumns.getTextData(state.indicatorColumns)
 export const getIndicatorColTextDataErrors = state => fromIndicatorColumns.getTextDataErrors(state.indicatorColumns)
+
+// fromDropDown
+export const getDropDown = state => fromDropDown.values(state.dropDown)
