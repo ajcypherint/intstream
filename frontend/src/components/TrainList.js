@@ -270,10 +270,10 @@ export default class Train extends Component {
           </div>
         </Col>
         <Col sm="2">
-          <label htmlFor={'true_false'}>{'Classification'}</label>
           <div className = "mb-2 ">
             <Choice name={'Classification'}
               value={selections.trueFalse}
+              prop={'name'}
               onChange={this.handleTFChange}
               idList={idsTF}
               uniqueList={uniqueTF}
@@ -283,11 +283,11 @@ export default class Train extends Component {
         </Col>
 
          <Col sm="3" >
-           <label htmlFor={'source_id'}>{'Source'}</label>
           <div >
             <Choice name={'Source'}
+              prop={'name'}
+              onChange={this.handleTFChange}
               value={selections.sourceChosen}
-              onChange={this.handleSourceChange}
               idList={ids}
               uniqueList={uniqueSources}
               disabled={selections.mlmodelChosen === NONEVAL}

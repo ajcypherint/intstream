@@ -15,27 +15,10 @@ export default class Edit extends Component {
   constructor (props) {
     super(props)
     this.versions = this.versions.bind(this)
-    this.updateComponent = this.updateComponent.bind(this)
-  }
-
-  updateComponent () {
-    const user = this.props.query.user || ''
-    const selections = {
-      user: user
-    }
-    this.props.setQuery(selections)
-    this.props.fetchOrgUserInfo(ORG_USER_INFO_API, '', ORG_USER_INFO_KEY)
   }
 
   componentDidMount () {
-    this.updateComponent()
-  }
-
-  componentDidUpdate (prevProps) {
-    // Typical usage (don't forget to compare props):
-    if (typeof this.props.query.page === 'undefined' && typeof prevProps.query.page !== 'undefined') {
-      this.updateComponent()
-    }
+    this.props.fetchOrgUserInfo(ORG_USER_INFO_API, '', ORG_USER_INFO_KEY)
   }
 
   versions (event) {
@@ -71,11 +54,14 @@ export default class Edit extends Component {
     const object_server_url = this.props.object.server_url || 'http://127.0.0.1:8000/'
     const userDropDownInfo = this.props.dropDown[ORG_USER_INFO_KEY] || {}
     const userDropDownResults = userDropDownInfo.results || []
-    const object_user = _.filter(userDropDownResults, { id: this.props.object.user })
-    const user_id = object_user.length > 0 ? object_user[0].id : 0
+    const object_user = _.filter(userDropDownResults, { id: parseInt(this.props.object.user) })
+    const user_id = object_user.length > 0 && object_user[0].id
 
     const userDropDownError = errors.user
-    const user_id_list = getIds(userDropDownResults)
+    let user_id_list = getIds(userDropDownResults)
+    user_id_list = user_id_list.map(function (b, i) {
+      return i ? Number(b) : b
+    })
 
     return (
         <Form onSubmit={this.props.onSubmit} >
@@ -103,21 +89,16 @@ export default class Edit extends Component {
             label={'arguments'}
             value={object_arguments}
             error={err_arguments} />
-          <FormGroup>
-          <Label htmlFor={'username'}>{'username'}</Label>
            <DropDown
             name={'user'}
             error={userDropDownError}
-            value={user_id.toString()}
+            value={user_id}
             onChange={this.props.handleChange}
             idList={user_id_list}
             prop={'username'}
             uniqueList={userDropDownResults}
             disabled={false}
           />
-          { userDropDownError && <FormFeedback className="invalid-feedback">{userDropDownError}</FormFeedback>
-          }
-          </FormGroup>
            <TextInput
             onChange={this.props.handleChange}
             name={'timeout'}

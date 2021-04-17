@@ -257,28 +257,24 @@ export class Main extends React.Component {
         </Col>
 
          <Col sm="2" md="2" lg="3">
-           <label htmlFor={'source_id'}>{'Source'}</label>
-          <div >
             <Choice name={'Source'}
+              prop={'name'}
               disabled={false}
               value={selections.sourceChosen}
               onChange={this.handleSourceChange}
               idList={ids}
               uniqueList={uniqueSources}
             />
-           </div>
         </Col>
         <Col sm="2" md="2" lg="2">
-           <label htmlFor={'model_id'}>{'Model'}</label>
-           <div>
              <Choice name={'Model'}
+               prop={'name'}
                disabled={false}
                value={selections.modelChosen}
                onChange={this.handleModelChange}
                idList={idsModels}
                uniqueList={uniqueModels}
              />
-        </div>
         </Col>
      </Row>
    </FormGroup>

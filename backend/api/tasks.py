@@ -336,7 +336,7 @@ def task_create_job_script_path(jobversion_id, create=True, organization_id=None
 
 @shared_task()
 def task_create_indicator_job_script_path(jobversion_id, create=True, organization_id=None):
-    jobversion = models.IndicatorJobVersion.objects.get(id=jobversion_id)
+    jobversion = models.StandardIndicatorJobVersion.objects.get(id=jobversion_id)
     _create_job_script_path(jobversion, DIRINDSCRIPT, SCRIPT_INDICATOR_JOB, create=create)
 
 def _create_job_script_path(jobversion, dir, file, create=True):
@@ -884,7 +884,7 @@ def remove_old_articles_all(organization_id=None):
     orgs = models.Organization.objects.filter(freemium=True)
     ids = [i.id for i in orgs]
     for i in ids:
-        remove_old_articles.delay(i, organization_id=i)
+        remove_old_articles.delay(organization_id=i)
 
 #todo refactor into one method for task and another for function to allow unit testing of function
 @shared_task(bind=True)

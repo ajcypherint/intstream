@@ -1,16 +1,23 @@
 import React, { Component } from 'react'
+import _ from 'lodash'
 import { FormGroup, Col, Row, Alert, Button, Jumbotron, Form } from 'reactstrap'
 import TextInput from './TextInput'
 import CheckBoxInput from './CheckBoxInput'
+import DropDown from './Choice'
 import propTypes from 'prop-types'
 import FormButtons from './compFormButtons'
-import { ADD, EDIT } from '../util/util'
+import { ADD, EDIT, getIds } from '../util/util'
+import { ORG_USER_INFO_API, ORG_USER_INFO_KEY } from '../containers/api'
 
 export default class Edit extends Component {
   constructor (props) {
     super(props)
     this.versions = this.versions.bind(this)
     this.logs = this.logs.bind(this)
+  }
+
+  componentDidMount () {
+    this.props.fetchOrgUserInfo(ORG_USER_INFO_API, '', ORG_USER_INFO_KEY)
   }
 
   logs (event) {
@@ -48,10 +55,19 @@ export default class Edit extends Component {
     const object_cron_month_of_year = this.props.object.cron_month_of_year || ''
     const object_cron_hour = this.props.object.cron_hour || ''
     const object_cron_minute = this.props.object.cron_minute || ''
-    const object_user = this.props.object.user || ''
     const object_timeout = this.props.object.timeout || ''
     const object_active = this.props.object.active || ''
     const object_server_url = this.props.object.server_url || 'http://127.0.0.1:8000/'
+    const userDropDownInfo = this.props.dropDown[ORG_USER_INFO_KEY] || {}
+    const userDropDownResults = userDropDownInfo.results || []
+    const object_user = _.filter(userDropDownResults, { id: parseInt(this.props.object.user) })
+    const user_id = object_user.length > 0 && object_user[0].id
+
+    const userDropDownError = errors.user
+    let user_id_list = getIds(userDropDownResults)
+    user_id_list = user_id_list.map(function (b, i) {
+      return i ? Number(b) : b
+    })
 
     return (
         <Form onSubmit={this.props.onSubmit} >
@@ -69,52 +85,55 @@ export default class Edit extends Component {
             label={'arguments'}
             value={object_arguments}
             error={err_arguments} />
-            <TextInput
+          <TextInput
             onChange={this.props.handleChange}
             name={'cron_day_of_week'}
             label={'cron_day_of_week'}
             value={object_cron_day_of_week}
             error={err_cron_day_of_week} />
-            <TextInput
+          <TextInput
             onChange={this.props.handleChange}
             name={'cron_day_of_month'}
             label={'cron_day_of_month'}
             value={object_cron_day_of_month}
             error={err_cron_day_of_month} />
-            <TextInput
+          <TextInput
             onChange={this.props.handleChange}
             name={'cron_month_of_year'}
             label={'cron_month_of_year'}
             value={object_cron_month_of_year}
             error={err_cron_month_of_year} />
 
-            <TextInput
+          <TextInput
             onChange={this.props.handleChange}
             name={'cron_hour'}
             label={'cron_hour'}
             value={object_cron_hour}
-            error={this.props.err_cron_hour} />
-            <TextInput
+            error={err_cron_hour} />
+          <TextInput
             onChange={this.props.handleChange}
             name={'cron_minute'}
             label={'cron_minute'}
             value={object_cron_minute}
             error={err_cron_minute} />
-
-           <TextInput
-            onChange={this.props.handleChange}
+          <DropDown
             name={'user'}
-            label={'user'}
-            value={object_user}
-            error={err_user} />
-           <TextInput
+            error={userDropDownError}
+            value={user_id}
+            onChange={this.props.handleChange}
+            idList={user_id_list}
+            prop={'username'}
+            uniqueList={userDropDownResults}
+            disabled={false}
+           />
+          <TextInput
             onChange={this.props.handleChange}
             name={'timeout'}
             label={'timeout'}
             value={object_timeout}
             error={err_timeout} />
 
-           <TextInput
+          <TextInput
             onChange={this.props.handleChange}
             name={'server_url'}
             label={'server_url'}

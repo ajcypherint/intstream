@@ -57,6 +57,7 @@ export default class Edit extends Component {
             value={this.props.object.last_name}
             error={this.err_email} />
             <Choice name={'Organization'}
+              prop={'name'}
               disabled={false}
               value={this.props.object.organization}
               onChange={this.handleSourceChange}

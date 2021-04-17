@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
 import { Alert, Form, Row, Col, Button, FormGroup, Label, Input } from 'reactstrap'
-import Choice from './Choice'
 import { withRouter } from 'react-router-dom'
 import Paginate from './Paginate'
 import { ASC, DESC, ALL } from '../util/util'

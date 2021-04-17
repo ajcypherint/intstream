@@ -28,7 +28,7 @@ SCRIPT_URL = "/script/"
 SCRIPT_ROOT = os.path.join(BASE_DIR, 'script')
 
 AWS_TRAIN_FILES = os.path.join(BASE_DIR, "aws_training_files")
-TMP_DIR = "/tmp"
+TMP_DIR = os.environ.get("INTSTREAM_TMP", "/tmp")
 MODEL_FOLDER = "model.clf"
 DEFAULT_SCRIPT_MODEL = "uuid-original-default"
 SYSTEM_ORG = "SYSTEM"

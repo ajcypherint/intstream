@@ -43,6 +43,7 @@ class ModelVersionTable extends Component {
                     value={this.props.query.chosen || ''}
                     onChange={this.handleChange}
                     idList={ids}
+                    prop={'name'}
                     uniqueList={unique}
                     disabled={false}
                    />

@@ -12,6 +12,21 @@ export class Main extends React.Component {
   constructor (props) {
     super(props)
     this.changesort = changesort.bind(this)
+    this.handleMitigate = this.handleMitigate.bind(this)
+    this.handleAllowed = this.handleAllowed.bind(this)
+    this.handleReviewed = this.handleReviewed.bind(this)
+  }
+
+  handleMitigate (event) {
+
+  }
+
+  handleReviewed (event) {
+
+  }
+
+  handleAllowed (event) {
+
   }
 
   render () {
@@ -134,6 +149,8 @@ export class Main extends React.Component {
                               )
                             }}>Value</td>
                           <td>M</td>
+                          <td>A</td>
+                          <td>R</td>
                           {
                             selectedTxtCols.map((name, index) => {
                               return (
@@ -167,6 +184,22 @@ export class Main extends React.Component {
                                           data-id={indicator.id}
                                           checked={indicator.mitigated}
                                           onChange={this.handleMitigate}/>
+                                       </div>
+                                     </td>
+                                     <td>
+                                      <div className="custom-control custom-checkbox">
+                                        <Input type="checkbox"
+                                          data-id={indicator.id}
+                                          checked={indicator.allowed}
+                                          onChange={this.handleAllowed}/>
+                                       </div>
+                                     </td>
+                                     <td>
+                                      <div className="custom-control custom-checkbox">
+                                        <Input type="checkbox"
+                                          data-id={indicator.id}
+                                          checked={indicator.reviewed}
+                                          onChange={this.handleReviewed}/>
                                        </div>
                                      </td>
                                         {

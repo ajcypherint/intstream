@@ -44,5 +44,4 @@ const FIELDS = ['name',
 const mapStateToProps = mapStateToPropsFunc(EMPTY)(FIELDS)(HEADING)
 const mapDispatchToProps = mapDispatchToPropsFunc(JOB_API)
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-  SourceEdit)
+export default connect(mapStateToProps, mapDispatchToProps)(SourceEdit)

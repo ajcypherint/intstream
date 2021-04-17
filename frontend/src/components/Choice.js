@@ -9,6 +9,8 @@ export default ({ name, error, idList, uniqueList, value, onChange, disabled, no
   const uniqueListSorted = uniqueList.sort((a, b) => a[prop] > b[prop] ? 1 : -1)
   value = value || ''
   return (
+    <FormGroup>
+    <Label htmlFor={name}>{name}</Label>
     <Input type="select" name={name}
       value={value}
       className={error ? 'is-invalid' : ''}
@@ -27,5 +29,8 @@ export default ({ name, error, idList, uniqueList, value, onChange, disabled, no
              }
 
            </Input>
+          { error && <FormFeedback className="invalid-feedback">{error}</FormFeedback>
+          }
+     </FormGroup>
   )
 }
