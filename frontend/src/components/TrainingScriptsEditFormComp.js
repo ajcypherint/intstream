@@ -53,8 +53,6 @@ export default class Edit extends Component {
                   onClick={this.versions} className="button-brand-primary mb-1" size="lg">Versions</Button>
           </Col>
             <Col>
-            <Button data-script={object_script} data-name={object_name}
-              onClick={this.logs} className="button-brand-primary mb-1" size="lg">Logs</Button>
           </Col>
           </Row>
               }

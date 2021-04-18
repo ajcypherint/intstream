@@ -21,7 +21,8 @@ export default class Main extends Component {
     this.paginate = Paginate.bind(this)
     this.changesort = changesort.bind(this)
     this.fetchit = this.fetchit.bind(this)
-    this.getArticle = this.getArticle.bind(this)
+    this.getLog = this.getLog.bind(this)
+    this.getTask = this.getTask.bind(this)
     this.back = this.back.bind(this)
   }
 
@@ -65,7 +66,7 @@ export default class Main extends Component {
     this.props.filterChange(newSelections, this.props.setQuery)
   }
 
-  getArticle (event) {
+  getLog (event) {
     const { id } = event.target.dataset
     this.props.clearSelect()
     this.props.fetchSelect(id)
@@ -152,9 +153,11 @@ export default class Main extends Component {
       <td>
          <table className={'table table-sm '}>
          <thead>
+           <td> ID</td>
+           <td> Task </td>
            <tr>
              <td className="hover" onClick={(event) => {
-               this.changesort('title',
+               this.changesort('Date',
                  ASC,
                  DESC,
                  selections,
@@ -172,8 +175,11 @@ export default class Main extends Component {
                 <tr key={log.id}>
                  <td className="hover" data-id={log.id} onClick={this.getLog}>
                     {log.job}
-                      </td>
-                  <td>{(new Date(log.date)).toLocaleString()}</td>
+                 </td>
+                 <td className="hover" data-id={log.task_id} onClick={this.getTask}>
+                   {log.task_id}
+                 </td>
+                 <td>{(new Date(log.date)).toLocaleString()}</td>
                 </tr>
                {// todo selected article
                  log.id in selectLogs

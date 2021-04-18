@@ -103,6 +103,9 @@ class ModelVersionTable extends Component {
                    }}>
                      Status
                    </td>
+                   <td>
+                     Task
+                   </td>
                   <td>
                      Metric
                    </td>
@@ -127,7 +130,12 @@ class ModelVersionTable extends Component {
                                 {version.version}
                              </td>
                              <td>
-                               {version.status}
+                               {version.status // todo(aj) on Link: click show log below
+                               }
+                             </td>
+                             <td>
+                               { version.task // todo(aj) Link: to task view filtered to this id
+                               }
                              </td>
                              <td >
                                 {version.metric_name}

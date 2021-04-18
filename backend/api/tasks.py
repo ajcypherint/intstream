@@ -7,6 +7,7 @@ import re
 import pathlib
 from django.core import exceptions
 from django import db
+from celery.result import allow_join_result
 
 
 import datetime
@@ -173,23 +174,35 @@ def get_tokens_for_user(user):
 
 @shared_task()
 def runjobs_mitigate(indicator_ids, organization_id=None):
+    """
+
+    :param indicator_ids: list[int]
+    :param organization_id: int
+    :return:
+    """
+    if isinstance(indicator_ids, int):
+        indicator_ids = [indicator_ids]
     for i in indicator_ids:
         instance  = models.Indicator.objects.get(pk=i)
         all_jobs = models.StandardIndicatorJob.objects.filter(indicator_types=instance.ind_type).all()
         tasks = []
         for j in all_jobs:
-            tasks.append(indicatorjob.s(args=(j.id, i.id), kwargs={"organization_id":organization_id}))
+            tasks.append(indicatorjob.s(j.id, i, organization_id=organization_id))
+        if len(tasks) > 0:
         # run all jobs
-        job_group = group(tasks)
-        result = job_group.get() #join
-        # run mitigation on success
-        mitigate_jobs = models.MitigateIndicatorJob.objects.filter(organization_id=organization_id,
-                                                        ind_type=instance.ind_type).all()
-        for m in mitigate_jobs:
-            indicatorjob.delay(m.id, i.id, organization_id=organization_id)
+            job_group = group(tasks)
+            promise = job_group()
+            with allow_join_result():
+                result = promise.get() #join
+                # run mitigation on success
+                mitigate_jobs = models.MitigateIndicatorJob.objects.filter(organization_id=organization_id,
+                                                                indicator_type=instance.ind_type).all()
+                if len(mitigate_jobs) > 0:
+                    for m in mitigate_jobs:
+                        indicatorjob.delay(m.id, i, organization_id=organization_id)
 
-@shared_task()
-def indicatorjob(id, indicator_id, organization_id=None):
+@shared_task(bind=True)
+def indicatorjob(self, id, indicator_id, organization_id=None):
     """
 
     :param id:
@@ -197,16 +210,18 @@ def indicatorjob(id, indicator_id, organization_id=None):
     :param organization_id:
     :return:
     """
-    _indicatorjob(id, indicator_id)
+
+    task = self.request.id.__str__()
+    _indicatorjob(task, id, indicator_id)
 
 
-def _indicatorjob(id, indicator_id):
-    job = models.IndicatorJob.objects.get(id=id)
+def _indicatorjob(task, id, indicator_id):
+    job = models.StandardIndicatorJob.objects.get(id=id)
     indicator = models.Indicator.objects.get(id=indicator_id)
-    user = models.UserIntStream.objects.get(pk=job.user)
+    user = models.UserIntStream.objects.get(pk=job.user.id)
     job_version = None
     try:
-        job_version = models.IndicatorJobVersion.objects.get(job=job, active=True)
+        job_version = models.StandardIndicatorJobVersion.objects.get(job=job, active=True)
     except exceptions.ObjectDoesNotExist as e:
         logger.warning("no active version for job: " + str(id) + "; " + str(e))
         return
@@ -246,15 +261,18 @@ def _indicatorjob(id, indicator_id):
                         "; stdout: " + proc.stdout.replace('\n', ';').replace('\r', ''))
         log = models.IndicatorJobLog(organization=job_version.organization,
                                      job=job,
+                                     task_id=task,
                                      return_status_code=proc.returncode,
                                      stdout=proc.stdout,
                                      stderr=proc.stderr)
+        log.save()
 
     except TimeoutError:
         proc.kill()
         outs, errs = proc.communicate()
         log = models.IndicatorJobLog(organization=job_version.organization,
                                      job=job,
+                                     task_id=task,
                                      return_status_code=proc.returncode,
                                      stdout=outs,
                                      stderr=errs)
@@ -262,9 +280,11 @@ def _indicatorjob(id, indicator_id):
         logger.info("indicator job: " + job.name + " timeout; stderr: " + proc.stderr.replace('\n', ';').replace('\r', '') +
                         "; stdout: " + proc.stdout.replace('\n', ';').replace('\r', ''))
 
-@shared_task()
-def job(id=None, organization_id=None):
-    _job(id, organization_id)
+@shared_task(bind=True)
+def job(self, id=None, organization_id=None):
+
+    task = self.request.id.__str__()
+    _job(task, id, organization_id)
 
 def get_expire(refresh_token):
     refresh_parts = refresh_token.split(".")
@@ -273,9 +293,9 @@ def get_expire(refresh_token):
     refresh_sig=base64.urlsafe_b64decode(refresh_parts[2].encode('ascii')+b'===')
     return json.loads(refresh_payload)['exp']
 
-def _job(id, organization_id):
+def _job(task, id, organization_id):
     job = models.Job.objects.get(id=id)
-    user = models.UserIntStream.objects.get(pk=job.user)
+    user = models.UserIntStream.objects.get(pk=job.user.id)
     job_version = models.JobVersion.objects.get(active=True, job=job)
     tokens = get_tokens_for_user(user)
     # can't  create virtual env here. race conditions
@@ -308,15 +328,17 @@ def _job(id, organization_id):
 
 
         log = models.JobLog(organization=job_version.organization,
-                                     job=job_version.job,
-                                     return_status_code=proc.returncode,
-                                     stdout=proc.stdout,
-                                     stderr=proc.stderr)
+                            task_id=task,
+                            job=job_version.job,
+                            return_status_code=proc.returncode,
+                            stdout=proc.stdout,
+                            stderr=proc.stderr)
         log.save()
     except TimeoutError:
         proc.kill()
         outs, errs = proc.communicate()
         log = models.JobLog(organization=job_version.organization,
+                            task_id=task,
                                      job=job_version.job,
                                      return_status_code=proc.returncode,
                                      stdout=outs,
@@ -329,14 +351,20 @@ def _job(id, organization_id):
 CUSTOM_TRAIN_FILE = "train_classify.py"
 
 
-@shared_task()
-def task_create_job_script_path(jobversion_id, create=True, organization_id=None):
+@shared_task(bind=True)
+def task_create_job_script_path(self, jobversion_id, create=True, organization_id=None):
     jobversion = models.JobVersion.objects.get(id=jobversion_id)
+    task_id = self.request.id.__str__()
+    jobversion.task_create_script_path = task_id
+    jobversion.save()
     _create_job_script_path(jobversion, DIRJOBSCRIPT, SCRIPT_JOB, create=create)
 
-@shared_task()
-def task_create_indicator_job_script_path(jobversion_id, create=True, organization_id=None):
+@shared_task(bind=True)
+def task_create_indicator_job_script_path(self,jobversion_id, create=True, organization_id=None):
     jobversion = models.StandardIndicatorJobVersion.objects.get(id=jobversion_id)
+    task_id = self.request.id.__str__()
+    jobversion.task_create_script_path = task_id
+    jobversion.save()
     _create_job_script_path(jobversion, DIRINDSCRIPT, SCRIPT_INDICATOR_JOB, create=create)
 
 def _create_job_script_path(jobversion, dir, file, create=True):
@@ -730,14 +758,21 @@ def create_classif_script_directory(training_script_version, create=True):
             raise e
     return directory
 
-@shared_task()
-def task_create_job_virtual_env(version_id, aws_req=False, create=True, organization_id=None):
+@shared_task(bind=True)
+def task_create_job_virtual_env(self, version_id, aws_req=False, create=True, organization_id=None):
     version = models.JobVersion.objects.get(id=version_id)
+    task_id = self.request.id.__str__()
+    version.task_create_virtual_env = task_id
+    version.save()
     _create_virtual_env(version, DIRJOBVENV, aws_req=aws_req, create=create)
 
-@shared_task()
-def task_create_indicator_job_virtual_env(version_id, aws_req=False, create=True, organization_id=None):
-    version = models.IndicatorJobVersion.objects.get(id=version_id)
+@shared_task(bind=True)
+def task_create_indicator_job_virtual_env(self, version_id, aws_req=False, create=True, organization_id=None):
+    version = models.StandardIndicatorJobVersion.objects.get(id=version_id)
+    task_id = self.request.id.__str__()
+    version.task_create_virtual_env = task_id
+    version.save()
+
     _create_virtual_env(version, DIRINDJOBVENV, aws_req=aws_req, create=create)
 
 def _create_virtual_env(version, base_dir, aws_req=False, create=True):
@@ -852,22 +887,22 @@ def _remove_old_articles(organization_id=None):
                                                     organization_id=organization_id,
                                                  upload_date__lt=monthprior,
                                                  classification__isnull=True).iterator()
-    old_articles.delete()
+    [i.delete() for i in old_articles]
     old_articles = models.TxtArticle.objects.filter(organization__freemium=True,
                                                     organization_id=organization_id,
                                                  upload_date__lt=monthprior,
                                                  classification__isnull=True).iterator()
-    old_articles.delete()
+    [i.delete() for i in old_articles]
     old_articles = models.HtmlArticle.objects.filter(organization__freemium=True,
                                                      organization_id=organization_id,
                                                  upload_date__lt=monthprior,
                                                  classification__isnull=True).iterator()
-    old_articles.delete()
+    [i.delete() for i in old_articles]
     old_articles = models.PDFArticle.objects.filter(organization__freemium=True,
                                                     organization_id=organization_id,
                                                  upload_date__lt=monthprior,
                                                  classification__isnull=True).iterator()
-    old_articles.delete()
+    [i.delete() for i in old_articles]
 
 
 @shared_task()

@@ -181,6 +181,7 @@ class UnmitigateIndicatorJob(BaseIndicatorJob):
 class IndicatorJobLog(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     date = models.DateTimeField(default=timezone.now)
+    task_id = models.CharField(max_length=500)
     stderr = models.TextField()
     stdout = models.TextField()
     job = models.ForeignKey(BaseIndicatorJob, on_delete=models.CASCADE)
@@ -205,6 +206,9 @@ class MitigateIndicatorJobVersion(models.Model):
 
     )
     active = models.BooleanField(default=False)
+    task_create_script_path = models.CharField(max_length=500, null=True)
+    task_create_virtual_env = models.CharField(max_length=500, null=True)
+
 
 
 class UnmitigateIndicatorJobVersion(models.Model):
@@ -225,6 +229,8 @@ class UnmitigateIndicatorJobVersion(models.Model):
 
     )
     active = models.BooleanField(default=False)
+    task_create_script_path = models.CharField(max_length=500, null=True)
+    task_create_virtual_env = models.CharField(max_length=500, null=True)
 
 class StandardIndicatorJobVersion(models.Model):
     class Meta:
@@ -245,6 +251,8 @@ class StandardIndicatorJobVersion(models.Model):
 
     )
     active = models.BooleanField(default=False)
+    task_create_script_path = models.CharField(max_length=500, null=True)
+    task_create_virtual_env = models.CharField(max_length=500, null=True)
 
 
 class Job(models.Model):
@@ -274,6 +282,7 @@ class Job(models.Model):
 class JobLog(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     date = models.DateTimeField(default=timezone.now)
+    task_id = models.CharField(max_length=500)
     stderr = models.TextField()
     stdout = models.TextField()
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
@@ -298,6 +307,9 @@ class JobVersion(models.Model):
 
     )
     active = models.BooleanField(default=False)
+    task_create_script_path = models.CharField(max_length=500, null=True)
+    task_create_virtual_env = models.CharField(max_length=500, null=True)
+
 
 
 class TrainingScript(models.Model):

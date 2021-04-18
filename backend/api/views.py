@@ -1383,7 +1383,7 @@ class IndicatorBaseViewSet(viewsets.ModelViewSet):
             for i in instance:
                 tasks.runjobs_mitigate.delay(i.id, organization_id=i.organization.id)
         else:
-            tasks.indicatorjob.delay(instance.id, organization_id=instance.organization.id)
+            tasks.runjobs_mitigate.delay(instance.id, organization_id=instance.organization.id)
 
 
 class CharInFilter(filters.BaseInFilter, filters.CharFilter):
@@ -1589,7 +1589,7 @@ class IndicatorNetLocViewSet(IndicatorBaseViewSet):
         return super(IndicatorNetLocViewSet, self).get_serializer(*args, **kwargs)
 
     def get_value(self):
-        suffix = models.Suffix.get(id=self.request.POST["suffix"])
+        suffix = models.Suffix.objects.get(id=self.request.POST["suffix"])
         subdomain = self.request.POST["subdomain"]
         subdomain = subdomain + "." if subdomain != "" else ""
         domain = self.request.POST["domain"]
@@ -1771,8 +1771,6 @@ class IndicatorMD5ViewSet(IndicatorBaseViewSet):
         instance = serializer.save(organization=self.request.user.organization)
         jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.MD5).all()
         self.tasks(instance, jobs)
-
-        # todo(aj) run jobs
 
 
 class IndicatorTextFilter(filters.FilterSet):
