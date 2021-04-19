@@ -15,6 +15,7 @@ export default class Edit extends Component {
   constructor (props) {
     super(props)
     this.versions = this.versions.bind(this)
+    this.logs = this.logs.bind(this)
   }
 
   componentDidMount () {

@@ -250,6 +250,8 @@ class JobLogSerializer(serializers.ModelSerializer):
             "stdout",
             "organization",
             "job",
+            "task_id",
+            "id",
         ]
         model = models.JobLog
 
@@ -263,7 +265,8 @@ class IndicatorJobLogSerializer(serializers.ModelSerializer):
             "stdout",
             "organization",
             "job",
-
+            "task_id",
+            "id",
 
         ]
         model = models.IndicatorJobLog

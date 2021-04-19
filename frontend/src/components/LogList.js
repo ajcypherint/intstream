@@ -30,6 +30,10 @@ export default class Main extends Component {
     this.props.history.goBack()
   }
 
+  getTask (event) {
+
+  }
+
   handleStartChange (date) {
     const selections = this.props.query
     this.updateDate(date, selections.endDate, true)
@@ -94,6 +98,7 @@ export default class Main extends Component {
     const page = this.props.query.page || 1
     const orderdir = this.props.query.orderdir || ''
     const parent_id = this.props.query.parent_id || ''
+    const choice = this.props.query.choice || 0
     const selections = {
       job: job,
       ...this.props.query,
@@ -101,7 +106,8 @@ export default class Main extends Component {
       page: page,
       orderdir: orderdir,
       parent_id: parent_id,
-      trueFalse: trueFalse
+      trueFalse: trueFalse,
+      choice: choice
     }
     this.props.setQuery(selections)
     if (selections.mlmodelChosen === NONEVAL) {
@@ -117,14 +123,13 @@ export default class Main extends Component {
   }
 
   render () {
-    const logs = this.props.LogsList || []
-    const errors = this.props.LogsErrors || {}
+    const logs = this.props.logsList || []
+    const errors = this.props.logsErrors || {}
     const selections = this.props.query || {}
     const totalcount = this.props.logsTotalCount || 0
-    const next = this.props.LogNext
-    const previous = this.props.LogPrevious
-    const loading = this.props.LogsLoading
-    const selectLogs = this.props.selectLogs || {}
+    const next = this.props.logNext
+    const previous = this.props.logPrevious
+    const loading = this.props.logsLoading
     // todo; move this to the backend.
     return (
 
@@ -132,6 +137,11 @@ export default class Main extends Component {
 
         {errors.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
     <table className="table">
+      <tr>
+        <td>
+          <Button onClick={this.back} className="button-brand-primary mb-1" size="md">Back</Button>
+        </td>
+      </tr>
     <tr>
           <td colSpan={4}>
          {this.paginate(totalcount,
@@ -144,18 +154,13 @@ export default class Main extends Component {
          )}
          </td>
       </tr>
-      <tr>
-        <td>
-          <Button onClick={this.back} className="button-brand-primary mb-1" size="md">Back</Button>
-        </td>
-      </tr>
-      <tr>
+     <tr>
       <td>
          <table className={'table table-sm '}>
          <thead>
+           <tr>
            <td> ID</td>
            <td> Task </td>
-           <tr>
              <td className="hover" onClick={(event) => {
                this.changesort('Date',
                  ASC,
@@ -174,40 +179,22 @@ export default class Main extends Component {
                 <tbody key={log.id}>
                 <tr key={log.id}>
                  <td className="hover" data-id={log.id} onClick={this.getLog}>
-                    {log.job}
+                    {log.id}
                  </td>
                  <td className="hover" data-id={log.task_id} onClick={this.getTask}>
                    {log.task_id}
                  </td>
                  <td>{(new Date(log.date)).toLocaleString()}</td>
                 </tr>
-               {// todo selected article
-                 log.id in selectLogs
-                   ? <tr>
-                    {selectLogs[log.id].loading === true
-                      ? <td>
-                          <span className="spinner-border" role="status">
-                            <span className="sr-only">Loading...</span>
-                          </span>
-                        </td>
-                      : <div><td colSpan="5">
-                            <Input type="textarea" className="bktextarea"
-                              name="text" rows="15" id="stdout" readOnly
-                              value={log.stdout}/>
-                          </td>
-                        <td colSpan="5">
-                            <Input type="textarea" className="bktextarea"
-                              name="text" rows="15" id="stderr" readOnly
-                              value={log.stderr}/>
-                          </td>
-                        </div>
-
-                    }
+                { log.id === this.props.query.choice &&
+                 <tr>
+                   <td colSpan={'3'}>
+                     <Input type="textarea" className="bktextarea"
+                        name="text" rows="15" id="stdout" readOnly
+                        value={log.stdout}/>
+                   </td>
                   </tr>
-                   : null
-                 // if article.id in this.props.selectArticles.keys()
                }
-
                 </tbody>
              )
            })
@@ -246,8 +233,6 @@ Main.propTypes = {
   logsNext: PropTypes.string,
   logsPrevious: PropTypes.string,
   logsuri: PropTypes.string,
-  selectLogs: PropTypes.object,
-  selectErrors: PropTypes.object,
   filterChange: PropTypes.func,
   fetchLogsFullUri: PropTypes.func,
   fetchLogs: PropTypes.func,

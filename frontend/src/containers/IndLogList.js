@@ -15,22 +15,22 @@ import {
   ArrayParam
 } from 'use-query-params'
 
-const JOB_URI = '/job/'
+const JOB_URI = '/indicatorjob/'
 const mapStateToProps = (state) => ({
   test: 'test',
   logsList: reducers.getArticles(state),
-  LogsLoading: reducers.getArticleLoading(state),
-  LogsErrors: reducers.getArticleErrors(state),
-  LogsTotalCount: reducers.getArticleTotalCount(state),
-  LogNext: reducers.getArticleNextPage(state),
-  LogPrevious: reducers.getArticlePreviousPage(state),
-  Loguri: JOB_URI,
+  logsLoading: reducers.getArticleLoading(state),
+  logsErrors: reducers.getArticleErrors(state),
+  logsTotalCount: reducers.getArticleTotalCount(state),
+  logNext: reducers.getArticleNextPage(state),
+  logPrevious: reducers.getArticlePreviousPage(state),
+  loguri: JOB_URI,
   selectLogs: reducers.getSelectArticles(state),
   selectErrors: reducers.getSelectErrors(state)
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  filterChange: (newSelections, setQuery) => dispatch(filterChange(newSelections, setQuery)),
+  filterChange: (newSelections, setQuery) => dispatch(filterChange(INDICATOR_JOB_LOGS_API, newSelections, setQuery)),
   fetchLogsFullUri: (url, params = undefined) => dispatch(getArticles(url, params)),
   fetchLogs: (params = undefined) => dispatch(getArticles(INDICATOR_JOB_LOGS_API, params)),
   clearLogs: () => dispatch(clearArticles()),
@@ -45,6 +45,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
       job: StringParam,
       ordering: StringParam,
       page: NumberParam,
-      orderdir: StringParam
+      orderdir: StringParam,
+      choice: NumberParam
     },
     Main))

@@ -24,9 +24,7 @@ const mapStateToProps = (state) => ({
   LogsTotalCount: reducers.getArticleTotalCount(state),
   LogNext: reducers.getArticleNextPage(state),
   LogPrevious: reducers.getArticlePreviousPage(state),
-  Loguri: JOB_URI,
-  selectLogs: reducers.getSelectArticles(state),
-  selectErrors: reducers.getSelectErrors(state)
+  Loguri: JOB_URI
 })
 
 const mapDispatchToProps = (dispatch) => ({

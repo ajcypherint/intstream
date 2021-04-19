@@ -3,7 +3,6 @@ import { withAuth } from '../reducers/util'
 import { setParams, getAll } from './util'
 import { dateString } from '../util/util'
 import { getArticles } from './articles'
-import { JOB_LOGS_API } from '../containers/api'
 
 export const CLEAR = '@@logfilter/CLEAR'
 export const HOME = '@@logfilter/HOME'
@@ -36,7 +35,7 @@ export const getfilter = (url, params = undefined) => {
   }
 }
 
-export const filterChange = (newSelections, setQuery) => {
+export const filterChange = (uri, newSelections, setQuery) => {
   return async (dispatch, getState) => {
     const job = newSelections.job
     const orderdir = newSelections.orderdir || ''
@@ -50,7 +49,6 @@ export const filterChange = (newSelections, setQuery) => {
         '&page=' + page +
         '&job=' + job
 
-    // todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
-    await dispatch(getArticles(JOB_LOGS_API, articleStr))
+    await dispatch(getArticles(uri, articleStr))
   }
 }
