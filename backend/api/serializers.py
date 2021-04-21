@@ -728,32 +728,36 @@ class SettingSerializer(serializers.ModelSerializer):
 class TaskResult(serializers.ModelSerializer):
     class Meta:
         fields=(
-           "id",
-            "content_encoding",
-            "content_type",
-            "date_done",
-            "result",
-            "status",
-            "task_args",
-            "task_id",
-            "task_kwargs",
-            "task_name",
-            "traceback"
+           "task_id",
+           "task_name",
+           "task_args",
+           "task_kwargs",
+           "status",
+           "worker",
+           "content_type",
+           "content_encoding",
+           "result",
+           "date_created",
+           "date_done",
+           "traceback",
+           "meta"
         )
         read_only_fields = (
-           "id",
-            "content_encoding",
-            "content_type",
-            "date_done",
-            "result",
-            "status",
-            "task_args",
-            "task_id",
-            "task_kwargs",
-            "task_name",
-            "trace_back"
+           "task_id",
+           "task_name",
+           "task_args",
+           "task_kwargs",
+           "status",
+           "worker",
+           "content_type",
+           "content_encoding",
+           "result",
+           "date_created",
+           "date_done",
+           "traceback",
+           "meta"
         )
-        model = TaskResultMdl
+        model = models.OrgTaskResultMdl
 
 
 class ArticleIDSerializer(serializers.ModelSerializer):

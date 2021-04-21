@@ -5,11 +5,9 @@ import { Alert, Form, Row, Col, Button, FormGroup, Input } from 'reactstrap'
 import DatePicker from 'react-datepicker'
 import { dateString, NONE, NONEVAL, ASC, DESC } from '../util/util'
 import Paginate from './Paginate'
-import { API_LOGS } from '../containers/LogList'
 
 import { changesort } from './ChangeSort'
 
-import TrueFalse from './TrueFalse'
 import Choice from './Choice'
 
 export default class Main extends Component {
@@ -32,16 +30,6 @@ export default class Main extends Component {
 
   getTask (event) {
 
-  }
-
-  handleStartChange (date) {
-    const selections = this.props.query
-    this.updateDate(date, selections.endDate, true)
-  }
-
-  handleEndChange (date) {
-    const selections = this.props.query
-    this.updateDate(selections.startDate, date, false)
   }
 
   updateDate (startDate, endDate, start_filter = true) {
@@ -97,34 +85,37 @@ export default class Main extends Component {
     const END = new Date()
     END.setHours(23, 59, 59, 999)
 
-    const job = this.props.query.job
-    const trueFalse = this.props.query.trueFalse || ''
+    const task = this.props.query.task || ''
+    const taskName = this.props.query.taskName || ''
     const ordering = this.props.query.ordering || 'title'
     const page = this.props.query.page || 1
     const orderdir = this.props.query.orderdir || ''
-    const parent_id = this.props.query.parent_id || ''
+    const startDate = this.props.query.startDate || START
+    const endDate = this.props.query.endDate || END
     const choice = this.props.query.choice || 0
+
     const selections = {
-      job: job,
-      ...this.props.query,
+      startDate: startDate,
+      endDate: endDate,
+      taskName: taskName,
+      task: task,
       ordering: ordering,
       page: page,
       orderdir: orderdir,
-      parent_id: parent_id,
-      trueFalse: trueFalse,
-      choice: choice
+      choice: choice,
+      ...this.props.query
     }
-    this.props.setQuery(selections)
-    if (selections.mlmodelChosen === NONEVAL) {
-      this.props.clearLogs()
-    } else {
-      const str = 'ordering=' + orderdir +
-        ordering +
-        '&job=' + job +
-        '&page=' + page
+    this.props.filterChange(selections, this.props.setQuery)
+  }
 
-      this.props.fetchLogs(str)
-    }
+  handleStartChange (date) {
+    const selections = this.props.query
+    this.updateDate(date, selections.endDate, true)
+  }
+
+  handleEndChange (date) {
+    const selections = this.props.query
+    this.updateDate(selections.startDate, date, false)
   }
 
   render () {
@@ -139,8 +130,26 @@ export default class Main extends Component {
     return (
 
       <div className="container mt-2 col-sm-12 " >
-
-        {errors.non_field_errors ? <Alert color="danger">{errors.non_field_errors}</Alert> : ''}
+        <Form onSubmit={this.onSubmit} >
+          {errors.detail && <Alert color="danger">{errors.detail}</Alert> }
+          {errors.non_field_errors && <Alert color="danger">{errors.non_field_errors}</Alert> }
+       <FormGroup>
+       <Row>
+        <Col sm="2" md="2" lg="2">
+          <label htmlFor={'start_id'}>{'Start Date'}</label>
+          <div className = "mb-2 ">
+          <DatePicker style={{ width: '100%' }} id={'startDate'} selected={selections.startDate} onChange={this.handleStartChange} />
+          </div>
+        </Col>
+        <Col sm="2" md="2" lg="2">
+          <label htmlFor={'end_id'}>{'End Date'}</label>
+          <div className = "mb-2 ">
+          <DatePicker id={'endDate'} selected={selections.endDate} onChange={this.handleEndChange}/>
+          </div>
+        </Col>
+      </Row>
+      </FormGroup>
+      </Form>
     <table className="table">
       <tr>
         <td>
@@ -164,8 +173,7 @@ export default class Main extends Component {
          <table className={'table table-sm '}>
          <thead>
            <tr>
-           <td> ID</td>
-           <td> Task </td>
+           <td> Task ID </td>
              <td className="hover" onClick={(event) => {
                this.changesort('Date',
                  ASC,
@@ -231,16 +239,7 @@ export default class Main extends Component {
 Main.propTypes = {
   query: PropTypes.object,
   setQuery: PropTypes.func,
-
-  logsList: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      stdout: PropTypes.string,
-      stderr: PropTypes.string,
-      date: PropTypes.string
-
-    })
-  ),
+  logsList: PropTypes.array,
   logsLoading: PropTypes.bool,
   logsErrors: PropTypes.object,
   logsTotalCount: PropTypes.number,

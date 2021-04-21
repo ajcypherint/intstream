@@ -307,7 +307,8 @@ def _job(task, id, organization_id):
     path_python = os.path.join(venv_directory,"bin","python")
     proc = None
     script = [path_python, script]
-    script.extend(job_args.split(" "))
+    if job_args != "":
+        script.extend(job_args.split(" "))
     try:
         proc = subprocess.run(script,
             env={

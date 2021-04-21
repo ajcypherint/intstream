@@ -91,7 +91,13 @@ function intersect (selectedCols, allColsObjs) {
   return cols
 }
 
-// todo(aj) add active filter
+export const filterTaskChange = (selections, setQuery) => {
+  return async (dispatch, getState) => {
+    setQuery(selections)
+    const  paramCols = 'start_date_done=' + selections.startDate.toISOString() +
+      '&end_date_done=' + selections.endDate.toISOString()
+  }
+}
 export const filterIndChange = (selections,
   setQuery
 ) => {
@@ -237,9 +243,9 @@ export const filterChange = (selections, setQuery, parent) => {
     const test = articleStr
     // todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
     if (parent) {
-      return await dispatch(getArticles(API_ARTICLES, articleStr, parent.id))
+      await dispatch(getArticles(API_ARTICLES, articleStr, parent.id))
     } else {
-      return await dispatch(getArticles(API_HOME_ARTICLES, articleStr))
+      await dispatch(getArticles(API_HOME_ARTICLES, articleStr))
     }
   }
 }

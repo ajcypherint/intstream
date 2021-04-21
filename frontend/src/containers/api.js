@@ -16,3 +16,5 @@ export const USER_INFO_API = '/api/userinfo/'
 export const ORG_USER_INFO_API = '/api/orguserinfo/'
 
 export const ORG_USER_INFO_KEY = 'ORG_USER_INFO'
+
+export const TASK_RESULT_API = '/api/taskresult/'

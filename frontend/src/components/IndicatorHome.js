@@ -50,7 +50,8 @@ export class Main extends React.Component {
       ...newSel
     }
     // again here we set selections then fetch
-    this.props.filterChange(selections, this.props.setQuery)
+    // this.props.filterChange(selections, this.props.setQuery)
+    this.props.setQuery(selections)
   }
 
   updateDate (startDate, endDate, start_filter = true) {
@@ -231,7 +232,8 @@ export class Main extends React.Component {
     return (
     <div className="container mt-2 col-sm-12" >
 
-    <Button onClick={this.props.history.goBack} className="button-brand-primary sb-1" size="sm">Back</Button>
+    { this.props.query.article &&
+    <Button onClick={this.props.history.goBack} className="button-brand-primary sb-1" size="sm">Back</Button> }
     <Form onSubmit={this.onSubmit} >
       { errorsTotal.map((i, index) => {
         return (i.detail && <Alert color="danger">{i.detail}</Alert>)

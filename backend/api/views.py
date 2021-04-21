@@ -1362,15 +1362,23 @@ class AllOrganizationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return models.Organization.objects.all()
 
+class TaskResultFilter(filters.FilterSet):
+    start_date_done = filters.IsoDateTimeFilter(field_name='date_done', lookup_expr='gte')
+    end_date_done = filters.IsoDateTimeFilter(field_name='date_done', lookup_expr='lte')
+    class Meta:
+        model = models.OrgTaskResultMdl
+        fields = ('task_id', )
+
 
 class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.IsAuthandReadOnly,)
+    filterset_class = TaskResultFilter
     serializer_class = serializers.TaskResult
-    filterset_fields = ("id", )
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ("task_id", )
 
-    #todo(aj) how to limit results to your org? use submit id? create a table linking org to task_id?
     def get_queryset(self):
-        return TaskResultMdl.objects.all()
+        return models.OrgTaskResultMdl.objects.filter(organization=self.request.user.organization).all()
 
 
 class IndicatorBaseViewSet(viewsets.ModelViewSet):

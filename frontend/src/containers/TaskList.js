@@ -17,7 +17,6 @@ import {
 
 const JOB_URI = '/job/'
 const mapStateToProps = (state) => ({
-  test: 'test',
   logsList: reducers.getArticles(state),
   LogsLoading: reducers.getArticleLoading(state),
   LogsErrors: reducers.getArticleErrors(state),
@@ -40,7 +39,8 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(mapStateToProps, mapDispatchToProps)(
   withQueryParams(
     {
-      job: StringParam,
+      startDate: DateParam,
+      endDate: DateParam,
       ordering: StringParam,
       page: NumberParam,
       orderdir: StringParam,
