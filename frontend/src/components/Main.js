@@ -20,6 +20,8 @@ import OrgList from '../containers/OrgList'
 import OrgEdit from '../containers/OrgEdit'
 import SettingsEdit from '../containers/SettingsEdit'
 
+import TaskList from '../containers/TaskList'
+
 import ModelsList from '../containers/ModelsList'
 import ModelsEdit from '../containers/ModelsEdit'
 
@@ -75,6 +77,7 @@ const Main = (props) => (
     <Route exact path="/train_list" component={TrainList} />
     <Route exact path="/jobloglist/" component={LogList} />
     <Route exact path="/indjobloglist/" component={IndLogList} />
+    <Route exact path="/tasklist" component={TaskList} />
     <Route exact path="/indjobversions"
       render={() =>
           <IndJobVer

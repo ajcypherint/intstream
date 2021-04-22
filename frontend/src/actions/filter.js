@@ -91,13 +91,6 @@ function intersect (selectedCols, allColsObjs) {
   return cols
 }
 
-export const filterTaskChange = (selections, setQuery) => {
-  return async (dispatch, getState) => {
-    setQuery(selections)
-    const  paramCols = 'start_date_done=' + selections.startDate.toISOString() +
-      '&end_date_done=' + selections.endDate.toISOString()
-  }
-}
 export const filterIndChange = (selections,
   setQuery
 ) => {

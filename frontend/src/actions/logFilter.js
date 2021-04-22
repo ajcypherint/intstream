@@ -35,6 +35,34 @@ export const getfilter = (url, params = undefined) => {
   }
 }
 
+export const filterChangeTask = (uri, newSelections, setQuery) => {
+  return async (dispatch, getState) => {
+    const orderdir = newSelections.orderdir || ''
+    const ordering = newSelections.ordering || ''
+    const page = newSelections.page || 1
+
+    const START = new Date()
+    START.setHours(0, 0, 0, 0)
+
+    const END = new Date()
+    END.setHours(23, 59, 59, 999)
+    const startDate = newSelections.startDate || START
+    startDate.setHours(0, 0, 0, 0)
+
+    const endDate = newSelections.endDate || END
+    endDate.setHours(23, 59, 59, 999)
+    setQuery(newSelections)
+
+    const articleStr = 'ordering=' + orderdir +
+        ordering +
+      '&start_date_done=' + newSelections.startDate.toISOString() +
+      '&end_date_done=' + newSelections.endDate.toISOString() +
+        '&page=' + page
+
+    await dispatch(getArticles(uri, articleStr))
+  }
+}
+
 export const filterChange = (uri, newSelections, setQuery) => {
   return async (dispatch, getState) => {
     const job = newSelections.job

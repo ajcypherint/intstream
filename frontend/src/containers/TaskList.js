@@ -1,10 +1,10 @@
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
-import Main from '../components/LogList'
-import { clear, filterChange } from '../actions/logFilter'
+import Main from '../components/TaskList'
+import { clear, filterChangeTask } from '../actions/logFilter'
 import { getArticles, clearArticles } from '../actions/articles'
 import * as fromSelect from '../actions/selectArticle'
-import { JOB_LOGS_API } from './api'
+import { TASK_RESULT_API } from './api'
 
 import {
   withQueryParams,
@@ -15,24 +15,22 @@ import {
   ArrayParam
 } from 'use-query-params'
 
-const JOB_URI = '/job/'
 const mapStateToProps = (state) => ({
   logsList: reducers.getArticles(state),
-  LogsLoading: reducers.getArticleLoading(state),
-  LogsErrors: reducers.getArticleErrors(state),
-  LogsTotalCount: reducers.getArticleTotalCount(state),
-  LogNext: reducers.getArticleNextPage(state),
-  LogPrevious: reducers.getArticlePreviousPage(state),
-  Loguri: JOB_URI
+  logsLoading: reducers.getArticleLoading(state),
+  logsErrors: reducers.getArticleErrors(state),
+  logsTotalCount: reducers.getArticleTotalCount(state),
+  logNext: reducers.getArticleNextPage(state),
+  logPrevious: reducers.getArticlePreviousPage(state)
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  filterChange: (newSelections, setQuery) => dispatch(filterChange(newSelections, setQuery)),
+  filterChange: (newSelections, setQuery) => dispatch(filterChangeTask(TASK_RESULT_API, newSelections, setQuery)),
   fetchLogsFullUri: (url, params = undefined) => dispatch(getArticles(url, params)),
-  fetchLogs: (params = undefined) => dispatch(getArticles(JOB_LOGS_API, params)),
+  fetchLogs: (params = undefined) => dispatch(getArticles(TASK_RESULT_API, params)),
   clearLogs: () => dispatch(clearArticles()),
   clear: () => dispatch(clear()),
-  fetchSelect: (id) => dispatch(fromSelect.getArticle(JOB_LOGS_API, id)),
+  fetchSelect: (id) => dispatch(fromSelect.getArticle(TASK_RESULT_API, id)),
   clearSelect: () => dispatch(fromSelect.clearArticles())
 })
 

@@ -79,6 +79,9 @@ export default class Example extends React.Component {
                   <DropdownItem tag={Link} to="/orguserinfo">
                      Users
                     </DropdownItem>
+                  <DropdownItem tag={Link} to="/tasklist">
+                     TaskList
+                  </DropdownItem>
                  </DropdownMenu>
               </UncontrolledDropdown>
                : null}

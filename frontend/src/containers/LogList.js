@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
-import Main from '../components/LogList'
+import One from '../components/LogList'
 import { clear, filterChange } from '../actions/logFilter'
 import { getArticles, clearArticles } from '../actions/articles'
 import * as fromSelect from '../actions/selectArticle'
@@ -28,7 +28,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  filterChange: (newSelections, setQuery) => dispatch(filterChange(newSelections, setQuery)),
+  filterChange: (newSelections, setQuery) => dispatch(filterChange(JOB_LOGS_API, newSelections, setQuery)),
   fetchLogsFullUri: (url, params = undefined) => dispatch(getArticles(url, params)),
   fetchLogs: (params = undefined) => dispatch(getArticles(JOB_LOGS_API, params)),
   clearLogs: () => dispatch(clearArticles()),
@@ -40,10 +40,10 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(mapStateToProps, mapDispatchToProps)(
   withQueryParams(
     {
-      job: StringParam,
+      job: NumberParam,
       ordering: StringParam,
       page: NumberParam,
       orderdir: StringParam,
       choice: NumberParam
     },
-    Main))
+    One))

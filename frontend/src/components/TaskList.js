@@ -95,6 +95,7 @@ export default class Main extends Component {
     const choice = this.props.query.choice || 0
 
     const selections = {
+      ...this.props.query,
       startDate: startDate,
       endDate: endDate,
       taskName: taskName,
@@ -102,8 +103,7 @@ export default class Main extends Component {
       ordering: ordering,
       page: page,
       orderdir: orderdir,
-      choice: choice,
-      ...this.props.query
+      choice: choice
     }
     this.props.filterChange(selections, this.props.setQuery)
   }
@@ -190,14 +190,11 @@ export default class Main extends Component {
            ? logs.map((log) => {
              return (
                 <tbody key={log.id}>
-                <tr key={log.id}>
-                 <td className="hover" data-id={log.id} onClick={this.getLog}>
-                    {log.id}
-                 </td>
+                  <tr>
                  <td className="hover" data-id={log.task_id} onClick={this.getTask}>
                    {log.task_id}
                  </td>
-                 <td>{(new Date(log.date)).toLocaleString()}</td>
+                 <td>{(new Date(log.date_done)).toLocaleString()}</td>
                 </tr>
                 { log.id === this.props.query.choice &&
                  <tr>

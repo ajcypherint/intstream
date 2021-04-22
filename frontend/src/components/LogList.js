@@ -5,14 +5,13 @@ import { Alert, Form, Row, Col, Button, FormGroup, Input } from 'reactstrap'
 import DatePicker from 'react-datepicker'
 import { dateString, NONE, NONEVAL, ASC, DESC } from '../util/util'
 import Paginate from './Paginate'
-import { API_LOGS } from '../containers/LogList'
 
 import { changesort } from './ChangeSort'
 
 import TrueFalse from './TrueFalse'
 import Choice from './Choice'
 
-export default class Main extends Component {
+export default class One extends Component {
   constructor (props) {
     super(props)
     this.handleStartChange = this.handleStartChange.bind(this)
@@ -123,7 +122,7 @@ export default class Main extends Component {
         '&job=' + job +
         '&page=' + page
 
-      this.props.fetchLogs(str)
+      // this.props.fetchLogs(str)
     }
   }
 
@@ -228,7 +227,7 @@ export default class Main extends Component {
   }
 }
 
-Main.propTypes = {
+One.propTypes = {
   query: PropTypes.object,
   setQuery: PropTypes.func,
 
