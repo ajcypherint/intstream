@@ -7,6 +7,11 @@ import { MD5, IPV4, IPV6, SHA1, SHA256, EMAIL, NETLOC } from '../reducers/tab'
 import Choice from './MultiChoiceCol'
 import _ from 'lodash'
 import { changesort } from './ChangeSort'
+import { BASE_INDICATOR_API } from '../containers/api'
+import {
+  UNMITIGATE,
+  MITIGATE
+} from './api'
 
 export class Main extends React.Component {
   constructor (props) {
@@ -18,15 +23,31 @@ export class Main extends React.Component {
   }
 
   handleMitigate (event) {
-
-  }
-
-  handleReviewed (event) {
-
+    const indicatorId = event.target.dataset.id
+    this.props.mitigateDispatch(indicatorId)
   }
 
   handleAllowed (event) {
+    let indicator = JSON.parse(event.target.dataset.indicator)
+    const newAllowed = !indicator.allowed
+    indicator = {
+      ...indicator,
+      allowed: newAllowed
+    }
+    // todo(aj) setIndicator use indicatorbase url in container
+    const url = BASE_INDICATOR_API + indicator.id + '/'
+    this.props.setIndicator(url, indicator)
+  }
 
+  handleReviewed (event) {
+    let indicator = JSON.parse(event.target.dataset.indicator)
+    const newReviewed = !indicator.reviewed
+    indicator = {
+      ...indicator,
+      reviewed: newReviewed
+    }
+    const url = BASE_INDICATOR_API + indicator.id + '/'
+    this.props.setIndicator(url, indicator)
   }
 
   render () {
@@ -36,6 +57,14 @@ export class Main extends React.Component {
     const selectedNumCols = selections.numCols || []
     const selectedTxtCols = selections.textCols || []
     const selected = selections.selectedTabIndexNum || 0
+
+    const versions = this.props.versions || {}
+    const mitigateVersions = versions[MITIGATE] || []
+    const mitigateDisabled = mitigateVersions.length === 0
+
+    const unmitigateVersions = versions[UNMITIGATE] || []
+    const unmitigateDisabled = unmitigateVersions.length === 0
+
     // hard code mitigated column as a column shown.
     return (
     <Tabs selectedIndex={selected} onSelect={this.props.tabUpdate}>
@@ -151,6 +180,7 @@ export class Main extends React.Component {
                           <td>M</td>
                           <td>A</td>
                           <td>R</td>
+                          <td>C</td>
                           {
                             selectedTxtCols.map((name, index) => {
                               return (
@@ -181,25 +211,46 @@ export class Main extends React.Component {
                                      <td>
                                       <div className="custom-control custom-checkbox">
                                         <Input type="checkbox"
+                                          disabled={mitigateDisabled}
                                           data-id={indicator.id}
+                                          data-indicator={JSON.stringify(indicator)}
                                           checked={indicator.mitigated}
                                           onChange={this.handleMitigate}/>
                                        </div>
                                      </td>
                                      <td>
-                                      <div className="custom-control custom-checkbox">
-                                        <Input type="checkbox"
-                                          data-id={indicator.id}
-                                          checked={indicator.allowed}
-                                          onChange={this.handleAllowed}/>
-                                       </div>
+                                       { indicator.saving === true
+                                         ? <span className="spinner-border spinner-border-sm" role="status">
+                                                        <span className="sr-only">Loading...</span>
+                                                      </span>
+                                         : <div className="custom-control custom-checkbox">
+                                              <Input type="checkbox"
+                                                data-id={indicator.id}
+                                                data-indicator={JSON.stringify(indicator)}
+                                                checked={indicator.allowed}
+                                                onChange={this.handleAllowed}/>
+                                           </div>
+                                       }
                                      </td>
                                      <td>
-                                      <div className="custom-control custom-checkbox">
-                                        <Input type="checkbox"
-                                          data-id={indicator.id}
-                                          checked={indicator.reviewed}
-                                          onChange={this.handleReviewed}/>
+                                       { indicator.saving === true
+                                         ? <span className="spinner-border spinner-border-sm" role="status">
+                                                        <span className="sr-only">Loading...</span>
+                                                      </span>
+                                         : <div className="custom-control custom-checkbox">
+                                            <Input type="checkbox"
+                                              data-id={indicator.id}
+                                              data-indicator={JSON.stringify(indicator)}
+                                              checked={indicator.reviewed}
+                                              onChange={this.handleReviewed}/>
+                                           </div>
+                                       }
+                                       </td>
+                                     <td>
+                                      <div className="custom-control custom-checkbox ">
+                                        <Input type="checkbox" disabled={true}
+                                          checked={indicator.reviewed || indicator.mitigated || indicator.allowed}
+                                          />
                                        </div>
                                      </td>
                                         {

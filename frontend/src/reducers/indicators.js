@@ -2,7 +2,10 @@
 //
 import _ from 'lodash'
 import * as indicatorsData from '../actions/indicators'
+import * as mitigate from '../actions/mitigate'
+import * as task from '../actions/task'
 import URL from 'url-parse'
+import { STATUS_RUNNING, STATUS_FAILURE } from '../containers/api'
 import { ASC, DESC } from '../util/util'
 import { listActions, TAB_MAP, REQ, FAIL, SUCCESS, mapActions } from './tab'
 
@@ -124,23 +127,56 @@ export default (state = initState, action) => {
     // used for edit
     case indicatorsData.SET_INDICATORS_REQUEST:
     {
+      const newIndicators = [...state.indicators]
+      for (let i = 0; i < newIndicators.length; i++) {
+        if (newIndicators[i].id === action.meta.id) {
+          newIndicators[i] = {
+            ...newIndicators[i],
+            saving: true
+          }
+          break
+        }
+      }
       return {
         ...state,
+        indicators: newIndicators,
         saving: true
       }
     }
     case indicatorsData.SET_INDICATORS_SUCCESS:
     {
+      const newIndicators = [...state.indicators]
+      for (let i = 0; i < newIndicators.length; i++) {
+        if (newIndicators[i].id === action.payload.id) {
+          newIndicators[i] = {
+            ...newIndicators[i],
+            ...action.payload,
+            saving: false
+          }
+          break
+        }
+      }
       return {
         ...state,
-        indicators: [action.payload],
+        indicators: newIndicators,
         saving: false
       }
     }
     case indicatorsData.SET_INDICATORS_FAILURE:
     {
+      const newIndicators = [...state.indicators]
+      for (let i = 0; i < newIndicators.length; i++) {
+        if (newIndicators[i].id === action.meta.id) {
+          newIndicators[i] = {
+            ...newIndicators[i],
+            saving: false
+          }
+          break
+        }
+      }
       return {
         ...state,
+        indicators: newIndicators,
         saving: false,
         errors: action.payload.response || { non_field_errors: action.payload.statusText }
       }
@@ -193,6 +229,58 @@ export default (state = initState, action) => {
         nextpage: null,
         previouspage: null,
         errors: action.payload.response || { non_field_errors: action.payload.statusText }
+      }
+    }
+    case mitigate.MITIGATE_REQUEST:
+    {
+      const newIndicators = [...state.indicators]
+      for (let i = 0; i < newIndicators.length; i++) {
+        if (newIndicators[i].id === action.meta.indicatorId) {
+          newIndicators[i] = {
+            ...newIndicators[i],
+            mitigateRunningStatus: true
+          }
+          break
+        }
+      }
+      return {
+        ...state,
+        indicators: newIndicators
+      }
+    }
+    case mitigate.NO_TASK:
+    {
+      const newIndicators = [...state.indicators]
+      for (let i = 0; i < newIndicators.length; i++) {
+        if (newIndicators[i].id === action.meta.indicatorId) {
+          newIndicators[i] = {
+            ...newIndicators[i],
+            mitigateRunningstatus: false
+          }
+          break
+        }
+      }
+      return {
+        ...state,
+        indicators: newIndicators
+      }
+    }
+    case task.TASK_SUCCESS:
+    {
+      // todo(aj) script must return True; all scripts should return result of task
+      const newIndicators = [...state.indicators]
+      for (let i = 0; i < newIndicators.length; i++) {
+        if (newIndicators[i].id === action.meta.indicatorId) {
+          newIndicators[i] = {
+            ...newIndicators[i],
+            mitigateRunningStatus: action.payload.status === STATUS_RUNNING
+          }
+          break
+        }
+      }
+      return {
+        ...state,
+        indicators: newIndicators
       }
     }
     default:

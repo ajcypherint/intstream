@@ -808,7 +808,6 @@ class IndicatorSerializer(serializers.ModelSerializer):
             "articles",
             "organization",
             "upload_date",
-            "value",
             "reviewed",
             "allowed",
             "mitigated"

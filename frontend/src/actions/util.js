@@ -51,6 +51,7 @@ export const getAll = (get) => (putAll) => (url, params, key) => {
     const total = totalresp.payload.count
     const pages = Math.ceil(total / PAGINATION)
     // ACTIVE, duh time for bed.
+    // todo(aj) wrap in promise and dispatch all at once
     for (let i = 1; i <= pages; i++) {
       const actionResponse = await dispatch(get(url, extraParams + '&page=' + i, key))
       //
@@ -68,7 +69,7 @@ export const getAll = (get) => (putAll) => (url, params, key) => {
 }
 
 // todo move to util
-export const getVersionTemplate = (ENDP) => (REQUEST) => (SUCCESS) => (FAILURE) => (params) => {
+export const getVersionTemplate = (ENDP) => (REQUEST) => (SUCCESS) => (FAILURE) => (params, meta = null) => {
   const url = setParams(ENDP, params)
   return {
     [RSAA]: {
@@ -78,7 +79,18 @@ export const getVersionTemplate = (ENDP) => (REQUEST) => (SUCCESS) => (FAILURE) 
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
-        REQUEST, SUCCESS, FAILURE
+        {
+          meta: meta,
+          type: REQUEST
+        },
+        {
+          meta: meta,
+          type: SUCCESS
+        },
+        {
+          meta: meta,
+          type: FAILURE
+        }
       ]
     }
   }

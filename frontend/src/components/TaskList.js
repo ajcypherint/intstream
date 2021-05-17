@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
-import { Alert, Form, Row, Col, Button, FormGroup, Input } from 'reactstrap'
+import { Label, Alert, Form, Row, Col, Button, FormGroup, Input } from 'reactstrap'
 import DatePicker from 'react-datepicker'
 import { dateString, NONE, NONEVAL, ASC, DESC } from '../util/util'
 import Paginate from './Paginate'
@@ -19,7 +19,6 @@ export default class Main extends Component {
     this.paginate = Paginate.bind(this)
     this.changesort = changesort.bind(this)
     this.fetchit = this.fetchit.bind(this)
-    this.getLog = this.getLog.bind(this)
     this.getTask = this.getTask.bind(this)
     this.back = this.back.bind(this)
   }
@@ -29,7 +28,12 @@ export default class Main extends Component {
   }
 
   getTask (event) {
-
+    const choice = event.target.dataset.id
+    const newSelections = {
+      ...this.props.query,
+      choice: choice
+    }
+    this.props.setQuery(newSelections)
   }
 
   updateDate (startDate, endDate, start_filter = true) {
@@ -58,17 +62,6 @@ export default class Main extends Component {
     this.props.filterChange(newSelections, this.props.setQuery)
   }
 
-  getLog (event) {
-    const { id } = event.target.dataset
-    this.props.clearSelect()
-    this.props.fetchSelect(id)
-    const newSelections = {
-      ...this.props.query,
-      choice: parseInt(id)
-    }
-    this.props.setQuery(newSelections)
-  }
-
   fetchit (selections, page) {
     const newSelections = {
       ...selections,
@@ -92,7 +85,7 @@ export default class Main extends Component {
     const orderdir = this.props.query.orderdir || ''
     const startDate = this.props.query.startDate || START
     const endDate = this.props.query.endDate || END
-    const choice = this.props.query.choice || 0
+    const choice = this.props.query.choice || ''
 
     const selections = {
       ...this.props.query,
@@ -173,17 +166,27 @@ export default class Main extends Component {
          <table className={'table table-sm '}>
          <thead>
            <tr>
-           <td> Task ID </td>
-             <td className="hover" onClick={(event) => {
-               this.changesort('Date',
-                 ASC,
-                 DESC,
-                 selections,
-                 this.props.filterChange,
-                 this.props.setQuery,
-                 0
-               )
-             }}>Date</td>
+             <td>Task ID</td>
+            <td className="hover" onClick={(event) => {
+              this.changesort('task_name',
+                ASC,
+                DESC,
+                selections,
+                this.props.filterChange,
+                this.props.setQuery,
+                0
+              )
+            }}>Task Name</td>
+            <td className="hover" onClick={(event) => {
+              this.changesort('date_done',
+                ASC,
+                DESC,
+                selections,
+                this.props.filterChange,
+                this.props.setQuery,
+                0
+              )
+            }}>Date</td>
           </tr>
          </thead>
          { !loading
@@ -194,27 +197,38 @@ export default class Main extends Component {
                  <td className="hover" data-id={log.task_id} onClick={this.getTask}>
                    {log.task_id}
                  </td>
+                 <td > {log.task_name} </td>
                  <td>{(new Date(log.date_done)).toLocaleString()}</td>
                 </tr>
-                { log.id === this.props.query.choice &&
+                { log.task_id === this.props.query.choice &&
                  <tr>
                    <td colSpan={'3'}>
-                     <Input type="textarea" className="bktextarea"
-                        name="text" rows="15" id="stdout" readOnly
-                        value={log.stderr}/>
+                     <Form>
+                       <FormGroup>
+                         <Label>Name</Label>
+                         <Input type="text" disabled="true" value={log.task_name}/>
+                       </FormGroup>
+                       <FormGroup>
+                         <Label>Args</Label>
+                         <Input type="text" disabled="true" value={log.task_args}/>
+                       </FormGroup>
+                       <FormGroup>
+                         <Label>Kwargs</Label>
+                         <Input type="text" disabled="true" value={log.task_kwargs}/>
+                       </FormGroup>
+                        <FormGroup>
+                         <Label>Status</Label>
+                         <Input type="text" disabled="true" value={log.status}/>
+                       </FormGroup>
+                        <FormGroup>
+                         <Label>Traceback</Label>
+                         <Input type="textarea" disabled="true" value={log.traceback}/>
+                       </FormGroup>
+                     </Form>
                    </td>
                   </tr>
                }
-                { log.id === this.props.query.choice &&
-                 <tr>
-                   <td colSpan={'3'}>
-                     <Input type="textarea" className="bktextarea"
-                        name="text" rows="15" id="stdout" readOnly
-                        value={log.stdout}/>
-                   </td>
-                  </tr>
-               }
-                </tbody>
+               </tbody>
              )
            })
            : <tbody><tr><td><span className="spinner-border" role="status">

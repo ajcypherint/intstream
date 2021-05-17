@@ -226,7 +226,7 @@ export class Children extends React.Component {
                     {article.title}
                       </td>
                   <td >
-                    {article.source.name}
+                    { typeof (article.source) !== 'undefined' && article.source.name }
                   </td>
                   <td>{(new Date(article.upload_date)).toLocaleString()}</td>
                   <td>

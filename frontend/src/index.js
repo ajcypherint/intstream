@@ -11,10 +11,11 @@ import './custom.css'
 import configureStore from './store'
 import App from './App'
 import { PersistGate } from 'redux-persist/integration/react'
+import { root } from './saga/polling'
 
 const history = createHistory()
 
-const { store, persistor } = configureStore(history)
+const { store, persistor, sagaMiddleware } = configureStore(history)
 
 ReactDOM.render((
   <Provider store={store}>
@@ -27,3 +28,5 @@ ReactDOM.render((
     </PersistGate>
   </Provider>
 ), document.getElementById('root'))
+
+sagaMiddleware.run(root)

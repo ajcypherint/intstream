@@ -131,6 +131,7 @@ export class Main extends React.Component {
       textCols: textCols
     }
     this.props.filterChange(selections, this.props.setQuery)
+    this.props.fetchMitigateJobVersions('?job__indicator_type__name=' + selectedTabIndex.toUpperCase())
   }
 
   componentDidMount () {
@@ -288,31 +289,12 @@ export class Main extends React.Component {
   }
   </Form>
       <Indicators
+        {...this.props}
         fetchit={this.fetch}
-        fetchIndicatorsFullUri={this.props.fetchIndicatorsFullUri}
         selections={selections}
-        setQuery={this.props.setQuery}
         paginate={this.paginate}
-        indicatorsList={this.props.indicatorsList}
-        indicatorsLoading={this.props.indicatorsLoading}
-        indicatorsNext={this.props.indicatorsNext}
-        indicatorsPrevious={this.props.indicatorsPrevious}
-        indicatorsTotalCount={this.props.indicatorsTotalCount}
         tabUpdate={this.tabUpdate}
-        md5={this.props.md5}
-        sha1={this.props.sha1}
-        sha256={this.props.sha256}
-        ipv4={this.props.ipv4}
-        ipv6={this.props.ipv6}
-        netloc={this.props.netloc}
-        email={this.props.email}
-        filterChange={this.props.filterChange}
         changeColChoice={this.changeColChoice}
-        numCols={this.props.numCols}
-        textCols={this.props.textCols}
-        numColsData={this.props.numColsData}
-        textColsData={this.props.textColsData}
-        query={this.props.query}
       />
   </div>
     )

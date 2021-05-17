@@ -211,7 +211,9 @@ export const setIndicators = (url, data, method = 'PUT') => {
       body: JSON.stringify(data),
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
-        SET_INDICATORS_REQUEST, SET_INDICATORS_SUCCESS, SET_INDICATORS_FAILURE
+        { type: SET_INDICATORS_REQUEST, meta: { id: data.id } },
+        { type: SET_INDICATORS_SUCCESS, meta: { id: data.id } },
+        { type: SET_INDICATORS_FAILURE, meta: { id: data.id } }
       ]
 
     }

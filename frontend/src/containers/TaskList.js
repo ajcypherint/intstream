@@ -42,6 +42,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
       ordering: StringParam,
       page: NumberParam,
       orderdir: StringParam,
-      choice: NumberParam
+      choice: StringParam
     },
     Main))

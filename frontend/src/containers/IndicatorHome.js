@@ -2,9 +2,18 @@ import React from 'react'
 import { connect } from 'react-redux'
 import * as reducers from '../reducers/'
 import { Main } from '../components/IndicatorHome'
-import { getIndicators } from '../actions/indicators'
+import { getIndicators, setIndicators } from '../actions/indicators'
 import { filterIndChange, setPage, setHomeSelections, getAllSources, MODEL_VERSIONS, getAllActiveModels } from '../actions/filter'
 import { getSources, clearSources } from '../actions/sources'
+import { mitigateDispatch } from '../actions/mitigate'
+import { getMultiJobVersion } from '../actions/multiJobVersion'
+import {
+  UNMITIGATE,
+  MITIGATE,
+  UNMITIGATE_IND_JOB_VERSION_API,
+  MITIGATE_IND_JOB_VERSION_API
+} from './api'
+
 import {
   withQueryParams,
   DelimitedNumericArrayParam,
@@ -18,6 +27,9 @@ import {
 } from 'use-query-params'
 
 import { MD5, SHA1, SHA256, IPV4, EMAIL, IPV6, NETLOC } from '../reducers/tab'
+
+const getMitigateJobVersionFunc = getMultiJobVersion(MITIGATE_IND_JOB_VERSION_API)
+const getUnmitigateJobVersionFunc = getMultiJobVersion(UNMITIGATE_IND_JOB_VERSION_API)
 
 const API_SOURCES = '/api/homefilter/'
 const mapStateToProps = (state) => ({
@@ -50,14 +62,19 @@ const mapStateToProps = (state) => ({
   numColsData: reducers.getIndicatorColNumData(state),
   textColsData: reducers.getIndicatorColTextData(state),
   indicatorColTextDataErrors: reducers.getIndicatorColTextDataErrors(state),
-  indicatorColNumDataErrors: reducers.getIndicatorColNumDataErrors(state)
+  indicatorColNumDataErrors: reducers.getIndicatorColNumDataErrors(state),
 
+  versions: reducers.getMultiJobVersion(state)
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  fetchMitigateJobVersions: (params = undefined) => dispatch(getMitigateJobVersionFunc(params, MITIGATE)),
+  fetchUnMitigateJobVersions: (params = undefined) => dispatch(getUnmitigateJobVersionFunc(params, UNMITIGATE)),
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
   filterChange: (selections, setPage) => dispatch(filterIndChange(selections, setPage)),
-  fetchIndicatorsFullUri: (url, params = undefined) => dispatch(getIndicators(url, undefined, params))
+  fetchIndicatorsFullUri: (url, params = undefined) => dispatch(getIndicators(url, undefined, params)),
+  mitigateDispatch: (indicator) => dispatch(mitigateDispatch(indicator)),
+  setIndicator: (url, indicatorObj) => dispatch(setIndicators(url, indicatorObj))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(

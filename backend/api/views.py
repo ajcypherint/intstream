@@ -71,6 +71,13 @@ class SourceTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.SourceType.objects.all()
     serializer_class = serializers.SourceTypeSerializer
 
+class CharInFilter(filters.BaseInFilter, filters.CharFilter):
+    pass
+
+
+class NumInFilter(filters.BaseInFilter, filters.NumberFilter):
+    pass
+
 
 class SourceFilter(filters.FilterSet):
     article___upload_date__gte = filters.IsoDateTimeFilter(field_name="article__upload_date",lookup_expr="gte")
@@ -85,6 +92,35 @@ class SourceFilter(filters.FilterSet):
         model = models.Source
         fields = ('id','name','active',"mlmodel")
 
+
+class MitigateIndicatorOnDemand(APIView):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    indicator_id = openapi.Parameter('indicator_id',
+                            in_=openapi.IN_BODY,
+                            required=True,
+                            description="indicator id",
+                            type=openapi.TYPE_INTEGER)
+    response = openapi.Response('job_id',
+            openapi.Schema( type=openapi.TYPE_INTEGER,
+                            ))
+    error = openapi.Response("detail",
+                             openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                             ))
+    @swagger_auto_schema(manual_parameters=[indicator_id,], responses={200:response,404:error})
+    def post(self, request, format=None):
+        indicator = models.Indicator.objects.get(id=self.request.data["indicator_id"],
+                                                 organization=self.request.user.organization)
+        jobs = models.MitigateIndicatorJob.objects.filter(indicator_type=indicator.ind_type,
+                                                  organization=self.request.user.organization,
+                                                  active=True)
+        job_ids = []
+        for job in jobs:
+            res = job.delay(job.id,
+                               indicator.id,
+                               organization_id=self.request.user.organization)
+            job_ids.append(res.id)
+        return Response({"job_ids": job_ids}, status.HTTP_200_OK)
 
 class RandomUnclassified(APIView):
 
@@ -790,6 +826,7 @@ class HomePage(APIView):
 
 class OrgViewSet(viewsets.ModelViewSet):
 
+
     def perform_create(self, serializer):
         serializer.save(organization = self.request.user.organization)
 
@@ -995,6 +1032,26 @@ class JobViewSet(OrgViewSet):
     def get_queryset(self):
         return models.Job.objects.filter(organization=self.request.user.organization)
 
+class BaseIndicatorFilter(filters.FilterSet):
+    start_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='gte', distinct=True)
+    end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
+    source = filters.NumberFilter(field_name="articles__source", distinct=True)
+    prediction__mlmodel = filters.CharFilter(field_name="articles__prediction__mlmodel", distinct=True)
+    article = filters.NumberFilter(field_name="articles__id", lookup_expr="exact")
+
+    class Meta:
+        model = models.Indicator
+        fields = ('id', "article",)
+
+class BaseIndicatorViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.IndicatorSerializer
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('id', 'reviewed', 'allowed', 'mitigated', 'ind_type', 'upload_date')
+    filterset_class = BaseIndicatorFilter
+
+    def get_queryset(self):
+        return models.Indicator.objects.filter(organization=self.request.user.organization)
 
 class JobVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
@@ -1394,12 +1451,6 @@ class IndicatorBaseViewSet(viewsets.ModelViewSet):
             tasks.runjobs_mitigate.delay(instance.id, organization_id=instance.organization.id)
 
 
-class CharInFilter(filters.BaseInFilter, filters.CharFilter):
-    pass
-
-
-class NumInFilter(filters.BaseInFilter, filters.NumberFilter):
-    pass
 
 
 class IndicatorMD5Filter(filters.FilterSet):
@@ -1946,7 +1997,7 @@ class MitigateIndicatorJobViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.MitigateIndicatorJobSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
-    filterset_fields = ('id','name', 'active')
+    filterset_fields = ('id','name', 'active',)
 
     def get_queryset(self):
         return models.MitigateIndicatorJob.objects.filter(organization=self.request.user.organization)
@@ -1987,7 +2038,7 @@ class MitigateIndicatorJobVersionViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.MitigateIndicatorJobVersionSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
-    filterset_fields = ('id', 'job', 'version', 'active', 'job__active')
+    filterset_fields = ('id', 'job', 'version', 'active', 'job__active', 'job__indicator_type__name')
 
     def get_queryset(self):
         return models.MitigateIndicatorJobVersion.objects.filter(organization=self.request.user.organization)

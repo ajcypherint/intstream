@@ -15,6 +15,7 @@ import classifications, * as fromClassif from './classifications'
 import settings, * as fromSettings from './settings'
 import modelVersions, * as fromModelVersions from './modelVersions'
 import jobVersions, * as fromJobVersions from './jobVersions'
+import multiJobVersions, * as fromMultiJobVersions from './multiJobVersions'
 import filterModelVer, * as fromFilterModelVer from './modelVersionFilter'
 import filterJobVer, * as fromFilterJobVer from './jobVersionFilter'
 import forgotPassword, * as fromForgotPassword from './forgotPassword'
@@ -28,6 +29,7 @@ import dropDown, * as fromDropDown from './dropDown'
 export default combineReducers({
   modelVersions: modelVersions,
   jobVersions: jobVersions,
+  multiJobVersions: multiJobVersions,
   trainingScripts: trainingScripts,
   filterModelVer: filterModelVer,
   filterJobVer: filterJobVer,
@@ -164,6 +166,9 @@ export const getJobVersionLoading = state => fromJobVersions.loading(state.jobVe
 export const getJobVersionTotalCount = state => fromJobVersions.totalcount(state.jobVersions)
 export const getJobVersionNextPage = state => fromJobVersions.nextpage(state.jobVersions)
 export const getJobVersionPreviousPage = state => fromJobVersions.previouspage(state.jobVersions)
+
+// from multiJobVersions
+export const getMultiJobVersion = state => fromMultiJobVersions.versions(state.multiJobVersions)
 
 // from filterModelVersions
 export const getModelVersionFilterMLModels = state => fromFilterModelVer.mlmodels(state.filterModelVer)

@@ -148,17 +148,13 @@ class RSSSource(Source):
 class IndicatorType(models.Model):
     name = models.CharField(max_length=20, unique=True)
 
-class BaseIndicatorJob(PolymorphicModel):
-    class Meta:
-        constraints = [
-                UniqueConstraint(fields=['name', 'organization'],
-                                 name='unique_indicatorjob'),
-                # cannot have multiple indicator types for mitigation or unmitigation
-                ]
 
-    name = models.CharField(max_length=100, unique=True)
+class BaseIndicatorJob(PolymorphicModel):
+    """
+    DO NOT EXPOSE VIA API ; no way to filter by org
+    """
+
     active = models.BooleanField(default=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 
     last_run = models.DateTimeField(blank=True, null=True)
     last_status = models.BooleanField(blank=True, null=True)
@@ -167,16 +163,55 @@ class BaseIndicatorJob(PolymorphicModel):
     user = models.ForeignKey(UserIntStream, on_delete=models.CASCADE)
     timeout = models.IntegerField(default=600) # seconds; default 10 mins
     server_url = models.TextField(max_length=300, default="http://127.0.0.1:8000/")
+    # only used  in MitigateIndicatorJob table
+
 
 class StandardIndicatorJob(BaseIndicatorJob):
+    class Meta:
+        constraints = [
+                UniqueConstraint(fields=['name', 'organization'],
+                                 name='unique_standard_indicatorjob'),
+                ]
 
+    name = models.CharField(max_length=100, unique=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     indicator_types = models.ManyToManyField(IndicatorType)
 
+
 class MitigateIndicatorJob(BaseIndicatorJob):
+    class Meta:
+        constraints = [
+                UniqueConstraint(fields=['name', 'organization'],
+                                 name='unique_mitigateindicatorjob'),
+                UniqueConstraint(fields=['indicator_type', 'organization'],
+                             condition=Q(auto_mitigate=True),
+                             name='mitigateindicatorjob_unique_auto_mitigate'),
+                UniqueConstraint(fields=['indicator_type', 'organization'],
+                             condition=Q(manual_mitigate=True),
+                             name='mitigateindicatorjob_unique_manual_mitigate'),
+
+                ]
+
+    name = models.CharField(max_length=100, unique=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+
     indicator_type = models.ForeignKey(IndicatorType, on_delete=models.CASCADE)
+    auto_mitigate = models.BooleanField(default=False)
+    manual_mitigate = models.BooleanField(default=False)
+
 
 class UnmitigateIndicatorJob(BaseIndicatorJob):
+    class Meta:
+        constraints = [
+                UniqueConstraint(fields=['name', 'organization'],
+                                 name='unique_unmitigate_indicatorjob'),
+                ]
+
+    name = models.CharField(max_length=100, unique=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
+
     indicator_type = models.ForeignKey(IndicatorType, on_delete=models.CASCADE)
+
 
 class IndicatorJobLog(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
