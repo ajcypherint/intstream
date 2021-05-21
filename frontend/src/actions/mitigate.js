@@ -18,11 +18,11 @@ export const deleteMitigate = (payload) => ({
   payload: payload
 })
 
-export const mitigate = (indicatorId) => ({
+export const mitigate = (indicatorId, action) => ({
   [RSAA]: {
     endpoint: MITIGATE_INDICATOR_API,
     method: 'POST',
-    body: JSON.stringify({ indicator_id: indicatorId }),
+    body: JSON.stringify({ indicator_id: indicatorId, action: action }),
     headers: withAuth({ 'Content-Type': 'application/json' }),
     types: [
       {

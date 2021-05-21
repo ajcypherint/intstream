@@ -7,11 +7,11 @@ import { MD5, IPV4, IPV6, SHA1, SHA256, EMAIL, NETLOC } from '../reducers/tab'
 import Choice from './MultiChoiceCol'
 import _ from 'lodash'
 import { changesort } from './ChangeSort'
-import { BASE_INDICATOR_API } from '../containers/api'
 import {
   UNMITIGATE,
-  MITIGATE
-} from './api'
+  MITIGATE,
+  BASE_INDICATOR_API
+} from '../containers/api'
 
 export class Main extends React.Component {
   constructor (props) {
@@ -24,7 +24,12 @@ export class Main extends React.Component {
 
   handleMitigate (event) {
     const indicatorId = event.target.dataset.id
-    this.props.mitigateDispatch(indicatorId)
+    const mitigated = event.target.dataset.mitigated
+    if (mitigated === 'true') {
+      this.props.mitigateDispatch(indicatorId, MITIGATE)
+    } else {
+      this.props.unmitigateDispatch(indicatorId, UNMITIGATE)
+    }
   }
 
   handleAllowed (event) {
@@ -213,6 +218,7 @@ export class Main extends React.Component {
                                         <Input type="checkbox"
                                           disabled={mitigateDisabled}
                                           data-id={indicator.id}
+                                          data-mitigated={indicator.mitigated}
                                           data-indicator={JSON.stringify(indicator)}
                                           checked={indicator.mitigated}
                                           onChange={this.handleMitigate}/>

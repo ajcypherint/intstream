@@ -10,7 +10,9 @@ export const INDJOB_API = '/api/indicatorjob/'
 
 export const MITIGATE_IND_JOB_VERSION_API = '/api/mitigateindicatorjobversion/'
 export const UNMITIGATE_IND_JOB_VERSION_API = '/api/unmitigateindicatorjobversion/'
+
 export const MITIGATE_IND_JOB_API = '/api/mitigateindicatorjob/'
+export const UNMITIGATE_IND_JOB_API = '/api/unmitigateindicatorjob/'
 
 export const INDICATOR_JOB_LOGS_API = '/api/indicatorjoblog/'
 

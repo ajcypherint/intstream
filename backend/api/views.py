@@ -100,6 +100,11 @@ class MitigateIndicatorOnDemand(APIView):
                             required=True,
                             description="indicator id",
                             type=openapi.TYPE_INTEGER)
+    action = openapi.Parameter('action',
+                            in_=openapi.IN_BODY,
+                            default="mitigate",
+                            description="mitigated/unmitigate",
+                            type=openapi.TYPE_STRING)
     response = openapi.Response('job_id',
             openapi.Schema( type=openapi.TYPE_INTEGER,
                             ))
@@ -109,9 +114,22 @@ class MitigateIndicatorOnDemand(APIView):
                              ))
     @swagger_auto_schema(manual_parameters=[indicator_id,], responses={200:response,404:error})
     def post(self, request, format=None):
+        MITIGATE = "mitigate"
+        UNMITIGATE = "unmitigate"
         indicator = models.Indicator.objects.get(id=self.request.data["indicator_id"],
                                                  organization=self.request.user.organization)
-        jobs = models.MitigateIndicatorJob.objects.filter(indicator_type=indicator.ind_type,
+        action = self.request.data.get("action", "mitigate")
+        if action not in [MITIGATE, UNMITIGATE]:
+            response = {
+                    "action":["action not in allowed valued"],
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        if action == MITIGATE:
+            jobs = models.MitigateIndicatorJob.objects.filter(indicator_type=indicator.ind_type,
+                                                  organization=self.request.user.organization,
+                                                  active=True)
+        else:
+             jobs = models.UnmitigateIndicatorJob.objects.filter(indicator_type=indicator.ind_type,
                                                   organization=self.request.user.organization,
                                                   active=True)
         job_ids = []
@@ -121,6 +139,7 @@ class MitigateIndicatorOnDemand(APIView):
                                organization_id=self.request.user.organization)
             job_ids.append(res.id)
         return Response({"job_ids": job_ids}, status.HTTP_200_OK)
+
 
 class RandomUnclassified(APIView):
 

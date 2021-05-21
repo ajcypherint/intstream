@@ -5,8 +5,8 @@ import { Main } from '../components/IndicatorHome'
 import { getIndicators, setIndicators } from '../actions/indicators'
 import { filterIndChange, setPage, setHomeSelections, getAllSources, MODEL_VERSIONS, getAllActiveModels } from '../actions/filter'
 import { getSources, clearSources } from '../actions/sources'
-import { mitigateDispatch } from '../actions/mitigate'
-import { getMultiJobVersion } from '../actions/multiJobVersion'
+import { mitigateDispatch, unmitigateDispatch } from '../actions/mitigate'
+import { getJobVersion } from '../actions/multiJobVersion'
 import {
   UNMITIGATE,
   MITIGATE,
@@ -28,8 +28,8 @@ import {
 
 import { MD5, SHA1, SHA256, IPV4, EMAIL, IPV6, NETLOC } from '../reducers/tab'
 
-const getMitigateJobVersionFunc = getMultiJobVersion(MITIGATE_IND_JOB_VERSION_API)
-const getUnmitigateJobVersionFunc = getMultiJobVersion(UNMITIGATE_IND_JOB_VERSION_API)
+const getMitigateJobVersionFunc = getJobVersion(MITIGATE_IND_JOB_VERSION_API)
+const getUnmitigateJobVersionFunc = getJobVersion(UNMITIGATE_IND_JOB_VERSION_API)
 
 const API_SOURCES = '/api/homefilter/'
 const mapStateToProps = (state) => ({
@@ -73,7 +73,7 @@ const mapDispatchToProps = (dispatch) => ({
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
   filterChange: (selections, setPage) => dispatch(filterIndChange(selections, setPage)),
   fetchIndicatorsFullUri: (url, params = undefined) => dispatch(getIndicators(url, undefined, params)),
-  mitigateDispatch: (indicator) => dispatch(mitigateDispatch(indicator)),
+  mitigateDispatch: (indicator, action) => dispatch(mitigateDispatch(indicator, action)),
   setIndicator: (url, indicatorObj) => dispatch(setIndicators(url, indicatorObj))
 })
 

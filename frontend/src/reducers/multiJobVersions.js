@@ -1,4 +1,4 @@
-import * as jobVersionData from '../actions/jobVersionMulti'
+import * as jobVersionData from '../actions/multiJobVersion'
 
 export const initialState = { }
 
