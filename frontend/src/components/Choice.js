@@ -2,8 +2,10 @@ import React from 'react'
 import { FormGroup, FormFeedback, Label, Input } from 'reactstrap'
 
 export default ({ name, error, idList, uniqueList, value, onChange, disabled, noAllValues, ...rest }) => {
+  for (var i = 0; i < idList.length; i++) idList[i] = parseInt(idList[i], 10)
+  value = parseInt(value)
   let prop = 'name'
-  if (rest.prop !== 'undefined') {
+  if (typeof rest.prop !== 'undefined') {
     prop = rest.prop
   }
   const uniqueListSorted = uniqueList.sort((a, b) => a[prop] > b[prop] ? 1 : -1)

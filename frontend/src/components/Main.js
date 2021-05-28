@@ -62,6 +62,10 @@ import TrainingScriptsVer from '../containers/TrainVersionList'
 import TrainingScriptVersionEditForm from './TrainingScriptVersionEditFormComp'
 import TrainingScriptVersionEdit from '../containers/SourcesTrainingScriptVersionEdit'
 
+import SourcesMitigateIndicatorJobList from '../containers/SourcesMitigateIndicatorJobList'
+import SourcesMitigateIndicatorJobEdit from '../containers/SourcesMitigateIndicatorJobEdit'
+import EditMitigateIndicatorJob from './SourceEditMitigateIndicatorJobFormComp'
+
 // import TrainingScriptsVersionEditForm from './TrainingScriptsVersionEditFormComp'
 // import TrainingScriptsVersionEdit from '../containers/TrainingScriptsVersionEdit'
 
@@ -283,6 +287,26 @@ const Main = (props) => (
         form={<EditRSS/>}
         state={ {
           action: EDIT
+        }}
+        match={match}/>}
+      />
+    <Route exact path="/sources_mitigateindicatorjob" component={SourcesMitigateIndicatorJobList} />
+    <Route exact path="/sources_mitigateindicatorjob_add"
+      render={() =>
+      <SourcesMitigateIndicatorJobEdit
+        form={<EditMitigateIndicatorJob/>}
+        state={ {
+          action: ADD
+        }}
+        match={undefined}/>}
+      />
+    <Route exact path="/sources_mitigatejob/:id"
+      render={({ match }) =>
+      <SourcesMitigateIndicatorJobEdit
+        form={<EditMitigateIndicatorJob/>}
+        state={ {
+          action: EDIT
+
         }}
         match={match}/>}
       />

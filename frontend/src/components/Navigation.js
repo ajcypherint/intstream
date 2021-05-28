@@ -104,6 +104,9 @@ export default class Example extends React.Component {
                     <DropdownItem tag={Link} to="/sources_indjob">
                     Hunting Jobs
                     </DropdownItem>
+                    <DropdownItem tag={Link} to="/sources_mitigateindicatorjob">
+                    Mitigation Jobs
+                    </DropdownItem>
 
                  </DropdownMenu>
               </UncontrolledDropdown>
