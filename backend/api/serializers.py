@@ -234,6 +234,8 @@ class MitigateIndicatorJobSerializer(serializers.ModelSerializer):
             "last_run",
             "last_status",
             "arguments",
+            "auto_mitigate",
+            "manual_mitigate",
             "user",
             "timeout",
             'server_url',

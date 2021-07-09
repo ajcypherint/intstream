@@ -437,7 +437,6 @@ def _extract_indicators(text, article_id, organization_id):
         except db.DataError as e:
             logger.error("ip: " + str(i) + "; " + str(e))
 
-
     urls = iocextract.extract_urls(text, refang=True)
     for i in urls:
         # todo  load extra suffixes from models.suffixes
