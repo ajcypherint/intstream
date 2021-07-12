@@ -54,9 +54,14 @@ import JobVer from '../containers/JobVersionList'
 import JobVersionEditForm from './JobVersionEditFormComp'
 import JobVersionEdit from '../containers/SourcesJobVersionEdit'
 
-import IndJobVer from '../containers/IndJobVersionList'
+import JobVersionEditTemplate from '../containers/JobVersionEditTemplate'
+import JobVerListTemplate from '../containers/JobVersionListTemplate'
+
 import IndJobVersionEditForm from './IndJobVersionEditFormComp'
-import IndJobVersionEdit from '../containers/SourcesIndJobVersionEdit'
+// import IndJobVersionEdit from '../containers/SourcesIndJobVersionEdit'
+
+import MitigateIndJobVersionEditForm from './MitigateIndJobVersionEditFormComp'
+// import MitigateIndJobVersionEdit from '../containers/SourcesMitigateIndJobVersionEdit'
 
 import TrainingScriptsVer from '../containers/TrainVersionList'
 import TrainingScriptVersionEditForm from './TrainingScriptVersionEditFormComp'
@@ -71,7 +76,66 @@ import EditMitigateIndicatorJob from './SourceEditMitigateIndicatorJobFormComp'
 
 import VersionTable from './VersionTable'
 
+import {
+  MITIGATE_IND_JOB_VERSION_API,
+  MITIGATE_ADD_URI,
+  MITIGATE_PARENT_URI,
+  JOB_VERSION_API,
+  // JOB_ADD_URI,
+  // JOB_PARENT_URI,
+  INDJOB_VERSION_API,
+  INDJOB_ADD_URI,
+  INDJOB_PARENT_URI
+} from '../containers/api'
+
+const IndJobVer = JobVerListTemplate(INDJOB_ADD_URI
+)(INDJOB_PARENT_URI
+)(INDJOB_VERSION_API)
+
+const MitigateIndJobVer = JobVerListTemplate(MITIGATE_ADD_URI
+)(MITIGATE_PARENT_URI
+)(MITIGATE_IND_JOB_VERSION_API)
+
+const INDJOBVERSION_HEADING = ' Hunging Job Version'
+const INDJOBVERSION_EMPTY = {
+  job: '',
+  version: '',
+  zip: '',
+  active: false
+}
+const INDJOBVERSION_FIELDS = [
+  'job',
+  'zip',
+  'version',
+  'active']
+
+const IndJobVersionEdit = JobVersionEditTemplate(
+  INDJOBVERSION_EMPTY)(
+  INDJOBVERSION_FIELDS)(
+  INDJOBVERSION_HEADING)(
+  INDJOB_VERSION_API)
+
+const MITIGATE_INDJOBVERSION_HEADING = ' Mitigate Indicator Job Version'
+const MITIGATE_INDJOBVERSION_EMPTY = {
+  job: '',
+  version: '',
+  zip: '',
+  active: false
+}
+const MITIGATE_INDJOBVERSION_FIELDS = [
+  'job',
+  'zip',
+  'version',
+  'active']
+
+const MitigateIndJobVersionEdit = JobVersionEditTemplate(
+  MITIGATE_INDJOBVERSION_EMPTY)(
+  MITIGATE_INDJOBVERSION_FIELDS)(
+  MITIGATE_INDJOBVERSION_HEADING)(
+  MITIGATE_IND_JOB_VERSION_API)
+
 const Main = (props) => (
+
   <Switch>
     <Route exact path="/" component={Home} />
     <Route exact path="/indicatorhome" component={IndicatorHome} />
@@ -82,6 +146,23 @@ const Main = (props) => (
     <Route exact path="/jobloglist/" component={LogList} />
     <Route exact path="/indjobloglist/" component={IndLogList} />
     <Route exact path="/tasklist" component={TaskList} />
+    <Route exact path="/mitigateindjobversions"
+      render={() =>
+          <MitigateIndJobVer
+            table={<VersionTable/>}
+          />
+      }
+      />
+    <Route exact path="/mitigateindjobversions_add"
+          render={() =>
+          <MitigateIndJobVersionEdit
+            form={<MitigateIndJobVersionEditForm/>}
+            state={ {
+              action: ADD
+            }}
+            match={undefined}/>}
+    />
+
     <Route exact path="/indjobversions"
       render={() =>
           <IndJobVer
@@ -300,7 +381,7 @@ const Main = (props) => (
         }}
         match={undefined}/>}
       />
-    <Route exact path="/sources_mitigatejob/:id"
+    <Route exact path="/sources_mitigateindicatorjob/:id"
       render={({ match }) =>
       <SourcesMitigateIndicatorJobEdit
         form={<EditMitigateIndicatorJob/>}

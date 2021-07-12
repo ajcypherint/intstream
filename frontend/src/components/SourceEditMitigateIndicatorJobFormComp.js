@@ -25,7 +25,7 @@ export default class Edit extends Component {
     event.preventDefault() // prevent form submission
     const job = event.target.dataset.job
     const name = event.target.dataset.name
-    this.props.history.push('/indjobversions/?job=' + job + '&name=' + name)
+    this.props.history.push('/mitigateindjobversions/?job=' + job + '&name=' + name)
   }
 
   logs (event) {

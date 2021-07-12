@@ -4,7 +4,7 @@ import * as reducers from '../reducers/'
 import Main from '../components/VersionList'
 import { getJobVersion, setPage, setActiveJobVersion } from '../actions/jobVersion'
 import { filterChangeTemplate } from '../actions/jobVersionFilter'
-import { INDJOB_VERSION_API } from './api'
+
 import {
   withQueryParams,
   useQueryParams,
@@ -13,14 +13,9 @@ import {
   ArrayParam
 } from 'use-query-params'
 
-const filterChangeFunc = filterChangeTemplate(INDJOB_VERSION_API)('job')
-const getJobVersionFunc = getJobVersion(INDJOB_VERSION_API)
-const setPageFunc = setPage(INDJOB_VERSION_API)
-const setActiveJobVersionFunc = setActiveJobVersion(INDJOB_VERSION_API)('job')
-
-const mapStateToProps = (state) => ({
-  addUri: '/indjobversions_add',
-  parentUri: '/sources_indjob',
+const mapStateToProps = (addUri) => (parentUri) => (state) => ({
+  addUri: addUri,
+  parentUri: parentUri,
   List: reducers.getJobVersionFilterJobs(state),
   VersionList: reducers.getJobVersion(state),
   VersionLoading: reducers.getJobVersionLoading(state),
@@ -31,14 +26,14 @@ const mapStateToProps = (state) => ({
 
 })
 
-const mapDispatchToProps = (dispatch) => ({
-  filterChange: (newSelections, setQuery) => dispatch(filterChangeFunc(newSelections, setQuery)),
-  fetchVersions: (params = undefined) => dispatch(getJobVersionFunc(params)),
-  setPage: (page) => dispatch(setPageFunc(page)),
-  setActiveVersion: (job, id, selections, setQuery) => dispatch(setActiveJobVersionFunc(job, id, selections, setQuery))
+const mapDispatchToProps = (API) => (dispatch) => ({
+  filterChange: (newSelections, setQuery) => dispatch(filterChangeTemplate(API)('job')(newSelections, setQuery)),
+  fetchVersions: (params = undefined) => dispatch(getJobVersion(API)(params)),
+  setPage: (page) => dispatch(setPage(API)(page)),
+  setActiveVersion: (job, id, selections, setQuery) => dispatch(setActiveJobVersion(API)('job')(job, id, selections, setQuery))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(
+export default (addUri) => (parentUri) => (API) => connect(mapStateToProps(addUri)(parentUri), mapDispatchToProps(API))(
   withQueryParams(
     {
       job: StringParam,
