@@ -1,8 +1,16 @@
 
+export const RSS_API = '/api/sourcesrss/'
+export const UPLOAD_API = '/api/sourcesupload/'
 export const TRAIN_VERSION_API = '/api/trainingscriptversion/'
+export const TRAIN_VERSION_ADD_URI = '/trainingscriptversions_add'
+export const TRAIN_VERSION_PARENT_URI = '/trainingscripts'
+
 export const TRAIN_API = '/api/trainingscriptversion/'
 
 export const JOB_VERSION_API = '/api/jobversion/'
+export const JOB_VERSION_ADD_URI = '/jobversions_add'
+export const JOB_VERSION_PARENT_URI = '/sources_job'
+
 export const JOB_API = '/api/job/'
 
 export const INDJOB_VERSION_API = '/api/indicatorjobversion/'

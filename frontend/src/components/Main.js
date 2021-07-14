@@ -2,14 +2,21 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import Home from '../containers/Home'
 import IndicatorHome from '../containers/IndicatorHome'
-import SourcesIndJobList from '../containers/SourcesIndJobList'
+
+import JobList from '../containers/SourcesJobListTemplate'
+
+// import SourcesIndJobList from '../containers/SourcesIndJobList'
 import SourcesIndJobEdit from '../containers/SourcesIndJobEdit'
-import SourcesJobList from '../containers/SourcesJobList'
+// import SourcesJobList from '../containers/SourcesJobList'
 import SourcesJobEdit from '../containers/SourcesJobEdit'
-import SourcesUploadList from '../containers/SourcesUploadList'
+// import SourcesUploadList from '../containers/SourcesUploadList'
 import SourcesUploadEdit from '../containers/SourcesUploadEdit'
-import SourcesRssList from '../containers/SourcesRSSList'
+// import SourcesRssList from '../containers/SourcesRSSList'
 import SourcesRSSEdit from '../containers/SourcesRSSEdit'
+import SourcesMitigateIndicatorJobList from '../containers/SourcesMitigateIndicatorJobList'
+import SourcesMitigateIndicatorJobEdit from '../containers/SourcesMitigateIndicatorJobEdit'
+import EditMitigateIndicatorJob from './SourceEditMitigateIndicatorJobFormComp'
+
 import AllUserList from '../containers/AllUserList'
 import AllUserEdit from '../containers/AllUserEdit'
 import EditAllUserForm from './AllUserEditFormComp.js'
@@ -50,29 +57,13 @@ import CreateMLVersion from '../containers/CreateMLVersion'
 import Ver from '../containers/ModelVersionList'
 import ModelVersionTable from './ModelVersionTable'
 
-import JobVer from '../containers/JobVersionList'
-import JobVersionEditForm from './JobVersionEditFormComp'
-import JobVersionEdit from '../containers/SourcesJobVersionEdit'
-
 import JobVersionEditTemplate from '../containers/JobVersionEditTemplate'
 import JobVerListTemplate from '../containers/JobVersionListTemplate'
 
+import JobVersionEditForm from './JobVersionEditFormComp'
 import IndJobVersionEditForm from './IndJobVersionEditFormComp'
-// import IndJobVersionEdit from '../containers/SourcesIndJobVersionEdit'
-
 import MitigateIndJobVersionEditForm from './MitigateIndJobVersionEditFormComp'
-// import MitigateIndJobVersionEdit from '../containers/SourcesMitigateIndJobVersionEdit'
-
-import TrainingScriptsVer from '../containers/TrainVersionList'
 import TrainingScriptVersionEditForm from './TrainingScriptVersionEditFormComp'
-import TrainingScriptVersionEdit from '../containers/SourcesTrainingScriptVersionEdit'
-
-import SourcesMitigateIndicatorJobList from '../containers/SourcesMitigateIndicatorJobList'
-import SourcesMitigateIndicatorJobEdit from '../containers/SourcesMitigateIndicatorJobEdit'
-import EditMitigateIndicatorJob from './SourceEditMitigateIndicatorJobFormComp'
-
-// import TrainingScriptsVersionEditForm from './TrainingScriptsVersionEditFormComp'
-// import TrainingScriptsVersionEdit from '../containers/TrainingScriptsVersionEdit'
 
 import VersionTable from './VersionTable'
 
@@ -80,9 +71,16 @@ import {
   MITIGATE_IND_JOB_VERSION_API,
   MITIGATE_ADD_URI,
   MITIGATE_PARENT_URI,
+  TRAIN_VERSION_API,
+  TRAIN_VERSION_ADD_URI,
+  TRAIN_VERSION_PARENT_URI,
   JOB_VERSION_API,
-  // JOB_ADD_URI,
-  // JOB_PARENT_URI,
+  JOB_VERSION_ADD_URI,
+  JOB_VERSION_PARENT_URI,
+  JOB_API,
+  RSS_API,
+  UPLOAD_API,
+  INDJOB_API,
   INDJOB_VERSION_API,
   INDJOB_ADD_URI,
   INDJOB_PARENT_URI
@@ -96,43 +94,110 @@ const MitigateIndJobVer = JobVerListTemplate(MITIGATE_ADD_URI
 )(MITIGATE_PARENT_URI
 )(MITIGATE_IND_JOB_VERSION_API)
 
-const INDJOBVERSION_HEADING = ' Hunging Job Version'
-const INDJOBVERSION_EMPTY = {
+const IND_JOBVERSION_HEADING = ' Hunging Job Version'
+const JOBVERSION_EMPTY = {
   job: '',
   version: '',
   zip: '',
   active: false
 }
-const INDJOBVERSION_FIELDS = [
+const JOBVERSION_FIELDS = [
   'job',
   'zip',
   'version',
   'active']
 
 const IndJobVersionEdit = JobVersionEditTemplate(
-  INDJOBVERSION_EMPTY)(
-  INDJOBVERSION_FIELDS)(
-  INDJOBVERSION_HEADING)(
+  JOBVERSION_EMPTY)(
+  JOBVERSION_FIELDS)(
+  IND_JOBVERSION_HEADING)(
   INDJOB_VERSION_API)
 
 const MITIGATE_INDJOBVERSION_HEADING = ' Mitigate Indicator Job Version'
-const MITIGATE_INDJOBVERSION_EMPTY = {
-  job: '',
-  version: '',
-  zip: '',
-  active: false
-}
-const MITIGATE_INDJOBVERSION_FIELDS = [
-  'job',
-  'zip',
-  'version',
-  'active']
 
 const MitigateIndJobVersionEdit = JobVersionEditTemplate(
-  MITIGATE_INDJOBVERSION_EMPTY)(
-  MITIGATE_INDJOBVERSION_FIELDS)(
+  JOBVERSION_EMPTY)(
+  JOBVERSION_FIELDS)(
   MITIGATE_INDJOBVERSION_HEADING)(
   MITIGATE_IND_JOB_VERSION_API)
+
+const JobVer = JobVerListTemplate(JOB_VERSION_ADD_URI
+)(JOB_VERSION_PARENT_URI
+)(JOB_VERSION_API)
+
+const TrainingScriptsVer = JobVerListTemplate(TRAIN_VERSION_ADD_URI
+)(TRAIN_VERSION_PARENT_URI
+)(TRAIN_VERSION_API)
+
+const TRAIN_JOBVERSION_HEADING = ' Training Job Version'
+
+const TrainingScriptVersionEdit = JobVersionEditTemplate(
+  JOBVERSION_EMPTY)(
+  JOBVERSION_FIELDS)(
+  TRAIN_JOBVERSION_HEADING)(
+  TRAIN_VERSION_API)
+
+const JOBVERSION_HEADING = ' Job Version'
+
+const JobVersionEdit = JobVersionEditTemplate(
+  JOBVERSION_EMPTY)(
+  JOBVERSION_FIELDS)(
+  JOBVERSION_HEADING)(
+  JOB_VERSION_API)
+
+// edit
+const JOB_FIELDS = ['id',
+  'name',
+  'last_run',
+  'last_run_status',
+  'active']
+const JOB_ORDERSTARTCOL = 'name'
+
+const INDJOB_EDITURI = '/sources_indjob/'
+const INDJOB_ADDURI = '/sources_indjob_add'
+const INDJOB_HEADING = 'Hunting Jobs'
+
+const SourcesIndJobList = JobList(JOB_ORDERSTARTCOL)(
+  JOB_FIELDS)(
+  INDJOB_HEADING)(
+  INDJOB_EDITURI)(
+  INDJOB_ADDURI)(
+  INDJOB_API)
+
+const JOB_HEADING = 'Scheduled Jobs'
+const JOB_EDITURI = '/sources_job/'
+const JOB_ADDURI = '/sources_job_add'
+
+const SourcesJobList = JobList(JOB_ORDERSTARTCOL)(
+  JOB_FIELDS)(
+  JOB_HEADING)(
+  JOB_EDITURI)(
+  JOB_ADDURI)(
+  JOB_API)
+
+const UPLOAD_HEADING = 'Upload Sources'
+const UPLOAD_EDITURI = '/sources_upload/'
+const UPLOAD_ADDURI = '/sources_upload_add'
+const UPLOAD_FIELDS = ['id', 'name', 'active']
+
+const SourcesUploadList = JobList(JOB_ORDERSTARTCOL)(
+  UPLOAD_FIELDS)(
+  UPLOAD_HEADING)(
+  UPLOAD_EDITURI)(
+  UPLOAD_ADDURI)(
+  UPLOAD_API)
+
+const RSS_HEADING = 'RSS Sources'
+const RSS_EDITURI = /sources_rss/
+const RSS_ADDURI = '/sources_rss_add'
+
+const RSS_FIELDS = ['id', 'name', 'url', 'active', 'extract_indicators']
+const SourcesRssList = JobList(JOB_ORDERSTARTCOL)(
+  RSS_FIELDS)(
+  RSS_HEADING)(
+  RSS_EDITURI)(
+  RSS_ADDURI)(
+  RSS_API)
 
 const Main = (props) => (
 
