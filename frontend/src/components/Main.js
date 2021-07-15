@@ -6,16 +6,17 @@ import IndicatorHome from '../containers/IndicatorHome'
 import JobList from '../containers/SourcesJobListTemplate'
 
 // import SourcesIndJobList from '../containers/SourcesIndJobList'
-import SourcesIndJobEdit from '../containers/SourcesIndJobEdit'
+// import SourcesIndJobEdit from '../containers/SourcesIndJobEdit'
 // import SourcesJobList from '../containers/SourcesJobList'
-import SourcesJobEdit from '../containers/SourcesJobEdit'
+// import SourcesJobEdit from '../containers/SourcesJobEdit'
 // import SourcesUploadList from '../containers/SourcesUploadList'
-import SourcesUploadEdit from '../containers/SourcesUploadEdit'
+// import SourcesUploadEdit from '../containers/SourcesUploadEdit'
 // import SourcesRssList from '../containers/SourcesRSSList'
-import SourcesRSSEdit from '../containers/SourcesRSSEdit'
-import SourcesMitigateIndicatorJobList from '../containers/SourcesMitigateIndicatorJobList'
-import SourcesMitigateIndicatorJobEdit from '../containers/SourcesMitigateIndicatorJobEdit'
-import EditMitigateIndicatorJob from './SourceEditMitigateIndicatorJobFormComp'
+// import SourcesRSSEdit from '../containers/SourcesRSSEdit'
+
+import JobEditTemplate from '../containers/JobEditTemplate.js'
+// import SourcesMitigateIndicatorJobList from '../containers/SourcesMitigateIndicatorJobList'
+// import SourcesMitigateIndicatorJobEdit from '../containers/SourcesMitigateIndicatorJobEdit'
 
 import AllUserList from '../containers/AllUserList'
 import AllUserEdit from '../containers/AllUserEdit'
@@ -64,13 +65,17 @@ import JobVersionEditForm from './JobVersionEditFormComp'
 import IndJobVersionEditForm from './IndJobVersionEditFormComp'
 import MitigateIndJobVersionEditForm from './MitigateIndJobVersionEditFormComp'
 import TrainingScriptVersionEditForm from './TrainingScriptVersionEditFormComp'
+import EditMitigateIndicatorJob from './SourceEditMitigateIndicatorJobFormComp'
 
 import VersionTable from './VersionTable'
 
 import {
+  MITIGATE_IND_JOB_API,
+  MITIGATE_IND_JOB_ADD_URI,
+  MITIGATE_IND_JOB_EDIT_URI,
   MITIGATE_IND_JOB_VERSION_API,
-  MITIGATE_ADD_URI,
-  MITIGATE_PARENT_URI,
+  MITIGATE_VERSION_ADD_URI,
+  MITIGATE_VERSION_PARENT_URI,
   TRAIN_VERSION_API,
   TRAIN_VERSION_ADD_URI,
   TRAIN_VERSION_PARENT_URI,
@@ -79,6 +84,8 @@ import {
   JOB_VERSION_PARENT_URI,
   JOB_API,
   RSS_API,
+  RSS_EDITURI,
+  RSS_ADDURI,
   UPLOAD_API,
   INDJOB_API,
   INDJOB_VERSION_API,
@@ -90,8 +97,8 @@ const IndJobVer = JobVerListTemplate(INDJOB_ADD_URI
 )(INDJOB_PARENT_URI
 )(INDJOB_VERSION_API)
 
-const MitigateIndJobVer = JobVerListTemplate(MITIGATE_ADD_URI
-)(MITIGATE_PARENT_URI
+const MitigateIndJobVer = JobVerListTemplate(MITIGATE_VERSION_ADD_URI
+)(MITIGATE_VERSION_PARENT_URI
 )(MITIGATE_IND_JOB_VERSION_API)
 
 const IND_JOBVERSION_HEADING = ' Hunging Job Version'
@@ -146,7 +153,7 @@ const JobVersionEdit = JobVersionEditTemplate(
   JOB_VERSION_API)
 
 // edit
-const JOB_FIELDS = ['id',
+const JOB_LIST_FIELDS = ['id',
   'name',
   'last_run',
   'last_run_status',
@@ -158,21 +165,21 @@ const INDJOB_ADDURI = '/sources_indjob_add'
 const INDJOB_HEADING = 'Hunting Jobs'
 
 const SourcesIndJobList = JobList(JOB_ORDERSTARTCOL)(
-  JOB_FIELDS)(
+  JOB_LIST_FIELDS)(
   INDJOB_HEADING)(
   INDJOB_EDITURI)(
   INDJOB_ADDURI)(
   INDJOB_API)
 
-const JOB_HEADING = 'Scheduled Jobs'
-const JOB_EDITURI = '/sources_job/'
-const JOB_ADDURI = '/sources_job_add'
+const JOB_LIST_HEADING = 'Scheduled Jobs'
+const JOB_LIST_EDITURI = '/sources_job/'
+const JOB_LIST_ADDURI = '/sources_job_add'
 
 const SourcesJobList = JobList(JOB_ORDERSTARTCOL)(
-  JOB_FIELDS)(
-  JOB_HEADING)(
-  JOB_EDITURI)(
-  JOB_ADDURI)(
+  JOB_LIST_FIELDS)(
+  JOB_LIST_HEADING)(
+  JOB_LIST_EDITURI)(
+  JOB_LIST_ADDURI)(
   JOB_API)
 
 const UPLOAD_HEADING = 'Upload Sources'
@@ -188,9 +195,6 @@ const SourcesUploadList = JobList(JOB_ORDERSTARTCOL)(
   UPLOAD_API)
 
 const RSS_HEADING = 'RSS Sources'
-const RSS_EDITURI = /sources_rss/
-const RSS_ADDURI = '/sources_rss_add'
-
 const RSS_FIELDS = ['id', 'name', 'url', 'active', 'extract_indicators']
 const SourcesRssList = JobList(JOB_ORDERSTARTCOL)(
   RSS_FIELDS)(
@@ -198,6 +202,76 @@ const SourcesRssList = JobList(JOB_ORDERSTARTCOL)(
   RSS_EDITURI)(
   RSS_ADDURI)(
   RSS_API)
+
+const MITIGATE_IND_JOB_HEADING = 'Indicator Mitigate Jobs'
+const MITIGATE_FIELDS = ['id',
+  'name',
+  'auto_mitigate',
+  'manual_mitigate',
+  'active']
+
+const SourcesMitigateIndicatorJobList = JobList(JOB_ORDERSTARTCOL)(
+  MITIGATE_FIELDS)(
+  MITIGATE_IND_JOB_HEADING)(
+  MITIGATE_IND_JOB_EDIT_URI)(
+  MITIGATE_IND_JOB_ADD_URI)(
+  MITIGATE_IND_JOB_API)
+
+const HUNTING_HEADING = ' Hunting Job'
+const JOB_EMPTY = {
+  name: '',
+  id: '',
+  arguments: '',
+  timeout: '',
+  server_url: '',
+  user: '',
+  active: false
+}
+
+const JOB_FIELDS = undefined // not needed
+const SourcesIndJobEdit = JobEditTemplate(JOB_EMPTY)(
+  JOB_FIELDS)(
+  HUNTING_HEADING)(
+  INDJOB_API)
+
+const JOB_HEADING = ' Scheduled Job'
+const SourcesJobEdit = JobEditTemplate(JOB_EMPTY)(
+  JOB_FIELDS)(
+  JOB_HEADING)(
+  JOB_API)
+
+const RSS_EDIT_HEADING = ' RSS Source'
+const RSS_EMPTY = { id: '', name: '', url: '', active: false, extract_indicators: false }
+
+const SourcesRSSEdit = JobEditTemplate(RSS_EMPTY)(
+  JOB_FIELDS)(
+  RSS_EDIT_HEADING)(
+  RSS_API)
+
+const UPLOAD_EDIT_HEADING = ' Upload Source'
+const UPLOAD_EMPTY = { name: '', id: '', file: '', active: false }
+const SourcesUploadEdit = JobEditTemplate(UPLOAD_EMPTY)(
+  JOB_FIELDS)(
+  UPLOAD_EDIT_HEADING)(
+  UPLOAD_API)
+
+const MITIGATE_EMPTY = {
+  name: '',
+  id: '',
+  arguments: '',
+  timeout: '',
+  server_url: '',
+  user: '',
+  auto_mitigate: false,
+  manual_mitigate: false,
+  active: false
+}
+
+const MITIGATE_EDIT_HEADING = ' Mitigate Job'
+const SourcesMitigateIndicatorJobEdit = JobEditTemplate(MITIGATE_EMPTY)(
+  JOB_FIELDS)(
+  MITIGATE_EDIT_HEADING)(
+  MITIGATE_IND_JOB_API)
 
 const Main = (props) => (
 

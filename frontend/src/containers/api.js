@@ -1,5 +1,8 @@
 
 export const RSS_API = '/api/sourcesrss/'
+export const RSS_EDITURI = /sources_rss/
+export const RSS_ADDURI = '/sources_rss_add'
+
 export const UPLOAD_API = '/api/sourcesupload/'
 export const TRAIN_VERSION_API = '/api/trainingscriptversion/'
 export const TRAIN_VERSION_ADD_URI = '/trainingscriptversions_add'
@@ -20,12 +23,14 @@ export const INDJOB_PARENT_URI = '/sources_indjob'
 export const INDJOB_API = '/api/indicatorjob/'
 
 export const MITIGATE_IND_JOB_VERSION_API = '/api/mitigateindicatorjobversion/'
-export const MITIGATE_ADD_URI = '/mitigateindjobversions_add'
-export const MITIGATE_PARENT_URI = '/sources_mitigateindicatorjob'
+export const MITIGATE_VERSION_ADD_URI = '/mitigateindjobversions_add'
+export const MITIGATE_VERSION_PARENT_URI = '/sources_mitigateindicatorjob'
 
 export const UNMITIGATE_IND_JOB_VERSION_API = '/api/unmitigateindicatorjobversion/'
 
 export const MITIGATE_IND_JOB_API = '/api/mitigateindicatorjob/'
+export const MITIGATE_IND_JOB_EDIT_URI = '/sources_mitigateindicatorjob/'
+export const MITIGATE_IND_JOB_ADD_URI = '/sources_mitigateindicatorjob_add'
 
 export const UNMITIGATE_IND_JOB_API = '/api/unmitigateindicatorjob/'
 
