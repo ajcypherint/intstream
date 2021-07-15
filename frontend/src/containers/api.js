@@ -49,7 +49,7 @@ export const MITIGATE_INDICATOR_API = '/api/mitigate/'
 
 export const BASE_INDICATOR_API = '/api/indicatorbase/'
 
-export const STATUS_RUNNING = 'runnong'
+export const STATUS_RUNNING = 'running'
 export const STATUS_SUCCEEDED = 'succeeded'
 export const STATUS_FAILED = 'failed'
 

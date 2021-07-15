@@ -3,36 +3,31 @@ import { Route, Switch } from 'react-router-dom'
 import Home from '../containers/Home'
 import IndicatorHome from '../containers/IndicatorHome'
 
-import JobList from '../containers/SourcesJobListTemplate'
-
-// import SourcesIndJobList from '../containers/SourcesIndJobList'
-// import SourcesIndJobEdit from '../containers/SourcesIndJobEdit'
-// import SourcesJobList from '../containers/SourcesJobList'
-// import SourcesJobEdit from '../containers/SourcesJobEdit'
-// import SourcesUploadList from '../containers/SourcesUploadList'
-// import SourcesUploadEdit from '../containers/SourcesUploadEdit'
-// import SourcesRssList from '../containers/SourcesRSSList'
-// import SourcesRSSEdit from '../containers/SourcesRSSEdit'
-
+import JobListTemplate from '../containers/SourcesJobListTemplate'
 import JobEditTemplate from '../containers/JobEditTemplate.js'
-// import SourcesMitigateIndicatorJobList from '../containers/SourcesMitigateIndicatorJobList'
-// import SourcesMitigateIndicatorJobEdit from '../containers/SourcesMitigateIndicatorJobEdit'
 
+import JobVersionEditTemplate from '../containers/JobVersionEditTemplate'
+import JobVerListTemplate from '../containers/JobVersionListTemplate'
+
+// todo(aj) refactor below
 import AllUserList from '../containers/AllUserList'
 import AllUserEdit from '../containers/AllUserEdit'
-import EditAllUserForm from './AllUserEditFormComp.js'
+import ModelsList from '../containers/ModelsList'
+import ModelsEdit from '../containers/ModelsEdit'
+import TrainingScriptsList from '../containers/TrainingScriptsList'
+import TrainingScriptsEdit from '../containers/TrainingScriptsEdit'
 import OrgUserList from '../containers/OrgUserList'
 import OrgUserEdit from '../containers/OrgUserEdit'
-import EditOrgUserForm from './OrgUserEditFormComp.js'
 import OrgList from '../containers/OrgList'
 import OrgEdit from '../containers/OrgEdit'
 import SettingsEdit from '../containers/SettingsEdit'
-
+import TrainList from '../containers/TrainList'
+import LogList from '../containers/LogList'
+import IndLogList from '../containers/IndLogList'
+import Ver from '../containers/ModelVersionList'
 import TaskList from '../containers/TaskList'
 
-import ModelsList from '../containers/ModelsList'
-import ModelsEdit from '../containers/ModelsEdit'
-
+// keep below
 import About from './About'
 import Logout from '../containers/Logout'
 import Password from '../containers/Password'
@@ -45,27 +40,18 @@ import EditIndJob from './SourceEditIndJobFormComp'
 import Article from '../containers/Article'
 import Train from '../containers/Train'
 
-import TrainingScriptsList from '../containers/TrainingScriptsList'
-import TrainingScriptsEdit from '../containers/TrainingScriptsEdit'
+import EditAllUserForm from './AllUserEditFormComp.js'
+import EditOrgUserForm from './OrgUserEditFormComp.js'
 import EditTrainingScripts from './TrainingScriptsEditFormComp'
-
-import Registration from '../containers/Registration'
-import TrainList from '../containers/TrainList'
-import LogList from '../containers/LogList'
-import IndLogList from '../containers/IndLogList'
-import { ADD, EDIT } from '../util/util'
-import CreateMLVersion from '../containers/CreateMLVersion'
-import Ver from '../containers/ModelVersionList'
-import ModelVersionTable from './ModelVersionTable'
-
-import JobVersionEditTemplate from '../containers/JobVersionEditTemplate'
-import JobVerListTemplate from '../containers/JobVersionListTemplate'
-
 import JobVersionEditForm from './JobVersionEditFormComp'
 import IndJobVersionEditForm from './IndJobVersionEditFormComp'
 import MitigateIndJobVersionEditForm from './MitigateIndJobVersionEditFormComp'
 import TrainingScriptVersionEditForm from './TrainingScriptVersionEditFormComp'
 import EditMitigateIndicatorJob from './SourceEditMitigateIndicatorJobFormComp'
+
+import { ADD, EDIT } from '../util/util'
+import CreateMLVersion from '../containers/CreateMLVersion'
+import ModelVersionTable from './ModelVersionTable'
 
 import VersionTable from './VersionTable'
 
@@ -164,7 +150,7 @@ const INDJOB_EDITURI = '/sources_indjob/'
 const INDJOB_ADDURI = '/sources_indjob_add'
 const INDJOB_HEADING = 'Hunting Jobs'
 
-const SourcesIndJobList = JobList(JOB_ORDERSTARTCOL)(
+const SourcesIndJobList = JobListTemplate(JOB_ORDERSTARTCOL)(
   JOB_LIST_FIELDS)(
   INDJOB_HEADING)(
   INDJOB_EDITURI)(
@@ -175,7 +161,7 @@ const JOB_LIST_HEADING = 'Scheduled Jobs'
 const JOB_LIST_EDITURI = '/sources_job/'
 const JOB_LIST_ADDURI = '/sources_job_add'
 
-const SourcesJobList = JobList(JOB_ORDERSTARTCOL)(
+const SourcesJobList = JobListTemplate(JOB_ORDERSTARTCOL)(
   JOB_LIST_FIELDS)(
   JOB_LIST_HEADING)(
   JOB_LIST_EDITURI)(
@@ -187,7 +173,7 @@ const UPLOAD_EDITURI = '/sources_upload/'
 const UPLOAD_ADDURI = '/sources_upload_add'
 const UPLOAD_FIELDS = ['id', 'name', 'active']
 
-const SourcesUploadList = JobList(JOB_ORDERSTARTCOL)(
+const SourcesUploadList = JobListTemplate(JOB_ORDERSTARTCOL)(
   UPLOAD_FIELDS)(
   UPLOAD_HEADING)(
   UPLOAD_EDITURI)(
@@ -196,7 +182,7 @@ const SourcesUploadList = JobList(JOB_ORDERSTARTCOL)(
 
 const RSS_HEADING = 'RSS Sources'
 const RSS_FIELDS = ['id', 'name', 'url', 'active', 'extract_indicators']
-const SourcesRssList = JobList(JOB_ORDERSTARTCOL)(
+const SourcesRssList = JobListTemplate(JOB_ORDERSTARTCOL)(
   RSS_FIELDS)(
   RSS_HEADING)(
   RSS_EDITURI)(
@@ -210,7 +196,7 @@ const MITIGATE_FIELDS = ['id',
   'manual_mitigate',
   'active']
 
-const SourcesMitigateIndicatorJobList = JobList(JOB_ORDERSTARTCOL)(
+const SourcesMitigateIndicatorJobList = JobListTemplate(JOB_ORDERSTARTCOL)(
   MITIGATE_FIELDS)(
   MITIGATE_IND_JOB_HEADING)(
   MITIGATE_IND_JOB_EDIT_URI)(
