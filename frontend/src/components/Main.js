@@ -9,17 +9,16 @@ import JobEditTemplate from '../containers/JobEditTemplate.js'
 import JobVersionEditTemplate from '../containers/JobVersionEditTemplate'
 import JobVerListTemplate from '../containers/JobVersionListTemplate'
 
-// todo(aj) refactor below
 import AllUserList from '../containers/AllUserList'
 import AllUserEdit from '../containers/AllUserEdit'
-import ModelsList from '../containers/ModelsList'
+// import ModelsList from '../containers/ModelsList'
 import ModelsEdit from '../containers/ModelsEdit'
-import TrainingScriptsList from '../containers/TrainingScriptsList'
-import TrainingScriptsEdit from '../containers/TrainingScriptsEdit'
-import OrgUserList from '../containers/OrgUserList'
-import OrgUserEdit from '../containers/OrgUserEdit'
-import OrgList from '../containers/OrgList'
-import OrgEdit from '../containers/OrgEdit'
+// import TrainingScriptsList from '../containers/TrainingScriptsList'
+// import TrainingScriptsEdit from '../containers/TrainingScriptsEdit'
+// import OrgUserList from '../containers/OrgUserList'
+// import OrgUserEdit from '../containers/OrgUserEdit'
+// import OrgList from '../containers/OrgList'
+// import OrgEdit from '../containers/OrgEdit'
 import SettingsEdit from '../containers/SettingsEdit'
 import TrainList from '../containers/TrainList'
 import LogList from '../containers/LogList'
@@ -62,6 +61,18 @@ import {
   MITIGATE_IND_JOB_VERSION_API,
   MITIGATE_VERSION_ADD_URI,
   MITIGATE_VERSION_PARENT_URI,
+  ORG_API,
+  ORG_EDITURI,
+  ORG_ADDURI,
+  TRAINING_SCRIPT_API,
+  TRAINING_SCRIPT_EDITURI,
+  TRAINING_SCRIPT_ADDURI,
+  ORGUSER_API,
+  ORGUSER_EDITURI,
+  ORGUSER_ADDURI,
+  MODELS_API,
+  MODELS_EDITURI,
+  MODELS_ADDURI,
   TRAIN_VERSION_API,
   TRAIN_VERSION_ADD_URI,
   TRAIN_VERSION_PARENT_URI,
@@ -180,6 +191,43 @@ const SourcesUploadList = JobListTemplate(JOB_ORDERSTARTCOL)(
   UPLOAD_ADDURI)(
   UPLOAD_API)
 
+const ORGUSER_ORDERSTARTCOL = 'username'
+const ORGUSER_FIELDS = ['username', 'email', 'is_staff', 'is_integrator']
+const ORGUSER_HEADING = 'Users'
+const OrgUserList = JobListTemplate(ORGUSER_ORDERSTARTCOL)(
+  ORGUSER_FIELDS)(
+  ORGUSER_HEADING)(
+  ORGUSER_EDITURI)(
+  ORGUSER_ADDURI)(
+  ORGUSER_API)
+
+const MODELS_HEADING = 'Models'
+const MODELS_FIELDS = ['id', 'name', 'active']
+const ModelsList = JobListTemplate(JOB_ORDERSTARTCOL)(
+  MODELS_FIELDS)(
+  MODELS_HEADING)(
+  MODELS_EDITURI)(
+  MODELS_ADDURI)(
+  MODELS_API)
+
+const ORG_FIELDS = ['id', 'name']
+const ORG_HEADING = 'Organization'
+const OrgList = JobListTemplate(JOB_ORDERSTARTCOL)(
+  ORG_FIELDS)(
+  ORG_HEADING)(
+  ORG_EDITURI)(
+  ORG_ADDURI)(
+  ORG_API)
+
+const TRAINING_SCRIPT_HEADING = 'Trainingscripts'
+const TRAINING_SCRIPT_FIELDS = ['id', 'name', 'active']
+const TrainingScriptsList = JobListTemplate(JOB_ORDERSTARTCOL)(
+  TRAINING_SCRIPT_FIELDS)(
+  TRAINING_SCRIPT_HEADING)(
+  TRAINING_SCRIPT_EDITURI)(
+  TRAINING_SCRIPT_ADDURI)(
+  TRAINING_SCRIPT_API)
+
 const RSS_HEADING = 'RSS Sources'
 const RSS_FIELDS = ['id', 'name', 'url', 'active', 'extract_indicators']
 const SourcesRssList = JobListTemplate(JOB_ORDERSTARTCOL)(
@@ -225,6 +273,40 @@ const SourcesJobEdit = JobEditTemplate(JOB_EMPTY)(
   JOB_FIELDS)(
   JOB_HEADING)(
   JOB_API)
+
+const ORGUSER_EDIT_HEADING = ' User '
+const ORGUSER_EDIT_FIELDS = ['username', 'email', 'first_name', 'last_name', 'is_integrator', 'is_staff']
+const ORGUSER_EDIT_EMPTY = {
+  username: '',
+  email: '',
+  first_name: '',
+  last_name: '',
+  is_integrator: false,
+  is_staff: false
+}
+const OrgUserEdit = JobEditTemplate(ORGUSER_EDIT_EMPTY)(
+  ORGUSER_EDIT_FIELDS)(
+  ORGUSER_EDIT_HEADING)(
+  ORGUSER_API)
+
+const TRAININGSCRIPTS_EDIT_HEADING = ' Training Scripts'
+const TRAININGSCRIPTS_EDIT_EMPTY = {
+  name: '',
+  active: false,
+  id: ''
+}
+const TRAININGSCRIPTS_EDIT_FIELDS = ['name', 'active']
+const TrainingScriptsEdit = JobEditTemplate(TRAININGSCRIPTS_EDIT_EMPTY)(
+  TRAININGSCRIPTS_EDIT_FIELDS)(
+  TRAININGSCRIPTS_EDIT_HEADING)(
+  TRAINING_SCRIPT_API)
+
+const ORG_EDIT_HEADING = ' Organization'
+const ORG_EDIT_EMPTY = { name: '', id: '' }
+const OrgEdit = JobEditTemplate(ORG_EDIT_EMPTY)(
+  ORG_FIELDS)(
+  ORG_EDIT_HEADING)(
+  ORG_API)
 
 const RSS_EDIT_HEADING = ' RSS Source'
 const RSS_EMPTY = { id: '', name: '', url: '', active: false, extract_indicators: false }

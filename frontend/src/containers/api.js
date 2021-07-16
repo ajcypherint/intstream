@@ -1,4 +1,20 @@
 
+export const ORG_API = '/api/organization/'
+export const ORG_EDITURI = /organization/
+export const ORG_ADDURI = '/organization_add'
+
+export const ORGUSER_API = '/api/orguserinfo/'
+export const ORGUSER_EDITURI = /orguserinfo/
+export const ORGUSER_ADDURI = '/orguserinfo_add'
+
+export const TRAINING_SCRIPT_API = '/api/trainingscript/'
+export const TRAINING_SCRIPT_EDITURI = /trainingscripts/
+export const TRAINING_SCRIPT_ADDURI = '/trainingscripts_add'
+
+export const MODELS_API = '/api/mlmodels/'
+export const MODELS_EDITURI = /models/
+export const MODELS_ADDURI = '/models_add'
+
 export const RSS_API = '/api/sourcesrss/'
 export const RSS_EDITURI = /sources_rss/
 export const RSS_ADDURI = '/sources_rss_add'
