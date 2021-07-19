@@ -50,8 +50,10 @@ export default class Edit extends Component {
     const object_indicator_type = this.props.object.indicator_type || ''
     const object_timeout = this.props.object.timeout || ''
     const object_active = this.props.object.active || ''
+    const object_auto_mitigate = this.props.object.auto_mitigate || ''
+    const object_manual_mitigate = this.props.object.manual_mitigate || ''
     const indicatorTypes = this.props.indicatorTypes || []
-    const object_server_url = this.props.object.server_url || 'http://127.0.0.1:8000/'
+    const object_server_url = this.props.object.server_url || ''
     const userDropDownInfo = this.props.dropDown[ORG_USER_INFO_KEY] || {}
     const userDropDownResults = userDropDownInfo.results || []
     const object_user = _.filter(userDropDownResults, { id: parseInt(this.props.object.user) })
@@ -122,6 +124,20 @@ export default class Edit extends Component {
             label={'active'}
             readOnly
             checked={object_active} />
+          <CheckBoxInput
+            onChange={this.props.handleChange}
+            type={'checkbox'}
+            name={'auto_mitigate'}
+            label={'auto_mitigate'}
+            readOnly
+            checked={object_auto_mitigate} />
+           <CheckBoxInput
+            onChange={this.props.handleChange}
+            type={'checkbox'}
+            name={'manual_mitigate'}
+            label={'manual_mitigate'}
+            readOnly
+            checked={object_manual_mitigate} />
           <Row>
             <Col>
             <Button data-job={object_job} data-name={object_name}

@@ -25,7 +25,7 @@ export class Main extends React.Component {
   handleMitigate (event) {
     const indicatorId = event.target.dataset.id
     const mitigated = event.target.dataset.mitigated
-    if (mitigated === 'true') {
+    if (mitigated === false) {
       this.props.mitigateDispatch(indicatorId, MITIGATE)
     } else {
       this.props.unmitigateDispatch(indicatorId, UNMITIGATE)
@@ -214,15 +214,20 @@ export class Main extends React.Component {
                                    <tr key={index}>
                                      <td>{indicator.value} </td>
                                      <td>
-                                      <div className="custom-control custom-checkbox">
-                                        <Input type="checkbox"
-                                          disabled={mitigateDisabled}
-                                          data-id={indicator.id}
-                                          data-mitigated={indicator.mitigated}
-                                          data-indicator={JSON.stringify(indicator)}
-                                          checked={indicator.mitigated}
-                                          onChange={this.handleMitigate}/>
-                                       </div>
+                                       { indicator.mitigateRunningStatus === true
+                                         ? <span className="spinner-border spinner-border-sm" role="status">
+                                                        <span className="sr-only">Loading...</span>
+                                                      </span>
+                                         : <div className="custom-control custom-checkbox">
+                                            <Input type="checkbox"
+                                              disabled={mitigateDisabled}
+                                              data-id={indicator.id}
+                                              data-mitigated={indicator.mitigated}
+                                              data-indicator={JSON.stringify(indicator)}
+                                              checked={indicator.mitigated}
+                                              onChange={this.handleMitigate}/>
+                                           </div>
+                                       }
                                      </td>
                                      <td>
                                        { indicator.saving === true

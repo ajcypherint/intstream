@@ -19,19 +19,18 @@ import IndLogList from '../containers/IndLogList'
 import Ver from '../containers/ModelVersionList'
 import TaskList from '../containers/TaskList'
 
-// keep below
+import Article from '../containers/Article'
+import Train from '../containers/Train'
 import About from './About'
 import Logout from '../containers/Logout'
 import Password from '../containers/Password'
+
 import EditOrgForm from './OrgEditFormComp'
 import Edit from './SourceEditFormComp'
 import EditRSS from './SourceEditRSSFormComp'
 import EditModels from './ModelsEditFormComp'
 import EditJob from './SourceEditJobFormComp'
 import EditIndJob from './SourceEditIndJobFormComp'
-import Article from '../containers/Article'
-import Train from '../containers/Train'
-
 import EditAllUserForm from './AllUserEditFormComp.js'
 import EditOrgUserForm from './OrgUserEditFormComp.js'
 import EditTrainingScripts from './TrainingScriptsEditFormComp'
@@ -249,8 +248,8 @@ const JOB_EMPTY = {
   name: '',
   id: '',
   arguments: '',
-  timeout: '',
-  server_url: '',
+  timeout: '60',
+  server_url: 'http://127.0.0.1:8000',
   user: '',
   active: false
 }
@@ -320,8 +319,8 @@ const MITIGATE_EMPTY = {
   name: '',
   id: '',
   arguments: '',
-  timeout: '',
-  server_url: '',
+  timeout: '60',
+  server_url: 'http://127.0.0.1:8000/',
   user: '',
   auto_mitigate: false,
   manual_mitigate: false,
