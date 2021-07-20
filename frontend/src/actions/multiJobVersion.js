@@ -1,6 +1,6 @@
 import { RSAA } from 'redux-api-middleware'
 import { withAuth } from '../reducers/util'
-import { setParams, getAll, setActiveVersionTemplate, getVersionTemplate, setActiveRequestTemplate } from './util'
+import { setParams, getAll, setActiveVersionTemplate, setActiveRequestTemplate } from './util'
 import { filterChangeTemplate } from './jobVersionFilter'
 
 export const GETNO_JOBVERSIONMULTI_REQUEST = '@@jobVersion/GETNO_JOBVERSIONMULTI_REQUEST'
@@ -23,6 +23,34 @@ export const setPage = (data) => {
     payload: data
   }
 }
+// todo move to util
+export const getVersionTemplate = (ENDP) => (REQUEST) => (SUCCESS) => (FAILURE) => (params, meta = null) => {
+  params = params + '?' + meta + '=true'
+  const url = setParams(ENDP, params)
+  return {
+    [RSAA]: {
+      endpoint: url,
+      fetch: fetch,
+      method: 'GET',
+      body: '',
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+        {
+          meta: meta,
+          type: REQUEST
+        },
+        {
+          meta: meta,
+          type: SUCCESS
+        },
+        {
+          meta: meta,
+          type: FAILURE
+        }
+      ]
+    }
+  }
+}
 
 export const getJobVersionNoRedux = (api, meta = null) => getVersionTemplate(api)(GETNO_JOBVERSIONMULTI_REQUEST)(
   GETNO_JOBVERSIONMULTI_SUCCESS)(
@@ -31,13 +59,3 @@ export const getJobVersionNoRedux = (api, meta = null) => getVersionTemplate(api
 export const getJobVersion = (api, meta = null) => getVersionTemplate(api)(GET_JOBVERSIONMULTI_REQUEST)(
   GET_JOBVERSIONMULTI_SUCCESS)(
   GET_JOBVERSIONMULTI_FAILURE)
-
-export const setActiveRequest = (api, meta = null) => setActiveRequestTemplate(api)(
-  UPDATE_JOBVERSIONMULTI_REQUEST)(
-  UPDATE_JOBVERSIONMULTI_SUCCESS)(
-  UPDATE_JOBVERSIONMULTI_FAILURE)
-
-export const setActiveJobVersion = (api, meta = null) => (parentField) => setActiveVersionTemplate(parentField)(
-  getJobVersionNoRedux(api))(
-  setActiveRequest(api))(
-  filterChangeTemplate(api)(parentField))

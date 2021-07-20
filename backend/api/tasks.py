@@ -75,12 +75,16 @@ DIRVENV = os.path.join(settings.TMP_DIR, "venv")
 DIRCLASSIFVENV  = os.path.join(DIRVENV, "classif")
 DIRJOBVENV    = os.path.join(DIRVENV, "job")
 DIRINDJOBVENV = os.path.join(DIRVENV, "indjob")
+DIRMITINDJOBVENV = os.path.join(DIRVENV, "mitindjob")
+DIRUNMITINDJOBVENV = os.path.join(DIRVENV, "unmitindjob")
 
 # script dirs
 DIRSCRIPT = os.path.join(settings.TMP_DIR, "script")
 
 DIRJOBSCRIPT = os.path.join(DIRSCRIPT, "jobscript")
 DIRINDSCRIPT = os.path.join(DIRSCRIPT,"indscript")
+DIRMITIGATEINDSCRIPT = os.path.join(DIRSCRIPT,"mitigateindscript")
+DIRUNMITIGATEINDSCRIPT = os.path.join(DIRSCRIPT,"unmitigateindscript")
 DIRCLASSIFSCRIPT = os.path.join(DIRSCRIPT,"classifscript")
 
 #model dir
@@ -202,7 +206,14 @@ def runjobs_mitigate(indicator_ids, organization_id=None):
                         indicatorjob.delay(m.id, i, organization_id=organization_id)
 
 @shared_task(bind=True)
-def indicatorjob(self, id, indicator_id, organization_id=None):
+def indicatorjob(self,
+                 id,
+                 indicator_id,
+                 organization_id=None,
+                 dir_ind_script=DIRINDSCRIPT,
+                 script_indicator_job=SCRIPT_INDICATOR_JOB,
+                 dir_ind_job_venv=DIRINDJOBVENV
+                 ):
     """
 
     :param id:
@@ -212,10 +223,20 @@ def indicatorjob(self, id, indicator_id, organization_id=None):
     """
 
     task = self.request.id.__str__()
-    _indicatorjob(task, id, indicator_id)
+    _indicatorjob(task,
+                  id,
+                  indicator_id,
+                  dir_ind_script,
+                  script_indicator_job,
+                  dir_ind_job_venv)
 
 
-def _indicatorjob(task, id, indicator_id):
+def _indicatorjob(task,
+                  id,
+                  indicator_id,
+                  dir_ind_script=DIRINDSCRIPT,
+                  script_indicator_job=SCRIPT_INDICATOR_JOB,
+                  dir_ind_job_venv=DIRINDJOBVENV):
     job = models.StandardIndicatorJob.objects.get(id=id)
     indicator = models.Indicator.objects.get(id=indicator_id)
     user = models.UserIntStream.objects.get(pk=job.user.id)
@@ -228,8 +249,8 @@ def _indicatorjob(task, id, indicator_id):
 
     tokens = get_tokens_for_user(user)
     # can't create dirs here.  race conditions
-    script = _create_job_script_path(job_version, DIRINDSCRIPT, SCRIPT_INDICATOR_JOB, create=False)
-    venv_directory = _create_virtual_env(job_version, DIRINDJOBVENV, aws_req=False, create=False)
+    script = _create_job_script_path(job_version, dir_ind_script, script_indicator_job, create=False)
+    venv_directory = _create_virtual_env(job_version, dir_ind_job_venv, aws_req=False, create=False)
 
     job_args = "" if job_version.job.arguments is None else job_version.job.arguments
     path_python = os.path.join(venv_directory,"bin","python")
@@ -361,12 +382,18 @@ def task_create_job_script_path(self, jobversion_id, create=True, organization_i
     _create_job_script_path(jobversion, DIRJOBSCRIPT, SCRIPT_JOB, create=create)
 
 @shared_task(bind=True)
-def task_create_indicator_job_script_path(self,jobversion_id, create=True, organization_id=None):
-    jobversion = models.StandardIndicatorJobVersion.objects.get(id=jobversion_id)
+def task_create_indicator_job_script_path(self,
+                                          jobversion_id,
+                                          create=True,
+                                          organization_id=None,
+                                          model="StandardIndicatorJobVersion",
+                                          dir=DIRINDSCRIPT,
+                                          script_indicator_job=SCRIPT_INDICATOR_JOB):
+    jobversion = getattr(models, model).objects.get(id=jobversion_id)
     task_id = self.request.id.__str__()
     jobversion.task_create_script_path = task_id
     jobversion.save()
-    _create_job_script_path(jobversion, DIRINDSCRIPT, SCRIPT_INDICATOR_JOB, create=create)
+    _create_job_script_path(jobversion, dir, script_indicator_job, create=create)
 
 def _create_job_script_path(jobversion, dir, file, create=True):
 
@@ -767,13 +794,19 @@ def task_create_job_virtual_env(self, version_id, aws_req=False, create=True, or
     _create_virtual_env(version, DIRJOBVENV, aws_req=aws_req, create=create)
 
 @shared_task(bind=True)
-def task_create_indicator_job_virtual_env(self, version_id, aws_req=False, create=True, organization_id=None):
-    version = models.StandardIndicatorJobVersion.objects.get(id=version_id)
+def task_create_indicator_job_virtual_env(self,
+                                          version_id,
+                                          aws_req=False,
+                                          create=True,
+                                          organization_id=None,
+                                          model="StandardIndicatorJobVersion",
+                                          dir=DIRINDJOBVENV):
+    version = getattr(models, model).objects.get(id=version_id)
     task_id = self.request.id.__str__()
     version.task_create_virtual_env = task_id
     version.save()
 
-    _create_virtual_env(version, DIRINDJOBVENV, aws_req=aws_req, create=create)
+    _create_virtual_env(version, dir, aws_req=aws_req, create=create)
 
 def _create_virtual_env(version, base_dir, aws_req=False, create=True):
     """

@@ -124,20 +124,33 @@ class MitigateIndicatorOnDemand(APIView):
                     "action":["action not in allowed valued"],
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        job_ids = []
         if action == MITIGATE:
             jobs = models.MitigateIndicatorJob.objects.filter(indicator_type=indicator.ind_type,
                                                   organization=self.request.user.organization,
                                                   active=True)
+            for job in jobs:
+                res = tasks.indicatorjob.delay(job.id,
+                                   indicator.id,
+                                   organization_id=self.request.user.organization,
+                                   dir_ind_script=tasks.DIRMITIGATEINDSCRIPT,
+                                   dir_ind_job_venv=tasks.DIRMITINDJOBVENV
+                                   )
+                job_ids.append(res.id)
+
         else:
-             jobs = models.UnmitigateIndicatorJob.objects.filter(indicator_type=indicator.ind_type,
+            jobs = models.UnmitigateIndicatorJob.objects.filter(indicator_type=indicator.ind_type,
                                                   organization=self.request.user.organization,
                                                   active=True)
-        job_ids = []
-        for job in jobs:
-            res = job.delay(job.id,
-                               indicator.id,
-                               organization_id=self.request.user.organization)
-            job_ids.append(res.id)
+            for job in jobs:
+                res = tasks.indicatorjob.delay(job.id,
+                                       indicator.id,
+                                       organization_id=self.request.user.organization,
+                                       dir_ind_script=tasks.DIRUNMITIGATEINDSCRIPT,
+                                       dir_ind_job_venv=tasks.DIRUNMITINDJOBVENV
+                                       )
+                job_ids.append(res.id)
+
         return Response({"job_ids": job_ids}, status.HTTP_200_OK)
 
 
@@ -1414,7 +1427,6 @@ class OrgUserViewSet(OrgViewSet):
         user.save()
         return user
 
-
     def get_queryset(self):
         return models.UserIntStream.objects.filter(organization=self.request.user.organization).all()
 
@@ -1437,6 +1449,7 @@ class AllOrganizationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return models.Organization.objects.all()
+
 
 class TaskResultFilter(filters.FilterSet):
     start_date_done = filters.IsoDateTimeFilter(field_name='date_done', lookup_expr='gte')
@@ -1468,8 +1481,6 @@ class IndicatorBaseViewSet(viewsets.ModelViewSet):
                 tasks.runjobs_mitigate.delay(i.id, organization_id=i.organization.id)
         else:
             tasks.runjobs_mitigate.delay(instance.id, organization_id=instance.organization.id)
-
-
 
 
 class IndicatorMD5Filter(filters.FilterSet):
@@ -2006,17 +2017,17 @@ class UnmitigateIndicatorJobViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.UnmitigateIndicatorJobSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
-    filterset_fields = ('id','name', 'active')
+    filterset_fields = ('id','name', 'active', )
 
     def get_queryset(self):
-        return models.MitigateIndicatorJob.objects.filter(organization=self.request.user.organization)
+        return models.UnmitigateIndicatorJob.objects.filter(organization=self.request.user.organization)
 
 
 class MitigateIndicatorJobViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.MitigateIndicatorJobSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
-    filterset_fields = ('id','name', 'active',)
+    filterset_fields = ('id','name', 'active', )
 
     def get_queryset(self):
         return models.MitigateIndicatorJob.objects.filter(organization=self.request.user.organization)
@@ -2065,8 +2076,19 @@ class MitigateIndicatorJobVersionViewSet(OrgViewSet):
     def perform_create(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
         # todo(aj) add task id as part of the model to track the job that created the virtual env and script path
-        tasks.task_create_indicator_job_script_path.delay(instance.id, create=True, organization_id=self.request.user.organization.id)
-        tasks.task_create_indicator_job_virtual_env.delay(instance.id, aws_req=False, create=True, organization_id=self.request.user.organization.id)
+        tasks.task_create_indicator_job_script_path.delay(instance.id,
+                                                          create=True,
+                                                          organization_id=self.request.user.organization.id,
+                                                          model="MitigateIndicatorJobVersion",
+                                                          dir=tasks.DIRMITIGATEINDSCRIPT,
+                                                          )
+        tasks.task_create_indicator_job_virtual_env.delay(instance.id,
+                                                          aws_req=False,
+                                                          create=True,
+                                                          organization_id=self.request.user.organization.id,
+                                                          model="MitigateIndicatorJobVersion",
+                                                          dir=tasks.DIRMITINDJOBVENV,
+                                                          )
 
 
 class UnmitigateIndicatorJobVersionViewSet(OrgViewSet):
@@ -2081,8 +2103,20 @@ class UnmitigateIndicatorJobVersionViewSet(OrgViewSet):
     def perform_create(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
         # todo(aj) add task id as part of the model to track the job that created the virtual env and script path
-        tasks.task_create_indicator_job_script_path.delay(instance.id, create=True, organization_id=self.request.user.organization.id)
-        tasks.task_create_indicator_job_virtual_env.delay(instance.id, aws_req=False, create=True, organization_id=self.request.user.organization.id)
+        tasks.task_create_indicator_job_script_path.delay(instance.id,
+                                                          create=True,
+                                                          organization_id=self.request.user.organization.id,
+                                                          model="UnmitigateIndicatorJobVersion",
+                                                          dir=tasks.DIRUNMITIGATEINDSCRIPT,
+                                                          )
+        tasks.task_create_indicator_job_virtual_env.delay(instance.id,
+                                                          aws_req=False,
+                                                          create=True,
+                                                          organization_id=self.request.user.organization.id,
+                                                          model="UnmitigateIndicatorJobVersion",
+                                                          Udir=tasks.DIRUNMITINDJOBVENV,
+                                                          )
+
 
 class IndicatorNumericFieldViewSet(ColumnViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)

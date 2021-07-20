@@ -131,7 +131,7 @@ export class Main extends React.Component {
       textCols: textCols
     }
     this.props.filterChange(selections, this.props.setQuery)
-    this.props.fetchMitigateJobVersions('?job__indicator_type__name=' + selectedTabIndex.toUpperCase())
+    this.props.fetchMitigateJobVersions('job__indicator_type__name=' + selectedTabIndex.toUpperCase())
   }
 
   componentDidMount () {

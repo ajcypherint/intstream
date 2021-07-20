@@ -7,7 +7,7 @@ export default (state = initialState, action) => {
     case jobVersionData.GET_JOBVERSIONMULTI_REQUEST:
     {
       const newState = { ...state }
-      newState[action.meta.identifier] = {
+      newState[action.meta] = {
         versions: [],
         loading: false,
         totalcount: 0,
@@ -20,7 +20,7 @@ export default (state = initialState, action) => {
     case jobVersionData.GET_JOBVERSIONMULTI_SUCCESS:
     {
       const newState = { ...state }
-      newState[action.meta.identifier] = {
+      newState[action.meta] = {
         versions: action.payload.results,
         loading: false,
         totalcount: action.payload.count,
@@ -34,7 +34,7 @@ export default (state = initialState, action) => {
     {
       // todo
       const newState = { ...state }
-      newState[action.meta.identifier] = {
+      newState[action.meta] = {
         ...state,
         errors: action.payload.response || { non_field_errors: action.payload.statusText }
       }
