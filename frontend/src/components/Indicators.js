@@ -25,7 +25,7 @@ export class Main extends React.Component {
   handleMitigate (event) {
     const indicatorId = event.target.dataset.id
     const mitigated = event.target.dataset.mitigated
-    if (mitigated === false) {
+    if (mitigated === 'false') {
       this.props.mitigateDispatch(indicatorId, MITIGATE)
     } else {
       this.props.unmitigateDispatch(indicatorId, UNMITIGATE)
@@ -64,7 +64,8 @@ export class Main extends React.Component {
     const selected = selections.selectedTabIndexNum || 0
 
     const versions = this.props.versions || {}
-    const mitigateVersions = versions[MITIGATE] || []
+    const mitigateTopVersions = versions[MITIGATE] || {}
+    const mitigateVersions = mitigateTopVersions.versions || []
     const mitigateDisabled = mitigateVersions.length === 0
 
     const unmitigateVersions = versions[UNMITIGATE] || []

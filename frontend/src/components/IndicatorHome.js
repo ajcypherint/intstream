@@ -172,8 +172,9 @@ export class Main extends React.Component {
   }
 
   tabUpdate (index, lastIndex, event) {
+    const newTab = event.target.dataset.value
     const newSel = {
-      selectedTabIndex: event.target.dataset.value,
+      selectedTabIndex: newTab,
       selectedTabIndexNum: index,
       page: 1
     }
@@ -184,6 +185,7 @@ export class Main extends React.Component {
     this.props.filterChange(selections,
       this.props.setQuery
     )
+    this.props.fetchMitigateJobVersions('job__indicator_type__name=' + newTab.toUpperCase())
   }
 
   // parent for paginate

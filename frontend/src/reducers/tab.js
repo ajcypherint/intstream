@@ -12,7 +12,7 @@ export const IPV4 = 'ipv4'
 export const IPV6 = 'ipv6'
 export const MD5 = 'md5'
 export const SHA1 = 'sha1'
-export const SHA256 = 'sha1'
+export const SHA256 = 'sha256'
 export const EMAIL = 'email'
 export const NETLOC = 'netloc'
 
