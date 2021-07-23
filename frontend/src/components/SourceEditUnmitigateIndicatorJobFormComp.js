@@ -9,9 +9,9 @@ import { getIds } from '../util/util'
 import DropDown from './Choice'
 import FormButtons from './compFormButtons'
 import {
-  MITIGATE_IND_JOB_VERSION_LIST,
   ORG_USER_INFO_API,
   ORG_USER_INFO_KEY,
+  UNMITIGATE_IND_JOB_VERSION_LIST,
   INDICATOR_JOB_LOGS_LIST
 } from '../containers/api'
 
@@ -30,7 +30,7 @@ export default class Edit extends Component {
     event.preventDefault() // prevent form submission
     const job = event.target.dataset.job
     const name = event.target.dataset.name
-    this.props.history.push(MITIGATE_IND_JOB_VERSION_LIST + '?job=' + job + '&name=' + name)
+    this.props.history.push(UNMITIGATE_IND_JOB_VERSION_LIST + '?job=' + job + '&name=' + name)
   }
 
   logs (event) {
@@ -55,8 +55,6 @@ export default class Edit extends Component {
     const object_indicator_type = this.props.object.indicator_type || ''
     const object_timeout = this.props.object.timeout || ''
     const object_active = this.props.object.active || ''
-    const object_auto_mitigate = this.props.object.auto_mitigate || ''
-    const object_manual_mitigate = this.props.object.manual_mitigate || ''
     const indicatorTypes = this.props.indicatorTypes || []
     const object_server_url = this.props.object.server_url || ''
     const userDropDownInfo = this.props.dropDown[ORG_USER_INFO_KEY] || {}
@@ -129,21 +127,7 @@ export default class Edit extends Component {
             label={'active'}
             readOnly
             checked={object_active} />
-          <CheckBoxInput
-            onChange={this.props.handleChange}
-            type={'checkbox'}
-            name={'auto_mitigate'}
-            label={'auto_mitigate'}
-            readOnly
-            checked={object_auto_mitigate} />
-           <CheckBoxInput
-            onChange={this.props.handleChange}
-            type={'checkbox'}
-            name={'manual_mitigate'}
-            label={'manual_mitigate'}
-            readOnly
-            checked={object_manual_mitigate} />
-          <Row>
+         <Row>
             <Col>
             <Button data-job={object_job} data-name={object_name}
               onClick={this.versions} className="button-brand-primary mb-1" size="lg">Versions</Button>

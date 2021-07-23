@@ -2114,7 +2114,7 @@ class UnmitigateIndicatorJobVersionViewSet(OrgViewSet):
                                                           create=True,
                                                           organization_id=self.request.user.organization.id,
                                                           model="UnmitigateIndicatorJobVersion",
-                                                          Udir=tasks.DIRUNMITINDJOBVENV,
+                                                          dir=tasks.DIRUNMITINDJOBVENV,
                                                           )
 
 

@@ -18,50 +18,51 @@ export const deleteMitigate = (payload) => ({
   payload: payload
 })
 
-export const mitigate = (indicatorId, action) => ({
+export const mitigateTemplate = (ENDPOINT) => (REQUEST) => (SUCCESS) => (FAILURE) => (indicatorId, action) => ({
   [RSAA]: {
-    endpoint: MITIGATE_INDICATOR_API,
+    endpoint: ENDPOINT,
     method: 'POST',
     body: JSON.stringify({ indicator_id: indicatorId, action: action }),
     headers: withAuth({ 'Content-Type': 'application/json' }),
     types: [
       {
-        type: MITIGATE_REQUEST,
+        type: REQUEST,
         meta: { indicatorId: indicatorId }
       },
       {
-        type: MITIGATE_SUCCESS,
+        type: SUCCESS,
         meta: { indicatorId: indicatorId }
       },
       {
-        type: MITIGATE_FAILURE,
+        type: FAILURE,
         meta: { indicatorId: indicatorId }
       }
     ]
   }
 })
 
+export const mitigate = mitigateTemplate(MITIGATE_INDICATOR_API)(MITIGATE_REQUEST)(MITIGATE_SUCCESS)(MITIGATE_FAILURE)
 export const noTask = (indicatorId) => ({
   type: NO_TASK,
   meta: { indicatorId: indicatorId }
 })
 
-export function mitigateDispatch (indicatorId) {
+export const mitigateDispatchTemplate = (indicatorId, action) => {
   return async (dispatch, getState) => {
-    const response = await dispatch(mitigate(indicatorId))
+    const response = await dispatch(mitigate(indicatorId, action))
     if (response.error) {
       return
     }
     // wrap dispatch in promise so it is async
     // launch checkTaskPoll which signlas saga to launch
     if (response.payload.job_ids.length > 0) {
-      return dispatch(checkTaskPoll(
+      dispatch(checkTaskPoll(
         {
           indicatorId: indicatorId,
           task_id: response.payload.job_ids[0]
         }))
     } else {
-      return dispatch(noTask(indicatorId))
+      dispatch(noTask(indicatorId))
     }
   }
 }

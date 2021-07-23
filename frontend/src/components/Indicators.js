@@ -221,7 +221,7 @@ export class Main extends React.Component {
                                                       </span>
                                          : <div className="custom-control custom-checkbox">
                                             <Input type="checkbox"
-                                              disabled={mitigateDisabled}
+                                              disabled={indicator.mitigated === true ? unmitigateDisabled : mitigateDisabled}
                                               data-id={indicator.id}
                                               data-mitigated={indicator.mitigated}
                                               data-indicator={JSON.stringify(indicator)}

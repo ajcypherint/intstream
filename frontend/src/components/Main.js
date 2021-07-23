@@ -39,6 +39,7 @@ import IndJobVersionEditForm from './IndJobVersionEditFormComp'
 import MitigateIndJobVersionEditForm from './MitigateIndJobVersionEditFormComp'
 import TrainingScriptVersionEditForm from './TrainingScriptVersionEditFormComp'
 import EditMitigateIndicatorJob from './SourceEditMitigateIndicatorJobFormComp'
+import EditUnmitigateIndicatorJob from './SourceEditUnmitigateIndicatorJobFormComp'
 
 import { ADD, EDIT } from '../util/util'
 import CreateMLVersion from '../containers/CreateMLVersion'
@@ -51,8 +52,16 @@ import {
   MITIGATE_IND_JOB_ADD_URI,
   MITIGATE_IND_JOB_EDIT_URI,
   MITIGATE_IND_JOB_VERSION_API,
+  MITIGATE_IND_JOB_VERSION_LIST,
   MITIGATE_VERSION_ADD_URI,
   MITIGATE_VERSION_PARENT_URI,
+  UNMITIGATE_IND_JOB_API,
+  UNMITIGATE_IND_JOB_ADD_URI,
+  UNMITIGATE_IND_JOB_EDIT_URI,
+  UNMITIGATE_IND_JOB_VERSION_API,
+  UNMITIGATE_IND_JOB_VERSION_ADD_URI,
+  UNMITIGATE_IND_JOB_VERSION_PARENT_URI,
+  UNMITIGATE_IND_JOB_VERSION_LIST,
   ORG_API,
   ORG_EDITURI,
   ORG_ADDURI,
@@ -90,6 +99,10 @@ const MitigateIndJobVer = JobVerListTemplate(MITIGATE_VERSION_ADD_URI
 )(MITIGATE_VERSION_PARENT_URI
 )(MITIGATE_IND_JOB_VERSION_API)
 
+const UnmitigateIndJobVer = JobVerListTemplate(UNMITIGATE_IND_JOB_VERSION_ADD_URI
+)(UNMITIGATE_IND_JOB_VERSION_PARENT_URI
+)(UNMITIGATE_IND_JOB_VERSION_API)
+
 const IND_JOBVERSION_HEADING = ' Hunging Job Version'
 const JOBVERSION_EMPTY = {
   job: '',
@@ -116,6 +129,13 @@ const MitigateIndJobVersionEdit = JobVersionEditTemplate(
   JOBVERSION_FIELDS)(
   MITIGATE_INDJOBVERSION_HEADING)(
   MITIGATE_IND_JOB_VERSION_API)
+
+const UNMITIGATE_INDJOBVERSION_HEADING = ' Unmitigate Indicator Job Version'
+const UnmitigateIndJobVersionEdit = JobVersionEditTemplate(
+  JOBVERSION_EMPTY)(
+  JOBVERSION_FIELDS)(
+  UNMITIGATE_INDJOBVERSION_HEADING)(
+  UNMITIGATE_IND_JOB_VERSION_API)
 
 const JobVer = JobVerListTemplate(JOB_VERSION_ADD_URI
 )(JOB_VERSION_PARENT_URI
@@ -236,12 +256,24 @@ const MITIGATE_FIELDS = ['id',
   'manual_mitigate',
   'active']
 
+const UNMITIGATE_IND_JOB_HEADING = 'Indicator Unmitigate Jobs'
+const UNMITIGATE_FIELDS = ['id',
+  'name',
+  'active']
+
 const SourcesMitigateIndicatorJobList = JobListTemplate(JOB_ORDERSTARTCOL)(
   MITIGATE_FIELDS)(
   MITIGATE_IND_JOB_HEADING)(
   MITIGATE_IND_JOB_EDIT_URI)(
   MITIGATE_IND_JOB_ADD_URI)(
   MITIGATE_IND_JOB_API)
+
+const SourcesUnmitigateIndicatorJobList = JobListTemplate(JOB_ORDERSTARTCOL)(
+  UNMITIGATE_FIELDS)(
+  UNMITIGATE_IND_JOB_HEADING)(
+  UNMITIGATE_IND_JOB_EDIT_URI)(
+  UNMITIGATE_IND_JOB_ADD_URI)(
+  UNMITIGATE_IND_JOB_API)
 
 const HUNTING_HEADING = ' Hunting Job'
 const JOB_EMPTY = {
@@ -333,6 +365,22 @@ const SourcesMitigateIndicatorJobEdit = JobEditTemplate(MITIGATE_EMPTY)(
   MITIGATE_EDIT_HEADING)(
   MITIGATE_IND_JOB_API)
 
+const UNMITIGATE_EMPTY = {
+  name: '',
+  id: '',
+  arguments: '',
+  timeout: '60',
+  server_url: 'http://127.0.0.1:8000/',
+  user: '',
+  active: false
+}
+
+const UNMITIGATE_EDIT_HEADING = ' Unmitigate Job'
+const SourcesUnmitigateIndicatorJobEdit = JobEditTemplate(UNMITIGATE_EMPTY)(
+  JOB_FIELDS)(
+  UNMITIGATE_EDIT_HEADING)(
+  UNMITIGATE_IND_JOB_API)
+
 const Main = (props) => (
 
   <Switch>
@@ -345,16 +393,32 @@ const Main = (props) => (
     <Route exact path="/jobloglist/" component={LogList} />
     <Route exact path="/indjobloglist/" component={IndLogList} />
     <Route exact path="/tasklist" component={TaskList} />
-    <Route exact path="/mitigateindjobversions"
+    <Route exact path={MITIGATE_IND_JOB_VERSION_LIST}
       render={() =>
           <MitigateIndJobVer
             table={<VersionTable/>}
           />
       }
       />
-    <Route exact path="/mitigateindjobversions_add"
+    <Route exact path={MITIGATE_VERSION_ADD_URI}
           render={() =>
           <MitigateIndJobVersionEdit
+            form={<MitigateIndJobVersionEditForm/>}
+            state={ {
+              action: ADD
+            }}
+            match={undefined}/>}
+    />
+    <Route exact path={UNMITIGATE_IND_JOB_VERSION_LIST}
+      render={() =>
+          <UnmitigateIndJobVer
+            table={<VersionTable/>}
+          />
+      }
+      />
+    <Route exact path={UNMITIGATE_IND_JOB_VERSION_ADD_URI}
+          render={() =>
+          <UnmitigateIndJobVersionEdit
             form={<MitigateIndJobVersionEditForm/>}
             state={ {
               action: ADD
@@ -570,6 +634,28 @@ const Main = (props) => (
         }}
         match={match}/>}
       />
+    <Route exact path={UNMITIGATE_IND_JOB_EDIT_URI} component={SourcesUnmitigateIndicatorJobList} />
+    <Route exact path={UNMITIGATE_IND_JOB_ADD_URI}
+      render={() =>
+      <SourcesUnmitigateIndicatorJobEdit
+        form={<EditUnmitigateIndicatorJob/>}
+        state={ {
+          action: ADD
+        }}
+        match={undefined}/>}
+      />
+    <Route exact path={UNMITIGATE_IND_JOB_EDIT_URI + ':id'}
+      render={({ match }) =>
+      <SourcesUnmitigateIndicatorJobEdit
+        form={<EditUnmitigateIndicatorJob/>}
+        state={ {
+          action: EDIT
+
+        }}
+        match={match}/>}
+      />
+      {// todo(aj) replace path with imported const
+      }
     <Route exact path="/sources_mitigateindicatorjob" component={SourcesMitigateIndicatorJobList} />
     <Route exact path="/sources_mitigateindicatorjob_add"
       render={() =>

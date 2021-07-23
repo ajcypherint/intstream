@@ -13,6 +13,10 @@ import {
   DropdownMenu,
   DropdownItem
 } from 'reactstrap'
+import {
+  MITIGATE_IND_JOB_EDIT_URI,
+  UNMITIGATE_IND_JOB_EDIT_URI
+} from '../containers/api'
 
 export default class Example extends React.Component {
   constructor (props) {
@@ -106,6 +110,9 @@ export default class Example extends React.Component {
                     </DropdownItem>
                     <DropdownItem tag={Link} to="/sources_mitigateindicatorjob">
                     Mitigation Jobs
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to={UNMITIGATE_IND_JOB_EDIT_URI}>
+                    Unmitigation Jobs
                     </DropdownItem>
 
                  </DropdownMenu>
