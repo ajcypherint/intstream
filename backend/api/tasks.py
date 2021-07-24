@@ -203,7 +203,8 @@ def runjobs_mitigate(indicator_ids, organization_id=None):
                                                                 indicator_type=instance.ind_type).all()
                 if len(mitigate_jobs) > 0:
                     for m in mitigate_jobs:
-                        indicatorjob.delay(m.id, i, organization_id=organization_id)
+                        indicatorjob.delay(m.id, i, organization_id=organization_id,
+                                           model="MitigateIndicatorJob", model_version="MitigateIndicatorJobVersion")
 
 @shared_task(bind=True)
 def indicatorjob(self,
@@ -212,7 +213,9 @@ def indicatorjob(self,
                  organization_id=None,
                  dir_ind_script=DIRINDSCRIPT,
                  script_indicator_job=SCRIPT_INDICATOR_JOB,
-                 dir_ind_job_venv=DIRINDJOBVENV
+                 dir_ind_job_venv=DIRINDJOBVENV,
+                 model="StandardIndicatorJob",
+                 model_version="StandardIndicatorJobVersion"
                  ):
     """
 
@@ -228,7 +231,9 @@ def indicatorjob(self,
                   indicator_id,
                   dir_ind_script,
                   script_indicator_job,
-                  dir_ind_job_venv)
+                  dir_ind_job_venv,
+                  model=model,
+                  model_version=model_version)
 
 
 def _indicatorjob(task,
@@ -236,13 +241,15 @@ def _indicatorjob(task,
                   indicator_id,
                   dir_ind_script=DIRINDSCRIPT,
                   script_indicator_job=SCRIPT_INDICATOR_JOB,
-                  dir_ind_job_venv=DIRINDJOBVENV):
-    job = models.StandardIndicatorJob.objects.get(id=id)
+                  dir_ind_job_venv=DIRINDJOBVENV,
+                  model="StandardIndicatorJob",
+                  model_version = "StandardIndicatorJobVersion"):
+    job = getattr(models, model).objects.get(id=id)
     indicator = models.Indicator.objects.get(id=indicator_id)
     user = models.UserIntStream.objects.get(pk=job.user.id)
     job_version = None
     try:
-        job_version = models.StandardIndicatorJobVersion.objects.get(job=job, active=True)
+        job_version = getattr(models, model_version).objects.get(job=job, active=True)
     except exceptions.ObjectDoesNotExist as e:
         logger.warning("no active version for job: " + str(id) + "; " + str(e))
         return

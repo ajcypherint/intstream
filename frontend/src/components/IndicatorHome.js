@@ -132,6 +132,7 @@ export class Main extends React.Component {
     }
     this.props.filterChange(selections, this.props.setQuery)
     this.props.fetchMitigateJobVersions('job__indicator_type__name=' + selectedTabIndex.toUpperCase())
+    this.props.fetchUnMitigateJobVersions('job__indicator_type__name=' + selectedTabIndex.toUpperCase())
   }
 
   componentDidMount () {
@@ -186,6 +187,7 @@ export class Main extends React.Component {
       this.props.setQuery
     )
     this.props.fetchMitigateJobVersions('job__indicator_type__name=' + newTab.toUpperCase())
+    this.props.fetchUnMitigateJobVersions('job__indicator_type__name=' + newTab.toUpperCase())
   }
 
   // parent for paginate

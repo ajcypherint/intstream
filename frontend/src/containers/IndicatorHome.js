@@ -5,7 +5,7 @@ import { Main } from '../components/IndicatorHome'
 import { getIndicators, setIndicators } from '../actions/indicators'
 import { filterIndChange, setPage, setHomeSelections, getAllSources, MODEL_VERSIONS, getAllActiveModels } from '../actions/filter'
 import { getSources, clearSources } from '../actions/sources'
-import { mitigateDispatchTemplate } from '../actions/mitigate'
+import { mitigateDispatch, unmitigateDispatch } from '../actions/mitigate'
 import { getJobVersion } from '../actions/multiJobVersion'
 import {
   UNMITIGATE,
@@ -73,8 +73,8 @@ const mapDispatchToProps = (dispatch) => ({
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
   filterChange: (selections, setPage) => dispatch(filterIndChange(selections, setPage)),
   fetchIndicatorsFullUri: (url, params = undefined) => dispatch(getIndicators(url, undefined, params)),
-  mitigateDispatch: (indicator, action) => dispatch(mitigateDispatchTemplate(indicator, action)),
-  unmitigateDispatch: (indicator, action) => dispatch(mitigateDispatchTemplate(indicator, action)),
+  mitigateDispatch: (indicator) => dispatch(mitigateDispatch(indicator)),
+  unmitigateDispatch: (indicator) => dispatch(unmitigateDispatch(indicator)),
   setIndicator: (url, indicatorObj) => dispatch(setIndicators(url, indicatorObj))
 })
 

@@ -1,10 +1,14 @@
 import { RSAA } from 'redux-api-middleware'
 import { withAuth } from '../reducers/util'
 import { checkTaskPoll } from './task'
-import { MITIGATE_INDICATOR_API, INDICATOR_API } from '../containers/api'
+import { UNMITIGATE_INDICATOR_API, MITIGATE_INDICATOR_API } from '../containers/api'
 export const MITIGATE_REQUEST = '@@mitigate/MITIGATE_REQUEST'
 export const MITIGATE_SUCCESS = '@@mitigate/MITIGATE_SUCCESS'
 export const MITIGATE_FAILURE = '@@mitigate/MITIGATE_FAILURE'
+
+export const UNMITIGATE_REQUEST = '@@mitigate/UNMITIGATE_REQUEST'
+export const UNMITIGATE_SUCCESS = '@@mitigate/UNMITIGATE_SUCCESS'
+export const UNMITIGATE_FAILURE = '@@mitigate/UNMITIGATE_FAILURE'
 
 export const SET_REQUEST = '@@mitigate/SET_REQUEST'
 export const SET_SUCCESS = '@@mitigate/SET_SUCCESS'
@@ -18,7 +22,7 @@ export const deleteMitigate = (payload) => ({
   payload: payload
 })
 
-export const mitigateTemplate = (ENDPOINT) => (REQUEST) => (SUCCESS) => (FAILURE) => (indicatorId, action) => ({
+export const mitigateTemplate = (action) => (ENDPOINT) => (REQUEST) => (SUCCESS) => (FAILURE) => (indicatorId) => ({
   [RSAA]: {
     endpoint: ENDPOINT,
     method: 'POST',
@@ -41,15 +45,17 @@ export const mitigateTemplate = (ENDPOINT) => (REQUEST) => (SUCCESS) => (FAILURE
   }
 })
 
-export const mitigate = mitigateTemplate(MITIGATE_INDICATOR_API)(MITIGATE_REQUEST)(MITIGATE_SUCCESS)(MITIGATE_FAILURE)
+export const mitigate = mitigateTemplate('mitigate')(MITIGATE_INDICATOR_API)(MITIGATE_REQUEST)(MITIGATE_SUCCESS)(MITIGATE_FAILURE)
+export const unmitigate = mitigateTemplate('unmitigate')(MITIGATE_INDICATOR_API)(MITIGATE_REQUEST)(MITIGATE_SUCCESS)(MITIGATE_FAILURE)
+
 export const noTask = (indicatorId) => ({
   type: NO_TASK,
   meta: { indicatorId: indicatorId }
 })
 
-export const mitigateDispatchTemplate = (indicatorId, action) => {
+export const mitigateDispatchTemplate = (func) => (indicatorId, action) => {
   return async (dispatch, getState) => {
-    const response = await dispatch(mitigate(indicatorId, action))
+    const response = await dispatch(func(indicatorId, action))
     if (response.error) {
       return
     }
@@ -66,3 +72,6 @@ export const mitigateDispatchTemplate = (indicatorId, action) => {
     }
   }
 }
+
+export const mitigateDispatch = mitigateDispatchTemplate(mitigate)
+export const unmitigateDispatch = mitigateDispatchTemplate(unmitigate)

@@ -121,7 +121,7 @@ class MitigateIndicatorOnDemand(APIView):
         action = self.request.data.get("action", "mitigate")
         if action not in [MITIGATE, UNMITIGATE]:
             response = {
-                    "action":["action not in allowed valued"],
+                    "action":["action: " + action + " not allowed"],
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         job_ids = []
@@ -132,9 +132,11 @@ class MitigateIndicatorOnDemand(APIView):
             for job in jobs:
                 res = tasks.indicatorjob.delay(job.id,
                                    indicator.id,
-                                   organization_id=self.request.user.organization,
+                                   organization_id=self.request.user.organization.id,
                                    dir_ind_script=tasks.DIRMITIGATEINDSCRIPT,
-                                   dir_ind_job_venv=tasks.DIRMITINDJOBVENV
+                                   dir_ind_job_venv=tasks.DIRMITINDJOBVENV,
+                                   model="MitigateIndicatorJob",
+                                   model_version="MitigateIndicatorJobVersion"
                                    )
                 job_ids.append(res.id)
 
@@ -145,9 +147,11 @@ class MitigateIndicatorOnDemand(APIView):
             for job in jobs:
                 res = tasks.indicatorjob.delay(job.id,
                                        indicator.id,
-                                       organization_id=self.request.user.organization,
+                                       organization_id=self.request.user.organization.id,
                                        dir_ind_script=tasks.DIRUNMITIGATEINDSCRIPT,
-                                       dir_ind_job_venv=tasks.DIRUNMITINDJOBVENV
+                                       dir_ind_job_venv=tasks.DIRUNMITINDJOBVENV,
+                                       model="UnmitigateIndicatorJob",
+                                       model_version="UnmitigateIndicatorJobVersion"
                                        )
                 job_ids.append(res.id)
 
@@ -1472,7 +1476,7 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
 
 class IndicatorBaseViewSet(viewsets.ModelViewSet):
 
-    def tasks(self, instance, jobs):
+    def tasks(self, instance):
         # todo(aj) instead send list of jobs to one task
         # filter out mitigation jobs.
         # run mitigation jobs after other tasks finish
@@ -1592,13 +1596,12 @@ class IndicatorSha1ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.SHA1)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.SHA1).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
     def perform_update(self, serializer):
+        # todo(aj) if mitigated changed  or if allow listed = True do not run mitigation
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.SHA1).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
 
 
@@ -1622,13 +1625,12 @@ class IndicatorSha256ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.SHA256)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.SHA256).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
     def perform_update(self, serializer):
+        # todo(aj) if mitigated changed  or if allow listed changed do not run mitigation
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.SHA256).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
 
 class NetLocFilter(filters.FilterSet):
@@ -1692,18 +1694,17 @@ class IndicatorNetLocViewSet(IndicatorBaseViewSet):
         instance = serializer.save(ind_type=ind_type,
                                    value=value,
                                    organization=self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.NETLOC).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
     def perform_update(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.NETLOC)
         value = self.get_value()
+        # todo(aj) if reviewed, allowed, or mitigated changed do not run mitigations
         instance = serializer.save(ind_type=ind_type,
                                    value=value,
                                    organization=self.request.user.organization)
 
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.NETLOC).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
 class SuffixViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
@@ -1741,13 +1742,13 @@ class IndicatorEmailViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.EMAIL)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.EMAIL).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
     def perform_update(self, serializer):
+
+        # todo(aj) if mitigated changed  or if allow listed = True do not run mitigation
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.EMAIL).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
 
 
@@ -1771,13 +1772,13 @@ class IndicatorIPV4ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.IPV4)
         instance = serializer.save(organization = self.request.user.organization, ind_type=ind_type)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.IPV4).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
     def perform_update(self, serializer):
+
+        # todo(aj) if mitigated changed or if allow listed = True do not run mitigation
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.IPV4).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
 
 
@@ -1801,13 +1802,13 @@ class IndicatorIPV6ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.IPV6)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.IPV6).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
     def perform_update(self, serializer):
+
+        # todo(aj) if mitigated changed  or if allow listed = True do not run mitigation
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.IPV6).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
 
 class ModelVersionViewSet(OrgViewSet):
@@ -1853,13 +1854,13 @@ class IndicatorMD5ViewSet(IndicatorBaseViewSet):
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.MD5)
         instance = serializer.save(ind_type=ind_type, organization = self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.MD5).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
     def perform_update(self, serializer):
+
+        # todo(aj) if mitigated changed or if allow listed = True do not run mitigation
         instance = serializer.save(organization=self.request.user.organization)
-        jobs = models.StandardIndicatorJob.objects.filter(indicator_types__name=settings.MD5).all()
-        self.tasks(instance, jobs)
+        self.tasks(instance)
 
 
 class IndicatorTextFilter(filters.FilterSet):
