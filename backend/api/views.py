@@ -1473,18 +1473,46 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         return models.OrgTaskResultMdl.objects.filter(organization=self.request.user.organization).all()
 
+class CheckFieldsData(object):
+    def __init__(self, instance):
+        """
+        :param instance: IndicatorBase
+        """
+        self.mitigated = instance.mitigated
+        self.allowed = instance.allowed
+        self.reviewed = instance.reviewed
+        self.len_articles = instance.articles.all().count()
+
+    def run_jobs_and_mitigate(self, new_instance):
+        """
+        checks whether to run tasks on a PUT request
+        if the user edits an indicator an adds an article
+        :param new_instance: CheckFieldsData
+        :return: Bool
+        """
+        if new_instance.articles.all().count() != self.len_articles:
+            return True
+        return False
+
 
 class IndicatorBaseViewSet(viewsets.ModelViewSet):
+    def tasks(self, instance, org_check_data):
+        """
 
-    def tasks(self, instance):
+        :param instance: IndicatorBase
+        :param org_check_data: CheckFieldsData
+        :return:
+        """
         # todo(aj) instead send list of jobs to one task
         # filter out mitigation jobs.
         # run mitigation jobs after other tasks finish
         if isinstance(instance, list):
             for i in instance:
-                tasks.runjobs_mitigate.delay(i.id, organization_id=i.organization.id)
+                if org_check_data.run_jobs_and_mitigate(i):
+                    tasks.runjobs_mitigate.delay(i.id, organization_id=i.organization.id)
         else:
-            tasks.runjobs_mitigate.delay(instance.id, organization_id=instance.organization.id)
+            if org_check_data.run_jobs_and_mitigate(instance):
+                tasks.runjobs_mitigate.delay(instance.id, organization_id=instance.organization.id)
 
 
 class IndicatorMD5Filter(filters.FilterSet):
@@ -1600,8 +1628,10 @@ class IndicatorSha1ViewSet(IndicatorBaseViewSet):
 
     def perform_update(self, serializer):
         # todo(aj) if mitigated changed  or if allow listed = True do not run mitigation
+        org = models.IndicatorSha1.objects.get(pk=serializer.initial_data["id"])
+        org_check = CheckFieldsData(org)
         instance = serializer.save(organization=self.request.user.organization)
-        self.tasks(instance)
+        self.tasks(instance, org_check)
 
 
 
@@ -1629,8 +1659,10 @@ class IndicatorSha256ViewSet(IndicatorBaseViewSet):
 
     def perform_update(self, serializer):
         # todo(aj) if mitigated changed  or if allow listed changed do not run mitigation
+        org = models.IndicatorSha256.objects.get(pk=serializer.initial_data["id"])
+        org_check = CheckFieldsData(org)
         instance = serializer.save(organization=self.request.user.organization)
-        self.tasks(instance)
+        self.tasks(instance, org_check)
 
 
 class NetLocFilter(filters.FilterSet):
@@ -1699,7 +1731,6 @@ class IndicatorNetLocViewSet(IndicatorBaseViewSet):
     def perform_update(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.NETLOC)
         value = self.get_value()
-        # todo(aj) if reviewed, allowed, or mitigated changed do not run mitigations
         instance = serializer.save(ind_type=ind_type,
                                    value=value,
                                    organization=self.request.user.organization)
@@ -1747,8 +1778,10 @@ class IndicatorEmailViewSet(IndicatorBaseViewSet):
     def perform_update(self, serializer):
 
         # todo(aj) if mitigated changed  or if allow listed = True do not run mitigation
+        org = models.IndicatorEmail.objects.get(pk=serializer.initial_data["id"])
+        org_check = CheckFieldsData(org)
         instance = serializer.save(organization=self.request.user.organization)
-        self.tasks(instance)
+        self.tasks(instance, org_check)
 
 
 
@@ -1776,9 +1809,11 @@ class IndicatorIPV4ViewSet(IndicatorBaseViewSet):
 
     def perform_update(self, serializer):
 
+        org = models.IndicatorIPV4.objects.get(pk=serializer.initial_data["id"])
+        org_check = CheckFieldsData(org)
         # todo(aj) if mitigated changed or if allow listed = True do not run mitigation
         instance = serializer.save(organization=self.request.user.organization)
-        self.tasks(instance)
+        self.tasks(instance, org_check)
 
 
 
@@ -1806,9 +1841,10 @@ class IndicatorIPV6ViewSet(IndicatorBaseViewSet):
 
     def perform_update(self, serializer):
 
-        # todo(aj) if mitigated changed  or if allow listed = True do not run mitigation
+        org = models.IndicatorIPV6.objects.get(pk=serializer.data["id"])
+        org_check = CheckFieldsData(org)
         instance = serializer.save(organization=self.request.user.organization)
-        self.tasks(instance)
+        self.tasks(instance, org_check)
 
 
 class ModelVersionViewSet(OrgViewSet):
@@ -1859,8 +1895,10 @@ class IndicatorMD5ViewSet(IndicatorBaseViewSet):
     def perform_update(self, serializer):
 
         # todo(aj) if mitigated changed or if allow listed = True do not run mitigation
+        org = models.IndicatorMD5.objects.get(pk=serializer.initial_data["id"])
+        org_check = CheckFieldsData(org)
         instance = serializer.save(organization=self.request.user.organization)
-        self.tasks(instance)
+        self.tasks(instance, org_check)
 
 
 class IndicatorTextFilter(filters.FilterSet):
