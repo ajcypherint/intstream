@@ -124,6 +124,32 @@ export default (state = initState, action) => {
   }
 
   switch (action.type) {
+    case indicatorsData.GET_INDICATOR_UPDATE_SUCCESS:
+    {
+      const newIndicators = [...state.indicators]
+      for (let i = 0; i < newIndicators.length; i++) {
+        if (newIndicators[i].id === action.payload.results[0].id) {
+          newIndicators[i] = {
+            ...newIndicators[i],
+            ...action.payload.results[0]
+          }
+          break
+        }
+      }
+      return {
+        ...state,
+        indicators: newIndicators
+      }
+    }
+    case indicatorsData.GET_INDICATOR_UPDATE_FAILURE:
+    {
+      const newIndicators = [...state.indicators]
+      return {
+        ...state,
+        indicators: newIndicators,
+        errors: action.payload.response || { non_field_errors: action.payload.statusText }
+      }
+    }
     // used for edit
     case indicatorsData.SET_INDICATORS_REQUEST:
     {
@@ -239,6 +265,41 @@ export default (state = initState, action) => {
           newIndicators[i] = {
             ...newIndicators[i],
             mitigateRunningStatus: true
+          }
+          break
+        }
+      }
+      return {
+        ...state,
+        indicators: newIndicators
+      }
+    }
+    case task.CHECK_TASK_POLL:
+    {
+      const newIndicators = [...state.indicators]
+      for (let i = 0; i < newIndicators.length; i++) {
+        if (newIndicators[i].id === parseInt(action.payload.indicatorId)) {
+          newIndicators[i] = {
+            ...newIndicators[i],
+            mitigateTaskId: action.payload.task_id,
+            mitigateRunningStatus: true
+          }
+          break
+        }
+      }
+      return {
+        ...state,
+        indicators: newIndicators
+      }
+    }
+    case task.CHECK_TASK_POLL_DONE:
+    {
+      const newIndicators = [...state.indicators]
+      for (let i = 0; i < newIndicators.length; i++) {
+        if (newIndicators[i].id === parseInt(action.payload.indicatorId)) {
+          newIndicators[i] = {
+            ...newIndicators[i],
+            mitigateRunningStatus: false
           }
           break
         }

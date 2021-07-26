@@ -53,22 +53,23 @@ export const noTask = (indicatorId) => ({
   meta: { indicatorId: indicatorId }
 })
 
-export const mitigateDispatchTemplate = (func) => (indicatorId, action) => {
+export const mitigateDispatchTemplate = (func) => (indicatorId, indicatorType) => {
   return async (dispatch, getState) => {
-    const response = await dispatch(func(indicatorId, action))
+    const response = await dispatch(func(indicatorId))
     if (response.error) {
       return
     }
     // wrap dispatch in promise so it is async
     // launch checkTaskPoll which signlas saga to launch
     if (response.payload.job_ids.length > 0) {
-      dispatch(checkTaskPoll(
+      await dispatch(checkTaskPoll(
         {
           indicatorId: indicatorId,
+          indicatorType: indicatorType,
           task_id: response.payload.job_ids[0]
         }))
     } else {
-      dispatch(noTask(indicatorId))
+      await dispatch(noTask(indicatorId))
     }
   }
 }

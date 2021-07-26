@@ -1,41 +1,40 @@
 import { takeLatest, takeEvery, race, take, put, call, delay } from 'redux-saga/effects'
-import { checkTask, CHECK_TASK_POLL, TASK_FAILURE, TASK_SUCCESS } from '../actions/task.js'
+import { taskDone, checkTask, CHECK_TASK_POLL, TASK_FAILURE, TASK_SUCCESS } from '../actions/task.js'
 import {
-  pollingFailure,
-  pollingTimeout,
-  POLLING_SUCCESS,
-  POLLING_TIMEOUT,
-  POLLING_FAILURE,
-  POLLING_CANCEL,
-  pollingDone
+  POLLING_CANCEL
 } from '../actions/polling.js'
 
-export const SUCCEEDED = 'completed'
-export const FAILED = 'failed'
+export const SUCCEEDED = 'SUCCESS'
+export const FAILED = 'FAILURE'
+export const RUNNING = 'RUNNING'
 export const TIMEOUT = 260000
 
 export function * checkJobStatus (action) {
   let jobDone = false
+  const check_task_id = action.payload.task_id
   while (!jobDone) {
     yield put(checkTask(action.payload.task_id, action.payload))
-    const pollingAction = yield takeLatest([TASK_SUCCESS, TASK_FAILURE])
-    if (pollingAction.type === TASK_FAILURE) {
-      jobDone = true
-      yield put(pollingFailure(action.payload))
-      break
-    }
-    const status = pollingAction.payload.status || 'NA'
-    switch (status) {
-      case SUCCEEDED:
-        jobDone = true
-        yield put(pollingDone(action.payload))
-        break
-      case FAILED:
-        jobDone = true
-        yield put(pollingDone(action.payload))
-        break
-      default:
-        break
+    const pollingAction = yield take(TASK_SUCCESS)
+    // only run for this task
+    if (pollingAction.meta.task_id === check_task_id) {
+      const results = pollingAction.payload.results
+      let status = RUNNING
+      if (results.length > 0) {
+        status = results[0].status
+      }
+
+      switch (status) {
+        case SUCCEEDED:
+          jobDone = true
+          yield put(taskDone(action.payload))
+          break
+        case FAILED:
+          jobDone = true
+          yield put(taskDone(action.payload))
+          break
+        default:
+          break
+      }
     }
     // delay the next polling request in 5 second
     yield delay(5000)
@@ -51,7 +50,10 @@ export function * startPollingTask (action) {
   })
   // seems to be giving me trouble to take the task failure
   if (timeout) {
-    yield put(pollingTimeout(action.payload))
+    yield put(taskDone(action.payload))
+  }
+  if (failed) {
+    yield put(taskDone(action.payload))
   }
 }
 

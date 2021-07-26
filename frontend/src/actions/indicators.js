@@ -2,6 +2,7 @@ import { RSAA } from 'redux-api-middleware'
 import { withAuth } from '../reducers/util'
 import URL from 'url-parse'
 import { setParams } from './util'
+import { BASE_INDICATOR_API } from '../containers/api'
 
 const setParamsType = function (url, type, params) {
   if (typeof type !== 'undefined') {
@@ -18,6 +19,10 @@ export const INDICATOR_URL = '/api/indicator'
 export const GET_INDICATORS_REQUEST = '@@indicators/GET_INDICATORS_REQUEST'
 export const GET_INDICATORS_SUCCESS = '@@indicators/GET_INDICATORS_SUCCESS'
 export const GET_INDICATORS_FAILURE = '@@indicators/GET_INDICATORS_FAILURE'
+
+export const GET_INDICATOR_UPDATE_REQUEST = '@@indicators/GET_INDICATOR_UPDATE_REQUEST'
+export const GET_INDICATOR_UPDATE_SUCCESS = '@@indicators/GET_INDICATOR_UPDATE_SUCCESS'
+export const GET_INDICATOR_UPDATE_FAILURE = '@@indicators/GET_INDICATOR_UPDATE_FAILURE'
 
 export const GET_IPV6_REQUEST = '@@indicators/GET_IPV6_REQUEST'
 export const GET_IPV6_SUCCESS = '@@indicators/GET_IPV6_SUCCESS'
@@ -182,7 +187,8 @@ export const getMD5 = (params) => {
     }
   }
 }
-export const getIndicators = (url, type = undefined, params = undefined) => {
+export const getIndicatorsTemplate = (REQUEST) => (SUCCESS) => (FAILURE
+) => (url, type = undefined, params = undefined) => {
   // filters - list[string]
   url = setParamsType(url, type, params)
 
@@ -194,12 +200,32 @@ export const getIndicators = (url, type = undefined, params = undefined) => {
       body: '',
       headers: withAuth({ 'Content-Type': 'application/json' }),
       types: [
-        GET_INDICATORS_REQUEST, GET_INDICATORS_SUCCESS, GET_INDICATORS_FAILURE
+        REQUEST, SUCCESS, FAILURE
       ]
 
     }
   }
 }
+
+export const getIndicatorUpdate = (id) => {
+  // filters - list[string]
+  const url = BASE_INDICATOR_API + '?id=' + id
+
+  return {
+    [RSAA]: {
+      endpoint: url,
+      method: 'GET',
+      fetch: fetch,
+      body: '',
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+        GET_INDICATOR_UPDATE_REQUEST, GET_INDICATOR_UPDATE_SUCCESS, GET_INDICATOR_UPDATE_FAILURE
+      ]
+
+    }
+  }
+}
+export const getIndicators = getIndicatorsTemplate(GET_INDICATORS_REQUEST)(GET_INDICATORS_SUCCESS)(GET_INDICATORS_FAILURE)
 
 export const setIndicators = (url, data, method = 'PUT') => {
   // filters - list[string]

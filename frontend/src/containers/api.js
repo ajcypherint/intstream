@@ -78,3 +78,5 @@ export const STATUS_FAILED = 'failed'
 
 export const MITIGATE = 'mitigate'
 export const UNMITIGATE = 'unmitigate'
+
+export const INDICATOR_PARTIAL = '/api/indicator'

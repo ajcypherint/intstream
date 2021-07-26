@@ -26,9 +26,9 @@ export class Main extends React.Component {
     const indicatorId = event.target.dataset.id
     const mitigated = event.target.dataset.mitigated
     if (mitigated === 'false') {
-      this.props.mitigateDispatch(indicatorId, MITIGATE)
+      this.props.mitigateDispatch(indicatorId)
     } else {
-      this.props.unmitigateDispatch(indicatorId, UNMITIGATE)
+      this.props.unmitigateDispatch(indicatorId)
     }
   }
 
