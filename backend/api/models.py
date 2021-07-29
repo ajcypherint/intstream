@@ -449,7 +449,7 @@ class ArticleType(models.Model):
 
 
 class Article(PolymorphicModel):
-    source = models.ForeignKey(Source,on_delete=models.CASCADE)
+    source = models.ForeignKey(Source,on_delete=models.CASCADE, db_index=True)
     title = models.TextField(max_length=1000)
     text = models.TextField(blank=True)
     upload_date = models.DateTimeField(default=timezone.now, db_index=True)
@@ -538,11 +538,11 @@ class Setting(models.Model):
 class Indicator(PolymorphicModel):
     articles = models.ManyToManyField(Article, blank=True)
     organization = models.ForeignKey(Organization,on_delete=models.CASCADE, editable=False)
-    ind_type = models.ForeignKey(IndicatorType, on_delete=models.CASCADE, editable=False)
+    ind_type = models.ForeignKey(IndicatorType, on_delete=models.CASCADE, editable=False, db_index=True)
     upload_date = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
-    reviewed = models.BooleanField(default=False)
-    allowed = models.BooleanField(default=False)
-    mitigated = models.BooleanField(default=False)
+    reviewed = models.BooleanField(default=False, db_index=True)
+    allowed = models.BooleanField(default=False, db_index=True)
+    mitigated = models.BooleanField(default=False, db_index=True)
 
 
 class IndicatorMD5(Indicator):
@@ -606,8 +606,8 @@ class IndicatorEmail(Indicator):
 
 class IndicatorIPV4(Indicator):
     value = models.GenericIPAddressField(protocol="IPv4",
-                                         unique=True)
-    ttl = models.IntegerField(default=14)
+                                         unique=True, )
+    ttl = models.IntegerField(default=14, )
 
 
 class IndicatorIPV6(Indicator):

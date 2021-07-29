@@ -48,11 +48,13 @@ celery_app.conf.beat_schedule = {
         "task": "api.tasks.remove_old_articles_all",
         "kwargs":{"organization_id":1},
         "schedule": crontab(hour="1", minute="30") # every day at hour 1
+      #"schedule": crontab(hour="*", minute="*/1") # testing
     },
     'update_tld': {
         "task": "api.tasks.update_suffixes",
         "kwargs":{"organization_id":1},
         "schedule": crontab(day_of_week="0", hour="1", minute="15")
+        #"schedule": crontab(hour="*", minute="*/1") # testing
     }
 }
 

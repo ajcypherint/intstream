@@ -2,8 +2,9 @@ from django_filters import rest_framework as filters
 from api import models
 from django_celery_results import backends, managers
 import json
+import logging
 
-
+LOG = logging.getLogger(__name__)
 class DisabledHTMLFilterBackend(filters.DjangoFilterBackend):
     def to_html(self, request, queryset, view):
         return ""
@@ -28,6 +29,9 @@ class OrgDatabaseBackend(backends.DatabaseBackend):
         worker = getattr(request, 'hostname', None)
 
         organization_id = task_kwargs_dict.get("organization_id", None)
+        if organization_id is None:
+            LOG.error("org is none; task_id: %s task_name: %s task_args %s task_kwargs: %s",
+                      task_id, task_name, task_args, task_kwargs)
         self.TaskModel._default_manager.store_result_org(
             content_type, content_encoding,
             task_id, result, status,

@@ -42,6 +42,11 @@ export class Main extends React.Component {
     // todo(aj) setIndicator use indicatorbase url in container
     const url = BASE_INDICATOR_API + indicator.id + '/'
     this.props.setIndicator(url, indicator)
+    const mitigated = event.target.dataset.mitigated
+    // todo(aj)
+    // if (mitigated === 'true') {
+    //  this.props.unmitigateDispatch(indicator.id)
+    // }
   }
 
   handleReviewed (event) {
@@ -238,6 +243,7 @@ export class Main extends React.Component {
                                          : <div className="custom-control custom-checkbox">
                                               <Input type="checkbox"
                                                 data-id={indicator.id}
+                                                data-mitigated={indicator.mitigated}
                                                 data-indicator={JSON.stringify(indicator)}
                                                 checked={indicator.allowed}
                                                 onChange={this.handleAllowed}/>

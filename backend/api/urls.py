@@ -110,6 +110,7 @@ schema_view = get_schema_view(
 urlpatterns=[
     path("register/",views.SignUpView.as_view()),
     path("mitigate/", views.MitigateIndicatorOnDemand.as_view()),
+    path("indicatorhome/", views.IndicatorHome.as_view()),
     path("activate/<str:uidb64>/<str:token>",views.Activate.as_view(), name="activate"),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('',include(router.urls)),

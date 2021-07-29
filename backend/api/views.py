@@ -112,7 +112,7 @@ class MitigateIndicatorOnDemand(APIView):
                              openapi.Schema(
                                 type=openapi.TYPE_STRING,
                              ))
-    @swagger_auto_schema(manual_parameters=[indicator_id,], responses={200:response,404:error})
+    @swagger_auto_schema(manual_parameters=[indicator_id, action], responses={200:response,404:error})
     def post(self, request, format=None):
         MITIGATE = "mitigate"
         UNMITIGATE = "unmitigate"
@@ -583,6 +583,33 @@ class Activate(View):
             # todo return template
             return render(request, "api/registration.html", context=context, status=status.HTTP_400_BAD_REQUEST)
 
+
+class PageCalc(object):
+    def __init__(self, page, total_len, request):
+        # retrieve page slicing
+        self.total_count = total_len
+        self.total_pages = math.ceil(self.total_count / settings.REST_FRAMEWORK["PAGE_SIZE"])
+
+        self.invalid = page > self.total_pages
+        self.start_slice = (page - 1) * settings.REST_FRAMEWORK["PAGE_SIZE"]
+        self.end_slice = (page * settings.REST_FRAMEWORK["PAGE_SIZE"])
+
+        # next and previous page
+        self.next = page + 1 if page + 1 <= self.total_pages else None
+        self.previous = page - 1 if page - 1 != 0 else None
+
+        # edit query param for page for next and previous
+        FULL_URL = request.build_absolute_uri('?')
+        ABSOLUTE_ROOT =  request.build_absolute_uri('/')[:-1].strip("/")
+        ABSOLUTE_ROOT_URL =  request.build_absolute_uri('/').strip("/")
+        self.url = request.build_absolute_uri()
+        self.next_full_uri = None
+        if next is not None:
+            self.next_full_uri = set_query_params(self.url, next)
+
+        self.prev_full_uri = None
+        if self.previous is not None:
+            self.prev_full_uri = set_query_params(self.url, self.previous)
 
 class HomePage(APIView):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
@@ -1102,7 +1129,7 @@ class JobVersionViewSet(OrgViewSet):
         instance = serializer.save(organization = self.request.user.organization)
         # todo(aj) add job id as part of the model to track the job that created the virtual env and script path
         tasks.task_create_job_script_path.delay(instance.id, create=True, organization_id=self.request.user.organization.id)
-        tasks.task_create_job_virtual_env.delay(instance.id, aws_req=False, create=True, organization_id = self.request.user.organization.id)
+        tasks.task_create_job_virtual_env.delay(instance.id, aws_req=False, create=True, organization_id=self.request.user.organization.id)
 
 
 class MLModelViewSet(OrgViewSet):
@@ -1273,7 +1300,7 @@ def create_predict(source, text, organization, serializer):
     org_id = serializer.instance.organization.id
     tasks.predict.delay(article_ids, source_id, organization_id=org_id)
     if serializer.instance.source.extract_indicators:
-        tasks.extract_indicators.delay(clean_text, serializer.instance.id, serializer.instance.organization.id)
+        tasks.extract_indicators.delay(clean_text, serializer.instance.id, organization_id=serializer.instance.organization.id)
 
 
 class TxtArticleViewSet(viewsets.ModelViewSet):
@@ -1496,7 +1523,7 @@ class CheckFieldsData(object):
 
 
 class IndicatorBaseViewSet(viewsets.ModelViewSet):
-    def tasks(self, instance, org_check_data):
+    def tasks(self, instance, org_check_data=None):
         """
 
         :param instance: IndicatorBase
@@ -1508,11 +1535,18 @@ class IndicatorBaseViewSet(viewsets.ModelViewSet):
         # run mitigation jobs after other tasks finish
         if isinstance(instance, list):
             for i in instance:
-                if org_check_data.run_jobs_and_mitigate(i):
+                if org_check_data is not None:
+                    if org_check_data.run_jobs_and_mitigate(i):
+                        tasks.runjobs_mitigate.delay(i.id, organization_id=i.organization.id)
+                else:
                     tasks.runjobs_mitigate.delay(i.id, organization_id=i.organization.id)
         else:
-            if org_check_data.run_jobs_and_mitigate(instance):
+            if org_check_data is not None:
+                if org_check_data.run_jobs_and_mitigate(instance):
+                    tasks.runjobs_mitigate.delay(instance.id, organization_id=instance.organization.id)
+            else:
                 tasks.runjobs_mitigate.delay(instance.id, organization_id=instance.organization.id)
+
 
 
 class IndicatorMD5Filter(filters.FilterSet):
@@ -1555,6 +1589,14 @@ class IndicatorSha256Filter(filters.FilterSet):
 
 
 class IndicatorIPV4Filter(filters.FilterSet):
+    # these need to be custom views to prevent the sort.  The sort is taking up a ton of time here.
+    # create one alternate view that can be used for the IndicatorHome page to retrieve values in a smarter way.
+    # remove the filters here.
+    # 1. select articles first based on start, end, source, prediction__mlmodel, page
+    # 2. join in indicators
+    # 3. join in custom columns to get one picture
+    # 4. set paging ;
+    # 5. return page requested
     value__in = CharInFilter(field_name="value",lookup_expr="in")
     start_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='gte', distinct=True)
     end_upload_date = filters.IsoDateTimeFilter(field_name='articles__upload_date', lookup_expr='lte', distinct=True)
@@ -1783,6 +1825,104 @@ class IndicatorEmailViewSet(IndicatorBaseViewSet):
         instance = serializer.save(organization=self.request.user.organization)
         self.tasks(instance, org_check)
 
+class IndicatorHome(APIView):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    start_upload_date = openapi.Parameter('start_upload_date',
+                            in_=openapi.IN_QUERY,
+                            required=True,
+                            description="IsoDateTime",
+                            type=openapi.TYPE_STRING)
+
+    end_upload_date = openapi.Parameter('end_upload_date',
+                            in_=openapi.IN_QUERY,
+                            required=True,
+                            description="IsoDateTime",
+                            type=openapi.TYPE_STRING)
+
+    data_model = openapi.Parameter('data_model',
+                            in_=openapi.IN_QUERY,
+                            required=True,
+                            description="Table",
+                            type=openapi.TYPE_STRING)
+
+    source = openapi.Parameter('source',
+                               in_=openapi.IN_QUERY,
+                               required=True,
+                               description="article source",
+                               type=openapi.TYPE_INTEGER
+                                )
+    page = openapi.Parameter('page',
+                               in_=openapi.IN_QUERY,
+                               required=True,
+                               description="page",
+                               type=openapi.TYPE_INTEGER
+                                )
+
+    prediction__mlmodel = openapi.Parameter('prediction_mlmodel',
+                               in_=openapi.IN_QUERY,
+                               required=True,
+                               description="article prediction mlmodel",
+                               type=openapi.TYPE_STRING
+                                )
+
+    response = openapi.Response('indicators',
+            openapi.Schema( type=openapi.TYPE_ARRAY,
+                            items=openapi.TYPE_OBJECT(
+                                properties={
+                                    "indicator":openapi.TYPE_INTEGER
+                                }
+                            )
+                            )
+                                )
+    article = openapi.Response('articles',
+                               openapi.TYPE_INTEGER)
+    error = openapi.Response("error_details",
+                             openapi.Schema(
+                                type=openapi.TYPE_OBJECT(
+                                    properties={
+                                        "detail": openapi.TYPE_OBJECT
+
+                                    }
+                                ),
+                             ))
+
+    @swagger_auto_schema(manual_parameters=[
+        article, start_upload_date, end_upload_date, source, article ], responses={200:response,404:error})
+    def get(self, request, format=None):
+        filters = [
+            ("article", self.request.GET.get("article", None)),
+            ("start_upload_date", self.request.GET.get("start_upload_date", None)),
+            ("end_upload_date", self.request.GET.get("end_upload_date", None)),
+            ("source", self.request.GET.get("source", None)),
+            ("prediction__mlmodel", self.request.GET.get("source", None)),
+        ]
+        data_model = self.request.GET.get("data_model", None)
+        if data_model is None:
+            return Response({"data_model": "data_model cannot be blank"}, status.HTTP_400_BAD_REQUEST)
+        ordering = self.request.GET.get("ordering", "value")
+        filters_keep = [i for i in filters if i[1] is not None]
+        filter_dict = dict(filters_keep)
+        article_ids = models.Article.objects.filter(**filter_dict).values("id")
+        model_name = "Indicators" + data_model
+        indicators_count= getattr(models, model_name).objects.filter(article_ids=article_ids).count()
+        page_calc = PageCalc(self.request.GET.get("page", 1), indicators_count, self.request)
+        # todo(aj) join columns selected
+        indicator_res = getattr(
+            models, model_name).objects.filter(
+            article_ids=article_ids).order_by(ordering)[
+                         page_calc.start_slice:page_calc.end_slice].values("id",
+                                                                           "value",
+                                                                           "mitigated",
+                                                                           "allowed",
+                                                                           "reviewed")
+        response = {
+            "count": indicators_count,
+            "results": indicator_res,
+            "next": page_calc.next_full_uri,
+            "previous": page_calc.prev_full_uri,
+
+        }
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class IndicatorIPV4ViewSet(IndicatorBaseViewSet):
@@ -1863,7 +2003,7 @@ class ModelVersionViewSet(OrgViewSet):
         #    articles = models.Article.objects.filter(upload_date__gte=instance.train_start_date).all()
         #    for article in articles:
         #        tasks.predict.delay(articles=[article.id],
-        #                            organization=article.organization.id,
+        #                            organization_id=article.organization.id,
         #                            source_id=article.source.id)
 
 
