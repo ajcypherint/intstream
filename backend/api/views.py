@@ -461,7 +461,7 @@ class SignUpView(APIView):
                               )
 
     response = openapi.Response('success',
-            openapi.Schema( type=openapi.TYPE_OBJECT,
+            openapi.Schema(type=openapi.TYPE_OBJECT,
                             properties={
                                      "message":openapi.Schema(type=openapi.TYPE_STRING),
                                     }
@@ -1857,6 +1857,12 @@ class IndicatorHome(APIView):
                                description="page",
                                type=openapi.TYPE_INTEGER
                                 )
+    article = openapi.Parameter('article',
+                               in_=openapi.IN_QUERY,
+                               required=True,
+                               description="article",
+                               type=openapi.TYPE_INTEGER
+                                )
 
     prediction__mlmodel = openapi.Parameter('prediction_mlmodel',
                                in_=openapi.IN_QUERY,
@@ -1867,27 +1873,26 @@ class IndicatorHome(APIView):
 
     response = openapi.Response('indicators',
             openapi.Schema( type=openapi.TYPE_ARRAY,
-                            items=openapi.TYPE_OBJECT(
-                                properties={
-                                    "indicator":openapi.TYPE_INTEGER
-                                }
+                            items=openapi.TYPE_OBJECT,
                             )
                             )
-                                )
-    article = openapi.Response('articles',
-                               openapi.TYPE_INTEGER)
     error = openapi.Response("error_details",
                              openapi.Schema(
-                                type=openapi.TYPE_OBJECT(
+                                type=openapi.TYPE_OBJECT,
                                     properties={
                                         "detail": openapi.TYPE_OBJECT
-
                                     }
                                 ),
-                             ))
+                             )
 
     @swagger_auto_schema(manual_parameters=[
-        article, start_upload_date, end_upload_date, source, article ], responses={200:response,404:error})
+        article,
+        data_model,
+        page,
+        start_upload_date,
+        end_upload_date,
+        source,
+        article], responses={200: response, 404: error})
     def get(self, request, format=None):
         filters = [
             ("article", self.request.GET.get("article", None)),
@@ -1895,6 +1900,7 @@ class IndicatorHome(APIView):
             ("end_upload_date", self.request.GET.get("end_upload_date", None)),
             ("source", self.request.GET.get("source", None)),
             ("prediction__mlmodel", self.request.GET.get("source", None)),
+            ("organization", self.request.user.organization)
         ]
         data_model = self.request.GET.get("data_model", None)
         if data_model is None:
@@ -1903,7 +1909,7 @@ class IndicatorHome(APIView):
         filters_keep = [i for i in filters if i[1] is not None]
         filter_dict = dict(filters_keep)
         article_ids = models.Article.objects.filter(**filter_dict).values("id")
-        model_name = "Indicators" + data_model
+        model_name = "Indicator" + data_model
         indicators_count= getattr(models, model_name).objects.filter(article_ids=article_ids).count()
         page_calc = PageCalc(self.request.GET.get("page", 1), indicators_count, self.request)
         # todo(aj) join columns selected
