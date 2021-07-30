@@ -80,3 +80,9 @@ export const MITIGATE = 'mitigate'
 export const UNMITIGATE = 'unmitigate'
 
 export const INDICATOR_PARTIAL = '/api/indicator'
+export const INDICATOR_URL = INDICATOR_PARTIAL
+export const INDICATOR_HOME_URL = '/api/indicatorhome'
+export const API_HOME_ARTICLES = '/api/homearticles/'
+export const API_ARTICLES = '/api/articles/'
+export const API_FILTER = '/api/homefilter/'
+export const MODEL_VERSIONS = '/api/modelversion/'

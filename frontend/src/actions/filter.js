@@ -15,15 +15,22 @@ import {
 import {
   getIPV4, getMD5, getSHA1, getSHA256,
   getIPV6, getEMAIL, getNETLOC,
-  getIndicators, clearIndicators, INDICATOR_URL
+  getIndicators, clearIndicators,
+  getIndicatorsHome
 } from '../actions/indicators'
 import { setChildHomeSelections } from '../actions/childFilter'
 import { getChildArticles } from '../actions/childArticles'
 
-export const API_HOME_ARTICLES = '/api/homearticles/'
-export const API_ARTICLES = '/api/articles/'
-export const API_FILTER = '/api/homefilter/'
-export const MODEL_VERSIONS = '/api/modelversion/'
+import {
+  API_HOME_ARTICLES,
+  API_ARTICLES,
+  API_FILTER,
+  MODEL_VERSIONS,
+  INDICATOR_URL,
+  INDICATOR_HOME_URL,
+  INDICATOR_PARTIAL
+} from '../containers/api'
+
 export const ALL_SOURCES = '@@filter/TOTAL'
 export const ALL_ACTIVE_MODELS = '@@filter/ALL_ACTIVE_MODELS'
 export const HOME = '@@filter/HOME'
@@ -145,7 +152,8 @@ export const filterIndChange = (selections,
     }
     const indicatorStrPage = indicatorStr + '&page=' + selections.page
     // get counts for each indicator tab
-    const resp_ind = await dispatch(getIndicators(INDICATOR_URL, selections.selectedTabIndex, indicatorStrPage))
+    const resp_ind = await dispatch(getIndicatorsHome(INDICATOR_HOME_URL,
+      selections.selectedTabIndex, indicatorStrPage))
     if (resp_ind.error) {
       return
     }

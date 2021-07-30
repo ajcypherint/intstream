@@ -1825,6 +1825,15 @@ class IndicatorEmailViewSet(IndicatorBaseViewSet):
         instance = serializer.save(organization=self.request.user.organization)
         self.tasks(instance, org_check)
 
+MODEL_MAP = {
+    "md5": "MD5",
+    "sha256": "Sha256",
+    "sha1": "Sha256",
+    "email": "Email",
+    "ipv4": "IPV4",
+    "ipv6": "IPV6",
+    "netloc": "NetLoc"
+}
 class IndicatorHome(APIView):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     start_upload_date = openapi.Parameter('start_upload_date',
@@ -1896,26 +1905,29 @@ class IndicatorHome(APIView):
     def get(self, request, format=None):
         filters = [
             ("article", self.request.GET.get("article", None)),
-            ("start_upload_date", self.request.GET.get("start_upload_date", None)),
-            ("end_upload_date", self.request.GET.get("end_upload_date", None)),
+            ("upload_date__gte", self.request.GET.get("start_upload_date", None)),
+            ("upload_date__lte", self.request.GET.get("end_upload_date", None)),
             ("source", self.request.GET.get("source", None)),
             ("prediction__mlmodel", self.request.GET.get("source", None)),
-            ("organization", self.request.user.organization)
+            ("organization__id", self.request.user.organization.id)
         ]
-        data_model = self.request.GET.get("data_model", None)
+        data_model_key = self.request.GET.get("data_model", None)
+        data_model = MODEL_MAP[data_model_key]
         if data_model is None:
             return Response({"data_model": "data_model cannot be blank"}, status.HTTP_400_BAD_REQUEST)
         ordering = self.request.GET.get("ordering", "value")
-        filters_keep = [i for i in filters if i[1] is not None]
+        filters_keep = [i for i in filters if i[1] is not None and i[1] is not '']
         filter_dict = dict(filters_keep)
-        article_ids = models.Article.objects.filter(**filter_dict).values("id")
+        article_ids_resp = models.Article.objects.filter(**filter_dict).values("id")
+        article_ids = [i["id"] for i in article_ids_resp]
         model_name = "Indicator" + data_model
-        indicators_count= getattr(models, model_name).objects.filter(article_ids=article_ids).count()
-        page_calc = PageCalc(self.request.GET.get("page", 1), indicators_count, self.request)
+        indicators_count = getattr(models, model_name).objects.filter(
+            articles__in=article_ids).distinct("value").count()
+        page_calc = PageCalc(int(self.request.GET.get("page", 1)), indicators_count, self.request)
         # todo(aj) join columns selected
         indicator_res = getattr(
             models, model_name).objects.filter(
-            article_ids=article_ids).order_by(ordering)[
+            articles__in=article_ids).order_by(ordering).distinct("value")[
                          page_calc.start_slice:page_calc.end_slice].values("id",
                                                                            "value",
                                                                            "mitigated",

@@ -2,7 +2,7 @@ import { RSAA } from 'redux-api-middleware'
 import { withAuth } from '../reducers/util'
 import URL from 'url-parse'
 import { setParams } from './util'
-import { BASE_INDICATOR_API } from '../containers/api'
+import { INDICATOR_HOME_URL, INDICATOR_URL, BASE_INDICATOR_API } from '../containers/api'
 
 const setParamsType = function (url, type, params) {
   if (typeof type !== 'undefined') {
@@ -13,8 +13,6 @@ const setParamsType = function (url, type, params) {
   }
   return url
 }
-
-export const INDICATOR_URL = '/api/indicator'
 
 export const GET_INDICATORS_REQUEST = '@@indicators/GET_INDICATORS_REQUEST'
 export const GET_INDICATORS_SUCCESS = '@@indicators/GET_INDICATORS_SUCCESS'
@@ -70,7 +68,7 @@ export const clearIndicators = (data) => {
 }
 
 export const getIPV6 = (params) => {
-  const url = setParams('/api/indicatoripv6/', params)
+  const url = setParams(INDICATOR_HOME_URL, params) + '&data_model=ipv6'
   return {
     [RSAA]: {
       endpoint: url,
@@ -87,7 +85,7 @@ export const getIPV6 = (params) => {
 }
 
 export const getEMAIL = (params) => {
-  const url = setParams('/api/indicatoremail/', params)
+  const url = setParams(INDICATOR_HOME_URL, params) + '&data_model=email'
   return {
     [RSAA]: {
       endpoint: url,
@@ -104,7 +102,7 @@ export const getEMAIL = (params) => {
 }
 
 export const getNETLOC = (params) => {
-  const url = setParams('/api/indicatornetloc/', params)
+  const url = setParams(INDICATOR_HOME_URL, params) + '&data_model=netloc'
   return {
     [RSAA]: {
       endpoint: url,
@@ -121,7 +119,7 @@ export const getNETLOC = (params) => {
 }
 
 export const getIPV4 = (params) => {
-  const url = setParams('/api/indicatoripv4/', params)
+  const url = setParams(INDICATOR_HOME_URL, params) + '&data_model=ipv4'
   return {
     [RSAA]: {
       endpoint: url,
@@ -138,7 +136,7 @@ export const getIPV4 = (params) => {
 }
 
 export const getSHA1 = (params) => {
-  const url = setParams('/api/indicatorsha1/', params)
+  const url = setParams(INDICATOR_HOME_URL, params) + '&data_model=sha1'
   return {
     [RSAA]: {
       endpoint: url,
@@ -155,7 +153,7 @@ export const getSHA1 = (params) => {
 }
 
 export const getSHA256 = (params) => {
-  const url = setParams('/api/indicatorsha256/', params)
+  const url = setParams(INDICATOR_HOME_URL, params) + '&data_model=sha256'
   return {
     [RSAA]: {
       endpoint: url,
@@ -172,7 +170,7 @@ export const getSHA256 = (params) => {
 }
 
 export const getMD5 = (params) => {
-  const url = setParams('/api/indicatormd5/', params)
+  const url = setParams(INDICATOR_HOME_URL, params) + '&data_model=md5'
   return {
     [RSAA]: {
       endpoint: url,
@@ -187,6 +185,7 @@ export const getMD5 = (params) => {
     }
   }
 }
+
 export const getIndicatorsTemplate = (REQUEST) => (SUCCESS) => (FAILURE
 ) => (url, type = undefined, params = undefined) => {
   // filters - list[string]
@@ -207,6 +206,25 @@ export const getIndicatorsTemplate = (REQUEST) => (SUCCESS) => (FAILURE
   }
 }
 
+export const getIndicatorsHomeTemplate = (REQUEST) => (SUCCESS) => (FAILURE) => (url, type, params) => {
+  // filters - list[string]
+  url = setParams(url, params) + '&data_model=' + type
+
+  return {
+    [RSAA]: {
+      endpoint: url,
+      method: 'GET',
+      fetch: fetch,
+      body: '',
+      headers: withAuth({ 'Content-Type': 'application/json' }),
+      types: [
+        REQUEST, SUCCESS, FAILURE
+      ]
+
+    }
+  }
+}
+export const getIndicatorsHome = getIndicatorsHomeTemplate(GET_INDICATORS_REQUEST)(GET_INDICATORS_SUCCESS)(GET_INDICATORS_FAILURE)
 export const getIndicatorUpdate = (id) => {
   // filters - list[string]
   const url = BASE_INDICATOR_API + '?id=' + id
@@ -225,6 +243,7 @@ export const getIndicatorUpdate = (id) => {
     }
   }
 }
+
 export const getIndicators = getIndicatorsTemplate(GET_INDICATORS_REQUEST)(GET_INDICATORS_SUCCESS)(GET_INDICATORS_FAILURE)
 
 export const setIndicators = (url, data, method = 'PUT') => {
