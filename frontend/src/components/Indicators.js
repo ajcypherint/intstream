@@ -8,6 +8,7 @@ import Choice from './MultiChoiceCol'
 import _ from 'lodash'
 import { changesort } from './ChangeSort'
 import {
+  INDICATOR_PARTIAL,
   UNMITIGATE,
   MITIGATE,
   BASE_INDICATOR_API
@@ -39,8 +40,9 @@ export class Main extends React.Component {
       ...indicator,
       allowed: newAllowed
     }
+    const type = event.target.dataset.type
     // todo(aj) setIndicator use indicatorbase url in container
-    const url = BASE_INDICATOR_API + indicator.id + '/'
+    const url = INDICATOR_PARTIAL + type + '/' + indicator.id + '/'
     this.props.setIndicator(url, indicator)
     const mitigated = event.target.dataset.mitigated
     // todo(aj)
@@ -51,12 +53,13 @@ export class Main extends React.Component {
 
   handleReviewed (event) {
     let indicator = JSON.parse(event.target.dataset.indicator)
+    const type = event.target.dataset.type
     const newReviewed = !indicator.reviewed
     indicator = {
       ...indicator,
       reviewed: newReviewed
     }
-    const url = BASE_INDICATOR_API + indicator.id + '/'
+    const url = INDICATOR_PARTIAL + type + '/' + indicator.id + '/'
     this.props.setIndicator(url, indicator)
   }
 
@@ -243,6 +246,7 @@ export class Main extends React.Component {
                                          : <div className="custom-control custom-checkbox">
                                               <Input type="checkbox"
                                                 data-id={indicator.id}
+                                                data-type={selections.selectedTabIndex}
                                                 data-mitigated={indicator.mitigated}
                                                 data-indicator={JSON.stringify(indicator)}
                                                 checked={indicator.allowed}
@@ -258,6 +262,8 @@ export class Main extends React.Component {
                                          : <div className="custom-control custom-checkbox">
                                             <Input type="checkbox"
                                               data-id={indicator.id}
+                                              data-type={selections.selectedTabIndex}
+                                              data-reviewed={indicator.reviewed}
                                               data-indicator={JSON.stringify(indicator)}
                                               checked={indicator.reviewed}
                                               onChange={this.handleReviewed}/>

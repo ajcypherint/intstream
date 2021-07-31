@@ -140,7 +140,8 @@ class JobSerializer(serializers.ModelSerializer):
             name = kwargs.get("name", None),
             task='api.tasks.job',
             organization=org,
-            kwargs=json.dumps({"id": job_id, "organization_id":org.pk})
+            enabled=kwargs.get("active", False),
+            kwargs=json.dumps({"active":kwargs.get("active", False), "id": job_id, "organization_id":org.pk})
         )
         #todo add enabled; add enabled to gui
 
@@ -151,11 +152,13 @@ class JobSerializer(serializers.ModelSerializer):
              month_of_year=kwargs.get("cron_month_of_year", None),
              hour=kwargs.get("cron_hour", None),
              minute=kwargs.get("cron_minute", None))
-
-        job = models.OrgPeriodicTask.objects.get(name=job.name)
-        job.crontab = schedule
-        #todo add enabled; add enabled to gui
-        job.save()
+        periodic_task = models.OrgPeriodicTask.objects.get(name=job.name)
+        kwargs_task = json.loads(periodic_task.kwargs)
+        kwargs_task["active"] = kwargs_task["active"]
+        periodic_task.kwargs = json.dumps(kwargs_task)
+        periodic_task.enabled = kwargs.get("active", False)
+        periodic_task.crontab = schedule
+        periodic_task.save()
 
     def create(self,validated_data):
         job = super().create(validated_data)
@@ -803,6 +806,7 @@ class ModelVersionSerializer(serializers.ModelSerializer):
 class IndicatorSerializer(serializers.ModelSerializer):
 
     ind_type = serializers.PrimaryKeyRelatedField(queryset=models.IndicatorType.objects.all())
+
     class Meta:
         fields = [
             "id",
@@ -813,6 +817,11 @@ class IndicatorSerializer(serializers.ModelSerializer):
             "reviewed",
             "allowed",
             "mitigated"
+        ]
+        read_only_fields = [
+            "ind_type",
+            "id",
+            "upload_date"
         ]
         model = models.Indicator
 

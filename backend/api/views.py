@@ -1903,12 +1903,19 @@ class IndicatorHome(APIView):
         source,
         article], responses={200: response, 404: error})
     def get(self, request, format=None):
+        article =  self.request.GET.get("article", None)
+        article = int(article) if article is not None else article
+        source =  self.request.GET.get("source", None)
+        source = int(source) if source is not None and source is not '' else source
+        prediction__mlmodel =  self.request.GET.get("prediction_ml_model", None)
+        prediction__mlmodel = int(prediction__mlmodel) if prediction__mlmodel is not None \
+            and prediction__mlmodel is not '' else prediction__mlmodel
         filters = [
-            ("article", self.request.GET.get("article", None)),
+            ("article", article),
             ("upload_date__gte", self.request.GET.get("start_upload_date", None)),
             ("upload_date__lte", self.request.GET.get("end_upload_date", None)),
-            ("source", self.request.GET.get("source", None)),
-            ("prediction__mlmodel", self.request.GET.get("source", None)),
+            ("source", source),
+            ("prediction__mlmodel", prediction__mlmodel),
             ("organization__id", self.request.user.organization.id)
         ]
         data_model_key = self.request.GET.get("data_model", None)
@@ -1930,6 +1937,7 @@ class IndicatorHome(APIView):
             articles__in=article_ids).order_by(ordering).distinct("value")[
                          page_calc.start_slice:page_calc.end_slice].values("id",
                                                                            "value",
+                                                                           "ind_type",
                                                                            "mitigated",
                                                                            "allowed",
                                                                            "reviewed")

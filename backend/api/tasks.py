@@ -309,10 +309,10 @@ def _indicatorjob(task,
                         "; stdout: " + proc.stdout.replace('\n', ';').replace('\r', ''))
 
 @shared_task(bind=True)
-def job(self, id=None, organization_id=None):
-
-    task = self.request.id.__str__()
-    _job(task, id, organization_id)
+def job(self, active=True, id=None, organization_id=None):
+    if active:
+        task = self.request.id.__str__()
+        _job(task, id, organization_id)
 
 def get_expire(refresh_token):
     refresh_parts = refresh_token.split(".")
