@@ -133,8 +133,8 @@ class MitigateIndicatorOnDemand(APIView):
                 res = tasks.indicatorjob.delay(job.id,
                                    indicator.id,
                                    organization_id=self.request.user.organization.id,
-                                   dir_ind_script=tasks.DIRMITIGATEINDSCRIPT,
-                                   dir_ind_job_venv=tasks.DIRMITINDJOBVENV,
+                                   dir_ind_script=settings.DIRMITIGATEINDSCRIPT,
+                                   dir_ind_job_venv=settings.DIRMITINDJOBVENV,
                                    model="MitigateIndicatorJob",
                                    model_version="MitigateIndicatorJobVersion"
                                    )
@@ -148,8 +148,8 @@ class MitigateIndicatorOnDemand(APIView):
                 res = tasks.indicatorjob.delay(job.id,
                                        indicator.id,
                                        organization_id=self.request.user.organization.id,
-                                       dir_ind_script=tasks.DIRUNMITIGATEINDSCRIPT,
-                                       dir_ind_job_venv=tasks.DIRUNMITINDJOBVENV,
+                                       dir_ind_script=settings.DIRUNMITIGATEINDSCRIPT,
+                                       dir_ind_job_venv=settings.DIRUNMITINDJOBVENV,
                                        model="UnmitigateIndicatorJob",
                                        model_version="UnmitigateIndicatorJobVersion"
                                        )
@@ -1753,28 +1753,34 @@ class IndicatorNetLocViewSet(IndicatorBaseViewSet):
             kwargs["many"] = True  # bulk
         return super(IndicatorNetLocViewSet, self).get_serializer(*args, **kwargs)
 
-    def get_value(self):
-        suffix = models.Suffix.objects.get(id=self.request.POST["suffix"])
-        subdomain = self.request.POST["subdomain"]
+    def set_value(self, entry):
+        suffix = entry["suffix"].value
+        subdomain = entry["subdomain"]
         subdomain = subdomain + "." if subdomain != "" else ""
-        domain = self.request.POST["domain"]
-        value = subdomain + domain + "." + suffix.value
-        return value
+        domain = entry["domain"]
+        entry["value"] = subdomain + domain + "." + suffix
+
+    def set_value_serializer(self, serializer):
+        if isinstance(serializer.validated_data, list):
+            for i in serializer.validated_data:
+                self.set_value(i)
+        else:
+            self.set_value(serializer.validated_data)
+        return serializer
 
     def perform_create(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.NETLOC)
-        value = self.get_value()
+        serializer = self.set_value_serializer(serializer)
 
         instance = serializer.save(ind_type=ind_type,
-                                   value=value,
                                    organization=self.request.user.organization)
         self.tasks(instance)
 
     def perform_update(self, serializer):
         ind_type = models.IndicatorType.objects.get(name=settings.NETLOC)
-        value = self.get_value()
+
+        serializer = self.set_value_serializer(serializer)
         instance = serializer.save(ind_type=ind_type,
-                                   value=value,
                                    organization=self.request.user.organization)
 
         self.tasks(instance)
@@ -2007,7 +2013,7 @@ class IndicatorIPV6ViewSet(IndicatorBaseViewSet):
 
     def perform_update(self, serializer):
 
-        org = models.IndicatorIPV6.objects.get(pk=serializer.data["id"])
+        org = models.IndicatorIPV6.objects.get(pk=serializer.intial_data["id"])
         org_check = CheckFieldsData(org)
         instance = serializer.save(organization=self.request.user.organization)
         self.tasks(instance, org_check)
@@ -2060,7 +2066,6 @@ class IndicatorMD5ViewSet(IndicatorBaseViewSet):
 
     def perform_update(self, serializer):
 
-        # todo(aj) if mitigated changed or if allow listed = True do not run mitigation
         org = models.IndicatorMD5.objects.get(pk=serializer.initial_data["id"])
         org_check = CheckFieldsData(org)
         instance = serializer.save(organization=self.request.user.organization)
@@ -2285,14 +2290,14 @@ class MitigateIndicatorJobVersionViewSet(OrgViewSet):
                                                           create=True,
                                                           organization_id=self.request.user.organization.id,
                                                           model="MitigateIndicatorJobVersion",
-                                                          dir=tasks.DIRMITIGATEINDSCRIPT,
+                                                          dir=settings.DIRMITIGATEINDSCRIPT,
                                                           )
         tasks.task_create_indicator_job_virtual_env.delay(instance.id,
                                                           aws_req=False,
                                                           create=True,
                                                           organization_id=self.request.user.organization.id,
                                                           model="MitigateIndicatorJobVersion",
-                                                          dir=tasks.DIRMITINDJOBVENV,
+                                                          dir=settings.DIRMITINDJOBVENV,
                                                           )
 
 
@@ -2312,14 +2317,14 @@ class UnmitigateIndicatorJobVersionViewSet(OrgViewSet):
                                                           create=True,
                                                           organization_id=self.request.user.organization.id,
                                                           model="UnmitigateIndicatorJobVersion",
-                                                          dir=tasks.DIRUNMITIGATEINDSCRIPT,
+                                                          dir=settings.DIRUNMITIGATEINDSCRIPT,
                                                           )
         tasks.task_create_indicator_job_virtual_env.delay(instance.id,
                                                           aws_req=False,
                                                           create=True,
                                                           organization_id=self.request.user.organization.id,
                                                           model="UnmitigateIndicatorJobVersion",
-                                                          dir=tasks.DIRUNMITINDJOBVENV,
+                                                          dir=settings.DIRUNMITINDJOBVENV,
                                                           )
 
 

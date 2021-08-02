@@ -52,6 +52,26 @@ SUFFIX_LIST_URL = os.environ.get("SUFFIX_LIST_URL", "https://publicsuffix.org/li
 MAX_SOURCES = os.environ.get("MAX_SOURCES", 5)
 # Application definition
 
+# Venv dirs
+DIRVENV = os.path.join(TMP_DIR, "venv")
+
+DIRCLASSIFVENV  = os.path.join(DIRVENV, "classif")
+DIRJOBVENV    = os.path.join(DIRVENV, "job")
+DIRINDJOBVENV = os.path.join(DIRVENV, "indjob")
+DIRMITINDJOBVENV = os.path.join(DIRVENV, "mitindjob")
+DIRUNMITINDJOBVENV = os.path.join(DIRVENV, "unmitindjob")
+
+# script dirs
+DIRSCRIPT = os.path.join(TMP_DIR, "script")
+
+DIRJOBSCRIPT = os.path.join(DIRSCRIPT, "jobscript")
+DIRINDSCRIPT = os.path.join(DIRSCRIPT,"indscript")
+DIRMITIGATEINDSCRIPT = os.path.join(DIRSCRIPT,"mitigateindscript")
+DIRUNMITIGATEINDSCRIPT = os.path.join(DIRSCRIPT,"unmitigateindscript")
+DIRCLASSIFSCRIPT = os.path.join(DIRSCRIPT,"classifscript")
+
+#model dir
+MODEL = os.path.join(TMP_DIR,"model")
 
 INSTALLED_APPS = [
     'api.apps.ApiConfig',

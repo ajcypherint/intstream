@@ -924,6 +924,10 @@ class IndicatorNetLocSerializer(serializers.ModelSerializer):
             "upload_date",
             "registered"
         ]
+        read_only_fields = [
+            "value",
+            "id"
+        ]
         model = models.IndicatorNetLoc
 
 

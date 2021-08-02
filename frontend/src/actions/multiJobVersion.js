@@ -25,7 +25,6 @@ export const setPage = (data) => {
 }
 // todo move to util
 export const getVersionTemplate = (ENDP) => (REQUEST) => (SUCCESS) => (FAILURE) => (params, meta = null) => {
-  params = params + '&' + meta + '=true'
   const url = setParams(ENDP, params)
   return {
     [RSAA]: {

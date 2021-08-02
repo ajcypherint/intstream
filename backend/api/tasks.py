@@ -69,26 +69,6 @@ def close_logging(signal=None, sender=None, task_id=None, task=None, args=None, 
         version.celery_log.save(task_id + ".log",File(f))
         version.save()
 """
-# Venv dirs
-DIRVENV = os.path.join(settings.TMP_DIR, "venv")
-
-DIRCLASSIFVENV  = os.path.join(DIRVENV, "classif")
-DIRJOBVENV    = os.path.join(DIRVENV, "job")
-DIRINDJOBVENV = os.path.join(DIRVENV, "indjob")
-DIRMITINDJOBVENV = os.path.join(DIRVENV, "mitindjob")
-DIRUNMITINDJOBVENV = os.path.join(DIRVENV, "unmitindjob")
-
-# script dirs
-DIRSCRIPT = os.path.join(settings.TMP_DIR, "script")
-
-DIRJOBSCRIPT = os.path.join(DIRSCRIPT, "jobscript")
-DIRINDSCRIPT = os.path.join(DIRSCRIPT,"indscript")
-DIRMITIGATEINDSCRIPT = os.path.join(DIRSCRIPT,"mitigateindscript")
-DIRUNMITIGATEINDSCRIPT = os.path.join(DIRSCRIPT,"unmitigateindscript")
-DIRCLASSIFSCRIPT = os.path.join(DIRSCRIPT,"classifscript")
-
-#model dir
-MODEL = os.path.join(settings.TMP_DIR,"model")
 
 #python script constants
 BASE_CLASSIFY_FILE = "base_classify_file.py"
@@ -203,17 +183,21 @@ def runjobs_mitigate(indicator_ids, organization_id=None):
                                                                 indicator_type=instance.ind_type).all()
                 if len(mitigate_jobs) > 0:
                     for m in mitigate_jobs:
-                        indicatorjob.delay(m.id, i, organization_id=organization_id,
-                                           model="MitigateIndicatorJob", model_version="MitigateIndicatorJobVersion")
+                        indicatorjob.delay(m.id, i,
+                                           organization_id=organization_id,
+                                           dir_ind_script=settings.DIRMITIGATEINDSCRIPT,
+                                           dir_ind_job_venv=settings.DIRMITINDJOBVENV,
+                                           model="MitigateIndicatorJob",
+                                           model_version="MitigateIndicatorJobVersion")
 
 @shared_task(bind=True)
 def indicatorjob(self,
                  id,
                  indicator_id,
                  organization_id=None,
-                 dir_ind_script=DIRINDSCRIPT,
+                 dir_ind_script=settings.DIRINDSCRIPT,
                  script_indicator_job=SCRIPT_INDICATOR_JOB,
-                 dir_ind_job_venv=DIRINDJOBVENV,
+                 dir_ind_job_venv=settings.DIRINDJOBVENV,
                  model="StandardIndicatorJob",
                  model_version="StandardIndicatorJobVersion"
                  ):
@@ -239,9 +223,9 @@ def indicatorjob(self,
 def _indicatorjob(task,
                   id,
                   indicator_id,
-                  dir_ind_script=DIRINDSCRIPT,
+                  dir_ind_script=settings.DIRINDSCRIPT,
                   script_indicator_job=SCRIPT_INDICATOR_JOB,
-                  dir_ind_job_venv=DIRINDJOBVENV,
+                  dir_ind_job_venv=settings.DIRINDJOBVENV,
                   model="StandardIndicatorJob",
                   model_version = "StandardIndicatorJobVersion"):
     job = getattr(models, model).objects.get(id=id)
@@ -327,8 +311,8 @@ def _job(task, id, organization_id):
     job_version = models.JobVersion.objects.get(active=True, job=job)
     tokens = get_tokens_for_user(user)
     # can't  create virtual env here. race conditions
-    script = _create_job_script_path(job_version, DIRJOBSCRIPT, SCRIPT_JOB, create=False)
-    venv_directory = _create_virtual_env(job_version, DIRJOBVENV, aws_req=False, create=False)
+    script = _create_job_script_path(job_version, settings.DIRJOBSCRIPT, SCRIPT_JOB, create=False)
+    venv_directory = _create_virtual_env(job_version, settings.DIRJOBVENV, aws_req=False, create=False)
 
     job_version = models.JobVersion.objects.get(id=job_version.id)
     job_args = job_version.job.arguments
@@ -386,7 +370,7 @@ def task_create_job_script_path(self, jobversion_id, create=True, organization_i
     task_id = self.request.id.__str__()
     jobversion.task_create_script_path = task_id
     jobversion.save()
-    _create_job_script_path(jobversion, DIRJOBSCRIPT, SCRIPT_JOB, create=create)
+    _create_job_script_path(jobversion, settings.DIRJOBSCRIPT, SCRIPT_JOB, create=create)
 
 @shared_task(bind=True)
 def task_create_indicator_job_script_path(self,
@@ -394,7 +378,7 @@ def task_create_indicator_job_script_path(self,
                                           create=True,
                                           organization_id=None,
                                           model="StandardIndicatorJobVersion",
-                                          dir=DIRINDSCRIPT,
+                                          dir=settings.DIRINDSCRIPT,
                                           script_indicator_job=SCRIPT_INDICATOR_JOB):
     jobversion = getattr(models, model).objects.get(id=jobversion_id)
     task_id = self.request.id.__str__()
@@ -707,7 +691,7 @@ def classify(text_list, model_version_id):
     :param model_version_id: int
     :return:
     """
-    model_directory = os.path.join(MODEL, str(model_version_id))
+    model_directory = os.path.join(settings.MODEL, str(model_version_id))
     model_version = models.ModelVersion.objects.get(id=model_version_id)
     # create model dir
     if not os.path.exists(model_directory):
@@ -764,7 +748,7 @@ def create_classify_dirs(training_script_version, create=True):
     :return:
     """
     script_dir = create_classif_script_directory(training_script_version, create=create)
-    virtualenv_dir = _create_virtual_env(training_script_version, DIRCLASSIFVENV, aws_req=True, create=create)
+    virtualenv_dir = _create_virtual_env(training_script_version, settings.DIRCLASSIFVENV, aws_req=True, create=create)
     return script_dir, virtualenv_dir
 
 
@@ -775,7 +759,7 @@ def create_classif_script_directory(training_script_version, create=True):
     :param training_script_version: models.TrainingScriptVersion
     :return:
     """
-    directory = os.path.join(DIRCLASSIFSCRIPT, str(training_script_version.id))
+    directory = os.path.join(settings.DIRCLASSIFSCRIPT, str(training_script_version.id))
     if not os.path.exists(directory) and create:
         try:
             pathlib.Path(directory).mkdir(parents=True)
@@ -798,7 +782,7 @@ def task_create_job_virtual_env(self, version_id, aws_req=False, create=True, or
     task_id = self.request.id.__str__()
     version.task_create_virtual_env = task_id
     version.save()
-    _create_virtual_env(version, DIRJOBVENV, aws_req=aws_req, create=create)
+    _create_virtual_env(version, settings.DIRJOBVENV, aws_req=aws_req, create=create)
 
 @shared_task(bind=True)
 def task_create_indicator_job_virtual_env(self,
@@ -807,7 +791,7 @@ def task_create_indicator_job_virtual_env(self,
                                           create=True,
                                           organization_id=None,
                                           model="StandardIndicatorJobVersion",
-                                          dir=DIRINDJOBVENV):
+                                          dir=settings.DIRINDJOBVENV):
     version = getattr(models, model).objects.get(id=version_id)
     task_id = self.request.id.__str__()
     version.task_create_virtual_env = task_id
