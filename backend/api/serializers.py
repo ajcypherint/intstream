@@ -154,7 +154,7 @@ class JobSerializer(serializers.ModelSerializer):
              minute=kwargs.get("cron_minute", None))
         periodic_task = models.OrgPeriodicTask.objects.get(name=job.name)
         kwargs_task = json.loads(periodic_task.kwargs)
-        kwargs_task["active"] = kwargs_task["active"]
+        kwargs_task["active"] = kwargs.get("active", False)
         periodic_task.kwargs = json.dumps(kwargs_task)
         periodic_task.enabled = kwargs.get("active", False)
         periodic_task.crontab = schedule

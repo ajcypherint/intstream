@@ -1917,7 +1917,7 @@ class IndicatorHome(APIView):
         prediction__mlmodel = int(prediction__mlmodel) if prediction__mlmodel is not None \
             and prediction__mlmodel is not '' else prediction__mlmodel
         filters = [
-            ("article", article),
+            ("id", article),
             ("upload_date__gte", self.request.GET.get("start_upload_date", None)),
             ("upload_date__lte", self.request.GET.get("end_upload_date", None)),
             ("source", source),

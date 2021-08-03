@@ -122,7 +122,7 @@ export default class One extends Component {
         '&job=' + job +
         '&page=' + page
 
-      // this.props.fetchLogs(str)
+      this.props.fetchLogs(str)
     }
   }
 
