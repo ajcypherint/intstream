@@ -180,6 +180,7 @@ def runjobs_mitigate(indicator_ids, organization_id=None):
                 result = promise.get() #join
                 # run mitigation on success
                 mitigate_jobs = models.MitigateIndicatorJob.objects.filter(organization_id=organization_id,
+                                                                           auto_mitigate=True,
                                                                 indicator_type=instance.ind_type).all()
                 if len(mitigate_jobs) > 0:
                     for m in mitigate_jobs:
