@@ -1834,7 +1834,7 @@ class IndicatorEmailViewSet(IndicatorBaseViewSet):
 MODEL_MAP = {
     "md5": "MD5",
     "sha256": "Sha256",
-    "sha1": "Sha256",
+    "sha1": "Sha1",
     "email": "Email",
     "ipv4": "IPV4",
     "ipv6": "IPV6",
