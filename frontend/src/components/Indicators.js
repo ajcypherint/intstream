@@ -282,13 +282,7 @@ export class Main extends React.Component {
                                             // todo get value of column name for id of indicator
                                             return (
                                                 <td key={index}>
-                                                  {
-                                                    _.filter(this.props.textColsData,
-                                                      { name: name, indicator: indicator.id }).length > 0
-                                                      ? _.filter(this.props.textColsData,
-                                                        { name: name, indicator: indicator.id })[0].value
-                                                      : ''
-                                                        }
+                                                  {indicator[name]}
                                                 </td>
                                             )
                                           })
@@ -298,13 +292,7 @@ export class Main extends React.Component {
                                              // todo get value of column name for id of indicator
                                              return (
                                                 <td key={index}>
-                                                  {
-                                                    _.filter(this.props.numColsData,
-                                                      { name: name, indicator: indicator.id }).length > 0
-                                                      ? _.filter(this.props.numColsData,
-                                                        { name: name, indicator: indicator.id })[0].value
-                                                      : ''
-                                                        }
+                                                  {indicator[name]}
                                                 </td>
                                              )
                                            })

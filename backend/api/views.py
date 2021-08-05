@@ -1,4 +1,6 @@
 import math
+import pandas as pd
+import numpy
 import iocextract
 from django.db import models as db_models
 from django.utils.encoding import force_bytes
@@ -1840,6 +1842,8 @@ MODEL_MAP = {
     "ipv6": "IPV6",
     "netloc": "NetLoc"
 }
+
+
 class IndicatorHome(APIView):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     start_upload_date = openapi.Parameter('start_upload_date',
@@ -1937,19 +1941,33 @@ class IndicatorHome(APIView):
         indicators_count = getattr(models, model_name).objects.filter(
             articles__in=article_ids).distinct("value").count()
         page_calc = PageCalc(int(self.request.GET.get("page", 1)), indicators_count, self.request)
-        # todo(aj) join columns selected
-        indicator_res = getattr(
-            models, model_name).objects.filter(
-            articles__in=article_ids).order_by(ordering).distinct("value")[
-                         page_calc.start_slice:page_calc.end_slice].values("id",
-                                                                           "value",
-                                                                           "ind_type",
-                                                                           "mitigated",
-                                                                           "allowed",
-                                                                           "reviewed")
+        indicator_query = getattr( models, model_name).objects.filter(
+            articles__in=article_ids).order_by(ordering).distinct("value")
+        indicator_res = indicator_query.values("id",
+                                               "value",
+                                               "ind_type",
+                                               "mitigated",
+                                               "allowed",
+                                               "reviewed")
+        indicator_pd = pd.DataFrame(indicator_res)
+        indicator_ids = [i["id"] for i in indicator_res]
+        column = models.IndicatorNumericField.objects.filter(
+            indicator__in=indicator_ids).values("id", "indicator_id", "value", "name")
+
+        if len(column) > 0:
+            column_df = pd.DataFrame(column)
+            column_pivot = column_df.pivot(index="indicator_id", columns="name", values="value")
+            total = pd.merge(left=indicator_pd, right=column_pivot, right_on=["indicator_id"], left_on=["id"])
+        else:
+            total = indicator_pd
+        indicators_page_total = []
+        if len(total) > 0:
+            total = total.loc[page_calc.start_slice:page_calc.end_slice]
+            indicators_page_total = total.to_dict('records')
+
         response = {
             "count": indicators_count,
-            "results": indicator_res,
+            "results": indicators_page_total,
             "next": page_calc.next_full_uri,
             "previous": page_calc.prev_full_uri,
 
