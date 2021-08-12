@@ -1,9 +1,8 @@
 # intstream
 Cyber Intelligence classification and information summarization.
 
-# install script
-1. cd utilities
-1. ./bash_install.sh
+# Installation
+1.  deb package installation
 
 initial user: intstreamadmin
 initial password: changeme@

@@ -32,18 +32,20 @@ class OrgDatabaseBackend(backends.DatabaseBackend):
         if organization_id is None:
             LOG.error("org is none; task_id: %s task_name: %s task_args %s task_kwargs: %s",
                       task_id, task_name, task_args, task_kwargs)
-        self.TaskModel._default_manager.store_result_org(
-            content_type, content_encoding,
-            task_id, result, status,
-            traceback=traceback,
-            meta=meta,
-            task_name=task_name,
-            task_args=task_args,
-            task_kwargs=task_kwargs,
-            worker=worker,
-            using=using,
-            organization_id=organization_id
-        )
+        # todo(aj) override celery backend cleanup with organization_id kwarg so it saves result
+        if task_name != "celery.backend_cleanup":
+            self.TaskModel._default_manager.store_result_org(
+                content_type, content_encoding,
+                task_id, result, status,
+                traceback=traceback,
+                meta=meta,
+                task_name=task_name,
+                task_args=task_args,
+                task_kwargs=task_kwargs,
+                worker=worker,
+                using=using,
+                organization_id=organization_id
+            )
         return result
 
 

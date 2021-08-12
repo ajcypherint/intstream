@@ -1889,6 +1889,10 @@ class IndicatorHome(APIView):
                                description="article prediction mlmodel",
                                type=openapi.TYPE_STRING
                                 )
+    orderdir = openapi.Parameter("orderdir",
+                                 in_=openapi.IN_QUERY,
+                                 description="order direction",
+                                 type=openapi.TYPE_STRING)
 
     response = openapi.Response('indicators',
             openapi.Schema( type=openapi.TYPE_ARRAY,
@@ -1910,12 +1914,14 @@ class IndicatorHome(APIView):
         page,
         start_upload_date,
         end_upload_date,
+        orderdir,
         source,
         article], responses={200: response, 404: error})
     def get(self, request, format=None):
         article =  self.request.GET.get("article", None)
         article = int(article) if article is not None else article
         source =  self.request.GET.get("source", None)
+        ordering = self.request.GET.get("orderdir", "")
         source = int(source) if source is not None and source is not '' else source
         prediction__mlmodel =  self.request.GET.get("prediction_ml_model", None)
         prediction__mlmodel = int(prediction__mlmodel) if prediction__mlmodel is not None \
@@ -1942,7 +1948,7 @@ class IndicatorHome(APIView):
             articles__in=article_ids).distinct("value").count()
         page_calc = PageCalc(int(self.request.GET.get("page", 1)), indicators_count, self.request)
         indicator_query = getattr( models, model_name).objects.filter(
-            articles__in=article_ids).order_by(ordering).distinct("value")
+            articles__in=article_ids).distinct("value")
         indicator_res = indicator_query.values("id",
                                                "value",
                                                "ind_type",
@@ -1963,6 +1969,8 @@ class IndicatorHome(APIView):
         indicators_page_total = []
         if len(total) > 0:
             total = total.loc[page_calc.start_slice:page_calc.end_slice]
+            ascending = not "-" == ordering
+            total.sort_values(by=[ordering], ascending=ascending, inplace=True)
             indicators_page_total = total.to_dict('records')
 
         response = {
