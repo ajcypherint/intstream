@@ -223,7 +223,7 @@ const ModelsList = JobListTemplate(JOB_ORDERSTARTCOL)(
   MODELS_ADDURI)(
   MODELS_API)
 
-const ORG_FIELDS = ['id', 'name']
+const ORG_FIELDS = ['id', 'name', 'freemium']
 const ORG_HEADING = 'Organization'
 const OrgList = JobListTemplate(JOB_ORDERSTARTCOL)(
   ORG_FIELDS)(
@@ -331,7 +331,7 @@ const ORG_EDIT_EMPTY = { name: '', id: '' }
 const OrgEdit = JobEditTemplate(ORG_EDIT_EMPTY)(
   ORG_FIELDS)(
   ORG_EDIT_HEADING)(
-  ORG_API)
+  ORG_API_ALL)
 
 const RSS_EDIT_HEADING = ' RSS Source'
 const RSS_EMPTY = { id: '', name: '', url: '', active: false, extract_indicators: false }
