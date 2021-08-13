@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+ARTICLE_MAX_BYTES = os.environ.get("ARTICLE_MAX_BYTES", 1000 * 1000 * 1)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EMAIL = "Email"
 IPV4 = "IPV4"

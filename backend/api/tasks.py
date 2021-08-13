@@ -114,6 +114,7 @@ async def fetch(url):
         try:
             async with session.get(url, timeout=120) as response:
                 try:
+                    # check content size. if too large return message.
                     return await response.text()
                 except UnicodeDecodeError as e:
                     return str(e)
@@ -581,6 +582,9 @@ def _process_rss_source(source_url, source_id, organization_id):
     org = models.Organization.objects.get(id=organization_id)
 
     for i, html in enumerate(htmls):
+        # todo(aj) check size of html if greater than ARTICLE_MAX_BYTES replace html text with message
+        if len(html.encode("utf8", errors="ignore")) > settings.ARTICLE_MAX_BYTES:
+            html = "article size greater than " + str(settings.ARTICLE_MAX_BYTES)
         article = models.RSSArticle(
             title=collect[i].title[0:1000],
             description=collect[i].description,
