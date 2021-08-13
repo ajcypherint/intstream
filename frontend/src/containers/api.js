@@ -1,4 +1,5 @@
 
+export const ORG_API_ALL = '/api/allorganization/'
 export const ORG_API = '/api/organization/'
 export const ORG_EDITURI = /organization/
 export const ORG_ADDURI = '/organization_add'
