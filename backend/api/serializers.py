@@ -6,6 +6,7 @@ from django.conf import settings
 from api import tasks
 from api import models
 import json
+from django.utils import timezone
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -140,6 +141,7 @@ class JobSerializer(serializers.ModelSerializer):
             name = kwargs.get("name", None),
             task='api.tasks.job',
             organization=org,
+            start_time=timezone.now(),
             enabled=kwargs.get("active", False),
             kwargs=json.dumps({"active":kwargs.get("active", False), "id": job_id, "organization_id":org.pk})
         )
@@ -156,6 +158,7 @@ class JobSerializer(serializers.ModelSerializer):
         kwargs_task = json.loads(periodic_task.kwargs)
         kwargs_task["active"] = kwargs.get("active", False)
         periodic_task.kwargs = json.dumps(kwargs_task)
+        periodic_task.start_time = timezone.now(),
         periodic_task.enabled = kwargs.get("active", False)
         periodic_task.crontab = schedule
         periodic_task.save()
