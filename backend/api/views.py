@@ -1963,15 +1963,18 @@ class IndicatorHome(APIView):
         if len(column) > 0:
             column_df = pd.DataFrame(column)
             column_pivot = column_df.pivot(index="indicator_id", columns="name", values="value")
-            total = pd.merge(left=indicator_pd, right=column_pivot, right_on=["indicator_id"], left_on=["id"])
+            # todo(fix merge) left outer type
+            total = pd.merge(how="left", left=indicator_pd, right=column_pivot, right_on=["indicator_id"], left_on=["id"])
         else:
             total = indicator_pd
         indicators_page_total = []
         if len(total) > 0:
-            total = total.loc[page_calc.start_slice:page_calc.end_slice]
             ascending = not "-" == ordering
             total.sort_values(by=[ordering], ascending=ascending, inplace=True)
+            total.reset_index(inplace=True)
+            total = total.loc[page_calc.start_slice:page_calc.end_slice]
             indicators_page_total = total.to_dict('records')
+
 
         response = {
             "count": indicators_count,
