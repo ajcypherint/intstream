@@ -122,6 +122,7 @@ class JobSerializer(serializers.ModelSerializer):
             'cron_hour',
             'cron_minute',
             'user',
+            'timeout',
             'server_url',
 
         ]
@@ -158,7 +159,6 @@ class JobSerializer(serializers.ModelSerializer):
         kwargs_task = json.loads(periodic_task.kwargs)
         kwargs_task["active"] = kwargs.get("active", False)
         periodic_task.kwargs = json.dumps(kwargs_task)
-        periodic_task.start_time = timezone.now(),
         periodic_task.enabled = kwargs.get("active", False)
         periodic_task.crontab = schedule
         periodic_task.save()
