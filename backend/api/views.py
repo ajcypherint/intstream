@@ -1957,21 +1957,34 @@ class IndicatorHome(APIView):
                                                "reviewed")
         indicator_pd = pd.DataFrame(indicator_res)
         indicator_ids = [i["id"] for i in indicator_res]
-        column = models.IndicatorNumericField.objects.filter(
+        total = indicator_pd
+
+        column_num = models.IndicatorNumericField.objects.filter(
             indicator__in=indicator_ids).values("id", "indicator_id", "value", "name")
 
-        if len(column) > 0:
-            column_df = pd.DataFrame(column)
-            column_pivot = column_df.pivot(index="indicator_id", columns="name", values="value")
-            # todo(fix merge) left outer type
-            total = pd.merge(how="left", left=indicator_pd, right=column_pivot, right_on=["indicator_id"], left_on=["id"])
-        else:
-            total = indicator_pd
+        column_pivot_num = pd.DataFrame([])
+        if len(column_num) > 0:
+            column_df = pd.DataFrame(column_num)
+            column_pivot_num = column_df.pivot(index="indicator_id", columns="name", values="value")
+            column_pivot_num.rename_axis(None, axis=1).reset_index()
+
+        column_text = models.IndicatorTextField.objects.filter(
+            indicator__in=indicator_ids).values("id", "indicator_id", "value", "name")
+        column_pivot_text = pd.DataFrame([])
+        if len(column_text) > 0:
+            column_df = pd.DataFrame(column_text)
+            column_pivot_text = column_df.pivot(index="indicator_id", columns="name", values="value")
+            column_pivot_text.rename_axis(None, axis=1).reset_index()
+
+        column_pivot = pd.concat([column_pivot_num, column_pivot_text])
+        if len(column_pivot) > 0:
+            total = pd.merge(how="left", left=indicator_pd, right=column_pivot, left_on=["id"], right_on=["indicator_id"])
         indicators_page_total = []
         if len(total) > 0:
             ascending = not "-" == ordering
             total.sort_values(by=[ordering], ascending=ascending, inplace=True)
             total.reset_index(inplace=True)
+            total.fillna("NA", inplace=True)
             total = total.loc[page_calc.start_slice:page_calc.end_slice]
             indicators_page_total = total.to_dict('records')
 

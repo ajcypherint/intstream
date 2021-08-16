@@ -338,3 +338,16 @@ EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", False)
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", False)
 # Dev set an environ variable to
 # 'django.core.mail.backends.console.EmailBackend'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': os.getenv('DJANGO_LOG_LEVEL','INFO')
+    },
+}
