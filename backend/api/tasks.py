@@ -157,8 +157,14 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
 
-@shared_task()
-def runjobs_mitigate(indicator_ids, organization_id=None):
+
+@shared_task(bind=True)
+def runjobs_mitigate(self, indicator_ids, organization_id=None):
+    task_id = self.request.id.__str__()
+    _runjobs_mitigate(indicator_ids, task_id, organization_id=organization_id)
+
+
+def _runjobs_mitigate(indicator_ids, task, organization_id=None):
     """
 
     :param indicator_ids: list[int]
@@ -168,29 +174,25 @@ def runjobs_mitigate(indicator_ids, organization_id=None):
     if isinstance(indicator_ids, int):
         indicator_ids = [indicator_ids]
     for i in indicator_ids:
-        instance  = models.Indicator.objects.get(pk=i)
-        all_jobs = models.StandardIndicatorJob.objects.filter(indicator_types=instance.ind_type).all()
-        tasks = []
+        instance = models.Indicator.objects.get(pk=i)
+        # todo refactor this using link; then calling .get or apply_async
+        all_jobs = models.StandardIndicatorJob.objects.filter(
+            organization_id=organization_id,
+            indicator_types=instance.ind_type).all()
         for j in all_jobs:
-            tasks.append(indicatorjob.s(j.id, i, organization_id=organization_id))
-        if len(tasks) > 0:
-        # run all jobs
-            job_group = group(tasks)
-            promise = job_group()
-            with allow_join_result():
-                result = promise.get() #join
-                # run mitigation on success
-                mitigate_jobs = models.MitigateIndicatorJob.objects.filter(organization_id=organization_id,
-                                                                           auto_mitigate=True,
-                                                                indicator_type=instance.ind_type).all()
-                if len(mitigate_jobs) > 0:
-                    for m in mitigate_jobs:
-                        indicatorjob.delay(m.id, i,
-                                           organization_id=organization_id,
-                                           dir_ind_script=settings.DIRMITIGATEINDSCRIPT,
-                                           dir_ind_job_venv=settings.DIRMITINDJOBVENV,
-                                           model="MitigateIndicatorJob",
-                                           model_version="MitigateIndicatorJobVersion")
+            _indicatorjob(j.id, i, task)
+        # run mitigation on success
+        mitigate_jobs = models.MitigateIndicatorJob.objects.filter(organization_id=organization_id,
+                                                                   auto_mitigate=True,
+                                                        indicator_type=instance.ind_type).all()
+        if len(mitigate_jobs) > 0:
+            for m in mitigate_jobs:
+                indicatorjob.delay(m.id, i,
+                                   organization_id=organization_id,
+                                   dir_ind_script=settings.DIRMITIGATEINDSCRIPT,
+                                   dir_ind_job_venv=settings.DIRMITINDJOBVENV,
+                                   model="MitigateIndicatorJob",
+                                   model_version="MitigateIndicatorJobVersion")
 
 @shared_task(bind=True)
 def indicatorjob(self,
@@ -212,9 +214,10 @@ def indicatorjob(self,
     """
 
     task = self.request.id.__str__()
-    _indicatorjob(task,
+    _indicatorjob(
                   id,
                   indicator_id,
+                  task,
                   dir_ind_script,
                   script_indicator_job,
                   dir_ind_job_venv,
@@ -222,9 +225,10 @@ def indicatorjob(self,
                   model_version=model_version)
 
 
-def _indicatorjob(task,
+def _indicatorjob(
                   id,
                   indicator_id,
+                  task,
                   dir_ind_script=settings.DIRINDSCRIPT,
                   script_indicator_job=SCRIPT_INDICATOR_JOB,
                   dir_ind_job_venv=settings.DIRINDJOBVENV,
