@@ -1883,7 +1883,7 @@ class IndicatorHome(APIView):
                                type=openapi.TYPE_INTEGER
                                 )
 
-    prediction__mlmodel = openapi.Parameter('prediction_mlmodel',
+    prediction__mlmodel = openapi.Parameter('prediction__mlmodel',
                                in_=openapi.IN_QUERY,
                                required=True,
                                description="article prediction mlmodel",
@@ -1923,7 +1923,7 @@ class IndicatorHome(APIView):
         source =  self.request.GET.get("source", None)
         ordering = self.request.GET.get("orderdir", "")
         source = int(source) if source is not None and source is not '' else source
-        prediction__mlmodel =  self.request.GET.get("prediction_ml_model", None)
+        prediction__mlmodel =  self.request.GET.get("prediction__mlmodel", None)
         prediction__mlmodel = int(prediction__mlmodel) if prediction__mlmodel is not None \
             and prediction__mlmodel is not '' else prediction__mlmodel
         filters = [
