@@ -71,7 +71,7 @@ const mapDispatchToProps = (dispatch) => ({
   fetchMitigateJobVersions: (params = undefined) => dispatch(getMitigateJobVersionFunc(params, MITIGATE)),
   fetchUnMitigateJobVersions: (params = undefined) => dispatch(getUnmitigateJobVersionFunc(params, UNMITIGATE)),
   fetchAllSources: (params = undefined) => dispatch(getAllSources(API_SOURCES, params)),
-  filterChange: (selections, setPage) => dispatch(filterIndChange(selections, setPage)),
+  filterChange: (selections, setPage, tabsUpdate) => dispatch(filterIndChange(selections, setPage, tabsUpdate)),
   fetchIndicatorsFullUri: (url, params = undefined) => dispatch(getIndicators(url, undefined, params)),
   mitigateDispatch: (indicator) => dispatch(mitigateDispatch(indicator)),
   unmitigateDispatch: (indicator) => dispatch(unmitigateDispatch(indicator)),

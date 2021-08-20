@@ -99,7 +99,8 @@ function intersect (selectedCols, allColsObjs) {
 }
 
 export const filterIndChange = (selections,
-  setQuery
+  setQuery,
+  tabsUpdate
 ) => {
   return async (dispatch, getState) => {
     let indicatorStr
@@ -122,10 +123,7 @@ export const filterIndChange = (selections,
     // if article view then just search by article
     if (article !== '') {
       const articleStr = 'id=' + article
-      const resp_article = await dispatch(getArticles(API_ARTICLES, articleStr))
-      if (resp_article.error) {
-        return
-      }
+      dispatch(getArticles(API_ARTICLES, articleStr))
       indicatorStr = 'ordering=' + orderdir + selections.ordering +
         '&orderdir=' + orderdir +
         '&article=' + selections.article
@@ -140,10 +138,7 @@ export const filterIndChange = (selections,
 
       // fetch sources and models; * not just sources but all filters not inc dates *
       // could ignore this for child
-      const resp = await dispatch(getAllSources(API_FILTER, sourceStr))
-      if (resp.error) {
-        return
-      }
+      dispatch(getAllSources(API_FILTER, sourceStr))
       indicatorStr = 'ordering=' + orderdir + selections.ordering +
         '&orderdir=' + orderdir +
         '&source=' + sourceChosen +
@@ -175,20 +170,19 @@ export const filterIndChange = (selections,
       '&ind_type=' + ind_type +
       '&source=' + sourceChosen + '&model=' + modelChosen
     }
-
-    const all_resp = await Promise.all([
-      dispatch(getColTextName(param_cols)),
-      dispatch(getColNumericName(param_cols)),
-      dispatch(getIPV4(indicatorStr)),
-      dispatch(getIPV6(indicatorStr)),
-      dispatch(getEMAIL(indicatorStr)),
-      dispatch(getNETLOC(indicatorStr)),
-      dispatch(getMD5(indicatorStr)),
-      dispatch(getSHA1(indicatorStr)),
-      dispatch(getSHA256(indicatorStr)),
-      dispatch(getColText(indInStr)),
+    dispatch(getColTextName(param_cols))
+    dispatch(getColNumericName(param_cols))
+    if (tabsUpdate) {
+      dispatch(getIPV4(indicatorStr))
+      dispatch(getIPV6(indicatorStr))
+      dispatch(getEMAIL(indicatorStr))
+      dispatch(getNETLOC(indicatorStr))
+      dispatch(getMD5(indicatorStr))
+      dispatch(getSHA1(indicatorStr))
+      dispatch(getSHA256(indicatorStr))
+      dispatch(getColText(indInStr))
       dispatch(getColNumeric(indInStr))
-    ])
+    }
   }
 }
 
@@ -219,7 +213,7 @@ export const filterChange = (selections, setQuery, parent) => {
     // fetch sources and models; * not just sources but all filters not inc dates *
     // could ignore this for child
     if (!parent) {
-      const resp = await dispatch(getAllSources(API_FILTER, sourceStr))
+      const resp = dispatch(getAllSources(API_FILTER, sourceStr))
       if (resp.error) {
         return
       }
@@ -244,9 +238,9 @@ export const filterChange = (selections, setQuery, parent) => {
     const test = articleStr
     // todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
     if (parent) {
-      await dispatch(getArticles(API_ARTICLES, articleStr, parent.id))
+      dispatch(getArticles(API_ARTICLES, articleStr, parent.id))
     } else {
-      await dispatch(getArticles(API_HOME_ARTICLES, articleStr))
+      dispatch(getArticles(API_HOME_ARTICLES, articleStr))
     }
   }
 }

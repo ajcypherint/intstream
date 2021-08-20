@@ -86,7 +86,7 @@ export class Main extends React.Component {
       ...this.props.query,
       ...newSel
     }
-    this.props.filterChange(selections, this.props.setQuery)
+    this.props.filterChange(selections, this.props.setQuery, true)
   }
 
   updateComponent () {
@@ -130,7 +130,7 @@ export class Main extends React.Component {
       numCols: numCols,
       textCols: textCols
     }
-    this.props.filterChange(selections, this.props.setQuery)
+    this.props.filterChange(selections, this.props.setQuery, true)
     this.props.fetchMitigateJobVersions(
       'job__active=true&job__mitigate=true&job__indicator_type__name=' + selectedTabIndex.toUpperCase())
     this.props.fetchUnMitigateJobVersions(
@@ -158,7 +158,7 @@ export class Main extends React.Component {
       ...newSel
     }
     // again here we set selections then fetch
-    this.props.filterChange(selections, this.props.setQuery)
+    this.props.filterChange(selections, this.props.setQuery, true)
   }
 
   handleSourceChange (event) {
@@ -171,7 +171,7 @@ export class Main extends React.Component {
       ...this.props.query,
       ...newSel
     }
-    this.props.filterChange(selections, this.props.setQuery)
+    this.props.filterChange(selections, this.props.setQuery, true)
   }
 
   tabUpdate (index, lastIndex, event) {
@@ -186,7 +186,8 @@ export class Main extends React.Component {
       ...newSel
     }
     this.props.filterChange(selections,
-      this.props.setQuery
+      this.props.setQuery,
+      false
     )
     this.props.fetchMitigateJobVersions('job__indicator_type__name=' + newTab.toUpperCase())
     this.props.fetchUnMitigateJobVersions('job__indicator_type__name=' + newTab.toUpperCase())
@@ -194,7 +195,7 @@ export class Main extends React.Component {
 
   // parent for paginate
   fetch (selections, page) {
-    this.props.filterChange(selections, this.props.setQuery)
+    this.props.filterChange(selections, this.props.setQuery, false)
   }
 
   render () {

@@ -52,19 +52,22 @@ export const getAll = (get) => (putAll) => (url, params, key) => {
     const pages = Math.ceil(total / PAGINATION)
     // ACTIVE, duh time for bed.
     // todo(aj) wrap in promise and dispatch all at once
+    const promises = []
     for (let i = 1; i <= pages; i++) {
-      const actionResponse = await dispatch(get(url, extraParams + '&page=' + i, key))
-      //
-      if (actionResponse.error) {
-        // the last dispatched action has errored, break out of the promise chain.
+      promises.push(dispatch(get(url, extraParams + '&page=' + i, key)))
+      // const actionResponse = await dispatch(get(url, extraParams + '&page=' + i, key))
+    }
+    const res = await Promise.all(promises)
+    for (let i = 0; i < res.length; i++) {
+      if (res[i].error) {
         return
       }
-
-      allModels = allModels.concat(actionResponse.payload.results)
+      allModels = allModels.concat(res[i].payload.results)
     }
 
     // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
-    return await dispatch(putAll(allModels, total, key))
+    // wrap in promise so async
+    dispatch(putAll(allModels, total, key))
   }
 }
 
