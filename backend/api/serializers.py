@@ -330,6 +330,7 @@ class UnmitigateIndicatorJobVersionSerializer(serializers.ModelSerializer):
         ]
         model = models.UnmitigateIndicatorJobVersion
 
+
 class UploadSourceSerializer(serializers.ModelSerializer):
     class Meta:
         fields = [
@@ -337,9 +338,23 @@ class UploadSourceSerializer(serializers.ModelSerializer):
             'name',
             'active',
             'organization',
+            'extract_indicators'
 
         ]
         model = models.UploadSource
+
+
+class HtmlUploadSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            'name',
+            'active',
+            'organization',
+            'extract_indicators'
+
+        ]
+        model = models.HtmlUploadSource
 
 
 class RssSourceSerializer(serializers.ModelSerializer):

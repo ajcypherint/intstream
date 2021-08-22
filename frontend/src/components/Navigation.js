@@ -97,7 +97,19 @@ export default class Example extends React.Component {
                 </DropdownToggle>
                 <DropdownMenu right >
                    <DropdownItem tag={Link} to="/sources_upload">
-                    Upload
+                    Raw Text Upload
+                    </DropdownItem>
+                   <DropdownItem tag={Link} to="/sources_htmlupload">
+                    File Html Upload
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/sources_docxupload">
+                    File Docx Upload
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/sources_pdfupload">
+                    File Pdf Upload
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/sources_textupload">
+                    File Text Upload
                     </DropdownItem>
                    <DropdownItem tag={Link} to="/sources_rss?ordering=name&page=1&orderDir=%2b">
                     RSS
@@ -115,6 +127,30 @@ export default class Example extends React.Component {
                     Unmitigation Jobs
                     </DropdownItem>
 
+                 </DropdownMenu>
+              </UncontrolledDropdown>
+               : null}
+             { this.props.isIntegrator
+               ? <UncontrolledDropdown nav inNavbar >
+                <DropdownToggle nav caret>
+                  Upload
+                </DropdownToggle>
+                <DropdownMenu right >
+                   <DropdownItem tag={Link} to="/sources_do_upload">
+                    Raw Text
+                    </DropdownItem>
+                   <DropdownItem tag={Link} to="/sources_do_htmlupload">
+                    File Html
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/sources_do_docxupload">
+                    File Docx
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/sources_do_pdfupload">
+                    File Pdf
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/sources_do_textupload">
+                    File Text
+                    </DropdownItem>
                  </DropdownMenu>
               </UncontrolledDropdown>
                : null}

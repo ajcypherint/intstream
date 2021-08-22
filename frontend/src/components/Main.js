@@ -26,7 +26,8 @@ import Logout from '../containers/Logout'
 import Password from '../containers/Password'
 
 import EditOrgForm from './OrgEditFormComp'
-import Edit from './SourceEditFormComp'
+import EditForm from './SourceEditFormComp'
+import EditRawUploadForm from './SourceEditRawFormComp'
 import EditRSS from './SourceEditRSSFormComp'
 import EditModels from './ModelsEditFormComp'
 import EditJob from './SourceEditJobFormComp'
@@ -86,6 +87,7 @@ import {
   RSS_EDITURI,
   RSS_ADDURI,
   UPLOAD_API,
+  HTMLUPLOAD_API,
   INDJOB_API,
   INDJOB_VERSION_API,
   INDJOB_ADD_URI,
@@ -192,10 +194,10 @@ const SourcesJobList = JobListTemplate(JOB_ORDERSTARTCOL)(
   JOB_LIST_ADDURI)(
   JOB_API)
 
-const UPLOAD_HEADING = 'Upload Sources'
+const UPLOAD_HEADING = 'Raw Upload Sources'
 const UPLOAD_EDITURI = '/sources_upload/'
 const UPLOAD_ADDURI = '/sources_upload_add'
-const UPLOAD_FIELDS = ['id', 'name', 'active']
+const UPLOAD_FIELDS = ['id', 'name', 'active', 'extract_indicators']
 
 const SourcesUploadList = JobListTemplate(JOB_ORDERSTARTCOL)(
   UPLOAD_FIELDS)(
@@ -203,6 +205,17 @@ const SourcesUploadList = JobListTemplate(JOB_ORDERSTARTCOL)(
   UPLOAD_EDITURI)(
   UPLOAD_ADDURI)(
   UPLOAD_API)
+
+const HTMLUPLOAD_HEADING = 'html Upload Sources'
+const HTMLUPLOAD_EDITURI = '/sources_htmlupload/'
+const HTMLUPLOAD_ADDURI = '/sources_htmlupload_add'
+
+const SourcesHtmlUploadList = JobListTemplate(JOB_ORDERSTARTCOL)(
+  UPLOAD_FIELDS)(
+  HTMLUPLOAD_HEADING)(
+  HTMLUPLOAD_EDITURI)(
+  HTMLUPLOAD_ADDURI)(
+  HTMLUPLOAD_API)
 
 const ORGUSER_ORDERSTARTCOL = 'username'
 const ORGUSER_FIELDS = ['username', 'email', 'is_staff', 'is_integrator']
@@ -341,12 +354,18 @@ const SourcesRSSEdit = JobEditTemplate(RSS_EMPTY)(
   RSS_EDIT_HEADING)(
   RSS_API)
 
-const UPLOAD_EDIT_HEADING = ' Upload Source'
-const UPLOAD_EMPTY = { name: '', id: '', file: '', active: false }
+const UPLOAD_EDIT_HEADING = ' Raw Upload Source'
+const UPLOAD_EMPTY = { name: '', id: '', file: '', active: false, extract_indicators: false }
 const SourcesUploadEdit = JobEditTemplate(UPLOAD_EMPTY)(
   JOB_FIELDS)(
   UPLOAD_EDIT_HEADING)(
   UPLOAD_API)
+
+const HTMLUPLOAD_EDIT_HEADING = ' Raw Upload Source'
+const SourcesHtmlUploadEdit = JobEditTemplate(UPLOAD_EMPTY)(
+  JOB_FIELDS)(
+  HTMLUPLOAD_EDIT_HEADING)(
+  HTMLUPLOAD_API)
 
 const MITIGATE_EMPTY = {
   name: '',
@@ -475,7 +494,7 @@ const Main = (props) => (
     <Route exact path="/sources_upload_add"
       render={() =>
       <SourcesUploadEdit
-        form={<Edit/>}
+        form={<EditRawUploadForm/>}
         action={'ADD'}
         state={ {
           action: ADD
@@ -485,7 +504,28 @@ const Main = (props) => (
     <Route exact path="/sources_upload/:id"
       render={({ match }) =>
       <SourcesUploadEdit
-        form={<Edit/>}
+        form={<EditRawUploadForm/>}
+        state={ {
+          action: EDIT
+        }}
+        match={match}/>}
+      />
+
+    <Route exact path={HTMLUPLOAD_EDITURI} component={SourcesHtmlUploadList} />
+    <Route exact path={HTMLUPLOAD_ADDURI}
+      render={() =>
+      <SourcesHtmlUploadEdit
+        form={<EditRawUploadForm/>}
+        action={'ADD'}
+        state={ {
+          action: ADD
+        }}
+        match={undefined}/>}
+      />
+    <Route exact path="/sources_htmlupload/:id"
+      render={({ match }) =>
+      <SourcesHtmlUploadEdit
+        form={<EditRawUploadForm/>}
         state={ {
           action: EDIT
         }}

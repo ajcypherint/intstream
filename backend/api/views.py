@@ -1037,6 +1037,21 @@ class UploadSourceViewSet(OrgViewSet):
     def get_queryset(self):
         return models.UploadSource.objects.filter(organization=self.request.user.organization)
 
+class HTMLUploadSourceFilter(filters.FilterSet):
+    class Meta:
+        model = models.HtmlUploadSource
+        fields = ('id','name','active')
+
+class HtmlUploadSourceViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.HtmlUploadSourceSerializer
+    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
+    filterset_fields = ('id','name','active')
+    filterset_class = HTMLUploadSourceFilter
+
+    def get_queryset(self):
+        return models.HtmlUploadSource.objects.filter(organization=self.request.user.organization)
+
 
 jobcols = ('id',
                   'name',

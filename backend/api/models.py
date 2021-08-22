@@ -138,6 +138,8 @@ class Source(PolymorphicModel):
 class UploadSource(Source):
     extract_indicators = models.BooleanField(default=False)
 
+class HtmlUploadSource(Source):
+    extract_indicators = models.BooleanField(default=False)
 
 # this will trigger an rss source to accept incoming intel
 class RSSSource(Source):
