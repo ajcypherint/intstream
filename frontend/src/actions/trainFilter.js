@@ -75,10 +75,7 @@ export const filterChange = (newSelections, setQuery) => {
       '&source=' + sourceChosen +
       '&source__active=true' + targetStr
 
-    const resp = await dispatch(getAllSources(CLASSIF_FILTER, sourceStr))
-    if (resp.error) {
-      return
-    }
+    dispatch(getAllSources(CLASSIF_FILTER, sourceStr))
 
     const articleStr = (dateString(orderdir,
       ordering,
@@ -91,6 +88,6 @@ export const filterChange = (newSelections, setQuery) => {
       '&source__active=true')
 
     // todo(aj) if parents defined use ../action/childArticles; getChildArticles instead.
-    return await dispatch(getArticlesClassif(mlmodelChosen, articleStr))
+    dispatch(getArticlesClassif(mlmodelChosen, articleStr))
   }
 }

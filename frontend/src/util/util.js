@@ -47,7 +47,7 @@ export function getUniqueTrainListTF (filterArray) {
   const uniqueModels = []
   for (let i = 0; i < uniqueTFPre2.length; i++) {
     const newObj = {
-      id: uniqueTFPre2[i].target,
+      id: uniqueTFPre2[i].target.toString(),
       name: ucFirst(uniqueTFPre2[i].target.toString())
     }
     uniqueModels.push(newObj)

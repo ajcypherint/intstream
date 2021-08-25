@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
-import { Alert, Form, Row, Col, Button, FormGroup, Input } from 'reactstrap'
+import { Label, Alert, Form, Row, Col, Button, FormGroup, Input } from 'reactstrap'
 import DatePicker from 'react-datepicker'
 import { dateString, NONE, NONEVAL, ASC, DESC, getUniqueTrainListTF } from '../util/util'
 import Paginate from './Paginate'
@@ -224,7 +224,7 @@ export default class Train extends Component {
              true_pct < 20.0 || false_pct < 20.0 || counts.total < 10
     // todo(aj) code uniqueTF, idsTF, filter out nulls just like  model
     const uniqueTF = getUniqueTrainListTF(this.props.sourcesList)
-    const idsTF = uniqueTF.map(a => a.id.toString()) || []
+    const idsTF = uniqueTF.map(a => a.id) || []
 
     return (
 
@@ -271,14 +271,23 @@ export default class Train extends Component {
         </Col>
         <Col sm="2">
           <div className = "mb-2 ">
-            <Choice name={'Classification'}
-              value={selections.trueFalse}
-              prop={'name'}
-              onChange={this.handleTFChange}
-              idList={idsTF}
-              uniqueList={uniqueTF}
-              disabled={selections.mlmodelChosen === NONEVAL}
-            />
+              <FormGroup>
+                <Label htmlFor={'Classification'}>{'Classification'}</Label>
+                <Input type="select" name={name}
+                  value={selections.trueFalse}
+                  id={name + '_id'}
+                  disabled={selections.mlmodelChosen === NONEVAL}
+                  onChange={this.handleTFChange}>
+                  {<option value={''}>---</option>}
+                    {uniqueTF.map((item) => {
+                      return (<option key={item.id}
+                        value={item.id}>
+                        {item.name}</option>)
+                    })
+                  }
+
+                 </Input>
+                 </FormGroup>
           </div>
         </Col>
 
@@ -286,7 +295,7 @@ export default class Train extends Component {
           <div >
             <Choice name={'Source'}
               prop={'name'}
-              onChange={this.handleTFChange}
+              onChange={this.handleSourceChange}
               value={selections.sourceChosen}
               idList={ids}
               uniqueList={uniqueSources}

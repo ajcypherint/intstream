@@ -20,9 +20,8 @@ export default ({ name, error, idList, uniqueList, value, onChange, disabled, no
       disabled={disabled}
       onChange={onChange}>
       {noAllValues ? null : <option value={''}>---</option>}
-            {idList.includes(value) === false && value !== ''
-              ? <option value={value}>{value}</option>
-              : ''}
+            {idList.includes(value) === false && value !== '' && <option value={value}>{value}</option>
+              }
              {uniqueList.map((item) => {
                return (<option key={item.id}
                                 value={item.id}>
