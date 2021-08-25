@@ -27,9 +27,11 @@ class TXT(Document):
         self.encoding=encoding
         super(TXT,self).__init__()
 
-    def read(self):
+    def read(self, max_pages=100):
         text = ''
-        for line in self.file_handle:
+        for index, line in enumerate(self.file_handle):
+            if index > max_pages:
+                break
             text = text + line.decode(encoding=self.encoding)
         return text
 
@@ -41,7 +43,7 @@ class WordDocx(Document):
         super(WordDocx,self).__init__()
         self.file_handle = file_handle
 
-    def read(self):
+    def read(self, max_pages=0):
         # todo(aj) change to use file_handle instead
         return docx2txt.process(self.file_handle)
 
@@ -62,9 +64,9 @@ class PDF(Document):
         self.device = TextConverter(self.rescmgr,self.retstr,self.codec,laparams=self.laparams)
         self.interpreter = PDFPageInterpreter(rsrcmgr=self.rescmgr,device=self.device)
 
-    def read(self):
+    def read(self, max_pages=100):
         pagenos = set()
-        maxpages = 0
+        maxpages = 100
         password = self.password
         if sys.version_info[0] <3:
             password = password.encode('utf8','ignore')

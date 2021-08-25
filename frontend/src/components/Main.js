@@ -87,7 +87,7 @@ import {
   RSS_EDITURI,
   RSS_ADDURI,
   UPLOAD_API,
-  HTMLUPLOAD_API,
+  FILEUPLOAD_API,
   INDJOB_API,
   INDJOB_VERSION_API,
   INDJOB_ADD_URI,
@@ -206,16 +206,16 @@ const SourcesUploadList = JobListTemplate(JOB_ORDERSTARTCOL)(
   UPLOAD_ADDURI)(
   UPLOAD_API)
 
-const HTMLUPLOAD_HEADING = 'html Upload Sources'
-const HTMLUPLOAD_EDITURI = '/sources_htmlupload/'
-const HTMLUPLOAD_ADDURI = '/sources_htmlupload_add'
+const FILEUPLOAD_HEADING = 'File Upload Sources'
+const FILEUPLOAD_EDITURI = '/sources_fileupload/'
+const FILEUPLOAD_ADDURI = '/sources_fileupload_add'
 
-const SourcesHtmlUploadList = JobListTemplate(JOB_ORDERSTARTCOL)(
+const SourcesFileUploadList = JobListTemplate(JOB_ORDERSTARTCOL)(
   UPLOAD_FIELDS)(
-  HTMLUPLOAD_HEADING)(
-  HTMLUPLOAD_EDITURI)(
-  HTMLUPLOAD_ADDURI)(
-  HTMLUPLOAD_API)
+  FILEUPLOAD_HEADING)(
+  FILEUPLOAD_EDITURI)(
+  FILEUPLOAD_ADDURI)(
+  FILEUPLOAD_API)
 
 const ORGUSER_ORDERSTARTCOL = 'username'
 const ORGUSER_FIELDS = ['username', 'email', 'is_staff', 'is_integrator']
@@ -361,11 +361,11 @@ const SourcesUploadEdit = JobEditTemplate(UPLOAD_EMPTY)(
   UPLOAD_EDIT_HEADING)(
   UPLOAD_API)
 
-const HTMLUPLOAD_EDIT_HEADING = ' Raw Upload Source'
-const SourcesHtmlUploadEdit = JobEditTemplate(UPLOAD_EMPTY)(
+const FILEUPLOAD_EDIT_HEADING = ' File Upload Source'
+const SourcesFileUploadEdit = JobEditTemplate(UPLOAD_EMPTY)(
   JOB_FIELDS)(
-  HTMLUPLOAD_EDIT_HEADING)(
-  HTMLUPLOAD_API)
+  FILEUPLOAD_EDIT_HEADING)(
+  FILEUPLOAD_API)
 
 const MITIGATE_EMPTY = {
   name: '',
@@ -511,10 +511,10 @@ const Main = (props) => (
         match={match}/>}
       />
 
-    <Route exact path={HTMLUPLOAD_EDITURI} component={SourcesHtmlUploadList} />
-    <Route exact path={HTMLUPLOAD_ADDURI}
+    <Route exact path={FILEUPLOAD_EDITURI} component={SourcesFileUploadList} />
+    <Route exact path={FILEUPLOAD_ADDURI}
       render={() =>
-      <SourcesHtmlUploadEdit
+      <SourcesFileUploadEdit
         form={<EditRawUploadForm/>}
         action={'ADD'}
         state={ {
@@ -522,9 +522,9 @@ const Main = (props) => (
         }}
         match={undefined}/>}
       />
-    <Route exact path="/sources_htmlupload/:id"
+    <Route exact path="/sources_fileupload/:id"
       render={({ match }) =>
-      <SourcesHtmlUploadEdit
+      <SourcesFileUploadEdit
         form={<EditRawUploadForm/>}
         state={ {
           action: EDIT

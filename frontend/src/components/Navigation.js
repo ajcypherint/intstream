@@ -100,16 +100,7 @@ export default class Example extends React.Component {
                     Raw Text Upload
                     </DropdownItem>
                    <DropdownItem tag={Link} to="/sources_htmlupload">
-                    File Html Upload
-                    </DropdownItem>
-                    <DropdownItem tag={Link} to="/sources_docxupload">
-                    File Docx Upload
-                    </DropdownItem>
-                    <DropdownItem tag={Link} to="/sources_pdfupload">
-                    File Pdf Upload
-                    </DropdownItem>
-                    <DropdownItem tag={Link} to="/sources_textupload">
-                    File Text Upload
+                    File Upload
                     </DropdownItem>
                    <DropdownItem tag={Link} to="/sources_rss?ordering=name&page=1&orderDir=%2b">
                     RSS
@@ -142,16 +133,7 @@ export default class Example extends React.Component {
                    <DropdownItem tag={Link} to="/sources_do_htmlupload">
                     File Html
                     </DropdownItem>
-                    <DropdownItem tag={Link} to="/sources_do_docxupload">
-                    File Docx
-                    </DropdownItem>
-                    <DropdownItem tag={Link} to="/sources_do_pdfupload">
-                    File Pdf
-                    </DropdownItem>
-                    <DropdownItem tag={Link} to="/sources_do_textupload">
-                    File Text
-                    </DropdownItem>
-                 </DropdownMenu>
+                </DropdownMenu>
               </UncontrolledDropdown>
                : null}
 

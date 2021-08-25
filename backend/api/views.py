@@ -1,4 +1,6 @@
 import math
+import io
+import tempfile
 import pandas as pd
 import numpy
 import iocextract
@@ -35,7 +37,7 @@ from rest_framework.views import APIView
 from api.cache import CustomAnonRateThrottle
 from django_filters import rest_framework as filters
 from django_filters.groups import CombinedGroup
-from utils.document import TXT, PDF, WordDocx
+from utils import document
 from rest_framework import permissions as drfpermissions
 from . import permissions
 from drf_yasg.utils import swagger_auto_schema
@@ -1037,20 +1039,20 @@ class UploadSourceViewSet(OrgViewSet):
     def get_queryset(self):
         return models.UploadSource.objects.filter(organization=self.request.user.organization)
 
-class HTMLUploadSourceFilter(filters.FilterSet):
+class FileUploadSourceFilter(filters.FilterSet):
     class Meta:
-        model = models.HtmlUploadSource
-        fields = ('id','name','active')
+        model = models.FileUploadSource
+        fields = ('id','name','active', 'type')
 
-class HtmlUploadSourceViewSet(OrgViewSet):
+class FileUploadSourceViewSet(OrgViewSet):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
-    serializer_class = serializers.HtmlUploadSourceSerializer
+    serializer_class = serializers.FileUploadSourceSerializer
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ('id','name','active')
-    filterset_class = HTMLUploadSourceFilter
+    filterset_class = FileUploadSourceFilter
 
     def get_queryset(self):
-        return models.HtmlUploadSource.objects.filter(organization=self.request.user.organization)
+        return models.FileUploadSource.objects.filter(organization=self.request.user.organization)
 
 
 jobcols = ('id',
@@ -1280,6 +1282,90 @@ class HtmlArticleFilter(filters.FilterSet):
         model = models.HtmlArticle
         fields = ARTICLE_SORT_FIELDS
 
+# todo(aj) custom viewset for file upload;
+# returns job id; launches task to extract text by type, runs create_predict;
+# use getattr to get algorithm for file type.
+class UploadArticle(APIView):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+
+    file = openapi.Parameter('file',
+                               in_=openapi.IN_FORM,
+                               required=True,
+                               description="file upload",
+                               type=openapi.TYPE_FILE
+                                )
+    type = openapi.Parameter('type',
+                             in_=openapi.IN_FORM,
+                             required=True,
+                             description="PDF, TXT, HTML, DOCX",
+                             type=openapi.TYPE_STRING)
+    source = openapi.Parameter('source',
+                             in_=openapi.IN_FORM,
+                             required=True,
+                             description="source id",
+                             type=openapi.TYPE_INTEGER)
+    title = openapi.Parameter('title',
+                             in_=openapi.IN_FORM,
+                             required=True,
+                             description="title",
+                             type=openapi.TYPE_STRING)
+
+    response = openapi.Response('article id',
+            openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                             "id": openapi.TYPE_INTEGER,
+                            }
+                            )
+                            )
+    error = openapi.Response("error",
+                             openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                    properties={
+                                        "detail": openapi.TYPE_OBJECT
+                                    }
+                                ),
+                             )
+
+    @swagger_auto_schema(manual_parameters=[
+        file], responses={200: response, 404: error})
+    def get(self, request, format=None):
+        serializer_map = {
+            "PDF": serializers.PDFSerializer,
+            "TXT": serializers.TxtSerializer,
+            "HTML": serializers.HtmlSerializer,
+            "DOCX": serializers.WordDocxSerializer
+        }
+        if not self.request.data.type:
+            return Response({"type": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if self.request.Files.get("file") is None:
+            return Response({"file": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if self.request.Files.get("title") is None:
+            return Response({"title": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if self.request.Files.get("source") is None:
+            return Response({"source": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if self.request.data.type not in serializer_map.keys():
+            return Response({"detail": "type not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # todo  better way to read contents?
+        data = {
+            "source":self.request.data.source,
+            "title": self.request.data.title,
+            "text": "NOT PROCESSED",
+            "upload_date": timezone.now(),
+            "encoding": "utf-8",
+            "organization": self.request.user.organization.id,
+            "file": self.request.Files["file"]
+        }
+        serializer = serializer_map[self.request.data.source](data=data)
+        serializer.save()
+        # launch task to
+        #   1. read file text
+        #   2. initialize new serializer
+        #   3. save extracted text
+        #   4. call create_predict
+        return Response(serializer.data,status.HTTP_200_OK)
+
 
 class HtmlArticleViewSet(viewsets.ModelViewSet):
     #todo(aj) delete put
@@ -1290,10 +1376,6 @@ class HtmlArticleViewSet(viewsets.ModelViewSet):
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = HtmlArticleFilter
 
-    def perform_create(self, serializer):
-        instance = TXT(self.request.FILES['file'],self.request.data.encoding)
-        text = instance.read()
-        create_predict(self.request.data["source"], text, self.request.user.organization, serializer)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
@@ -1318,6 +1400,7 @@ def create_predict(source, text, organization, serializer):
     tasks.predict.delay(article_ids, source_id, organization_id=org_id)
     if serializer.instance.source.extract_indicators:
         tasks.extract_indicators.delay(clean_text, serializer.instance.id, organization_id=serializer.instance.organization.id)
+    return serializer
 
 
 class TxtArticleViewSet(viewsets.ModelViewSet):
@@ -1328,10 +1411,6 @@ class TxtArticleViewSet(viewsets.ModelViewSet):
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = TxtArticleFilter
 
-    def perform_create(self, serializer):
-        instance = TXT(self.request.FILES['file'],self.request.data.encoding)
-        text = instance.read()
-        create_predict(self.request.data["source"], text, self.request.user.organization, serializer)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
@@ -1355,10 +1434,6 @@ class WordDocxArticleViewSet(viewsets.ModelViewSet):
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = WordDocxArticleFilter
 
-    def perform_create(self, serializer):
-        instance = WordDocx(self.request.FILES['file'])
-        text = instance.read()
-        create_predict(self.request.data["source"], text, self.request.user.organization, serializer)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)
@@ -1380,12 +1455,6 @@ class PDFArticleViewSet(viewsets.ModelViewSet):
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = PDFArticleFilter
-
-    def perform_create(self, serializer):
-        password = self.request.data.password if 'password' in self.request.data else ''
-        instance = PDF(self.request.FILES['file'], password=password)
-        text = instance.read()
-        create_predict(self.request.data["source"], text, self.request.user.organization, serializer)
 
     def perform_update(self, serializer):
         instance = serializer.save(organization=self.request.user.organization)

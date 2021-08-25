@@ -39,7 +39,6 @@ SOURCE = 'sources'
 
 router.register("indicatortype", views.IndicatorTypeViewSet, basename="indicatotype")
 router.register(UPLOADSOURCE, views.UploadSourceViewSet, basename="uploadsource")
-router.register("htmlsourcesupload", views.HtmlUploadSourceViewSet, basename="htmluploadsource")
 router.register(RSSSOURCE, views.RssSourceViewSet, basename="rsssource")
 
 router.register("indicatorjoblog", views.IndicatorJobLogViewSet, basename="indicatorjoblog")

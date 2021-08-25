@@ -135,11 +135,20 @@ class Source(PolymorphicModel):
         return self.name + " (" + str(self.id) + ")"
 
 
+
 class UploadSource(Source):
+    """
+    Raw text uploaded
+    """
     extract_indicators = models.BooleanField(default=False)
 
-class HtmlUploadSource(Source):
+
+class FileUploadSource(Source):
+    """
+    File uploaded
+    """
     extract_indicators = models.BooleanField(default=False)
+    type = models.ForeignKey(SourceType, on_delete=models.CASCADE)
 
 # this will trigger an rss source to accept incoming intel
 class RSSSource(Source):

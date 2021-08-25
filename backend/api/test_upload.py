@@ -62,3 +62,12 @@ class TestUpload(TestCase):
         self.assertEqual(r.status_code,status.HTTP_201_CREATED)
         self.assertTrue(mock_predict.delay.called)
 
+    @mock.patch("api.views.tasks.extract_indicators")
+    @mock.patch("api.views.tasks.predict")
+    def test_upload_docx(self, mock_predict, mock_extract_indicators):
+        file = open('./sample_files/report_docx.docx','rb')
+        data = {'source':1,'title':'test','file':file}
+        r = self.c.post("/api/docxarticles/",data=data)
+        self.assertEqual(r.status_code,status.HTTP_201_CREATED)
+        self.assertTrue(mock_predict.delay.called)
+

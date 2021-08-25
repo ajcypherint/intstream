@@ -344,17 +344,18 @@ class UploadSourceSerializer(serializers.ModelSerializer):
         model = models.UploadSource
 
 
-class HtmlUploadSourceSerializer(serializers.ModelSerializer):
+class FileUploadSourceSerializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
             'name',
             'active',
             'organization',
-            'extract_indicators'
+            'extract_indicators',
+            'type'
 
         ]
-        model = models.HtmlUploadSource
+        model = models.FileUploadSource
 
 
 class RssSourceSerializer(serializers.ModelSerializer):
@@ -664,6 +665,7 @@ class WordDocxSerializer(DefaultArticleSerializer):
            'upload_date',
            'file',
            'encoding',
+           'clean_text',
            'organization',
         ]
         model = models.TxtArticle
@@ -681,6 +683,7 @@ class TxtSerializer(DefaultArticleSerializer):
            'upload_date',
            'file',
            'encoding',
+           'clean_text',
            'organization',
         ]
         model = models.TxtArticle
