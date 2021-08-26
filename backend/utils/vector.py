@@ -28,7 +28,13 @@ def clean_html(raw):
 
     text = tree.body.text(separator='\n')
     text = re.sub(r'\n\s*', "\n",text)
-    return text.strip().strip("\n")
+    remove_short_lines = ""
+    #short lines are usually just headers from the webpage
+    for line in text.splitlines(keepends=True):
+        if len(str(line).split()) > 3:
+            remove_short_lines += str(line)
+
+    return remove_short_lines.strip().strip("\n")
 
 
 def clean_md5(raw):
@@ -103,8 +109,11 @@ class StemmedTfidfVectorizer(TfidfVectorizer):
         analyzer = super(StemmedTfidfVectorizer,self).build_analyzer()
         def fixup(doc):
             result = None
+            if len(self.operations) == 0:
+                return doc
             for operation in self.operations:
                 result = operation(doc)
+
             return result
 
         return lambda doc: self.stemmer.stemWords(analyzer(fixup(doc)))
