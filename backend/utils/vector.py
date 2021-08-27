@@ -28,13 +28,8 @@ def clean_html(raw):
 
     text = tree.body.text(separator='\n')
     text = re.sub(r'\n\s*', "\n",text)
-    remove_short_lines = ""
-    #short lines are usually just headers from the webpage
-    for line in text.splitlines(keepends=True):
-        if len(str(line).split()) > 3:
-            remove_short_lines += str(line)
 
-    return remove_short_lines.strip().strip("\n")
+    return text.strip().strip("\n")
 
 
 def clean_md5(raw):
