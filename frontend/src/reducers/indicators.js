@@ -274,7 +274,7 @@ export default (state = initState, action) => {
         indicators: newIndicators
       }
     }
-    case task.CHECK_TASK_POLL:
+    case task.TASK_POLL:
     {
       const newIndicators = [...state.indicators]
       for (let i = 0; i < newIndicators.length; i++) {
@@ -292,7 +292,7 @@ export default (state = initState, action) => {
         indicators: newIndicators
       }
     }
-    case task.CHECK_TASK_POLL_DONE:
+    case task.TASK_POLL_DONE:
     {
       const newIndicators = [...state.indicators]
       for (let i = 0; i < newIndicators.length; i++) {

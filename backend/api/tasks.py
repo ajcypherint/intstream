@@ -29,6 +29,7 @@ import json
 import tarfile
 from utils import train
 import logging
+from api.views import SERIALIZER_MAP
 from celery import group
 # to control the tasks that required logging mechanism
 TASK_WITH_LOGGING = ['api.tasks.train_model']
@@ -75,6 +76,7 @@ BASE_CLASSIFY_FILE = "base_classify_file.py"
 CUSTOM_CLASSIFY_FILE = "train_classify.py"
 SCRIPT_INDICATOR_JOB = "indicatorjob.py"
 SCRIPT_JOB = "job.py"
+READ_TITLE = "READ_TITLE"
 
 INTSTREAM_PROXY_ENV = "INTSTREAM_PROXY"
 
@@ -1094,6 +1096,29 @@ def _train_model(self,
             version.celery_log.save(os.path.basename(log_name), File(f))
             version.save()
 
+@shared_task()
+def read_predict(article_id, article_type, password=None, organization_id=None):
+    _read_predict(article_id, article_type, password=password, organization_id=organization_id)
+
+def _read_predict(article_id, article_type, password=None, organization_id=None):
+    article = SERIALIZER_MAP[article_type]["model"].objects.get(id=article_id)
+    with open(article.file, "rb") as f:
+        #todo(aj) check file size
+        reader = SERIALIZER_MAP[article_type]["reader"]
+        if password is not None:
+            text = reader(f).read()
+        else:
+            text = reader(f, password=password).read()
+
+        article.text = text
+        if article.title != READ_TITLE:
+            # todo(aj) guess a title
+            article.title = article.text.split()[1:10]
+        article.save()
+        predict.delay([article.id], article.source.id, organization_id=organization_id)
+        article_ser = SERIALIZER_MAP[article_type]["serializer"](article)
+        if article.source.extract_indicators:
+            extract_indicators.delay(article_ser.clean_text, article.id, organization_id=organization_id)
 
 
 

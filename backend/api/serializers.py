@@ -605,14 +605,15 @@ class PDFSerializer(DefaultArticleSerializer):
 
     class Meta:
         fields= [
-           'id',
-           'source',
-           'title',
-           'upload_date',
-           'file',
-           'encoding',
-           'password',
-           'organization',
+            'id',
+            'source',
+            'title',
+            'upload_date',
+            'file',
+            'encoding',
+            'password',
+            'read_task',
+            'organization',
         ]
 
         model = models.PDFArticle
@@ -648,6 +649,7 @@ class HtmlSerializer(DefaultArticleSerializer):
            'file',
            'encoding',
            'clean_text',
+           'read_task',
            'organization',
         ]
         model = models.HtmlArticle
@@ -666,6 +668,7 @@ class WordDocxSerializer(DefaultArticleSerializer):
            'file',
            'encoding',
            'clean_text',
+            'read_task',
            'organization',
         ]
         model = models.TxtArticle
@@ -684,6 +687,7 @@ class TxtSerializer(DefaultArticleSerializer):
            'file',
            'encoding',
            'clean_text',
+           'read_task',
            'organization',
         ]
         model = models.TxtArticle
@@ -1039,3 +1043,14 @@ class IndicatorTextField(serializers.ModelSerializer):
         ]
         model = models.IndicatorTextField
 
+
+class KeyValue(serializers.ModelSerializer):
+    class Meta:
+        fields = [
+            "id",
+            "key",
+            "value",
+            "organization"
+
+        ]
+        model = models.KeyValue

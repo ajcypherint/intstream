@@ -21,6 +21,7 @@ export const RSS_EDITURI = /sources_rss/
 export const RSS_ADDURI = '/sources_rss_add'
 
 export const UPLOAD_API = '/api/sourcesupload/'
+export const FILEUPLOAD_API = '/api/fileupload/'
 export const HTMLUPLOAD_API = '/api/htmlsourcesupload/'
 export const TRAIN_VERSION_API = '/api/trainingscriptversion/'
 export const TRAIN_VERSION_ADD_URI = '/trainingscriptversions_add'

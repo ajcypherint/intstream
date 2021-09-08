@@ -1,7 +1,8 @@
 import { connect } from 'react-redux'
-import Article from '../components/Article'
+import FileUpload from '../components/FileUpload'
 import * as reducers from '../reducers/'
 import { getArticles, clearArticles } from '../actions/articles'
+
 import { API_ARTICLES } from './api'
 
 const mapStateToProps = (state) => {
@@ -16,8 +17,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchArticles: (params = undefined) => dispatch(getArticles(API_ARTICLES, params))
-
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Article)
+export default connect(mapStateToProps, mapDispatchToProps)(FileUpload)

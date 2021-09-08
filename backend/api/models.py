@@ -507,21 +507,23 @@ class Prediction(models.Model):
 # Upload Articles
 class WordDocxArticle(Article):
     file = models.FileField(upload_to='article')
+    read_task = models.TextField(max_length=300, blank=True, null=True)
 
 
 class PDFArticle(Article):
     file = models.FileField(upload_to='article')
     password = models.CharField(max_length=200,blank=True,null=True)
+    read_task = models.TextField(max_length=300, blank=True, null=True)
 
 
 class TxtArticle(Article):
     file = models.FileField(upload_to='article')
-
+    read_task = models.TextField(max_length=300, blank=True, null=True)
 
 
 class HtmlArticle(Article):
     file = models.FileField(upload_to='article')
-
+    read_task = models.TextField(max_length=300, blank=True, null=True)
 
 # Rss Articles
 class RSSArticle(Article):
@@ -662,4 +664,14 @@ class IndicatorTextField(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
     indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
     update_date = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
+
+
+class KeyValue(models.Model):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['key', 'organization'], name='unique_key_col'),
+            ]
+    key = models.TextField(max_length=1000)
+    value = models.TextField()
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
 

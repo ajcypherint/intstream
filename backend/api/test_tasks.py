@@ -194,3 +194,5 @@ class TestTasks(TestCase):
 
         self.assertTrue(process.delay.called)
 
+    def test_read_predict(self):
+        self.assertEqual(False, True)

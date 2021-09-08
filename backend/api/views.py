@@ -1,24 +1,14 @@
 import math
-import io
-import tempfile
 import pandas as pd
-import numpy
-import iocextract
-from django.db import models as db_models
-from django.utils.encoding import force_bytes
 from django.utils import timezone
 from api.backend import DisabledHTMLFilterBackend
-from rest_framework import mixins
 from django.core.mail import EmailMessage
 from api.tokens import account_activation_token
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
-from django_filters.widgets import CSVWidget
 from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db.models.functions import Trunc
-from django.template.loader import render_to_string
 from django_rest_passwordreset import views as drpr_views
 import urllib.parse as urlparse
 from django.core import exceptions
@@ -28,7 +18,6 @@ from random import randint
 from dateutil.parser import parse
 from . import serializers
 from . import models
-from django_celery_results.models import TaskResult as TaskResultMdl
 from rest_framework import filters as rest_filters
 from rest_framework import status, generics, mixins
 from rest_framework.response import Response
@@ -44,9 +33,8 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework import viewsets
 from django.db.models import F, Func, Window, Q, Case, When
-from django.conf import settings
 import itertools
-from utils import vector, read
+from utils import vector
 from scipy.cluster import  hierarchy
 import json
 from rest_framework import mixins
@@ -56,11 +44,28 @@ from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
-
 from django_rest_passwordreset.signals import reset_password_token_created
-
 from django.conf import settings
+import utils
 
+SERIALIZER_MAP = {
+            "PDF": {"serializer": serializers.PDFSerializer,
+                    "model": models.PDFArticle,
+                    "reader": utils.document.PDF
+                    },
+            "TXT": {"serializer": serializers.TxtSerializer,
+                    "model": models.TxtArticle,
+                    "reader": utils.document.TXT
+                    },
+            "HTML": {"serializer": serializers.HtmlSerializer,
+                     "model": models.HtmlArticle,
+                     "reader": utils.document.TXT
+                    },
+            "DOCX": {"serializer": serializers.WordDocxSerializer,
+                     "model": models.WordDocxArticle,
+                     "reader": utils.document.WordDocx
+                     }
+        }
 
 class MLModelFilter(filters.FilterSet):
     modelversion__isnull = filters.BooleanFilter(field_name="modelversion",
@@ -1282,9 +1287,7 @@ class HtmlArticleFilter(filters.FilterSet):
         model = models.HtmlArticle
         fields = ARTICLE_SORT_FIELDS
 
-# todo(aj) custom viewset for file upload;
-# returns job id; launches task to extract text by type, runs create_predict;
-# use getattr to get algorithm for file type.
+
 class UploadArticle(APIView):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
 
@@ -1307,7 +1310,7 @@ class UploadArticle(APIView):
     title = openapi.Parameter('title',
                              in_=openapi.IN_FORM,
                              required=True,
-                             description="title",
+                             description="title, set READ_TITLE for auto generation",
                              type=openapi.TYPE_STRING)
 
     response = openapi.Response('article id',
@@ -1330,12 +1333,7 @@ class UploadArticle(APIView):
     @swagger_auto_schema(manual_parameters=[
         file], responses={200: response, 404: error})
     def get(self, request, format=None):
-        serializer_map = {
-            "PDF": serializers.PDFSerializer,
-            "TXT": serializers.TxtSerializer,
-            "HTML": serializers.HtmlSerializer,
-            "DOCX": serializers.WordDocxSerializer
-        }
+
         if not self.request.data.type:
             return Response({"type": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
         if self.request.Files.get("file") is None:
@@ -1344,30 +1342,31 @@ class UploadArticle(APIView):
             return Response({"title": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
         if self.request.Files.get("source") is None:
             return Response({"source": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
-        if self.request.data.type not in serializer_map.keys():
+        if self.request.data.type not in SERIALIZER_MAP.keys():
             return Response({"detail": "type not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # todo  better way to read contents?
         data = {
-            "source":self.request.data.source,
+            "source": self.request.data.source,
             "title": self.request.data.title,
             "text": "NOT PROCESSED",
+            "read_task": "NA",
             "upload_date": timezone.now(),
             "encoding": "utf-8",
             "organization": self.request.user.organization.id,
             "file": self.request.Files["file"]
         }
-        serializer = serializer_map[self.request.data.source](data=data)
+        serializer = SERIALIZER_MAP[self.request.data.source]["serializer"](data=data)
         serializer.save()
-        # launch task to
-        #   1. read file text
-        #   2. initialize new serializer
-        #   3. save extracted text
-        #   4. call create_predict
-        return Response(serializer.data,status.HTTP_200_OK)
+        task_info = tasks.read_predict.delay(serializer.instance.id, self.request.data.source,
+                           organization_id=self.request.user.organization.id)
+        data["read_task_id"] = str(task_info.id)
+        serializer = SERIALIZER_MAP[self.request.data.source]["serializer"](data=data)
+        serializer.save()
+        res = serializer.data
+        return Response(res, status.HTTP_200_OK)
 
 
-class HtmlArticleViewSet(viewsets.ModelViewSet):
+class HtmlArticleViewSet(OrgViewSet):
     #todo(aj) delete put
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.HtmlArticle.objects.all()
@@ -1375,10 +1374,6 @@ class HtmlArticleViewSet(viewsets.ModelViewSet):
     filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = HtmlArticleFilter
-
-
-    def perform_update(self, serializer):
-        instance = serializer.save(organization=self.request.user.organization)
 
     def get_queryset(self):
         return models.HtmlArticle.objects.filter(organization=self.request.user.organization)
@@ -1403,7 +1398,7 @@ def create_predict(source, text, organization, serializer):
     return serializer
 
 
-class TxtArticleViewSet(viewsets.ModelViewSet):
+class TxtArticleViewSet(OrgViewSet):
     #todo(aj) delete put
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.TxtSerializer
@@ -1411,9 +1406,6 @@ class TxtArticleViewSet(viewsets.ModelViewSet):
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = TxtArticleFilter
 
-
-    def perform_update(self, serializer):
-        instance = serializer.save(organization=self.request.user.organization)
 
     def get_queryset(self):
         return models.TxtArticle.objects.filter(organization=self.request.user.organization)
@@ -1425,7 +1417,7 @@ class WordDocxArticleFilter(filters.FilterSet):
         fields = ARTICLE_SORT_FIELDS
 
 
-class WordDocxArticleViewSet(viewsets.ModelViewSet):
+class WordDocxArticleViewSet(OrgViewSet):
     #todo(aj) delete put
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.WordDocxArticle.objects.all()
@@ -1434,9 +1426,6 @@ class WordDocxArticleViewSet(viewsets.ModelViewSet):
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = WordDocxArticleFilter
 
-
-    def perform_update(self, serializer):
-        instance = serializer.save(organization=self.request.user.organization)
 
     def get_queryset(self):
         return models.WordDocxArticle.objects.filter(organization=self.request.user.organization)
@@ -1448,16 +1437,13 @@ class PDFArticleFilter(filters.FilterSet):
         fields = ARTICLE_SORT_FIELDS
 
 
-class PDFArticleViewSet(viewsets.ModelViewSet):
+class PDFArticleViewSet(OrgViewSet):
     #todo(aj) delete put
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     serializer_class = serializers.PDFSerializer
     filter_backends = (DisabledHTMLFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter)
     filterset_fields = ARTICLE_SORT_FIELDS
     filterset_class = PDFArticleFilter
-
-    def perform_update(self, serializer):
-        instance = serializer.save(organization=self.request.user.organization)
 
     def get_queryset(self):
         return models.PDFArticle.objects.filter(organization=self.request.user.organization)
@@ -2469,6 +2455,18 @@ class IndicatorNumericFieldViewSet(ColumnViewSet):
 
         return super(IndicatorNumericFieldViewSet, self).get_serializer(*args, **kwargs)
 
+
+class KeyValueViewSet(OrgViewSet):
+    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
+    serializer_class = serializers.KeyValue
+    filter_backends = (DisabledHTMLFilterBackend, rest_filters.SearchFilter)
+    filterset_fields = ('id', 'key')
+
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get("data", {}), list):
+            kwargs["many"] = True # bulk
+
+        return super(KeyValueViewSet, self).get_serializer(*args, **kwargs)
 
 class ResetPasswordConfirm(drpr_views.ResetPasswordConfirm):
     authentication_classes = []
