@@ -3,6 +3,7 @@ from django.test import Client
 from unittest import mock
 from utils import train
 from datetime import datetime
+from api import models
 
 
 def temp_bucket_exists(var):
@@ -37,6 +38,8 @@ class Train(TestCase):
         headers={"Content-Type":"application/json"}
         self.c.login(username=username,password=password)
         logger = mock.Mock()
+
+
         self.trainer = train.DeployPySparkScriptOnAws(
                  2,
                  "S3_logs_folder",
@@ -52,6 +55,7 @@ class Train(TestCase):
                  emr_version="emr-5.28.0", #python3.6 spark
                  extra_kwargs=''
                  )
+
 
     @mock.patch("boto3.Session")
     @mock.patch("aioboto3.Session")
