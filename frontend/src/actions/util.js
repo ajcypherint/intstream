@@ -67,7 +67,7 @@ export const getAll = (get) => (putAll) => (url, params, key) => {
 
     // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
     // wrap in promise so async
-    dispatch(putAll(allModels, total, key))
+    return dispatch(putAll(allModels, total, key))
   }
 }
 
