@@ -1367,7 +1367,7 @@ class UploadArticle(APIView):
 
 
 class HtmlArticleViewSet(OrgViewSet):
-    #todo(aj) delete put
+   #todo(aj) delete put
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
     queryset = models.HtmlArticle.objects.all()
     serializer_class = serializers.HtmlSerializer

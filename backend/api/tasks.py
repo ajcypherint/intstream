@@ -1113,7 +1113,7 @@ def _read_predict(article_id, article_type, password=None, organization_id=None)
         article.text = text
         if article.title != READ_TITLE:
             # todo(aj) guess a title
-            article.title = article.text.split()[1:10]
+            article.title = article.text.split()[1:30]
         article.save()
         predict.delay([article.id], article.source.id, organization_id=organization_id)
         article_ser = SERIALIZER_MAP[article_type]["serializer"](article)

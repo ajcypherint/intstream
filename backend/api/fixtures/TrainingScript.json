@@ -4,6 +4,7 @@
     "pk": 3,
     "fields": {
         "name": "default",
+        "active": true,
         "organization": 6
     }
 }
