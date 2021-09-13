@@ -314,7 +314,6 @@ def set_query_params(url, page):
 class Upload(APIView):
     permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
 
-
     response = openapi.Response('model_info',
             openapi.Schema( type=openapi.TYPE_OBJECT,
                             properties={
@@ -349,7 +348,7 @@ class Upload(APIView):
                               aws_secret_access_key=aws_settings.aws_secret,
                               organization_id=org.id
                               )
-        return Response({"job_id":result.id},status.HTTP_200_OK)
+        return Response({"job_id":result.id}, status=status.HTTP_200_OK)
 
 
 class Train(APIView):
@@ -1332,9 +1331,9 @@ class UploadArticle(APIView):
 
     @swagger_auto_schema(manual_parameters=[
         file], responses={200: response, 404: error})
-    def get(self, request, format=None):
+    def post(self, request):
 
-        if not self.request.data.type:
+        if not self.request.data.get("type", False):
             return Response({"type": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
         if self.request.Files.get("file") is None:
             return Response({"file": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -1342,7 +1341,7 @@ class UploadArticle(APIView):
             return Response({"title": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
         if self.request.Files.get("source") is None:
             return Response({"source": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
-        if self.request.data.type not in SERIALIZER_MAP.keys():
+        if self.request.data.get("type") not in SERIALIZER_MAP.keys():
             return Response({"detail": "type not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
         data = {
@@ -1363,7 +1362,7 @@ class UploadArticle(APIView):
         serializer = SERIALIZER_MAP[self.request.data.source]["serializer"](data=data)
         serializer.save()
         res = serializer.data
-        return Response(res, status.HTTP_200_OK)
+        return Response(res, status=status.HTTP_200_OK)
 
 
 class HtmlArticleViewSet(OrgViewSet):
@@ -1466,9 +1465,9 @@ class UserSingleViewSet(viewsets.GenericViewSet,
         serializer=serializers.UserSerializerUpdate(user,data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'status':'password set'},status=status.HTTP_200_OK)
+            return Response({'status':'password set'}, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         """
@@ -2007,7 +2006,7 @@ class IndicatorHome(APIView):
         data_model_key = self.request.GET.get("data_model", None)
         data_model = MODEL_MAP[data_model_key]
         if data_model is None:
-            return Response({"data_model": "data_model cannot be blank"}, status.HTTP_400_BAD_REQUEST)
+            return Response({"data_model": "data_model cannot be blank"}, status=status.HTTP_400_BAD_REQUEST)
         ordering = self.request.GET.get("ordering", "value")
         filters_keep = [i for i in filters if i[1] is not None and i[1] is not '']
         filter_dict = dict(filters_keep)

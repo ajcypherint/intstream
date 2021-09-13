@@ -29,9 +29,6 @@ class TestUpload(TestCase):
         data = {'source': 1, 'title': 'test', 'file':file}
         r = self.c.post("/api/htmlarticles/", data=data)
         self.assertEqual(r.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(mock_predict.delay.called)
-        # todo(aj) branch extract_indicators
-        #self.assertTrue(mock_extract_indicators.delay.called)
 
     @mock.patch("api.views.tasks.extract_indicators")
     @mock.patch("api.views.tasks.predict")
@@ -42,7 +39,6 @@ class TestUpload(TestCase):
 
         r = self.c.post("/api/txtarticles/",data=data)
         self.assertEqual(r.status_code,status.HTTP_201_CREATED)
-        self.assertTrue(mock_predict.delay.called)
 
     @mock.patch("api.views.tasks.extract_indicators")
     @mock.patch("api.views.tasks.predict")
@@ -51,7 +47,6 @@ class TestUpload(TestCase):
         data = {'source':1,'title':'test','file':file}
         r = self.c.post("/api/pdfarticles/",data=data)
         self.assertEqual(r.status_code,status.HTTP_201_CREATED)
-        self.assertTrue(mock_predict.delay.called)
 
     @mock.patch("api.views.tasks.extract_indicators")
     @mock.patch("api.views.tasks.predict")
@@ -60,7 +55,6 @@ class TestUpload(TestCase):
         data = {'source':1,'title':'test','file':file}
         r = self.c.post("/api/docxarticles/",data=data)
         self.assertEqual(r.status_code,status.HTTP_201_CREATED)
-        self.assertTrue(mock_predict.delay.called)
 
     @mock.patch("api.views.tasks.extract_indicators")
     @mock.patch("api.views.tasks.predict")
@@ -69,5 +63,4 @@ class TestUpload(TestCase):
         data = {'source':1,'title':'test','file':file}
         r = self.c.post("/api/docxarticles/",data=data)
         self.assertEqual(r.status_code,status.HTTP_201_CREATED)
-        self.assertTrue(mock_predict.delay.called)
 

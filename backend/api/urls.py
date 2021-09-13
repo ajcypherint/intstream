@@ -84,6 +84,9 @@ router.register("indicatortextfieldname", views.IndicatorTextFieldNameViewSet, b
 router.register("indicatornumericfield", views.IndicatorNumericFieldViewSet, basename="indicatornumericfield")
 router.register("indicatornumericfieldname", views.IndicatorNumericFieldNameViewSet, basename="indicatornumericfieldname")
 
+
+router.register('keyvalue/', views.KeyValueViewSet, basename="keyvalue"),
+
 SETTINGS = "setting"
 router.register(SETTINGS,views.SettingsViewSet, basename="setting")
 
@@ -117,8 +120,7 @@ urlpatterns=[
     path('password-reset/validate_token/', views.ResetPasswordValidateToken.as_view(), name="reset-password-validate"),
     path('password-reset/confirm/', views.ResetPasswordConfirm.as_view(), name="reset-password-confirm"),
     path('password-reset/', views.ResetPasswordRequest.as_view(), name="reset-password-request"),
-    path('keyvalue/', views.KeyValueViewSet, name="keyvalue"),
-    path('uploadarticle/', views.UploadArticle, name="uploadarticle"),
+    path('uploadarticle/', views.UploadArticle.as_view(), name="uploadarticle"),
     path('token-auth/', TokenObtainPairView.as_view()),
     path('token-refresh/', TokenRefreshView.as_view()),
     path('token-verify/', TokenVerifyView.as_view()),

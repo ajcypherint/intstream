@@ -88,19 +88,18 @@ class TestTasks(TestCase):
         self.assertEqual(r_put.status_code, 200)
 
     def test_upload_article(self):
-        source = models.UploadSource(name="test upload")
-        source.save()
         fake_article = """
         This is an article about something"""
-        with tempfile.NamedTemporaryFile(encoding="utf8") as f:
-            f.write(fake_article)
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(fake_article.encode("utf8"))
             f.flush()
             f.seek(0)
 
             r = self.c.post("/api/uploadarticle/",
-                            {"file": f,
+                            data={
+                             "file": f,
                              "type": "TXT",
-                             "source": source.pk,
+                             "source": 1,
                              "title": "READ_TITLE"})
 
         self.assertEqual(True, False)

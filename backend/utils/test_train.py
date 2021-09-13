@@ -4,7 +4,11 @@ from unittest import mock
 from utils import train
 from datetime import datetime
 from api import models
+import asyncio
 
+class MockResult(object):
+    def __init__(self, id):
+        self.id = id
 
 def temp_bucket_exists(var):
     return True
@@ -102,13 +106,18 @@ class Train(TestCase):
     @mock.patch("utils.train.DeployPySparkScriptOnAws.upload_temp_files")
     @mock.patch("api.models.Article")
     @mock.patch("utils.train.DeployPySparkScriptOnAws.chunks")
+    @mock.patch("utils.train.DeployPySparkScriptOnAws.upload_article")
     def test_upload(self,
+                    upload_article,
                     chunks,
                     Article,
                     upload_temp_files,
                     tar_python_script,
                     temp_bucket_exists,
                     ):
+        future = asyncio.Future()
+        future.set_result({"ResponseMetadata": {"HTTPStatusCode": 200}})
+        upload_article.return_value = future
         temp_bucket_exists.return_value = True
         tar_python_script.return_value = True
         upload_temp_files.side_effect = mock_upload_temp_files
