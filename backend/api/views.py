@@ -1335,35 +1335,39 @@ class UploadArticle(APIView):
 
         if not self.request.data.get("type", False):
             return Response({"type": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
-        if self.request.Files.get("file") is None:
+        if self.request.FILES.get("file") is None:
             return Response({"file": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
-        if self.request.Files.get("title") is None:
+        if self.request.data.get("title") is None:
             return Response({"title": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
-        if self.request.Files.get("source") is None:
+        if self.request.data.get("source") is None:
             return Response({"source": "field is required"}, status=status.HTTP_400_BAD_REQUEST)
         if self.request.data.get("type") not in SERIALIZER_MAP.keys():
             return Response({"detail": "type not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
         data = {
-            "source": self.request.data.source,
-            "title": self.request.data.title,
+            "source": self.request.data["source"],
+            "title": self.request.data["title"],
             "text": "NOT PROCESSED",
             "read_task": "NA",
             "upload_date": timezone.now(),
             "encoding": "utf-8",
-            "organization": self.request.user.organization.id,
-            "file": self.request.Files["file"]
+            "organization_id": self.request.user.organization.id,
+            "file": self.request.FILES["file"]
         }
-        serializer = SERIALIZER_MAP[self.request.data.source]["serializer"](data=data)
-        serializer.save()
-        task_info = tasks.read_predict.delay(serializer.instance.id, self.request.data.source,
-                           organization_id=self.request.user.organization.id)
-        data["read_task_id"] = str(task_info.id)
-        serializer = SERIALIZER_MAP[self.request.data.source]["serializer"](data=data)
-        serializer.save()
-        res = serializer.data
-        return Response(res, status=status.HTTP_200_OK)
-
+        serializer_cls = SERIALIZER_MAP[self.request.data["type"]]["serializer"]
+        serializer = serializer_cls(data=data)
+        if serializer.is_valid():
+            serializer.save(organization=self.request.user.organization)
+            task_info = tasks.read_predict.delay(serializer.instance.id, self.request.data["source"],
+                               organization_id=self.request.user.organization.id)
+            data["read_task_id"] = str(task_info.id)
+            serializer = serializer_cls(data=data)
+            serializer.is_valid()
+            serializer.save(organization=self.request.user.organization)
+            res = serializer.data
+            return Response(res, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "invalid data"}, status=status.HTTP_400_BAD_REQUEST)
 
 class HtmlArticleViewSet(OrgViewSet):
    #todo(aj) delete put

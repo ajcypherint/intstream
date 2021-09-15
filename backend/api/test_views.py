@@ -102,4 +102,4 @@ class TestTasks(TestCase):
                              "source": 1,
                              "title": "READ_TITLE"})
 
-        self.assertEqual(True, False)
+        self.assertEqual(r.status_code, 200)
