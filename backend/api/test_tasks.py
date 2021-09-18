@@ -8,7 +8,30 @@ import datetime
 import os
 from django.conf import settings
 from django.core.files import File
+from api import serializers
 
+
+class MockArticleSer(object):
+    def __init__(self):
+        self.clean_text = "some text"
+
+
+class MockSource(object):
+    def __init__(self):
+        self.id = 1
+        self.extract_indicators = True
+
+
+class MockArticle(object):
+    def __init__(self, id, file, title):
+        self.file = file
+        self.text = ''
+        self.title = title
+        self.id = id
+        self.source = MockSource()
+
+    def save(self):
+        return
 
 class MockResponse():
     def __init__(self):
@@ -194,5 +217,44 @@ class TestTasks(TestCase):
 
         self.assertTrue(process.delay.called)
 
-    def test_read_predict(self):
-        self.assertEqual(False, True)
+    @mock.patch("api.models.TxtArticle.objects.get")
+    def test_read_predict_txt(self, mock_txt_article_get):
+        txt_file = os.path.join(settings.BASE_DIR, "sample_files/report_text.txt")
+        id = 1
+        mock_article = MockArticle(id, txt_file, tasks.READ_TITLE)
+        mock_txt_article_get.return_value = mock_article
+        serializers.DefaultArticleSerializer.clean_text = ''
+        tasks._read_predict(id, "TXT")
+        mock_txt_article_get.assert_called()
+
+
+    @mock.patch("api.models.WordDocxArticle.objects.get")
+    def test_read_predict_docx(self, mock_txt_article_get):
+        txt_file = os.path.join(settings.BASE_DIR, "sample_files/report_docx.docx")
+        id = 1
+        mock_article = MockArticle(id, txt_file, tasks.READ_TITLE)
+        mock_txt_article_get.return_value = mock_article
+        serializers.DefaultArticleSerializer.clean_text = ''
+        tasks._read_predict(id, "DOCX")
+        mock_txt_article_get.assert_called()
+
+    @mock.patch("api.models.HtmlArticle.objects.get")
+    def test_read_predict_html(self, mock_txt_article_get):
+        txt_file = os.path.join(settings.BASE_DIR, "sample_files/report_html.html")
+        id = 1
+        mock_article = MockArticle(id, txt_file, tasks.READ_TITLE)
+        mock_txt_article_get.return_value = mock_article
+        serializers.DefaultArticleSerializer.clean_text = ''
+        tasks._read_predict(id, "HTML")
+        mock_txt_article_get.assert_called()
+
+    @mock.patch("api.models.PDFArticle.objects.get")
+    def test_read_predict_pdf(self, mock_txt_article_get):
+        txt_file = os.path.join(settings.BASE_DIR, "sample_files/f1065.pdf")
+        id = 1
+        mock_article = MockArticle(id, txt_file, tasks.READ_TITLE)
+        mock_txt_article_get.return_value = mock_article
+        serializers.DefaultArticleSerializer.clean_text = ''
+        tasks._read_predict(id, "PDF")
+        mock_txt_article_get.assert_called()
+

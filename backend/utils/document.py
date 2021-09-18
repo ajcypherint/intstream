@@ -4,6 +4,7 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 import pdfminer.pdfdocument as pdfdocument
 import docx2txt
+from django.conf import settings
 import sys
 from io import StringIO
 
@@ -13,7 +14,7 @@ class Document(object):
     def __init__(self):
         self.text = ""
 
-    def read(self):
+    def read(self, max_pages=settings.MAX_READ_UPLOAD_PAGES, password=None):
         pass
 
 class TXT(Document):
@@ -27,7 +28,7 @@ class TXT(Document):
         self.encoding=encoding
         super(TXT,self).__init__()
 
-    def read(self, max_pages=100):
+    def read(self, max_pages=settings.MAX_READ_UPLOAD_PAGES, password=None):
         text = ''
         for index, line in enumerate(self.file_handle):
             if index > max_pages:
@@ -43,13 +44,13 @@ class WordDocx(Document):
         super(WordDocx,self).__init__()
         self.file_handle = file_handle
 
-    def read(self, max_pages=0):
+    def read(self, max_pages=settings.MAX_READ_UPLOAD_PAGES, password=None):
         # todo(aj) change to use file_handle instead
         return docx2txt.process(self.file_handle)
 
 
 class PDF(Document):
-    def __init__(self,file_handle, password='',**kwargs):
+    def __init__(self,file_handle,**kwargs):
         """
         :param file_handle: request.FILES['file']
         """
@@ -58,20 +59,16 @@ class PDF(Document):
         self.fp = file_handle
         self.rescmgr = PDFResourceManager()
         self.retstr = StringIO()
-        self.password = password
         self.codec='utf8'
         self.laparams=LAParams()
         self.device = TextConverter(self.rescmgr,self.retstr,self.codec,laparams=self.laparams)
         self.interpreter = PDFPageInterpreter(rsrcmgr=self.rescmgr,device=self.device)
 
-    def read(self, max_pages=100):
+    def read(self, max_pages=settings.MAX_READ_UPLOAD_PAGES, password=None):
+        if password == None:
+            password = ''
         pagenos = set()
         maxpages = 100
-        password = self.password
-        if sys.version_info[0] <3:
-            password = password.encode('utf8','ignore')
-        else:
-            password=password
 
         page_gen = PDFPage.get_pages(fp=self.fp,
                                      pagenos=pagenos,

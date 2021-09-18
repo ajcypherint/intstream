@@ -1100,15 +1100,13 @@ def _train_model(self,
 def read_predict(article_id, article_type, password=None, organization_id=None):
     _read_predict(article_id, article_type, password=password, organization_id=organization_id)
 
+
 def _read_predict(article_id, article_type, password=None, organization_id=None):
     article = SERIALIZER_MAP[article_type]["model"].objects.get(id=article_id)
     with open(article.file, "rb") as f:
         #todo(aj) check file size
         reader = SERIALIZER_MAP[article_type]["reader"]
-        if password is not None:
-            text = reader(f).read()
-        else:
-            text = reader(f, password=password).read()
+        text = reader(f).read(password=password)
 
         article.text = text
         if article.title != READ_TITLE:

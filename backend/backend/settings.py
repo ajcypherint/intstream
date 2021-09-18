@@ -21,6 +21,7 @@ NETLOC = "NetLoc"
 SHA256 = "Sha256"
 SHA1 = "Sha1"
 MD5 = "MD5"
+MAX_READ_UPLOAD_PAGES = 100
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

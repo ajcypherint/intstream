@@ -7,6 +7,8 @@ from api import models
 import datetime
 import json
 import tempfile
+import os
+from django.conf import settings
 
 
 class TestTasks(TestCase):
@@ -99,6 +101,48 @@ class TestTasks(TestCase):
                             data={
                              "file": f,
                              "type": "TXT",
+                             "source": 1,
+                             "title": "READ_TITLE"})
+
+        self.assertEqual(r.status_code, 200)
+
+
+    def test_upload_html_article(self):
+        fake_article = """
+        <h1>This is an article about something</h1>"""
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(fake_article.encode("utf8"))
+            f.flush()
+            f.seek(0)
+
+            r = self.c.post("/api/uploadarticle/",
+                            data={
+                             "file": f,
+                             "type": "HTML",
+                             "source": 1,
+                             "title": "READ_TITLE"})
+
+        self.assertEqual(r.status_code, 200)
+
+    def test_upload_pdf_article(self):
+
+        with open(os.path.join(settings.BASE_DIR,"sample_files/pdf-test.pdf"), "rb") as f:
+            r = self.c.post("/api/uploadarticle/",
+                            data={
+                             "file": f,
+                             "type": "PDF",
+                             "source": 1,
+                             "title": "READ_TITLE"})
+
+        self.assertEqual(r.status_code, 200)
+
+    def test_upload_docx_article(self):
+        with open(os.path.join(settings.BASE_DIR,"sample_files/report_docx.docx"), "rb") as f:
+
+            r = self.c.post("/api/uploadarticle/",
+                            data={
+                             "file": f,
+                             "type": "DOCX",
                              "source": 1,
                              "title": "READ_TITLE"})
 
