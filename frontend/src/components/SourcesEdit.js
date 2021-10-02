@@ -100,16 +100,10 @@ class SourcesEdit extends Component {
                {React.cloneElement(this.props.form,
                  {
                    object: source,
-                   fetchUserInfo: this.props.fetchUserInfo,
                    onSubmit: this.onSubmit,
                    handleChange: this.handleInputChange,
                    errors: error,
-                   indicatorTypes: this.props.indicatorTypes,
-                   saving: this.props.saving,
-                   state: this.props.state,
-                   query: this.props.query,
                    goBack: this.goBack,
-                   dropDown: this.props.dropDown,
                    ...this.props
 
                  }
@@ -122,17 +116,5 @@ class SourcesEdit extends Component {
     )
   }
 };
-
-SourcesEdit.propTypes = {
-  dropDown: propTypes.object,
-  heading: propTypes.string,
-  errors: propTypes.object,
-  source: propTypes.object,
-  indicatorTypes: propTypes.array,
-  loading: propTypes.bool,
-  match: propTypes.object,
-  fetchSources: propTypes.func,
-  clearSources: propTypes.func
-}
 
 export default withRouter(SourcesEdit)

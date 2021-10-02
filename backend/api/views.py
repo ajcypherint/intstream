@@ -1043,21 +1043,6 @@ class UploadSourceViewSet(OrgViewSet):
     def get_queryset(self):
         return models.UploadSource.objects.filter(organization=self.request.user.organization)
 
-class FileUploadSourceFilter(filters.FilterSet):
-    class Meta:
-        model = models.FileUploadSource
-        fields = ('id','name','active', 'type')
-
-class FileUploadSourceViewSet(OrgViewSet):
-    permission_classes = (permissions.IsAuthandReadOnlyIntegrator,)
-    serializer_class = serializers.FileUploadSourceSerializer
-    filter_backends = (DisabledHTMLFilterBackend,rest_filters.OrderingFilter,rest_filters.SearchFilter)
-    filterset_fields = ('id','name','active')
-    filterset_class = FileUploadSourceFilter
-
-    def get_queryset(self):
-        return models.FileUploadSource.objects.filter(organization=self.request.user.organization)
-
 
 jobcols = ('id',
                   'name',
@@ -2054,8 +2039,9 @@ class IndicatorHome(APIView):
             total = pd.merge(how="left", left=indicator_pd, right=column_pivot, left_on=["id"], right_on=["indicator_id"])
         indicators_page_total = []
         if len(total) > 0:
-            ascending = not "-" == ordering
-            total.sort_values(by=[ordering], ascending=ascending, inplace=True)
+            ascending = not "-" == ordering[0]
+            sort_ordering = ordering[1:] if ordering[0] == "-" else ordering
+            total.sort_values(by=[sort_ordering], ascending=ascending, inplace=True)
             total.reset_index(inplace=True)
             total.fillna("NA", inplace=True)
             total = total.loc[page_calc.start_slice:page_calc.end_slice]
@@ -2152,7 +2138,6 @@ class ModelVersionViewSet(OrgViewSet):
         #        tasks.predict.delay(articles=[article.id],
         #                            organization_id=article.organization.id,
         #                            source_id=article.source.id)
-
 
 
 

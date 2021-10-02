@@ -143,13 +143,6 @@ class UploadSource(Source):
     extract_indicators = models.BooleanField(default=False)
 
 
-class FileUploadSource(Source):
-    """
-    File uploaded
-    """
-    extract_indicators = models.BooleanField(default=False)
-    type = models.ForeignKey(SourceType, on_delete=models.CASCADE)
-
 # this will trigger an rss source to accept incoming intel
 class RSSSource(Source):
     url = models.URLField(max_length=1000)
@@ -448,7 +441,6 @@ class MLModel(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
     active = models.BooleanField(default=False) # allow to show in gui
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, editable=False)
-    training_script = models.ForeignKey(TrainingScript, on_delete=models.CASCADE, editable=True)
 
     def __str__(self):
         return str(self.id)

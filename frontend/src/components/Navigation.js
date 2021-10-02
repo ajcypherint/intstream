@@ -15,9 +15,10 @@ import {
 } from 'reactstrap'
 import {
   MITIGATE_IND_JOB_EDIT_URI,
-  UNMITIGATE_IND_JOB_EDIT_URI
+  UNMITIGATE_IND_JOB_EDIT_URI,
+  DO_FILE_UPLOAD_URI,
+  DO_UPLOAD_URI
 } from '../containers/api'
-
 export default class Example extends React.Component {
   constructor (props) {
     super(props)
@@ -92,15 +93,26 @@ export default class Example extends React.Component {
 
              { this.props.isIntegrator
                ? <UncontrolledDropdown nav inNavbar >
+               <DropdownToggle nav caret>
+                  Logs
+                </DropdownToggle>
+
+                <DropdownMenu right >
+                  <DropdownItem tag={Link} to="/tasklist">
+                     TaskList
+                  </DropdownItem>
+                 </DropdownMenu>
+              </UncontrolledDropdown>
+               : null}
+
+             { this.props.isIntegrator
+               ? <UncontrolledDropdown nav inNavbar >
                 <DropdownToggle nav caret>
                   Sources
                 </DropdownToggle>
                 <DropdownMenu right >
                    <DropdownItem tag={Link} to="/sources_upload">
-                    Raw Text Upload
-                    </DropdownItem>
-                   <DropdownItem tag={Link} to="/sources_fileupload">
-                    File Upload
+                    Upload
                     </DropdownItem>
                    <DropdownItem tag={Link} to="/sources_rss?ordering=name&page=1&orderDir=%2b">
                     RSS
@@ -127,11 +139,11 @@ export default class Example extends React.Component {
                   Upload
                 </DropdownToggle>
                 <DropdownMenu right >
-                   <DropdownItem tag={Link} to="/sources_do_upload">
+                   <DropdownItem tag={Link} to={DO_UPLOAD_URI}>
                     Raw Text
                     </DropdownItem>
-                   <DropdownItem tag={Link} to="/sources_do_htmlupload">
-                    File Html
+                   <DropdownItem tag={Link} to={DO_FILE_UPLOAD_URI}>
+                    File
                     </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>

@@ -9,7 +9,6 @@
         "created_date": "2019-05-26T01:31:29.587Z",
         "active": true,
         "organization": 1,
-        "training_script": 3,
         "sources": [
             24,
             25,
@@ -31,7 +30,6 @@
         "created_date": "2019-05-26T01:32:08.132Z",
         "active": true,
         "organization": 1,
-        "training_script": 3,
         "sources": [
             4,
             70,
@@ -75,7 +73,6 @@
         "created_date": "2019-12-12T02:43:02.706Z",
         "active": false,
         "organization": 1,
-        "training_script": 3,
         "sources": []
     }
 },
@@ -89,7 +86,6 @@
         "created_date": "2019-12-12T02:44:08.535Z",
         "active": false,
         "organization": 1,
-        "training_script": 3,
         "sources": []
     }
 },
@@ -103,7 +99,6 @@
         "created_date": "2019-12-12T02:47:05.245Z",
         "active": false,
         "organization": 1,
-        "training_script": 3,
         "sources": [
             24
         ]
@@ -119,7 +114,6 @@
         "created_date": "2019-12-12T02:47:21.506Z",
         "active": false,
         "organization": 1,
-        "training_script": 3,
         "sources": [
             24,
             25
@@ -136,7 +130,6 @@
         "created_date": "2019-12-12T02:49:05.993Z",
         "active": true,
         "organization": 1,
-        "training_script": 3,
         "sources": [
             24
         ]

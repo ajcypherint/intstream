@@ -60,7 +60,7 @@ export const mitigateDispatchTemplate = (func) => (indicatorId, indicatorType) =
       return
     }
     // wrap dispatch in promise so it is async
-    // launch checkTaskPoll which signlas saga to launch
+    // launch checkTaskPoll which signals saga to launch
     if (response.payload.job_ids.length > 0) {
       await dispatch(checkTaskPoll(
         {

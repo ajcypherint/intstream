@@ -1,9 +1,13 @@
+export const ARTICLE_TYPES_DD = 'articletypes'
 
+export const DO_UPLOAD_URI = '/sources_do_upload'
+export const DO_FILE_UPLOAD_URI = '/sources_do_htmlupload'
 export const ORG_API_ALL = '/api/allorganization/'
 export const ORG_API = '/api/organization/'
 export const ORG_EDITURI = /organization/
 export const ORG_ADDURI = '/organization_add'
 
+export const ARTICLE_TYPES_API = '/api/articletypes/'
 export const ORGUSER_API = '/api/orguserinfo/'
 export const ORGUSER_EDITURI = /orguserinfo/
 export const ORGUSER_ADDURI = '/orguserinfo_add'

@@ -41,12 +41,15 @@ import MitigateIndJobVersionEditForm from './MitigateIndJobVersionEditFormComp'
 import TrainingScriptVersionEditForm from './TrainingScriptVersionEditFormComp'
 import EditMitigateIndicatorJob from './SourceEditMitigateIndicatorJobFormComp'
 import EditUnmitigateIndicatorJob from './SourceEditUnmitigateIndicatorJobFormComp'
+import FileEdit from './FileUploadFormComp'
 
 import { ADD, EDIT } from '../util/util'
 import CreateMLVersion from '../containers/CreateMLVersion'
 import ModelVersionTable from './ModelVersionTable'
 
 import VersionTable from './VersionTable'
+
+import FileUpload from '../containers/FileUpload'
 
 import {
   MITIGATE_IND_JOB_API,
@@ -63,6 +66,7 @@ import {
   UNMITIGATE_IND_JOB_VERSION_ADD_URI,
   UNMITIGATE_IND_JOB_VERSION_PARENT_URI,
   UNMITIGATE_IND_JOB_VERSION_LIST,
+  DO_FILE_UPLOAD_URI,
   ORG_API,
   ORG_API_ALL,
   ORG_EDITURI,
@@ -194,7 +198,7 @@ const SourcesJobList = JobListTemplate(JOB_ORDERSTARTCOL)(
   JOB_LIST_ADDURI)(
   JOB_API)
 
-const UPLOAD_HEADING = 'Raw Upload Sources'
+const UPLOAD_HEADING = 'Upload Sources'
 const UPLOAD_EDITURI = '/sources_upload/'
 const UPLOAD_ADDURI = '/sources_upload_add'
 const UPLOAD_FIELDS = ['id', 'name', 'active', 'extract_indicators']
@@ -205,17 +209,6 @@ const SourcesUploadList = JobListTemplate(JOB_ORDERSTARTCOL)(
   UPLOAD_EDITURI)(
   UPLOAD_ADDURI)(
   UPLOAD_API)
-
-const FILEUPLOAD_HEADING = 'File Upload Sources'
-const FILEUPLOAD_EDITURI = '/sources_fileupload/'
-const FILEUPLOAD_ADDURI = '/sources_fileupload_add'
-
-const SourcesFileUploadList = JobListTemplate(JOB_ORDERSTARTCOL)(
-  UPLOAD_FIELDS)(
-  FILEUPLOAD_HEADING)(
-  FILEUPLOAD_EDITURI)(
-  FILEUPLOAD_ADDURI)(
-  FILEUPLOAD_API)
 
 const ORGUSER_ORDERSTARTCOL = 'username'
 const ORGUSER_FIELDS = ['username', 'email', 'is_staff', 'is_integrator']
@@ -312,6 +305,12 @@ const SourcesJobEdit = JobEditTemplate(JOB_EMPTY)(
   JOB_HEADING)(
   JOB_API)
 
+const FILE_UPLOAD_EMPTY = {
+  type: '',
+  id: '',
+  filename: ''
+}
+
 const ORGUSER_EDIT_HEADING = ' User '
 const ORGUSER_EDIT_FIELDS = ['username', 'email', 'first_name', 'last_name', 'is_integrator', 'is_staff']
 const ORGUSER_EDIT_EMPTY = {
@@ -354,18 +353,12 @@ const SourcesRSSEdit = JobEditTemplate(RSS_EMPTY)(
   RSS_EDIT_HEADING)(
   RSS_API)
 
-const UPLOAD_EDIT_HEADING = ' Raw Upload Source'
+const UPLOAD_EDIT_HEADING = ' Upload Source'
 const UPLOAD_EMPTY = { name: '', id: '', file: '', active: false, extract_indicators: false }
 const SourcesUploadEdit = JobEditTemplate(UPLOAD_EMPTY)(
   JOB_FIELDS)(
   UPLOAD_EDIT_HEADING)(
   UPLOAD_API)
-
-const FILEUPLOAD_EDIT_HEADING = ' File Upload Source'
-const SourcesFileUploadEdit = JobEditTemplate(UPLOAD_EMPTY)(
-  JOB_FIELDS)(
-  FILEUPLOAD_EDIT_HEADING)(
-  FILEUPLOAD_API)
 
 const MITIGATE_EMPTY = {
   name: '',
@@ -504,27 +497,6 @@ const Main = (props) => (
     <Route exact path="/sources_upload/:id"
       render={({ match }) =>
       <SourcesUploadEdit
-        form={<EditRawUploadForm/>}
-        state={ {
-          action: EDIT
-        }}
-        match={match}/>}
-      />
-
-    <Route exact path={FILEUPLOAD_EDITURI} component={SourcesFileUploadList} />
-    <Route exact path={FILEUPLOAD_ADDURI}
-      render={() =>
-      <SourcesFileUploadEdit
-        form={<EditRawUploadForm/>}
-        action={'ADD'}
-        state={ {
-          action: ADD
-        }}
-        match={undefined}/>}
-      />
-    <Route exact path="/sources_fileupload/:id"
-      render={({ match }) =>
-      <SourcesFileUploadEdit
         form={<EditRawUploadForm/>}
         state={ {
           action: EDIT
@@ -738,6 +710,16 @@ const Main = (props) => (
         }}
         match={match}/>}
       />
+
+    <Route exact path={DO_FILE_UPLOAD_URI}
+      render={() =>
+      <FileUpload
+        form={<FileEdit/>}
+        state={ {
+          action: ADD
+        }}
+        match={undefined}/>}
+    />
 
     <Route exact path="/sources_job" component={SourcesJobList} />
     <Route exact path="/sources_job_add"

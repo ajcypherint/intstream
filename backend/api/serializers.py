@@ -344,19 +344,6 @@ class UploadSourceSerializer(serializers.ModelSerializer):
         model = models.UploadSource
 
 
-class FileUploadSourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = [
-            "id",
-            'name',
-            'active',
-            'organization',
-            'extract_indicators',
-            'type'
-
-        ]
-        model = models.FileUploadSource
-
 
 class RssSourceSerializer(serializers.ModelSerializer):
     class Meta:

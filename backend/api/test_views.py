@@ -31,14 +31,22 @@ class TestTasks(TestCase):
         headers = {"Content-Type":"application/json"}
         self.c.login(username=self.username,password=self.password)
 
+    def test_mlmodel(self):
+        source = models.Source.objects.all()[0]
+        data1 = {"name": "test123", "active": True,
+                "sources": [{"id":source.id, "name":source.name,
+                             "active":source.active, "organization": source.organization.id}]}
+        r = self.c.post("/api/mlmodels/", content_type="application/json",data=data1)
+        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
+
     def test_integrity_error(self):
         data = {'value': 'ac'}
-        r = self.c.post("/api/htmlarticles/", data=data)
+        r = self.c.post("/api/htmlarticles/", content_type="application/json", data=data)
         self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_link(self):
         data = {"value": "0800fc577294c34e0b28ad2839435945"}
-        r = self.c.post("/api/indicatormd5/", data=data)
+        r = self.c.post("/api/indicatormd5/", content_type="application/json", data=data)
         id = r.json().get("id")
         org = models.Organization.objects.get(id=1)
         source = models.RSSSource(url="http://test.com", organization=org)
